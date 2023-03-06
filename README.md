@@ -1,31 +1,40 @@
 # Своя ЧГК
+
+Шушарин Николай - prefie (backend, devops)
+
+Кряжев Александр - kryaazh (frontend, design)
+
+Старые игроки:
+
 Вихлянцева Дарья - DaryaVkh (frontend)
-
-Шушарин Николай - prefie (fullstack, db)
-
-Кряжев Александр - kryaazh (design)
 
 Шрейн Ольга - OlgaShreyn (backend, testing)
 
 
+
 ## Ссылка на приложение:
 
-### Юзерка: https://ownchgk.herokuapp.com
-### Админка: https://ownchgk.herokuapp.com/admin
+### Юзерка: https://ownchgk.ru
+### Админка: https://ownchgk.ru/admin
 
 ## Установка
 
 1) Склонировать репозиторий
 ```bash
-    git clone https://github.com/DaryaVkh/OwnChGK.git
+    git clone https://github.com/prefie/OwnChGK.git
 ```   
 
 2) Перейти на продакшен ветку (`master`)
 ```bash
     git checkout master
-``` 
+```
 
-3) Запустить сборку приложения
+3) Установить зависимости
+```bash
+    npm i
+```
+
+4) Запустить сборку приложения
 ```bash
     npm run build
 ```
