@@ -64,13 +64,27 @@ const Authorization: FC<AuthorizationProps> = props => {
                 <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
 
                 <form onSubmit={handleSubmit}>
-                    <CustomInput type="email" id="email" name="email" placeholder="Почта" value={email}
-                                 onChange={handleEmailChange} isInvalid={wrongEmailOrPassword} autocomplete={true}
-                                 onFocus={handleErrorFixes}/>
-                    <CustomInput type="password" id="password" name="password" placeholder="Пароль" value={password}
-                                 onChange={handlePasswordChange} isInvalid={wrongEmailOrPassword} autocomplete={true}
-                                 onFocus={handleErrorFixes} errorHelperText='Неверный логин или пароль'/>
-
+                    <CustomInput type="email"
+                                 id="email"
+                                 name="email"
+                                 placeholder="Почта"
+                                 value={email}
+                                 onChange={handleEmailChange}
+                                 isInvalid={wrongEmailOrPassword}
+                                 autocomplete={true}
+                                 onFocus={handleErrorFixes}
+                    />
+                    <CustomInput type="password"
+                                 id="password"
+                                 name="password"
+                                 placeholder="Пароль"
+                                 value={password}
+                                 onChange={handlePasswordChange}
+                                 isInvalid={wrongEmailOrPassword}
+                                 autocomplete={true}
+                                 onFocus={handleErrorFixes}
+                                 errorHelperText='Неверный логин или пароль'
+                    />
                     <FormButton type="signInButton" text="Войти"/>
                 </form>
 
@@ -85,7 +99,7 @@ const Authorization: FC<AuthorizationProps> = props => {
                         ? null
                         :
                         <div className={classes.toRegistrationWrapper}>
-                            <p className={classes.toRegistrationParagraph}>Ещё нет аккаунта?</p>
+                            <p className={classes.toRegistrationParagraph}>Раньше не играл?</p>
                             <Link className={classes.toRegistrationLink} to="/registration"
                                   id="toRegistration"> Зарегистрироваться</Link>
                         </div>

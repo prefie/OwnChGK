@@ -50,7 +50,7 @@
 
   .userData {
     width: 65%;
-    color: var(--foreground-color);
+    color: var(--color-fill-accent-enabled);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -79,7 +79,7 @@
   width: 100%;
   margin-top: 7vh;
   font-weight: 700;
-  border: 2px solid var(--foreground-color);
+  border: 2px solid var(--color-fill-accent-enabled);
   border-radius: 7px;
   filter: drop-shadow(0 3px 3px rgba(255, 255, 255, .4));
   overflow: hidden;
@@ -89,7 +89,7 @@
 
   &:not(:disabled):hover {
     cursor: pointer;
-    box-shadow: 0 0 2vh 2px var(--foreground-color);
+    box-shadow: 0 0 2vh 2px var(--color-fill-accent-enabled);
   }
 
   &:not(:disabled):active {

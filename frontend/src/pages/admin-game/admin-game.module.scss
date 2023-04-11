@@ -29,7 +29,7 @@
   height: 7vh;
   font-size: 1.4vw;
   font-weight: 500;
-  border: 2px solid var(--foreground-color);
+  border: 2px solid var(--color-fill-accent-enabled);
   border-radius: 8px;
   filter: drop-shadow(0px 4px 4px rgba(255, 255, 255, 0.25));
   overflow: hidden;
@@ -45,7 +45,7 @@
 
   &:not(:disabled):hover {
     cursor: pointer;
-    box-shadow: 0 0 2vh 2px var(--foreground-color);
+    box-shadow: 0 0 2vh 2px var(--color-fill-accent-enabled);
   }
 
   &:not(:disabled):active {
@@ -135,7 +135,7 @@
     .question {
       position: relative;
       height: 6.5vh;
-      border: 2px solid var(--foreground-color);
+      border: 2px solid var(--color-fill-accent-enabled);
       background-color: white;
       font-size: 1.2vw;
       font-weight: 700;
@@ -163,7 +163,7 @@
       padding: 3vh 2vw;
 
       .tour {
-        color: var(--foreground-color);
+        color: var(--color-fill-accent-enabled);
       }
 
       .activeTour {
@@ -210,7 +210,7 @@
 
     .activeTour,
     .activeQuestion {
-      background-color: var(--foreground-color);
+      background-color: var(--color-fill-accent-enabled);
       border-color: white;
     }
   }
