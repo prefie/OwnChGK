@@ -1,38 +1,25 @@
 .buttonWrapper {
-  width: 100%;
   display: flex;
   justify-content: center;
 }
 
 .Button {
-  height: 6vh;
-  font-size: 1.3vmax;
-  font-weight: var(--bold-weight);
-  border: 2px solid var(--foreground-color);
-  border-radius: 12px;
-  margin-top: 4vh;
-  margin-bottom: 2.5vh;
-  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.25));
-  overflow: hidden;
-  user-select: none;
-  font-family: Roboto, sans-serif;
+  background-color: var(--color-fill-accent-enabled);
+  color: var(--color-text-icon-primary);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-32);
+  padding: 0.375em 2.5em;
+  border-radius: 0.375em;
+  margin-top: 2rem;
 
   &:not(:disabled):hover {
     cursor: pointer;
-    box-shadow: 0 0 2vh 2px var(--foreground-color);
+    background-color: var(--color-fill-accent-hover);
   }
 
   &:not(:disabled):active {
-    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, .50);
+    background-color: var(--color-fill-accent-pressed);
   }
-}
-
-.signInButton {
-  width: 13vmax;
-}
-
-.signUpButton {
-  width: 16vmax;
 }
 
 .disabled {

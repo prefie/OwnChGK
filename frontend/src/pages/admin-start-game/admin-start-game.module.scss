@@ -24,7 +24,7 @@
     align-self: center;
     margin-top: 7vh;
     font-weight: 700;
-    border: 2px solid var(--foreground-color);
+    border: 2px solid var(--color-fill-accent-enabled);
     border-radius: 7px;
     filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.25));
     overflow: hidden;
@@ -34,7 +34,7 @@
 
     &:hover {
       cursor: pointer;
-      box-shadow: 0 0 2vh 2px var(--foreground-color);
+      box-shadow: 0 0 2vh 2px var(--color-fill-accent-enabled);
     }
 
     &:active {
@@ -48,7 +48,7 @@
   align-items: flex-end;
   align-self: center;
   background: none;
-  color: var(--foreground-color);
+  color: var(--color-fill-accent-enabled);
   font-size: 2.3vmin;
   margin-top: 20vh;
   cursor: pointer;
