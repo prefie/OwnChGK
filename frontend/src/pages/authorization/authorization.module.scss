@@ -20,6 +20,11 @@
   display: inline-block;
 }
 
+.buttonWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 
 .toRegistrationLink {
   text-decoration: none;

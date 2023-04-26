@@ -1,7 +1,7 @@
 import React, {FC, useEffect, useState} from 'react';
 import classes from './custom-input.module.scss';
 import {InputProps} from '../../entities/custom-input/custom-input.interfaces';
-import {FormControl, FormHelperText, IconButton, InputAdornment, OutlinedInput, TextField} from '@mui/material';
+import {FormControl, FormHelperText, IconButton, InputAdornment, OutlinedInput} from '@mui/material';
 import {Visibility, VisibilityOff} from '@mui/icons-material';
 
 export const CustomInput: FC<InputProps> = props => {
@@ -79,7 +79,6 @@ export const CustomInput: FC<InputProps> = props => {
                            required={required}
                            onFocus={props.onFocus}
                            readOnly={props.readonly}
-                           sx={styles}
                            endAdornment={
                                props.type === 'password'
                                    ?

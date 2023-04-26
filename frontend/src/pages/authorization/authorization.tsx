@@ -17,6 +17,8 @@ import {authorizeUserWithRole, checkToken as testToken} from '../../redux/action
 import {AppState} from '../../entities/app/app.interfaces';
 import PageBackdrop from '../../components/backdrop/backdrop';
 import {login} from '../../server-api/server-api';
+import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
+import {AddRounded} from "@mui/icons-material";
 
 const Authorization: FC<AuthorizationProps> = props => {
     const [wrongEmailOrPassword, setWrongEmailOrPassword] = useState<boolean>(false);
@@ -85,7 +87,9 @@ const Authorization: FC<AuthorizationProps> = props => {
                                  onFocus={handleErrorFixes}
                                  errorHelperText='Неверный логин или пароль'
                     />
-                    <FormButton type="signInButton" text="Войти"/>
+                    <div className={classes.buttonWrapper}>
+                        <CustomButton type={"submit"} text={"Войти"} buttonType={ButtonType.primary}/>
+                    </div>
                 </form>
 
                 <div className={classes.restoreLinkWrapper}>
