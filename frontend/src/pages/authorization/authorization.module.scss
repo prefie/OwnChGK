@@ -24,6 +24,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
+  margin-top: 1.5rem;
 }
 
 .toRegistrationLink {
@@ -54,6 +55,18 @@
   margin-top: 1.5rem;
 }
 
+@media only screen and (max-width: 1400px) {
+  .contentWrapper {
+    width: 35%
+  }
+}
+
+@media only screen and (max-width: 992px) {
+  .contentWrapper {
+    width: 50%
+  }
+}
+
 @media only screen and (max-width: 600px) {
   .contentWrapper {
     width: 80%;
@@ -73,3 +86,5 @@
     margin-top: 50vw;
   }
 }
+
+
