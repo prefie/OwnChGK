@@ -2,19 +2,19 @@ import {
     Entity,
     Column,
     PrimaryGeneratedColumn,
-    BaseEntity,
     OneToMany,
     ManyToOne,
     JoinColumn,
     ManyToMany, JoinTable
 } from 'typeorm';
-import {Game, GameStatus} from "./Game";
-import {Admin} from "./Admin";
-import {Team} from "./Team";
+import { Game, GameStatus } from './Game';
+import { Admin } from './Admin';
+import { Team } from './Team';
+import { BaseCreature } from './BaseCreature';
 
 @Entity('big_games')
-export class BigGame extends BaseEntity {
-    @PrimaryGeneratedColumn('uuid', {name: 'big_game_id'})
+export class BigGame extends BaseCreature {
+    @PrimaryGeneratedColumn('uuid', { name: 'big_game_id' })
     id: string;
 
     @Column({
@@ -35,11 +35,13 @@ export class BigGame extends BaseEntity {
     )
     games: Game[];
 
-    @ManyToOne(() => Admin, {
-        nullable: false,
-        onDelete: 'RESTRICT',
-        onUpdate: 'CASCADE'
-    })
+    @ManyToOne(
+        () => Admin,
+        {
+            nullable: false,
+            onDelete: 'RESTRICT',
+            onUpdate: 'CASCADE'
+        })
     @JoinColumn({
         name: 'admin_id',
     })
@@ -47,6 +49,7 @@ export class BigGame extends BaseEntity {
 
     @ManyToMany(
         () => Team,
+        team => team.bigGames,
         {
             onDelete: 'CASCADE',
             onUpdate: 'CASCADE'

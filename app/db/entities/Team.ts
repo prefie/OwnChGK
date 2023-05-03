@@ -1,6 +1,7 @@
-import {Entity, Column, PrimaryGeneratedColumn, BaseEntity, OneToOne, JoinColumn, ManyToMany} from 'typeorm';
-import {User} from './User';
-import {BigGame} from "./BigGame";
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToMany } from 'typeorm';
+import { User } from './User';
+import { BigGame } from './BigGame';
+import { BaseCreature } from './BaseCreature';
 
 export class Participant {
     name: string;
@@ -13,8 +14,8 @@ export class Participant {
 }
 
 @Entity('teams')
-export class Team extends BaseEntity {
-    @PrimaryGeneratedColumn('uuid', {name: 'team_id'})
+export class Team extends BaseCreature {
+    @PrimaryGeneratedColumn('uuid', { name: 'team_id' })
     id: string;
 
     @Column({
@@ -36,11 +37,12 @@ export class Team extends BaseEntity {
 
     @ManyToMany(
         () => BigGame,
+        bigGame => bigGame.teams
     )
     bigGames: BigGame[];
 
-    @Column("json", {
+    @Column('json', {
         nullable: true
     })
-    participants: Participant[]
+    participants: Participant[];
 }

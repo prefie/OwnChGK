@@ -14,19 +14,19 @@ export const gamesRouter = () => {
 
     router.get('/',
         middleware,
-        query('amIParticipate').optional().isBoolean(), gamesController.getAll);
+        query('amIParticipate').optional().isBoolean(), gamesController.getAll.bind(gamesController));
 
     router.get('/:gameId',
         middleware,
-        param('gameId').isUUID(), gamesController.getGame);
+        param('gameId').isUUID(), gamesController.getGame.bind(gamesController));
 
     router.get('/:gameId/start',
         roleMiddleware(adminAccess),
-        param('gameId').isUUID(), gamesController.startGame);
+        param('gameId').isUUID(), gamesController.startGame.bind(gamesController));
 
     router.get('/:gameId/participants',
         roleMiddleware(adminAccess),
-        param('gameId').isUUID(), gamesController.getParticipants);
+        param('gameId').isUUID(), gamesController.getParticipants.bind(gamesController));
 
     router.patch('/:gameId/change',
         roleMiddleware(adminAccess),
@@ -36,43 +36,43 @@ export const gamesRouter = () => {
         body('chgkSettings.questionCount').optional().isInt({min: 0}),
         body('matrixSettings.roundCount').optional().isInt({min: 0}),
         body('matrixSettings.questionCount').optional().isInt({min: 0}),
-        body('matrixSettings.roundNames').optional().isArray(), gamesController.changeGame)
+        body('matrixSettings.roundNames').optional().isArray(), gamesController.changeGame.bind(gamesController))
 
     router.patch('/:gameId/changeStatus',
         roleMiddleware(adminAccess),
         param('gameId').isUUID(),
-        body('status').custom(validateGameStatus), gamesController.changeGameStatus);
+        body('status').custom(validateGameStatus), gamesController.changeGameStatus.bind(gamesController));
 
     router.patch('/:gameId/changeIntrigueStatus',
         roleMiddleware(adminAccess),
         param('gameId').isUUID(),
-        body('isIntrigue').isBoolean(), gamesController.changeIntrigueStatus);
+        body('isIntrigue').isBoolean(), gamesController.changeIntrigueStatus.bind(gamesController));
 
     router.patch('/:gameId/changeName',
         roleMiddleware(adminAccess),
         param('gameId').isUUID(),
-        body('newGameName').isString().notEmpty(), gamesController.editGameName);
+        body('newGameName').isString().notEmpty(), gamesController.editGameName.bind(gamesController));
 
     router.patch('/:gameId/changeAdmin',
         roleMiddleware(adminAccess),
         param('gameId').isUUID(),
-        body('adminEmail').isEmail(), gamesController.editGameAdmin); // Не используется
+        body('adminEmail').isEmail(), gamesController.editGameAdmin.bind(gamesController)); // Не используется
 
     router.delete('/:gameId',
         roleMiddleware(adminAccess),
-        param('gameId').isUUID(), gamesController.deleteGame);
+        param('gameId').isUUID(), gamesController.deleteGame.bind(gamesController));
 
     router.get('/:gameId/result',
         middleware,
-        param('gameId').isUUID(), gamesController.getGameResult);
+        param('gameId').isUUID(), gamesController.getGameResult.bind(gamesController));
 
     router.get('/:gameId/resultTable',
         middleware,
-        param('gameId').isUUID(), gamesController.getGameResultScoreTable);
+        param('gameId').isUUID(), gamesController.getGameResultScoreTable.bind(gamesController));
 
     router.get('/:gameId/resultTable/format',
         middleware,
-        param('gameId').isUUID(), gamesController.getResultWithFormat);
+        param('gameId').isUUID(), gamesController.getResultWithFormat.bind(gamesController));
 
     router.post('/',
         roleMiddleware(adminAccess),
@@ -82,7 +82,7 @@ export const gamesRouter = () => {
         body('chgkSettings.questionCount').optional().isInt({min: 0}),
         body('matrixSettings.roundCount').optional().isInt({min: 0}),
         body('matrixSettings.questionCount').optional().isInt({min: 0}),
-        body('matrixSettings.roundNames').optional().isArray(), gamesController.insertGame);
+        body('matrixSettings.roundNames').optional().isArray(), gamesController.insertGame.bind(gamesController));
 
     return router;
 }

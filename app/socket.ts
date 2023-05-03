@@ -1,9 +1,10 @@
-import {GameStatus, GameTypeLogic} from './logic/Game';
-import {Status} from './logic/AnswerAndAppeal';
+import { GameStatus, GameTypeLogic } from './logic/Game';
+import { Status } from './logic/AnswerAndAppeal';
 import jwt from 'jsonwebtoken';
-import {secret} from './jwtToken';
-import * as WebSocket from 'ws';
-import {BigGameLogic} from "./logic/BigGameLogic";
+import { secret } from './jwtToken';
+import { WebSocket } from 'ws';
+import { BigGameLogic } from './logic/BigGameLogic';
+import { AppConfig } from './app-config';
 
 export const bigGames: { [id: string]: BigGameLogic; } = {};
 export const gameAdmins: { [id: string]: any; } = {};
@@ -66,13 +67,13 @@ function GiveAddedTime(gameId: number, gamePart: 'chgk' | 'matrix') {
 
 function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber: number, activeGamePart: string) {
     console.log('changeQuestion ', activeGamePart, tourNumber, questionNumber, 'with gameId= ', gameId);
-    bigGames[gameId].CurrentGame = activeGamePart === 'chgk' ? bigGames[gameId].ChGK : bigGames[gameId].Matrix
+    bigGames[gameId].CurrentGame = activeGamePart === 'chgk' ? bigGames[gameId].ChGK : bigGames[gameId].Matrix;
     bigGames[gameId].CurrentGame.currentQuestion = [tourNumber, questionNumber];
 
     for (let user of gameUsers[gameId]) {
         user.send(JSON.stringify({
             'action': 'changeQuestionNumber',
-            'matrixActive': {round: tourNumber, question: questionNumber},
+            'matrixActive': { round: tourNumber, question: questionNumber },
             'number': bigGames[gameId].CurrentGame.rounds[0].questionsCount * (tourNumber - 1) + questionNumber,
             'activeGamePart': activeGamePart
         }));
@@ -104,7 +105,7 @@ function StartTimer(gameId: number, gamePart: 'chgk' | 'matrix') {
         game.timer = setTimeout(() => {
             game.isTimerStart = false;
             console.log('stop after pause gameId = ', gameId);
-            game.leftTime = 0
+            game.leftTime = 0;
         }, game.leftTime);
         console.log(game.leftTime, 'added time to resp gameId = ', gameId);
         for (let user of gameUsers[gameId]) {
@@ -159,7 +160,6 @@ function GiveAnswer(answer: string, teamId: string, gameId: number, ws) {
     const roundNumber = bigGames[gameId].CurrentGame.currentQuestion[0] - 1;
     const questionNumber = bigGames[gameId].CurrentGame.currentQuestion[1] - 1;
     bigGames[gameId].CurrentGame.rounds[roundNumber].questions[questionNumber].giveAnswer(bigGames[gameId].CurrentGame.teams[teamId], answer);
-    bigGames[gameId].CurrentGame.rounds[roundNumber].questions[questionNumber].acceptAnswers(process.env.ANSWER);
     ws.send(JSON.stringify({
         'action': 'statusAnswer',
         'isAccepted': true,
@@ -214,7 +214,7 @@ function RejectAnswer(gameId: number, gameType: string, roundNumber: number, que
 function GetAllTeamsAnswers(gameId: number, gameType: string, roundNumber: number, questionNumber: number, ws) {
     const game = gameType === 'chgk' ? bigGames[gameId].ChGK : bigGames[gameId].Matrix;
     const answers = game.rounds[roundNumber - 1].questions[questionNumber - 1].answers.filter(ans => ans.text.length > 0);
-    const acceptedAnswers = answers.filter(ans => ans.status === 0 && ans.text != process.env.ANSWER).map(ans => ans.text);
+    const acceptedAnswers = answers.filter(ans => ans.status === 0).map(ans => ans.text);
     const rejectedAnswers = answers.filter(ans => ans.status === 1 || ans.status === 3).map(ans => ans.text);
     const uncheckedAnswers = answers.filter(ans => ans.status === 2).map(ans => ans.text);
     ws.send(JSON.stringify({
@@ -234,7 +234,7 @@ function GetAppealsByNumber(gameId: number, gameType: string, roundNumber: numbe
                 teamName: game.teams[appeal.teamId].name,
                 text: appeal.text,
                 answer: game.teams[appeal.teamId].getAnswer(roundNumber, questionNumber).text
-            }
+            };
         });
 
     console.log('appeals', appeals, 'In game = ', gameId);
@@ -298,7 +298,7 @@ function StopBreakTime(gameId) {
             action: 'isOnBreak',
             status: false,
             time: 0
-        }))
+        }));
     }
 }
 
@@ -323,12 +323,12 @@ function GetQuestionNumber(gameId, ws) {
 }
 
 function GetQuestionNumberForUser(gameId, ws) {
-    const game = bigGames[gameId].CurrentGame
+    const game = bigGames[gameId].CurrentGame;
     const result = game.rounds[0].questionsCount * (game.currentQuestion[0] - 1) + game.currentQuestion[1];
     ws.send(JSON.stringify({
         'action': 'currentQuestionNumber',
         'number': result,
-        'matrixActive': {round: game.currentQuestion[0], question: game.currentQuestion[1]},
+        'matrixActive': { round: game.currentQuestion[0], question: game.currentQuestion[1] },
         'activeGamePart': game.type === GameTypeLogic.ChGK ? 'chgk' : 'matrix',
     }));
 }
@@ -345,7 +345,7 @@ function GetTeamAnswers(gameId, teamId, ws) {
                 questionNumber: ans.questionNumber,
                 answer: ans.text,
                 status: ans.status
-            }
+            };
         });
     }
     if (bigGames[gameId].Matrix) {
@@ -358,7 +358,7 @@ function GetTeamAnswers(gameId, teamId, ws) {
                 questionNumber: ans.questionNumber,
                 answer: ans.text,
                 status: ans.status
-            }
+            };
         });
 
     }
@@ -367,7 +367,7 @@ function GetTeamAnswers(gameId, teamId, ws) {
         'action': 'teamAnswers',
         'chgkAnswers': answer['chgk'],
         'matrixAnswers': answer['matrix']
-    }))
+    }));
 }
 
 function GetTeamAnswersForAdmin(gameId, teamId, ws) {
@@ -382,7 +382,7 @@ function GetTeamAnswersForAdmin(gameId, teamId, ws) {
                 questionNumber: ans.questionNumber,
                 answer: ans.text,
                 status: ans.status
-            }
+            };
         });
     }
     if (bigGames[gameId].Matrix) {
@@ -394,7 +394,7 @@ function GetTeamAnswersForAdmin(gameId, teamId, ws) {
                 questionNumber: ans.questionNumber,
                 answer: ans.text,
                 status: ans.status
-            }
+            };
         });
 
     }
@@ -405,7 +405,7 @@ function GetTeamAnswersForAdmin(gameId, teamId, ws) {
         'matrixAnswers': answer['matrix'],
         'chgkQuestionsCount': bigGames[gameId].ChGK ? bigGames[gameId].ChGK.rounds.length * bigGames[gameId].ChGK.rounds[0].questionsCount : 0,
         'matrixQuestionsCount': bigGames[gameId].Matrix ? bigGames[gameId].Matrix.rounds.length * bigGames[gameId].Matrix.rounds[0].questionsCount : 0,
-    }))
+    }));
 }
 
 function NotifyAdminsAboutAppeal(gameId, number) {
@@ -419,7 +419,7 @@ function NotifyAdminsAboutAppeal(gameId, number) {
 function AdminsAction(gameId, ws, jsonMessage, gameType) {
     if (!gameAdmins[gameId].has(ws)) {
         gameAdmins[gameId].add(ws);
-        ws.on('close', function() {
+        ws.on('close', function () {
             gameAdmins[gameId].delete(ws);
         });
     }
@@ -489,7 +489,7 @@ function UsersAction(gameId, ws, jsonMessage, gameType, teamId) {
     }
     if (!gameUsers[gameId].has(ws)) {
         gameUsers[gameId].add(ws);
-        ws.on('close', function() {
+        ws.on('close', function () {
             gameUsers[gameId].delete(ws);
         });
     }
@@ -552,7 +552,7 @@ function CheckBreakTime(gameId, ws, jsonMessage) {
         'action': 'checkBreakTime',
         'currentTime': jsonMessage.time,
         'time': bigGames[gameId].breakTime
-    }))
+    }));
 }
 
 function IsOnBreak(gameId, ws) {
@@ -564,7 +564,7 @@ function IsOnBreak(gameId, ws) {
 }
 
 function getGameStatus(gameId, ws) {
-    const currentGame = bigGames[gameId]?.CurrentGame
+    const currentGame = bigGames[gameId]?.CurrentGame;
 
     if (currentGame) {
         const currentQuestionNumber = currentGame.currentQuestion
@@ -607,7 +607,7 @@ export function HandlerWebsocket(ws: WebSocket, message: string) {
     if (!jsonMessage || !jsonMessage.cookie) {
         NotAuthorizeMessage(ws);
     } else {
-        const {roles: userRoles, teamId: teamId, gameId: gameId} =
+        const { roles: userRoles, teamId: teamId, gameId: gameId } =
             jwt.verify(jsonMessage.cookie, secret) as jwt.JwtPayload;
         if (!bigGames[gameId] || (userRoles === 'user' && !bigGames[gameId].CurrentGame.teams[teamId])) {
             ws.send(JSON.stringify({

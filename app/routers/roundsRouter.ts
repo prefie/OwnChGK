@@ -13,7 +13,7 @@ export const roundsRouter = () => {
     // Пока не используется
     router.get('/',
         middleware,
-        body('gameName').isString().notEmpty(), roundsController.getAll);
+        body('gameName').isString().notEmpty(), roundsController.getAll.bind(roundsController));
 
     router.patch('/:gameId/:number/change',
         roleMiddleware(adminAccess),
@@ -21,12 +21,12 @@ export const roundsRouter = () => {
         param('number').isInt(),
         body('newQuestionCount').isInt({min: 0}),
         body('newQuestionCost').isInt({min: 0}),
-        body('newQuestionTime').isInt({min: 0}), roundsController.editRound);
+        body('newQuestionTime').isInt({min: 0}), roundsController.editRound.bind(roundsController));
 
     router.delete('/:gameId/:number',
         roleMiddleware(adminAccess),
         param('gameId').isUUID(),
-        param('number').isInt(), roundsController.deleteRound);
+        param('number').isInt(), roundsController.deleteRound.bind(roundsController));
 
     router.post('/',
         roleMiddleware(adminAccess),
@@ -34,7 +34,7 @@ export const roundsRouter = () => {
         body('gameName').isString().notEmpty(),
         body('questionCount').isInt({min: 0}),
         body('questionCost').isInt({min: 0}),
-        body('questionTime').isInt({min: 0}), roundsController.insertRound);
+        body('questionTime').isInt({min: 0}), roundsController.insertRound.bind(roundsController));
 
     return router;
 }
