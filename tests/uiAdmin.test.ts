@@ -68,7 +68,7 @@ test('Should_go_to_team_creation_by_admin', async () => {
 
     let teamNameInput = await driver.findElement(By.id('teamName'));
     let captainInput = await driver.findElement(By.id('captain'));
-    let saveTeamButton = await driver.findElement(By.css('button[type="Submit"]'));
+    let saveTeamButton = await driver.findElement(By.css('custom-button[type="Submit"]'));
     let currentUrl = await driver.getCurrentUrl();
     expect(currentUrl).toContain('/team-creation');
     expect(await teamNameInput.getAttribute("placeholder")).toBe("Название")
@@ -104,7 +104,7 @@ test('Should_go_to_admin_profile', async () => {
     let oldPassword = await driver.findElement(By.id('old-password'));
     let newPassword = await driver.findElement(By.id('new-password'));
     let newPasswordRepeat = await driver.findElement(By.id('repeat-new-password'));
-    let saveButton = await driver.findElement(By.css('button[type="Submit"]'));
+    let saveButton = await driver.findElement(By.css('custom-button[type="Submit"]'));
     expect(await email.getText()).toBe(loginSecret);
     expect(await oldPassword.getAttribute("value")).toBe("");
     expect(await newPassword.getAttribute("value")).toBe("");

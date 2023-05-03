@@ -1,0 +1,81 @@
+.games-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 56px;
+  line-height: 64px;
+}
+
+.game-content {
+  width: calc(25.25% - 48px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: #00283d;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.game-content:hover {
+  background-color: rgba(0, 40, 61, 0.8);
+  cursor: pointer;
+}
+
+@media (max-width: 1280px) {
+  .game-content {
+    width: calc(33.33% - 48px);
+  }
+}
+
+@media (max-width: 860px) {
+  .game-content {
+    width: calc(50% - 48px);
+  }
+}
+
+@media (max-width: 600px) {
+  .game-content {
+    width: calc(100% - 48px);
+  }
+}
+
+.game-title {
+  margin: 0;
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.game-types-list {
+  display: flex;
+  gap: 4px;
+}
+
+.game-type {
+  font-size: 18px;
+  line-height: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 8px;
+  background-color: rgb(20, 57, 77);
+  width: 50%;
+  border-radius: 8px;
+}
+
+.game-type-name {
+  color: rgba(235, 248, 255, 0.64);
+}
+
+.game-type-qt {
+}
+
+.game-commands-count {
+  font-size: 18px;
+  line-height: 24px;
+}

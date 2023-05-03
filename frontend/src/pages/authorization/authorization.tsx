@@ -1,7 +1,6 @@
 import React, {FC, useState} from 'react';
 import classes from './authorization.module.scss';
 import Header from '../../components/header/header';
-import {FormButton} from '../../components/form-button/form-button';
 import {Link, Redirect} from 'react-router-dom';
 import {
     AuthorizationDispatchProps,
@@ -17,6 +16,8 @@ import {authorizeUserWithRole, checkToken as testToken} from '../../redux/action
 import {AppState} from '../../entities/app/app.interfaces';
 import PageBackdrop from '../../components/backdrop/backdrop';
 import {login} from '../../server-api/server-api';
+import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
+import {Input} from "../../components/input/input";
 
 const Authorization: FC<AuthorizationProps> = props => {
     const [wrongEmailOrPassword, setWrongEmailOrPassword] = useState<boolean>(false);
@@ -55,7 +56,8 @@ const Authorization: FC<AuthorizationProps> = props => {
     };
 
     return props.isLoggedIn ? (
-        <Redirect to={props.user.role === 'admin' || props.user.role === 'superadmin' ? '/admin/start-screen' : '/start-screen'}/>
+        <Redirect
+            to={props.user.role === 'admin' || props.user.role === 'superadmin' ? '/admin/start-screen' : '/start-screen'}/>
     ) : (
         <PageWrapper>
             <Header isAuthorized={false}/>
@@ -64,30 +66,31 @@ const Authorization: FC<AuthorizationProps> = props => {
                 <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
 
                 <form onSubmit={handleSubmit}>
-                    <CustomInput type="email"
-                                 id="email"
-                                 name="email"
-                                 placeholder="Почта"
-                                 value={email}
-                                 onChange={handleEmailChange}
-                                 isInvalid={wrongEmailOrPassword}
-                                 autocomplete={true}
-                                 onFocus={handleErrorFixes}
+                    <Input
+                        type="email"
+                        id="email"
+                        placeholder="Почта"
+                        value={email}
+                        onChange={handleEmailChange}
+                        isInvalid={wrongEmailOrPassword}
+                        autocomplete={true}
+                        onFocus={handleErrorFixes}
                     />
-                    <CustomInput type="password"
-                                 id="password"
-                                 name="password"
-                                 placeholder="Пароль"
-                                 value={password}
-                                 onChange={handlePasswordChange}
-                                 isInvalid={wrongEmailOrPassword}
-                                 autocomplete={true}
-                                 onFocus={handleErrorFixes}
-                                 errorHelperText='Неверный логин или пароль'
+                    <Input
+                        type="password"
+                        id="password"
+                        placeholder="Пароль"
+                        value={password}
+                        onChange={handlePasswordChange}
+                        isInvalid={wrongEmailOrPassword}
+                        autocomplete={true}
+                        onFocus={handleErrorFixes}
+                        errorHelperText='Неверный логин или пароль'
                     />
-                    <FormButton type="signInButton" text="Войти"/>
+                    <div className={classes.buttonWrapper}>
+                        <CustomButton type={"submit"} text={"Войти"} buttonType={ButtonType.primary}/>
+                    </div>
                 </form>
-
                 <div className={classes.restoreLinkWrapper}>
                     <Link className={classes.restorePasswordLink}
                           to={props.isAdmin ? '/admin/restore-password' : '/restore-password'}
@@ -105,7 +108,7 @@ const Authorization: FC<AuthorizationProps> = props => {
                         </div>
                 }
             </div>
-            <PageBackdrop isOpen={isLoading} />
+            <PageBackdrop isOpen={isLoading}/>
         </PageWrapper>
     );
 };

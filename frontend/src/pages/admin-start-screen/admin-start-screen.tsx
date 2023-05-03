@@ -15,6 +15,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import Scrollbar from '../../components/scrollbar/scrollbar';
 import Loader from "../../components/loader/loader";
+import {PlusOneRounded} from "@mui/icons-material";
+import GameItem from "../../components/game-item/game-item";
 
 const inputStyles = {
     '& .MuiOutlinedInput-notchedOutline': {

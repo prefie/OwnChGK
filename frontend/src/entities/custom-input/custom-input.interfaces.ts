@@ -3,7 +3,7 @@ import React from 'react';
 export interface InputProps {
     type: string;
     id: string;
-    name: string;
+    name?: string;
     placeholder: string;
     autocomplete?: boolean;
     isInvalid?: boolean,

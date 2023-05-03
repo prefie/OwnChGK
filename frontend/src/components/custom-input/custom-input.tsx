@@ -1,8 +1,17 @@
 import React, {FC, useEffect, useState} from 'react';
 import classes from './custom-input.module.scss';
 import {InputProps} from '../../entities/custom-input/custom-input.interfaces';
-import {FormControl, FormHelperText, IconButton, InputAdornment, OutlinedInput, TextField} from '@mui/material';
+import {
+    FormControl,
+    FormHelperText,
+    IconButton,
+    InputAdornment,
+    OutlinedInput,
+} from '@mui/material';
 import {Visibility, VisibilityOff} from '@mui/icons-material';
+
+
+
 
 export const CustomInput: FC<InputProps> = props => {
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
@@ -79,7 +88,6 @@ export const CustomInput: FC<InputProps> = props => {
                            required={required}
                            onFocus={props.onFocus}
                            readOnly={props.readonly}
-                           sx={styles}
                            endAdornment={
                                props.type === 'password'
                                    ?
@@ -87,8 +95,7 @@ export const CustomInput: FC<InputProps> = props => {
                                        <IconButton
                                            onClick={handleClickShowPassword}
                                            edge="end"
-                                       >
-                                           {values.showPassword ? <VisibilityOff/> : <Visibility/>}
+                                       >{values.showPassword ? <VisibilityOff/> : <Visibility/>}
                                        </IconButton>
                                    </InputAdornment>
                                    :
