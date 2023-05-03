@@ -1,15 +1,45 @@
-$regular-weight: 400;
-$medium-weight: 500;
-$bold-weight: 900;
-$background-color: #1B262C;
-$foreground-color: #3282B8;
-
 :root {
-  --regular-weight: #{$regular-weight};
-  --medium-weight: #{$medium-weight};
-  --bold-weight: #{$bold-weight};
-  --background-color: #{$background-color};
-  --foreground-color: #{$foreground-color};
+  // Units
+  --base-unit: 0.25rem;
+
+  //Typography
+  --font-family-primary: sans-serif, "Roboto";
+  --font-family-secondary: serif, "Georgia";
+  --font-size-12: calc(var(--base-unit) * 3);
+  --font-size-16: calc(var(--base-unit) * 4);
+  --font-size-20: calc(var(--base-unit) * 5);
+  --font-size-24: calc(var(--base-unit) * 6);
+  --font-size-32: calc(var(--base-unit) * 8);
+  --font-size-40: calc(var(--base-unit) * 10);
+  --font-size-48: calc(var(--base-unit) * 12);
+  --font-size-64: calc(var(--base-unit) * 16);
+
+  --line-height-default: 1;
+  --line-height-small: 1.1;
+  --line-height-medium: 1.3;
+  --line-height-large: 1.5;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-bolder: 900;
+
+  // Colors
+  // Background
+  --color-bg-main: #00131D;
+
+  // Fills
+  --color-fill-accent-enabled: #0077B8;
+  --color-fill-accent-hover: #0069A3;
+  --color-fill-accent-pressed: #005787;
+  --color-fill-accent-disabled: #00283D;
+
+  // Text&Icon
+  --color-text-icon-primary: rgba(235, 248, 255, 1);
+  --color-text-icon-secondary: rgba(235, 248, 255, 0.48);
+  --color-text-icon-disabled: rgba(235, 248, 255, 0.32);
+
+  --color-text-icon-link-enabled: #0AA9FF;
 }
 
 * {
@@ -30,8 +60,8 @@ html {
 }
 
 html {
-  font-family: 'Roboto', sans-serif;
-  font-weight: var(--regular-weight);
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-regular);
   font-size: 16px;
 }
 

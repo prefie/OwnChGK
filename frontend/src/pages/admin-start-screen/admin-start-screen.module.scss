@@ -6,7 +6,7 @@
   display: flex;
   justify-content: center;
   flex-grow: 1;
-  background-color: var(--background-color);
+  background-color: var(--color-bg-main);
 }
 
 .contentWrapper {
@@ -27,7 +27,7 @@
 }
 
 .box {
-  background-color: var(--background-color);
+  background-color: var(--color-bg-main);
   border-radius: 10px;
   box-shadow: 0 0 3vh 1vh rgba(50, 130, 184, 0.25);
   width: 100%;
@@ -132,7 +132,7 @@
   min-width: 0 !important;
   height: 6vh;
   font-size: 1.5vw;
-  border: 2px solid var(--foreground-color) !important;
+  border: 2px solid var(--color-fill-accent-enabled) !important;
   background-color: white !important;
   border-radius: 8px !important;
   overflow: hidden;

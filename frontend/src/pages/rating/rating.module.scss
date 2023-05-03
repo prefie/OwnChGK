@@ -50,8 +50,8 @@
         .button {
             height: 6vh;
             font-size: 1.3vw;
-            font-weight: var(--medium-weight);
-            border: 2px solid var(--foreground-color);
+            font-weight: var(--font-weight-medium);
+            border: 2px solid var(--color-fill-accent-enabled);
             border-radius: 8px;
             filter: drop-shadow(0px 4px 4px rgba(255, 255, 255, 0.25));
             overflow: hidden;
@@ -62,7 +62,7 @@
 
             &:not(:disabled):hover {
                 cursor: pointer;
-                box-shadow: 0 0 2vh 2px var(--foreground-color);
+                box-shadow: 0 0 2vh 2px var(--color-fill-accent-enabled);
             }
 
             &:not(:disabled):active {

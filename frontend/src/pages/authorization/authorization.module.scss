@@ -15,14 +15,17 @@
 }
 
 .toRegistrationParagraph {
-  color: #E5E5E5;
+  font-size: var(--font-size-24);
+  color: var(--color-text-icon-primary);
   display: inline-block;
 }
 
+
 .toRegistrationLink {
   text-decoration: none;
-  color: var(--foreground-color);
-  font-weight: 700;
+  color: var(--color-text-icon-link-enabled);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-24);
 }
 
 .toRegistrationWrapper {
@@ -34,7 +37,7 @@
 }
 
 .restorePasswordLink {
-  color: var(--foreground-color);
+  color: var(--color-text-icon-link-enabled);
   text-decoration: none;
   user-select: none;
 }
@@ -42,7 +45,8 @@
 .restoreLinkWrapper {
   width: 100%;
   text-align: center;
-  font-size: 1vmax;
+  font-size: var(--font-size-24);
+  margin-top: 1.5rem;
 }
 
 @media only screen and (max-width: 600px) {
