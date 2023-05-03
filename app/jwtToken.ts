@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
+import { AppConfig } from './app-config';
 
-export const secret = process.env.SECRET_KEY ?? 'SECRET_KEY';
+export const secret = AppConfig.jwtSecretKey ?? 'SECRET_KEY';
 
 export const generateAccessToken = (id: string, email: string, roles: string, teamId: string, gameId: string, name?: string) => {
     const payload = {
@@ -12,5 +13,5 @@ export const generateAccessToken = (id: string, email: string, roles: string, te
         name
     };
 
-    return jwt.sign(payload, secret, {expiresIn: '24h'});
-}
+    return jwt.sign(payload, secret, { expiresIn: '24h' });
+};

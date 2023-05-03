@@ -1,10 +1,11 @@
-import {Entity, Column, PrimaryGeneratedColumn, BaseEntity, JoinColumn, ManyToOne, OneToMany} from 'typeorm';
-import {Game} from './Game';
-import {Question} from "./Questions";
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Game } from './Game';
+import { Question } from './Questions';
+import { BaseCreature } from './BaseCreature';
 
 @Entity('rounds')
-export class Round extends BaseEntity {
-    @PrimaryGeneratedColumn('uuid', {name: 'round_id'})
+export class Round extends BaseCreature {
+    @PrimaryGeneratedColumn('uuid', { name: 'round_id' })
     id: string;
 
     @Column()
@@ -18,7 +19,7 @@ export class Round extends BaseEntity {
     @Column({
         name: 'questions_time'
     })
-    questionTime: number
+    questionTime: number;
 
     @OneToMany(
         () => Question,
@@ -26,11 +27,13 @@ export class Round extends BaseEntity {
     )
     questions: Question[];
 
-    @ManyToOne(() => Game, {
-        nullable: false,
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    })
+    @ManyToOne(
+        () => Game,
+        {
+            nullable: false,
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        })
     @JoinColumn({
         name: 'game_id',
     })

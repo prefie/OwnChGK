@@ -1,7 +1,8 @@
-import {Entity, Column, BaseEntity} from 'typeorm';
+import { Entity, Column } from 'typeorm';
+import { BaseCreature } from './BaseCreature';
 
 @Entity()
-export abstract class Person extends BaseEntity {
+export abstract class Person extends BaseCreature {
     @Column({
         unique: true
     })

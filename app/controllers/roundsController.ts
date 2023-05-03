@@ -1,21 +1,26 @@
-import {getCustomRepository} from 'typeorm';
-import {RoundRepository} from '../db/repositories/roundRepository';
-import {validationResult} from 'express-validator';
-import {Request, Response} from 'express';
-import {RoundDto} from "../dtos/roundDto";
+import { RoundRepository } from '../db/repositories/roundRepository';
+import { validationResult } from 'express-validator';
+import { Request, Response } from 'express';
+import { RoundDto } from '../dtos/roundDto';
 
 
 export class RoundsController {
+    private readonly roundRepository: RoundRepository;
+
+    constructor() {
+        this.roundRepository = new RoundRepository();
+    }
+
     public async getAll(req: Request, res: Response) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameName} = req.body;
+            const { gameName } = req.body;
 
-            const rounds = await getCustomRepository(RoundRepository).findByGameName(gameName);
+            const rounds = await this.roundRepository.findByGameName(gameName);
             return res.status(200).json(rounds?.map(round => new RoundDto(round)));
         } catch (error) {
             return res.status(500).json({
@@ -29,7 +34,7 @@ export class RoundsController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
             const {
@@ -40,7 +45,7 @@ export class RoundsController {
                 questionTime
             } = req.body;
 
-            await getCustomRepository(RoundRepository).insertByParams(
+            await this.roundRepository.insertByParams(
                 number,
                 gameName,
                 questionCount,
@@ -59,11 +64,11 @@ export class RoundsController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameId, number} = req.params;
-            await getCustomRepository(RoundRepository).deleteByGameNameAndNumber(gameId, +number);
+            const { gameId, number } = req.params;
+            await this.roundRepository.deleteByGameNameAndNumber(gameId, +number);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
@@ -77,17 +82,17 @@ export class RoundsController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameId, number} = req.params;
+            const { gameId, number } = req.params;
             const {
                 newQuestionCount,
                 newQuestionCost,
                 newQuestionTime
             } = req.body;
 
-            await getCustomRepository(RoundRepository).updateByParams(+number, gameId, newQuestionCount, newQuestionCost, newQuestionTime);
+            await this.roundRepository.updateByParams(+number, gameId, newQuestionCount, newQuestionCost, newQuestionTime);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({

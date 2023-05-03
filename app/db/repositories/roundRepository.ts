@@ -1,68 +1,92 @@
-import {EntityRepository, Repository} from 'typeorm';
-import {Round} from '../entities/Round';
-import {GameType} from '../entities/Game';
-import {BigGame} from "../entities/BigGame";
-import {Question} from "../entities/Questions";
+import { EntityManager, Repository } from 'typeorm';
+import { Round } from '../entities/Round';
+import { GameType } from '../entities/Game';
+import { BigGame } from '../entities/BigGame';
+import { Question } from '../entities/Questions';
+import { AppDataSource } from '../../data-source';
+import { BaseRepository } from './baseRepository';
 
-@EntityRepository(Round)
-export class RoundRepository extends Repository<Round> {
-    findByGameName(gameName: string) {
-        return this.manager.transaction(async manager => {
-            const bigGame = await manager.findOne(BigGame, {name: gameName}, {relations: ['games', 'games.rounds']});
-            const game = bigGame.games.find(game => game.type == GameType.CHGK);
-
-            return game.rounds;
-        });
+export class RoundRepository extends BaseRepository<Round> {
+    constructor() {
+        super(AppDataSource.getRepository(Round));
     }
 
-    insertByParams(number: number,
-                   gameName: string,
-                   questionCount: number,
-                   questionCost: number,
-                   questionTime: number) {
-        return this.manager.transaction(async manager => {
-            const bigGame = await manager.findOne(BigGame, {name: gameName}, {relations: ['games']});
-            const game = bigGame.games.find(game => game.type == GameType.CHGK);
-            const round = await manager.create(Round, {number, game, questionTime});
-            await manager.save(round);
+    async findByGameName(gameName: string) {
+        const bigGame = await this.innerRepository.manager.findOne<BigGame>(BigGame, {
+            where: { name: gameName },
+            relations: { games: { rounds: true } }
+        });
+        const game = bigGame.games.find(game => game.type == GameType.CHGK);
 
+        return game.rounds;
+    }
+
+    async insertByParams(number: number,
+                         gameName: string,
+                         questionCount: number,
+                         questionCost: number,
+                         questionTime: number) {
+        const bigGame = await this.innerRepository.manager.findOne<BigGame>(BigGame, {
+            where: { name: gameName },
+            relations: { games: { rounds: true } }
+        });
+        const game = bigGame.games.find(game => game.type == GameType.CHGK);
+        return await this.innerRepository.manager.transaction(async (manager: EntityManager) => {
+            const round = new Round();
+            round.number = number;
+            round.game = game;
+            round.questionTime = questionTime;
+
+            const questions = [];
             for (let i = 1; i <= questionCount; i++) {
-                const question = await manager.create(Question, {cost: questionCost, round});
-                await manager.save(question);
+                const question = new Question();
+                question.cost = questionCost;
+                question.round = round;
+                questions.push(question);
             }
 
-            return round;
+            await manager.save<Round>(round);
+            await manager.save<Question>(questions);
         });
     }
 
-    deleteByGameNameAndNumber(bigGameId: string, number: number) {
-        return this.manager.transaction(async manager => {
-            const bigGame = await manager.findOne(BigGame, bigGameId, {relations: ['games', 'games.rounds']});
-            const game = bigGame.games.find(game => game.type == GameType.CHGK);
-
-            return manager.delete(Round, {game, number});
+    async deleteByGameNameAndNumber(bigGameId: string, number: number) {
+        const bigGame = await this.innerRepository.manager.findOne<BigGame>(BigGame, {
+            where: { id: bigGameId },
+            relations: { games: { rounds: true } }
         });
+        const game = bigGame.games.find(game => game.type == GameType.CHGK);
+
+        return this.innerRepository.delete({ game: { id: game.id }, number });
     }
 
-    updateByParams(number: number,
-                   bigGameId: string,
-                   newQuestionNumber: number,
-                   newQuestionCost: number,
-                   newQuestionTime: number) {
-        return this.manager.transaction(async manager => {
-            const bigGame = await manager.findOne(BigGame, bigGameId, {relations: ['games', 'games.rounds']});
-            const game = bigGame.games.find(game => game.type == GameType.CHGK);
-            await manager.delete(Round, {game, number});
+    async updateByParams(number: number,
+                         bigGameId: string,
+                         newQuestionNumber: number,
+                         newQuestionCost: number,
+                         newQuestionTime: number) {
+        const bigGame = await this.innerRepository.manager.findOne<BigGame>(BigGame, {
+            where: { id: bigGameId },
+            relations: { games: { rounds: true } }
+        });
+        const game = bigGame.games.find(game => game.type == GameType.CHGK);
+        return this.innerRepository.manager.transaction(async (manager: EntityManager) => {
+            const round = new Round();
+            round.number = number;
+            round.game = game;
+            round.questionTime = newQuestionTime;
 
-            const round = await manager.create(Round, {number, game, questionTime: newQuestionTime});
-            await manager.save(round);
-
+            const questions = [];
             for (let i = 1; i <= newQuestionCost; i++) {
-                const question = await manager.create(Question, {cost: newQuestionCost, round});
-                await manager.save(question);
+                const question = new Question();
+                question.cost = newQuestionCost;
+                question.round = round;
+                questions.push(question);
             }
 
-            return round;
+            await manager.delete<Round>(Round, { game: { id: game.id }, number });
+            await manager.save<Round>(round);
+            await manager.save<Question>(questions);
         });
     }
 }

@@ -12,15 +12,15 @@ export const teamsRouter = () => {
 
     router.get('/',
         middleware,
-        query('withoutUser').optional().isBoolean(), teamsController.getAll);
+        query('withoutUser').optional().isBoolean(), teamsController.getAll.bind(teamsController));
 
     router.get('/:teamId',
         middleware,
-        param('teamId').isUUID(), teamsController.getTeam);
+        param('teamId').isUUID(), teamsController.getTeam.bind(teamsController));
 
     router.get('/:teamId/participants',
         middleware,
-        param('teamId').isUUID(), teamsController.getParticipants);
+        param('teamId').isUUID(), teamsController.getParticipants.bind(teamsController));
 
     router.patch('/:teamId/change',
         middleware,
@@ -29,19 +29,19 @@ export const teamsRouter = () => {
         body('captain').optional({nullable: true}).isEmail(),
         body('participants').optional({nullable: true}).isArray(),
         body('participants.*.email').optional().isString(), // TODO: потом добавить валидацию на мыло
-        body('participants.*.name').optional().isString(), teamsController.editTeam); // TODO: внутри есть проверка юзера, мб перенести в новый middleware
+        body('participants.*.name').optional().isString(), teamsController.editTeam.bind(teamsController)); // TODO: внутри есть проверка юзера, мб перенести в новый middleware
 
     router.patch('/:teamId/changeCaptain',
         middleware,
-        param('teamId').isUUID(), teamsController.editTeamCaptainByCurrentUser);
+        param('teamId').isUUID(), teamsController.editTeamCaptainByCurrentUser.bind(teamsController));
 
     router.delete('/:teamId',
         roleMiddleware(adminAccess),
-        param('teamId').isUUID(), teamsController.deleteTeam);
+        param('teamId').isUUID(), teamsController.deleteTeam.bind(teamsController));
     
     router.patch('/:teamId/deleteCaptain',
         middleware,
-        param('teamId').isUUID(), teamsController.deleteTeamCaptainById);
+        param('teamId').isUUID(), teamsController.deleteTeamCaptainById.bind(teamsController));
 
     router.post('/',
         middleware,
@@ -49,7 +49,7 @@ export const teamsRouter = () => {
         body('captain').optional({nullable: true}).isEmail(),
         body('participants').optional({nullable: true}).isArray(),
         body('participants.*.email').optional().isString(), // TODO: потом добавить валидацию на мыло
-        body('participants.*.name').optional().isString(), teamsController.insertTeam);
+        body('participants.*.name').optional().isString(), teamsController.insertTeam.bind(teamsController));
 
     return router;
 }

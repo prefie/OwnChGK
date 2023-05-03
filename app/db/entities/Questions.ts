@@ -1,9 +1,10 @@
-import {Entity, Column, PrimaryGeneratedColumn, BaseEntity, ManyToOne, JoinColumn} from 'typeorm';
-import {Round} from "./Round";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Round } from './Round';
+import { BaseCreature } from './BaseCreature';
 
 @Entity('questions')
-export class Question extends BaseEntity {
-    @PrimaryGeneratedColumn('uuid', {name: 'question_id'})
+export class Question extends BaseCreature {
+    @PrimaryGeneratedColumn('uuid', { name: 'question_id' })
     id: string;
 
     @Column()
@@ -15,13 +16,15 @@ export class Question extends BaseEntity {
     text: string;
 
     @Column()
-    cost: number
+    cost: number;
 
-    @ManyToOne(() => Round, {
-        nullable: false,
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    })
+    @ManyToOne(
+        () => Round,
+        {
+            nullable: false,
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        })
     @JoinColumn({
         name: 'round_id',
     })

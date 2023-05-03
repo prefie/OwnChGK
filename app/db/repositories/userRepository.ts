@@ -1,35 +1,45 @@
-import {EntityRepository, Repository} from 'typeorm';
-import {User} from '../entities/User';
+import { User } from '../entities/User';
+import { AppDataSource } from '../../data-source';
+import { BaseRepository } from './baseRepository';
 
-@EntityRepository(User)
-export class UserRepository extends Repository<User> {
+export class UserRepository extends BaseRepository<User> {
+    constructor() {
+        super(AppDataSource.getRepository(User));
+    }
+
     findById(userId: string) {
-        return this.findOne(userId, {relations: ['team']});
+        return this.innerRepository.findOne({
+            where: { id: userId },
+            relations: { team: true }
+        });
     }
 
     findByEmail(email: string) {
-        return this.findOne({email}, {relations: ['team']});
+        return this.innerRepository.findOne({
+            where: { email: email },
+            relations: { team: true }
+        });
     }
 
     findUsersWithoutTeam() {
-        return this.find({relations: ['team']})
-            .then(users => users.filter(user => user.team === null))
+        return this.innerRepository.find({
+            where: { team: null },
+            relations: { team: true }
+        });
     }
 
     insertByEmailAndPassword(email: string, password: string) {
-        return this.manager.transaction(async manager => {
-            const user = await manager.create(User, {email, password});
+        const user = new User();
+        user.email = email;
+        user.password = password;
 
-            return manager.save(user);
-        })
+        return this.innerRepository.save(user);
     }
 
-    updateByEmailAndPassword(email: string, password: string) {
-        return this.manager.transaction(async manager => {
-            const user = await manager.findOne(User, {email});
-            user.password = password;
+    async updateByEmailAndPassword(email: string, password: string) {
+        const user = await this.innerRepository.findOneBy({ email });
+        user.password = password;
 
-            return manager.save(user);
-        })
+        return this.innerRepository.save(user);
     }
 }

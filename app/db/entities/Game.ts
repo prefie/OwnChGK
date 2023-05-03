@@ -2,13 +2,13 @@ import {
     Entity,
     Column,
     PrimaryGeneratedColumn,
-    BaseEntity,
     JoinColumn,
     ManyToOne,
     OneToMany,
 } from 'typeorm';
-import {Round} from './Round';
-import {BigGame} from "./BigGame";
+import { Round } from './Round';
+import { BigGame } from './BigGame';
+import { BaseCreature } from './BaseCreature';
 
 export enum GameStatus {
     NOT_STARTED = 'not_started',
@@ -22,8 +22,8 @@ export enum GameType {
 }
 
 @Entity('games')
-export class Game extends BaseEntity {
-    @PrimaryGeneratedColumn('uuid', {name: 'game_id'})
+export class Game extends BaseCreature {
+    @PrimaryGeneratedColumn('uuid', { name: 'game_id' })
     id: string;
 
     @Column({
@@ -39,13 +39,15 @@ export class Game extends BaseEntity {
     )
     rounds: Round[];
 
-    @ManyToOne(() => BigGame, {
-        nullable: false,
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-    })
+    @ManyToOne(
+        () => BigGame,
+        {
+            nullable: false,
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        })
     @JoinColumn({
         name: 'big_game_id',
     })
-    bigGame: BigGame
+    bigGame: BigGame;
 }

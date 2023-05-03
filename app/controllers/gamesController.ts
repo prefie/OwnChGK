@@ -1,38 +1,43 @@
-import {validationResult} from 'express-validator';
-import {getCustomRepository} from 'typeorm';
-import {Request, Response} from 'express';
+import { validationResult } from 'express-validator';
+import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import {secret} from '../jwtToken';
-import {bigGames, gameAdmins, gameUsers} from '../socket';
-import {Game, GameTypeLogic, Round} from '../logic/Game';
-import {Team} from '../logic/Team';
-import {BigGameDto} from "../dtos/bigGameDto";
-import {BigGameLogic} from "../logic/BigGameLogic";
-import {BigGameRepository} from "../db/repositories/bigGameRepository";
-import {GameStatus, GameType} from "../db/entities/Game";
-import {BigGame} from "../db/entities/BigGame";
-import {TeamDto} from "../dtos/teamDto";
-import {ChgkSettingsDto} from "../dtos/chgkSettingsDto";
-import {MatrixSettingsDto} from "../dtos/matrixSettingsDto";
+import { secret } from '../jwtToken';
+import { bigGames, gameAdmins, gameUsers } from '../socket';
+import { Game, GameTypeLogic, Round } from '../logic/Game';
+import { Team } from '../logic/Team';
+import { BigGameDto } from '../dtos/bigGameDto';
+import { BigGameLogic } from '../logic/BigGameLogic';
+import { BigGameRepository } from '../db/repositories/bigGameRepository';
+import { GameStatus, GameType } from '../db/entities/Game';
+import { BigGame } from '../db/entities/BigGame';
+import { TeamDto } from '../dtos/teamDto';
+import { ChgkSettingsDto } from '../dtos/chgkSettingsDto';
+import { MatrixSettingsDto } from '../dtos/matrixSettingsDto';
 
 export class GamesController {
+    private readonly bigGameRepository: BigGameRepository;
+
+    constructor() {
+        this.bigGameRepository = new BigGameRepository();
+    }
+
     public async getAll(req: Request, res: Response) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {amIParticipate} = req.query;
+            const { amIParticipate } = req.query;
             let games: BigGame[];
             if (amIParticipate) {
                 const oldToken = req.cookies['authorization'];
-                const {id: userId} = jwt.verify(oldToken, secret) as jwt.JwtPayload;
+                const { id: userId } = jwt.verify(oldToken, secret) as jwt.JwtPayload;
                 console.log('user = ', userId, 'try to getAllGames');
 
-                games = await getCustomRepository(BigGameRepository).findAmIParticipate(userId);
+                games = await this.bigGameRepository.findAmIParticipate(userId);
             } else {
-                games = await getCustomRepository(BigGameRepository).find();
+                games = await this.bigGameRepository.find();
             }
 
             return res.status(200).json({
@@ -50,18 +55,18 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameName} = req.params;
-            const game = await getCustomRepository(BigGameRepository).findByName(gameName);
+            const { gameName } = req.params;
+            const game = await this.bigGameRepository.findByName(gameName);
             if (!game) {
-                return res.status(404).json({message: 'game not found'});
+                return res.status(404).json({ message: 'game not found' });
             }
 
             return res.status(200).json({
                 teams: game.teams?.map(team => new TeamDto(team))
-            })
+            });
         } catch (error) {
             return res.status(500).json({
                 message: error.message,
@@ -74,19 +79,19 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameName, teams, chgkSettings, matrixSettings} = req.body;
+            const { gameName, teams, chgkSettings, matrixSettings } = req.body;
 
             const token = req.cookies['authorization'];
-            const {email} = jwt.verify(token, secret) as jwt.JwtPayload;
-            const game = await getCustomRepository(BigGameRepository).findByName(gameName);
+            const { email } = jwt.verify(token, secret) as jwt.JwtPayload;
+            const game = await this.bigGameRepository.findByName(gameName);
             if (game) {
-                return res.status(409).json({message: 'Игра с таким названием уже есть'})
+                return res.status(409).json({ message: 'Игра с таким названием уже есть' });
             }
 
-            await getCustomRepository(BigGameRepository).insertByParams(gameName, email, teams, chgkSettings, matrixSettings);
+            await this.bigGameRepository.insertByParams(gameName, email, teams, chgkSettings, matrixSettings);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
@@ -100,12 +105,12 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameId} = req.params;
+            const { gameId } = req.params;
 
-            await getCustomRepository(BigGameRepository).delete(gameId);
+            await this.bigGameRepository.deleteById(gameId);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
@@ -119,12 +124,12 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameId} = req.params;
-            const {newGameName} = req.body;
-            await getCustomRepository(BigGameRepository).updateNameById(gameId, newGameName);
+            const { gameId } = req.params;
+            const { newGameName } = req.body;
+            await this.bigGameRepository.updateNameById(gameId, newGameName);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
@@ -138,13 +143,13 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameId} = req.params;
-            const {adminEmail} = req.body;
+            const { gameId } = req.params;
+            const { adminEmail } = req.body;
 
-            await getCustomRepository(BigGameRepository).updateAdminByIdAndAdminEmail(gameId, adminEmail);
+            await this.bigGameRepository.updateAdminByIdAndAdminEmail(gameId, adminEmail);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
@@ -158,13 +163,13 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameId} = req.params;
-            const bigGame = await getCustomRepository(BigGameRepository).findWithAllRelations(gameId);
+            const { gameId } = req.params;
+            const bigGame = await this.bigGameRepository.findWithAllRelations(gameId);
             if (!bigGame) {
-                return res.status(404).json({message: 'game not found'});
+                return res.status(404).json({ message: 'game not found' });
             }
             const chgk = bigGame.games.find(game => game.type == GameType.CHGK);
             const matrix = bigGame.games.find(game => game.type == GameType.MATRIX);
@@ -189,13 +194,13 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameId} = req.params;
-            const bigGame = await getCustomRepository(BigGameRepository).findWithAllRelations(gameId);
+            const { gameId } = req.params;
+            const bigGame = await this.bigGameRepository.findWithAllRelations(gameId);
             if (!bigGame) {
-                return res.status(404).json({message: 'game not found'});
+                return res.status(404).json({ message: 'game not found' });
             }
             gameAdmins[gameId] = new Set();
             gameUsers[gameId] = new Set();
@@ -249,7 +254,7 @@ export class GamesController {
                 matrixSettings: matrixSettings
             };
 
-            await getCustomRepository(BigGameRepository).updateByGameIdAndStatus(gameId, GameStatus.STARTED);
+            await this.bigGameRepository.updateByGameIdAndStatus(gameId, GameStatus.STARTED);
             return res.status(200).json(answer);
         } catch (error: any) {
             return res.status(500).json({
@@ -263,26 +268,26 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameId} = req.params;
-            const {newGameName, teams, chgkSettings, matrixSettings} = req.body;
+            const { gameId } = req.params;
+            const { newGameName, teams, chgkSettings, matrixSettings } = req.body;
 
-            const currentGame = await getCustomRepository(BigGameRepository).findOne(gameId);
+            const currentGame = await this.bigGameRepository.findById(gameId);
             if (!currentGame) {
-                return res.status(404).json({message: 'game not found'});
+                return res.status(404).json({ message: 'game not found' });
             }
 
             if (currentGame.name !== newGameName) {
-                const game = await getCustomRepository(BigGameRepository).findByName(newGameName);
+                const game = await this.bigGameRepository.findByName(newGameName);
                 if (game) {
-                    return res.status(409).json({message: 'Игра с таким названием уже есть'});
+                    return res.status(409).json({ message: 'Игра с таким названием уже есть' });
                 }
             }
 
             console.log('ChangeGame: ', gameId, ' teams is: ', teams);
-            await getCustomRepository(BigGameRepository).updateByParams(gameId, newGameName, teams, chgkSettings, matrixSettings);
+            await this.bigGameRepository.updateByParams(gameId, newGameName, teams, chgkSettings, matrixSettings);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
@@ -296,14 +301,14 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameId} = req.params;
-            const {isIntrigue} = req.body;
+            const { gameId } = req.params;
+            const { isIntrigue } = req.body;
 
             if (!bigGames[gameId]) {
-                return res.status(404).json({'message': 'Игра не началась'});
+                return res.status(404).json({ 'message': 'Игра не началась' });
             }
 
             bigGames[gameId].isIntrigue = isIntrigue;
@@ -321,12 +326,12 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameId} = req.params;
+            const { gameId } = req.params;
             if (!bigGames[gameId]) {
-                return res.status(404).json({'message': 'Игра не началась'});
+                return res.status(404).json({ 'message': 'Игра не началась' });
             }
             const totalScore = bigGames[gameId].CurrentGame.getTotalScoreForAllTeams();
             const answer = {
@@ -346,19 +351,19 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameId} = req.params;
+            const { gameId } = req.params;
             if (!bigGames[gameId]) {
-                return res.status(404).json({'message': 'Игра не началась'});
+                return res.status(404).json({ 'message': 'Игра не началась' });
             }
 
             const token = req.cookies['authorization'];
-            const {roles, teamId} = jwt.verify(token, secret) as jwt.JwtPayload;
+            const { roles, teamId } = jwt.verify(token, secret) as jwt.JwtPayload;
 
             if (roles === 'user' && !teamId) {
-                return res.status(400).json({message: 'user without team'});
+                return res.status(400).json({ message: 'user without team' });
             }
 
             const bigGame = bigGames[gameId];
@@ -397,19 +402,19 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameId} = req.params;
+            const { gameId } = req.params;
             if (!bigGames[gameId]) {
-                return res.status(404).json({'message': 'Игра не началась'});
+                return res.status(404).json({ 'message': 'Игра не началась' });
             }
 
             const token = req.cookies['authorization'];
-            const {roles, teamId} = jwt.verify(token, secret) as jwt.JwtPayload;
+            const { roles, teamId } = jwt.verify(token, secret) as jwt.JwtPayload;
 
             if (roles === 'user' && !teamId) {
-                return res.status(400).json({message: 'user without team'});
+                return res.status(400).json({ message: 'user without team' });
             }
 
             const bigGame = bigGames[gameId];
@@ -433,7 +438,7 @@ export class GamesController {
 
             const scoreTable = roles === 'user' && teamId && bigGames[gameId].isIntrigue
                 ? game.getScoreTableForTeam(teamId)
-                : game.getScoreTable()
+                : game.getScoreTable();
 
             let roundsResultList = [];
             for (const team in scoreTable) {
@@ -471,12 +476,12 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json(errors)
+                return res.status(400).json(errors);
             }
 
-            const {gameId} = req.params;
-            const {status} = req.body;
-            await getCustomRepository(BigGameRepository).updateByGameIdAndStatus(gameId, status);
+            const { gameId } = req.params;
+            const { status } = req.body;
+            await this.bigGameRepository.updateByGameIdAndStatus(gameId, status);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
@@ -490,20 +495,20 @@ export class GamesController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(400).json({message: 'Ошибка', errors})
+                return res.status(400).json({ message: 'Ошибка', errors });
             }
 
-            const {gameId} = req.params;
-            const game = await getCustomRepository(BigGameRepository).findWithAllRelations(gameId);
+            const { gameId } = req.params;
+            const game = await this.bigGameRepository.findWithAllRelations(gameId);
             const table = [];
             for (let team of game.teams) {
                 table.push(team.name);
                 if (team.captain) {
-                    table.push(["Капитан", "Почта"].join(';'));
+                    table.push(['Капитан', 'Почта'].join(';'));
                     table.push(team.captain.name + ';' + team.captain.email + ';');
                 }
                 if (team.participants) {
-                    table.push(["Имя", "Почта"].join(';'));
+                    table.push(['Имя', 'Почта'].join(';'));
                     const participantsList = [];
                     for (let participant of team.participants) {
                         participantsList.push(participant.name + ';' + participant.email + ';');
@@ -514,9 +519,9 @@ export class GamesController {
 
             }
 
-                return res.status(200).json({
-                    participants: table.join('\n')
-                });
+            return res.status(200).json({
+                participants: table.join('\n')
+            });
 
         } catch (error: any) {
             return res.status(500).json({

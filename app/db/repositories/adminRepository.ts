@@ -1,26 +1,33 @@
-import {EntityRepository, Repository} from 'typeorm';
-import {Admin} from '../entities/Admin';
+import { Admin } from '../entities/Admin';
+import { AppDataSource } from '../../data-source';
+import { BaseRepository } from './baseRepository';
 
-@EntityRepository(Admin)
-export class AdminRepository extends Repository<Admin> {
+export class AdminRepository extends BaseRepository<Admin> {
+    constructor() {
+        super(AppDataSource.getRepository(Admin));
+    }
+
     findByEmail(email: string) {
-        return this.findOne({email});
+        return this.innerRepository.findOneBy({ email });
     }
 
     insertByEmailAndPassword(email: string, password: string, name: string = null) {
-        return this.manager.transaction(async manager => {
-            const admin = await manager.create(Admin, {email, password, name: name ?? null});
+        const admin = new Admin();
+        admin.email = email;
+        admin.password = password;
+        admin.name = name ?? null;
 
-            return manager.save(admin);
-        });
+        return this.innerRepository.save(admin);
     }
 
-    updateByEmailAndPassword(email: string, password: string) {
-        return this.manager.transaction(async manager => {
-            const admin = await manager.findOne(Admin, {email});
-            admin.password = password;
+    async updateByEmailAndPassword(email: string, password: string) {
+        const admin = await this.innerRepository.findOneBy({ email });
+        admin.password = password;
 
-            return manager.save(admin);
-        });
+        return this.innerRepository.save(admin);
+    }
+
+    deleteByEmail(email: string) {
+        return this.innerRepository.delete({ email });
     }
 }
