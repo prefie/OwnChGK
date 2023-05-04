@@ -33,9 +33,25 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         });
     }
 
-    findWithAllRelations(bigGameId: string) {
+    findWithAllRelationsByBigGameId(bigGameId: string) {
         return this.innerRepository.findOne({
-            where: { id: bigGameId }, relations: {
+            where: { id: bigGameId },
+            relations: {
+                games: {
+                    rounds: {
+                        questions: true
+                    }
+                },
+                teams: {
+                    captain: true
+                },
+            }
+        });
+    }
+
+    findWithAllRelations() {
+        return this.innerRepository.find({
+            relations: {
                 games: {
                     rounds: {
                         questions: true
@@ -49,11 +65,19 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     }
 
     findAmIParticipate(userId: string) {
-        return this.innerRepository.createQueryBuilder('bigGames')
-            .leftJoinAndSelect('bigGames.teams', 'teams')
-            .leftJoinAndSelect('teams.captain', 'users')
-            .where('teams.captain.id = :id', { id: userId })
-            .getMany();
+        return this.innerRepository.find({
+            where: { teams: { captain: { id: userId } } },
+            relations: {
+                games: {
+                    rounds: {
+                        questions: true
+                    }
+                },
+                teams: {
+                    captain: true
+                },
+            }
+        });
     }
 
     async insertByParams(name: string,

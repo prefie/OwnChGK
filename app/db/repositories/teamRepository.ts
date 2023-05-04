@@ -8,6 +8,12 @@ export class TeamRepository extends BaseRepository<Team> {
         super(AppDataSource.getRepository(Team));
     }
 
+    findWithCaptainRelations() {
+        return this.innerRepository.find({
+            relations: { captain: true }
+        });
+    }
+
     findByName(name: string) {
         return this.innerRepository.findOne({
             where: { name },
@@ -30,7 +36,9 @@ export class TeamRepository extends BaseRepository<Team> {
     }
 
     async insertTeam(name: string, userEmail: string, participants: Participant[]) {
-        const captain = await this.innerRepository.manager.findOneBy<User>(User, { email: userEmail });
+        const captain = userEmail
+            ? await this.innerRepository.manager.findOneBy<User>(User, { email: userEmail })
+            : null;
         const team = new Team();
         team.name = name;
         team.captain = captain;
@@ -45,9 +53,11 @@ export class TeamRepository extends BaseRepository<Team> {
 
     async updateByParams(teamId: string, newName: string, captainEmail: string, participants: Participant[]) {
         const team = await this.innerRepository.findOneBy({ id: teamId });
-        const captain = await this.innerRepository.manager.findOneBy<User>(User, { email: captainEmail });
+        const captain = captainEmail
+            ? await this.innerRepository.manager.findOneBy<User>(User, { email: captainEmail })
+            : null;
         team.name = newName;
-        team.captain = captain ?? null;
+        team.captain = captain;
         team.participants = participants;
 
         return this.innerRepository.save(team);
