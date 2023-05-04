@@ -13,11 +13,6 @@ export class RoundsController {
 
     public async getAll(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameName } = req.body;
 
             const rounds = await this.roundRepository.findByGameName(gameName);
@@ -32,11 +27,6 @@ export class RoundsController {
 
     public async insertRound(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const {
                 number,
                 gameName,
@@ -62,11 +52,6 @@ export class RoundsController {
 
     public async deleteRound(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId, number } = req.params;
             await this.roundRepository.deleteByGameNameAndNumber(gameId, +number);
             return res.status(200).json({});
@@ -80,11 +65,6 @@ export class RoundsController {
 
     public async editRound(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId, number } = req.params;
             const {
                 newQuestionCount,

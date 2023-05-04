@@ -1,7 +1,7 @@
 import { compare, hash } from 'bcrypt';
 import { validationResult } from 'express-validator';
 import { Request, Response } from 'express';
-import { generateAccessToken, secret } from '../jwtToken';
+import { generateAccessToken, secret, TokenPayload } from '../jwtToken';
 import {
     makeTemporaryPassword,
     SendMailWithTemporaryPassword,
@@ -21,11 +21,6 @@ export class AdminsController {
 
     public async getAll(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const admins = await this.adminRepository.find();
             return res.status(200).json({
                 admins: admins?.map(admin => new AdminDto(admin))
@@ -40,11 +35,6 @@ export class AdminsController {
 
     public async login(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { email, password } = req.body;
 
             const admin = await this.adminRepository.findByEmail(email);
@@ -74,11 +64,6 @@ export class AdminsController {
 
     public async insert(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { email, name, password } = req.body;
             if (password) {
                 const hashedPassword = await hash(password, 10);
@@ -100,11 +85,6 @@ export class AdminsController {
 
     public async sendPasswordWithTemporaryPassword(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { email } = req.body;
 
             let admin = await this.adminRepository.findByEmail(email);
@@ -127,11 +107,6 @@ export class AdminsController {
 
     public async confirmTemporaryPassword(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { email, code } = req.body;
             let admin = await this.adminRepository.findByEmail(email);
             if (!admin) {
@@ -153,15 +128,10 @@ export class AdminsController {
 
     public async changeName(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { newName } = req.body;
 
             const oldToken = req.cookies['authorization'];
-            const payload = jwt.verify(oldToken, secret) as jwt.JwtPayload;
+            const payload = jwt.verify(oldToken, secret) as TokenPayload;
             if (payload.id) {
                 const admin = await this.adminRepository.findById(payload.id);
                 if (admin) {
@@ -187,11 +157,6 @@ export class AdminsController {
 
     public async changePasswordByOldPassword(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { email, password, oldPassword } = req.body;
 
             const hashedPassword = await hash(password, 10);
@@ -217,11 +182,6 @@ export class AdminsController {
 
     public async changePasswordByCode(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { email, password, code } = req.body;
 
             const hashedPassword = await hash(password, 10);
@@ -248,11 +208,6 @@ export class AdminsController {
 
     public async logout(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             res.clearCookie('authorization');
 
             return res.status(200).json({});
@@ -266,11 +221,6 @@ export class AdminsController {
 
     public async delete(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { email } = req.body;
             await this.adminRepository.deleteByEmail(email);
             return res.status(200).json({});

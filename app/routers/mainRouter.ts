@@ -1,8 +1,8 @@
-import {Router} from 'express';
-import {resolve} from 'path';
+import { Router } from 'express';
+import { resolve } from 'path';
 
-export const adminAccess = new Set(["superadmin", "admin"]);
-export const superAdminAccess = new Set(["superadmin"]);
+export const adminAccess = new Set(['superadmin', 'admin']);
+export const superAdminAccess = new Set(['superadmin']);
 
 export const mainRouter = () => {
     const router = Router();
@@ -12,4 +12,4 @@ export const mainRouter = () => {
     });
 
     return router;
-}
+};

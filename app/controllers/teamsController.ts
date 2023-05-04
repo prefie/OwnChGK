@@ -2,7 +2,7 @@ import { validationResult } from 'express-validator';
 import { TeamRepository } from '../db/repositories/teamRepository';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { generateAccessToken, secret } from '../jwtToken';
+import { generateAccessToken, secret, TokenPayload } from '../jwtToken';
 import { TeamDto } from '../dtos/teamDto';
 import { BigGameDto } from '../dtos/bigGameDto';
 import { Participant } from '../db/entities/Team';
@@ -21,11 +21,6 @@ export class TeamsController {
 
     public async getAll(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { withoutUser } = req.query;
             const teams = withoutUser ?
                 await this.teamRepository.findTeamsWithoutUser()
@@ -44,11 +39,6 @@ export class TeamsController {
 
     public async getAllGames(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { teamName } = req.params;
             const team = await this.teamRepository.findByName(teamName);
             return res.status(200).json({
@@ -65,11 +55,6 @@ export class TeamsController {
 
     public async insertTeam(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { teamName, captain, participants } = req.body;
 
             const oldToken = req.cookies['authorization'];
@@ -79,7 +64,7 @@ export class TeamsController {
                 roles,
                 name,
                 teamId,
-            } = jwt.verify(oldToken, secret) as jwt.JwtPayload;
+            } = jwt.verify(oldToken, secret) as TokenPayload;
 
             if (captain && email !== captain) {
                 return res.status(403).json({ message: 'Юзеру нельзя создать команду с другим капитаном' });
@@ -112,11 +97,6 @@ export class TeamsController {
 
     public async deleteTeam(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { teamId } = req.params;
             await this.teamRepository.deleteById(teamId);
             return res.status(200).json({});
@@ -130,11 +110,6 @@ export class TeamsController {
 
     public async editTeam(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { teamId } = req.params;
             const { newTeamName, captain, participants } = req.body;
 
@@ -155,7 +130,7 @@ export class TeamsController {
                 roles,
                 name,
                 teamId: currentTeamId,
-            } = jwt.verify(oldToken, secret) as jwt.JwtPayload;
+            } = jwt.verify(oldToken, secret) as TokenPayload;
 
             if (!adminAccess.has(roles)) {
                 if (teamId !== currentTeamId) {
@@ -184,11 +159,6 @@ export class TeamsController {
 
     public async editTeamCaptainByCurrentUser(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { teamId } = req.params;
 
             const oldToken = req.cookies['authorization'];
@@ -197,7 +167,7 @@ export class TeamsController {
                 email,
                 roles,
                 name
-            } = jwt.verify(oldToken, secret) as jwt.JwtPayload;
+            } = jwt.verify(oldToken, secret) as TokenPayload;
 
             await this.teamRepository.updateEmptyTeamByIdAndUserEmail(teamId, id);
 
@@ -218,11 +188,6 @@ export class TeamsController {
 
     public async getTeam(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { teamId } = req.params;
             const team = await this.teamRepository.findByIdWithRelations(teamId);
             if (!team) {
@@ -240,11 +205,6 @@ export class TeamsController {
 
     public async deleteTeamCaptainById(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { teamId } = req.params;
 
             const oldToken = req.cookies['authorization'];
@@ -253,7 +213,7 @@ export class TeamsController {
                 email: email,
                 roles: userRoles,
                 name: name
-            } = jwt.verify(oldToken, secret) as jwt.JwtPayload;
+            } = jwt.verify(oldToken, secret) as TokenPayload;
 
             const user = await this.userRepository.findById(userId);
             if (user.team?.id === teamId) {
@@ -279,11 +239,6 @@ export class TeamsController {
 
     public async getParticipants(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ message: 'Ошибка', errors });
-            }
-
             const { teamId } = req.params;
             const team = await this.teamRepository.findById(teamId);
             return res.status(200).json({

@@ -1,7 +1,7 @@
-import {Router} from 'express';
-import {UsersController} from '../controllers/usersController';
-import {middleware} from '../middleware/middleware';
-import {body, param, query} from "express-validator";
+import { Router } from 'express';
+import { UsersController } from '../controllers/usersController';
+import { authMiddleware } from '../middleware/authMiddleware';
+import { body, param, query } from 'express-validator';
 
 export const usersRouter = () => {
     const router = Router();
@@ -9,7 +9,7 @@ export const usersRouter = () => {
     const usersController = new UsersController();
 
     router.get('/',
-        middleware,
+        authMiddleware,
         query('withoutTeam').optional().isBoolean(), usersController.getAll.bind(usersController));
 
     router.get('/current', usersController.get.bind(usersController));
@@ -31,10 +31,10 @@ export const usersRouter = () => {
         body('email').isEmail(),
         body('code').isString().notEmpty(), usersController.confirmTemporaryPassword.bind(usersController));
 
-    router.get('/getTeam', middleware, usersController.getTeam.bind(usersController));
+    router.get('/getTeam', authMiddleware, usersController.getTeam.bind(usersController));
 
     router.patch('/:gameId/changeToken',
-        middleware,
+        authMiddleware,
         param('gameId').isUUID(), usersController.changeTokenWhenGoIntoGame.bind(usersController)); // TODO url
 
     router.patch('/changePasswordByCode',
@@ -43,14 +43,14 @@ export const usersRouter = () => {
         body('code').isString().notEmpty(), usersController.changePasswordByCode.bind(usersController));
 
     router.patch('/changeName',
-        middleware,
+        authMiddleware,
         body('newName').isString(), usersController.changeName.bind(usersController));
 
     router.patch('/changePassword',
-        middleware,
+        authMiddleware,
         body('email').isEmail(),
         body('password').isString().notEmpty(),
         body('oldPassword').isString().notEmpty(), usersController.changePasswordByOldPassword.bind(usersController));
 
     return router;
-}
+};

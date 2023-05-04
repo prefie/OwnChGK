@@ -37,14 +37,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         return this.innerRepository.findOne({
             where: { id: bigGameId },
             relations: {
-                games: {
-                    rounds: {
-                        questions: true
-                    }
-                },
-                teams: {
-                    captain: true
-                },
+                games: { rounds: { questions: true } },
+                teams: { captain: true },
             }
         });
     }
@@ -52,14 +46,18 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     findWithAllRelations() {
         return this.innerRepository.find({
             relations: {
-                games: {
-                    rounds: {
-                        questions: true
-                    }
-                },
-                teams: {
-                    captain: true
-                },
+                games: { rounds: { questions: true } },
+                teams: { captain: true },
+            }
+        });
+    }
+
+    findWithAllRelationsByAdminId(adminId: string) {
+        return this.innerRepository.find({
+            where: [{ admin: { id: adminId } }, { additionalAdmins: { id: adminId } }],
+            relations: {
+                games: { rounds: { questions: true } },
+                teams: { captain: true },
             }
         });
     }
@@ -68,14 +66,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         return this.innerRepository.find({
             where: { teams: { captain: { id: userId } } },
             relations: {
-                games: {
-                    rounds: {
-                        questions: true
-                    }
-                },
-                teams: {
-                    captain: true
-                },
+                games: { rounds: { questions: true } },
+                teams: { captain: true },
             }
         });
     }

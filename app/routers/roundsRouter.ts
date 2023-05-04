@@ -1,9 +1,10 @@
-import {Router} from 'express';
-import {RoundsController} from '../controllers/roundsController';
-import {roleMiddleware} from '../middleware/roleMiddleware';
-import {middleware} from '../middleware/middleware';
-import {adminAccess} from "./mainRouter";
-import {body, param} from "express-validator";
+import { Router } from 'express';
+import { RoundsController } from '../controllers/roundsController';
+import { roleMiddleware } from '../middleware/roleMiddleware';
+import { authMiddleware } from '../middleware/authMiddleware';
+import { adminAccess } from './mainRouter';
+import { body, param } from 'express-validator';
+import { validationMiddleware } from '../middleware/validationMiddleware';
 
 export const roundsRouter = () => {
     const router = Router();
@@ -11,30 +12,42 @@ export const roundsRouter = () => {
     const roundsController = new RoundsController();
 
     // Пока не используется
-    router.get('/',
-        middleware,
-        body('gameName').isString().notEmpty(), roundsController.getAll.bind(roundsController));
+    router.get(
+        '/',
+        authMiddleware,
+        body('gameName').isString().notEmpty(),
+        validationMiddleware,
+        roundsController.getAll.bind(roundsController));
 
-    router.patch('/:gameId/:number/change',
+    router.patch(
+        '/:gameId/:number/change',
         roleMiddleware(adminAccess),
         param('gameId').isUUID(),
         param('number').isInt(),
-        body('newQuestionCount').isInt({min: 0}),
-        body('newQuestionCost').isInt({min: 0}),
-        body('newQuestionTime').isInt({min: 0}), roundsController.editRound.bind(roundsController));
+        body('newQuestionCount').isInt({ min: 0 }),
+        body('newQuestionCost').isInt({ min: 0 }),
+        body('newQuestionTime').isInt({ min: 0 }),
+        validationMiddleware,
+        roundsController.editRound.bind(roundsController));
 
-    router.delete('/:gameId/:number',
+    router.delete(
+        '/:gameId/:number',
         roleMiddleware(adminAccess),
         param('gameId').isUUID(),
-        param('number').isInt(), roundsController.deleteRound.bind(roundsController));
+        param('number').isInt(),
+        validationMiddleware,
+        roundsController.deleteRound.bind(roundsController));
 
-    router.post('/',
+    router.post(
+        '/',
         roleMiddleware(adminAccess),
         body('number').isInt(),
         body('gameName').isString().notEmpty(),
-        body('questionCount').isInt({min: 0}),
-        body('questionCost').isInt({min: 0}),
-        body('questionTime').isInt({min: 0}), roundsController.insertRound.bind(roundsController));
+        body('questionCount').isInt({ min: 0 }),
+        body('questionCost').isInt({ min: 0 }),
+        body('questionTime').isInt({ min: 0 }),
+        validationMiddleware,
+        roundsController.insertRound.bind(roundsController));
 
     return router;
-}
+};

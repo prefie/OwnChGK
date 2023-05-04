@@ -48,6 +48,27 @@ export class BigGame extends BaseCreature {
     admin: Admin;
 
     @ManyToMany(
+        () => Admin,
+        admin => admin.additionalBigGames,
+        {
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE',
+        }
+    )
+    @JoinTable({
+        name: 'big_game_admin_links',
+        joinColumn: {
+            name: 'big_game_id',
+            referencedColumnName: 'id'
+        },
+        inverseJoinColumn: {
+            name: 'admin_id',
+            referencedColumnName: 'id'
+        }
+    })
+    additionalAdmins: Admin[];
+
+    @ManyToMany(
         () => Team,
         team => team.bigGames,
         {
