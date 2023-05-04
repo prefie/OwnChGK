@@ -27,7 +27,11 @@ export class Admin extends Person {
 
     @ManyToMany(
         () => BigGame,
-        game => game.additionalAdmins
+        game => game.additionalAdmins,
+        {
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        }
     )
     additionalBigGames: BigGame[];
 }
