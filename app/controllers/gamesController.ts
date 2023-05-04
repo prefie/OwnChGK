@@ -2,7 +2,7 @@ import { validationResult } from 'express-validator';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { secret } from '../jwtToken';
-import { bigGames, gameAdmins, gameUsers } from '../socket';
+import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: избавиться
 import { Game, GameTypeLogic, Round } from '../logic/Game';
 import { Team } from '../logic/Team';
 import { BigGameDto } from '../dtos/bigGameDto';
@@ -37,7 +37,7 @@ export class GamesController {
 
                 games = await this.bigGameRepository.findAmIParticipate(userId);
             } else {
-                games = await this.bigGameRepository.find();
+                games = await this.bigGameRepository.findWithAllRelations(); // TODO: ограничить доступ
             }
 
             return res.status(200).json({
@@ -51,6 +51,7 @@ export class GamesController {
         }
     }
 
+    // Не юзается, использует название игры из параметров - плохо
     public async getAllTeams(req: Request, res: Response) {
         try {
             const errors = validationResult(req);
@@ -167,7 +168,7 @@ export class GamesController {
             }
 
             const { gameId } = req.params;
-            const bigGame = await this.bigGameRepository.findWithAllRelations(gameId);
+            const bigGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
             if (!bigGame) {
                 return res.status(404).json({ message: 'game not found' });
             }
@@ -198,7 +199,7 @@ export class GamesController {
             }
 
             const { gameId } = req.params;
-            const bigGame = await this.bigGameRepository.findWithAllRelations(gameId);
+            const bigGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
             if (!bigGame) {
                 return res.status(404).json({ message: 'game not found' });
             }
@@ -297,6 +298,7 @@ export class GamesController {
         }
     }
 
+    // TODO: почему интрига через запрос, а не в сокетах?
     public async changeIntrigueStatus(req: Request, res: Response) {
         try {
             const errors = validationResult(req);
@@ -499,7 +501,7 @@ export class GamesController {
             }
 
             const { gameId } = req.params;
-            const game = await this.bigGameRepository.findWithAllRelations(gameId);
+            const game = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
             const table = [];
             for (let team of game.teams) {
                 table.push(team.name);

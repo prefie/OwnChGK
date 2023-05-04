@@ -29,7 +29,7 @@ export class TeamsController {
             const { withoutUser } = req.query;
             const teams = withoutUser ?
                 await this.teamRepository.findTeamsWithoutUser()
-                : await this.teamRepository.find();
+                : await this.teamRepository.findWithCaptainRelations();
 
             return res.status(200).json({
                 teams: teams?.map(value => new TeamDto(value))

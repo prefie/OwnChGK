@@ -6,6 +6,7 @@ export class TeamDto {
     public readonly captainEmail: string;
     public readonly captainId: string;
     public readonly participants: Participant[];
+    public readonly participantsCount: number;
 
     constructor(team: Team) {
         this.name = team.name;
@@ -13,5 +14,6 @@ export class TeamDto {
         this.captainEmail = team.captain?.email; // TODO: мб на UserDto?
         this.captainId = team.captain?.id.toString();
         this.participants = team.participants;
+        this.participantsCount = team.participants?.length ?? 0;
     }
 }
