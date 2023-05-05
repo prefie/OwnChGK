@@ -21,7 +21,7 @@
 
 1) Склонировать репозиторий
 ```bash
-    git clone https://github.com/prefie/OwnChGK.git
+    git clone https://github.com/prefie/OwnChGK_.git
 ```   
 
 2) Перейти на продакшен ветку (`master`)
@@ -37,6 +37,10 @@
 4) Запустить сборку приложения
 ```bash
     npm run build
+```
+или
+```bash
+    npm run build-win
 ```
 
 ## Запустить приложение
