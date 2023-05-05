@@ -17,7 +17,7 @@ export class UserRepository extends BaseRepository<User> {
 
     findByEmail(email: string) {
         return this.innerRepository.findOne({
-            where: { email: email },
+            where: { email: email.toLowerCase() },
             relations: { team: true }
         });
     }
@@ -31,14 +31,14 @@ export class UserRepository extends BaseRepository<User> {
 
     insertByEmailAndPassword(email: string, password: string) {
         const user = new User();
-        user.email = email;
+        user.email = email.toLowerCase();
         user.password = password;
 
         return this.innerRepository.save(user);
     }
 
     async updateByEmailAndPassword(email: string, password: string) {
-        const user = await this.innerRepository.findOneBy({ email });
+        const user = await this.innerRepository.findOneBy({ email: email.toLowerCase() });
         user.password = password;
 
         return this.innerRepository.save(user);

@@ -77,7 +77,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                          teams: string[],
                          chgkSettings: ChgkSettings,
                          matrixSettings: MatrixSettings) {
-        const admin = await this.innerRepository.manager.findOneBy<Admin>(Admin, { email: adminEmail });
+        const admin = await this.innerRepository.manager.findOneBy<Admin>(Admin, { email: adminEmail.toLowerCase() });
         const teamsFromDb = await this.innerRepository.manager.findBy<Team>(Team, { name: In(teams) });
         const bigGame = new BigGame();
         bigGame.name = name;
@@ -200,7 +200,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     }
 
     async updateAdminByIdAndAdminEmail(bigGameId: string, newAdminEmail: string) {
-        const admin = await this.innerRepository.manager.findOneBy<Admin>(Admin, { email: newAdminEmail });
+        const admin = await this.innerRepository.manager.findOneBy<Admin>(Admin, { email: newAdminEmail.toLowerCase() });
         const bigGame = await this.innerRepository.findOneBy({ id: bigGameId });
         bigGame.admin = admin;
 

@@ -169,7 +169,7 @@ export class TeamsController {
                 name
             } = jwt.verify(oldToken, secret) as TokenPayload;
 
-            await this.teamRepository.updateEmptyTeamByIdAndUserEmail(teamId, id);
+            await this.teamRepository.updateEmptyTeamByIdAndUserId(teamId, id);
 
             const token = generateAccessToken(id, email, roles, teamId, null, name);
             res.cookie('authorization', token, {
@@ -217,7 +217,7 @@ export class TeamsController {
 
             const user = await this.userRepository.findById(userId);
             if (user.team?.id === teamId) {
-                await this.teamRepository.deleteTeamCaptainByIdAndUserEmail(teamId);
+                await this.teamRepository.deleteTeamCaptainById(teamId);
                 const token = generateAccessToken(userId, email, userRoles, null, null, name);
                 res.cookie('authorization', token, {
                     maxAge: 24 * 60 * 60 * 1000,
