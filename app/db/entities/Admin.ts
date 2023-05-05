@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany } from 'typeorm';
 import { Person } from './Person';
 import { BigGame } from './BigGame';
 
@@ -24,4 +24,14 @@ export class Admin extends Person {
         game => game.admin
     )
     bigGames: BigGame[];
+
+    @ManyToMany(
+        () => BigGame,
+        game => game.additionalAdmins,
+        {
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        }
+    )
+    additionalBigGames: BigGame[];
 }

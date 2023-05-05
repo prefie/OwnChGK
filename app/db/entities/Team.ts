@@ -37,7 +37,11 @@ export class Team extends BaseCreature {
 
     @ManyToMany(
         () => BigGame,
-        bigGame => bigGame.teams
+        bigGame => bigGame.teams,
+        {
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
+        }
     )
     bigGames: BigGame[];
 

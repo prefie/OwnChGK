@@ -1,7 +1,7 @@
 import { GameStatus, GameTypeLogic } from './logic/Game';
 import { Status } from './logic/AnswerAndAppeal';
 import jwt from 'jsonwebtoken';
-import { secret } from './jwtToken';
+import { secret, TokenPayload } from './jwtToken';
 import { WebSocket } from 'ws';
 import { BigGameLogic } from './logic/BigGameLogic';
 import { AppConfig } from './app-config';
@@ -608,7 +608,7 @@ export function HandlerWebsocket(ws: WebSocket, message: string) {
         NotAuthorizeMessage(ws);
     } else {
         const { roles: userRoles, teamId: teamId, gameId: gameId } =
-            jwt.verify(jsonMessage.cookie, secret) as jwt.JwtPayload;
+            jwt.verify(jsonMessage.cookie, secret) as TokenPayload;
         if (!bigGames[gameId] || (userRoles === 'user' && !bigGames[gameId].CurrentGame.teams[teamId])) {
             ws.send(JSON.stringify({
                 'action': 'gameNotStarted'

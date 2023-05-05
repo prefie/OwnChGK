@@ -1,7 +1,7 @@
 import { validationResult } from 'express-validator';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { secret } from '../jwtToken';
+import { secret, TokenPayload } from '../jwtToken';
 import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: избавиться
 import { Game, GameTypeLogic, Round } from '../logic/Game';
 import { Team } from '../logic/Team';
@@ -13,6 +13,7 @@ import { BigGame } from '../db/entities/BigGame';
 import { TeamDto } from '../dtos/teamDto';
 import { ChgkSettingsDto } from '../dtos/chgkSettingsDto';
 import { MatrixSettingsDto } from '../dtos/matrixSettingsDto';
+import { adminAccess, superAdminAccess } from '../routers/mainRouter';
 
 export class GamesController {
     private readonly bigGameRepository: BigGameRepository;
@@ -23,21 +24,17 @@ export class GamesController {
 
     public async getAll(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { amIParticipate } = req.query;
-            let games: BigGame[];
+            let games: BigGame[] = [];
+            const oldToken = req.cookies['authorization'];
+            const { id, roles } = jwt.verify(oldToken, secret) as TokenPayload;
+            console.log('user = ', id, 'try to getAllGames');
             if (amIParticipate) {
-                const oldToken = req.cookies['authorization'];
-                const { id: userId } = jwt.verify(oldToken, secret) as jwt.JwtPayload;
-                console.log('user = ', userId, 'try to getAllGames');
-
-                games = await this.bigGameRepository.findAmIParticipate(userId);
-            } else {
-                games = await this.bigGameRepository.findWithAllRelations(); // TODO: ограничить доступ
+                games = await this.bigGameRepository.findAmIParticipate(id);
+            } else if (superAdminAccess.has(roles)) {
+                games = await this.bigGameRepository.findWithAllRelations();
+            } else if (adminAccess.has(roles)) {
+                games = await this.bigGameRepository.findWithAllRelationsByAdminId(id);
             }
 
             return res.status(200).json({
@@ -54,11 +51,6 @@ export class GamesController {
     // Не юзается, использует название игры из параметров - плохо
     public async getAllTeams(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameName } = req.params;
             const game = await this.bigGameRepository.findByName(gameName);
             if (!game) {
@@ -78,15 +70,10 @@ export class GamesController {
 
     public async insertGame(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameName, teams, chgkSettings, matrixSettings } = req.body;
 
             const token = req.cookies['authorization'];
-            const { email } = jwt.verify(token, secret) as jwt.JwtPayload;
+            const { email } = jwt.verify(token, secret) as TokenPayload;
             const game = await this.bigGameRepository.findByName(gameName);
             if (game) {
                 return res.status(409).json({ message: 'Игра с таким названием уже есть' });
@@ -104,11 +91,6 @@ export class GamesController {
 
     public async deleteGame(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId } = req.params;
 
             await this.bigGameRepository.deleteById(gameId);
@@ -123,11 +105,6 @@ export class GamesController {
 
     public async editGameName(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId } = req.params;
             const { newGameName } = req.body;
             await this.bigGameRepository.updateNameById(gameId, newGameName);
@@ -142,11 +119,6 @@ export class GamesController {
 
     public async editGameAdmin(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId } = req.params;
             const { adminEmail } = req.body;
 
@@ -162,11 +134,6 @@ export class GamesController {
 
     public async getGame(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId } = req.params;
             const bigGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
             if (!bigGame) {
@@ -193,11 +160,6 @@ export class GamesController {
 
     public async startGame(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId } = req.params;
             const bigGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
             if (!bigGame) {
@@ -267,11 +229,6 @@ export class GamesController {
 
     public async changeGame(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId } = req.params;
             const { newGameName, teams, chgkSettings, matrixSettings } = req.body;
 
@@ -301,11 +258,6 @@ export class GamesController {
     // TODO: почему интрига через запрос, а не в сокетах?
     public async changeIntrigueStatus(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId } = req.params;
             const { isIntrigue } = req.body;
 
@@ -326,11 +278,6 @@ export class GamesController {
 
     public async getGameResult(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId } = req.params;
             if (!bigGames[gameId]) {
                 return res.status(404).json({ 'message': 'Игра не началась' });
@@ -351,18 +298,13 @@ export class GamesController {
 
     public async getGameResultScoreTable(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId } = req.params;
             if (!bigGames[gameId]) {
                 return res.status(404).json({ 'message': 'Игра не началась' });
             }
 
             const token = req.cookies['authorization'];
-            const { roles, teamId } = jwt.verify(token, secret) as jwt.JwtPayload;
+            const { roles, teamId } = jwt.verify(token, secret) as TokenPayload;
 
             if (roles === 'user' && !teamId) {
                 return res.status(400).json({ message: 'user without team' });
@@ -402,18 +344,13 @@ export class GamesController {
 
     public async getResultWithFormat(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId } = req.params;
             if (!bigGames[gameId]) {
                 return res.status(404).json({ 'message': 'Игра не началась' });
             }
 
             const token = req.cookies['authorization'];
-            const { roles, teamId } = jwt.verify(token, secret) as jwt.JwtPayload;
+            const { roles, teamId } = jwt.verify(token, secret) as TokenPayload;
 
             if (roles === 'user' && !teamId) {
                 return res.status(400).json({ message: 'user without team' });
@@ -476,11 +413,6 @@ export class GamesController {
 
     public async changeGameStatus(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId } = req.params;
             const { status } = req.body;
             await this.bigGameRepository.updateByGameIdAndStatus(gameId, status);
@@ -495,11 +427,6 @@ export class GamesController {
 
     public async getParticipants(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ message: 'Ошибка', errors });
-            }
-
             const { gameId } = req.params;
             const game = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
             const table = [];

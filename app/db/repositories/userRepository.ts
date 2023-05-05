@@ -1,6 +1,7 @@
 import { User } from '../entities/User';
 import { AppDataSource } from '../../data-source';
 import { BaseRepository } from './baseRepository';
+import { IsNull } from 'typeorm';
 
 export class UserRepository extends BaseRepository<User> {
     constructor() {
@@ -23,7 +24,7 @@ export class UserRepository extends BaseRepository<User> {
 
     findUsersWithoutTeam() {
         return this.innerRepository.find({
-            where: { team: null },
+            where: { team: { id: IsNull() } },
             relations: { team: true }
         });
     }

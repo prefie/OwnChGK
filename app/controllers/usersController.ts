@@ -2,7 +2,7 @@ import { compare, hash } from 'bcrypt';
 import { UserRepository } from '../db/repositories/userRepository';
 import { validationResult } from 'express-validator';
 import { Request, Response } from 'express';
-import { generateAccessToken, secret } from '../jwtToken';
+import { generateAccessToken, secret, TokenPayload } from '../jwtToken';
 import jwt from 'jsonwebtoken';
 import { makeTemporaryPassword, SendMailWithTemporaryPassword } from '../email';
 import { transporter } from '../email';
@@ -22,11 +22,6 @@ export class UsersController { // TODO: дописать смену имени �
 
     public async getAll(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { withoutTeam } = req.query;
             const users = withoutTeam ?
                 await this.userRepository.findUsersWithoutTeam()
@@ -45,11 +40,6 @@ export class UsersController { // TODO: дописать смену имени �
 
     public async login(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { email, password } = req.body;
 
             const user = await this.userRepository.findByEmail(email);
@@ -78,11 +68,6 @@ export class UsersController { // TODO: дописать смену имени �
 
     public async insert(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { email, password } = req.body;
 
             const user = await this.userRepository.findByEmail(email);
@@ -111,11 +96,6 @@ export class UsersController { // TODO: дописать смену имени �
     // вызывается только если знаем, что у юзера текущего точно есть команда
     public async changeTokenWhenGoIntoGame(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { gameId } = req.params;
             const oldToken = req.cookies['authorization'];
             const {
@@ -123,7 +103,7 @@ export class UsersController { // TODO: дописать смену имени �
                 email: email,
                 roles: userRoles,
                 name: name
-            } = jwt.verify(oldToken, secret) as jwt.JwtPayload;
+            } = jwt.verify(oldToken, secret) as TokenPayload;
             if (userRoles === 'user') {
                 const user = await this.userRepository.findById(userId);
 
@@ -155,15 +135,10 @@ export class UsersController { // TODO: дописать смену имени �
 
     public async changeName(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { newName } = req.body;
 
             const oldToken = req.cookies['authorization'];
-            const payload = jwt.verify(oldToken, secret) as jwt.JwtPayload;
+            const payload = jwt.verify(oldToken, secret) as TokenPayload;
             if (payload.id) {
                 const user = await this.userRepository.findById(payload.id);
                 if (user) {
@@ -189,11 +164,6 @@ export class UsersController { // TODO: дописать смену имени �
 
     public async changePasswordByOldPassword(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { email, password, oldPassword } = req.body;
 
             const hashedPassword = await hash(password, 10);
@@ -219,11 +189,6 @@ export class UsersController { // TODO: дописать смену имени �
 
     public async changePasswordByCode(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { email, password, code } = req.body;
 
             const hashedPassword = await hash(password, 10);
@@ -250,11 +215,6 @@ export class UsersController { // TODO: дописать смену имени �
 
     public async sendPasswordWithTemporaryPassword(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { email } = req.body;
 
             let user = await this.userRepository.findByEmail(email);
@@ -277,11 +237,6 @@ export class UsersController { // TODO: дописать смену имени �
 
     public async confirmTemporaryPassword(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const { email, code } = req.body;
             let user = await this.userRepository.findByEmail(email);
             if (!user) {
@@ -303,13 +258,8 @@ export class UsersController { // TODO: дописать смену имени �
 
     public async getTeam(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const oldToken = req.cookies['authorization'];
-            const { id: userId } = jwt.verify(oldToken, secret) as jwt.JwtPayload;
+            const { id: userId } = jwt.verify(oldToken, secret) as TokenPayload;
             const user = await this.userRepository.findById(userId);
 
             if (user.team !== null) {
@@ -327,16 +277,11 @@ export class UsersController { // TODO: дописать смену имени �
 
     public async get(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             const oldToken = req.cookies['authorization'];
             const {
                 id: userId,
                 roles: userRoles,
-            } = jwt.verify(oldToken, secret) as jwt.JwtPayload;
+            } = jwt.verify(oldToken, secret) as TokenPayload;
 
             if (userId !== undefined) {
                 if (userRoles === 'user') {
@@ -365,11 +310,6 @@ export class UsersController { // TODO: дописать смену имени �
 
     public async logout(req: Request, res: Response) {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json(errors);
-            }
-
             res.clearCookie('authorization');
 
             return res.status(200).json({});
