@@ -38,7 +38,7 @@ export class TeamRepository extends BaseRepository<Team> {
 
     async insertTeam(name: string, userEmail: string, participants: Participant[]) {
         const captain = userEmail
-            ? await this.innerRepository.manager.findOneBy<User>(User, { email: userEmail })
+            ? await this.innerRepository.manager.findOneBy<User>(User, { email: userEmail.toLowerCase() })
             : null;
         const team = new Team();
         team.name = name;
@@ -55,7 +55,7 @@ export class TeamRepository extends BaseRepository<Team> {
     async updateByParams(teamId: string, newName: string, captainEmail: string, participants: Participant[]) {
         const team = await this.innerRepository.findOneBy({ id: teamId });
         const captain = captainEmail
-            ? await this.innerRepository.manager.findOneBy<User>(User, { email: captainEmail })
+            ? await this.innerRepository.manager.findOneBy<User>(User, { email: captainEmail.toLowerCase() })
             : null;
         team.name = newName;
         team.captain = captain;
@@ -64,7 +64,7 @@ export class TeamRepository extends BaseRepository<Team> {
         return this.innerRepository.save(team);
     }
 
-    async updateEmptyTeamByIdAndUserEmail(teamId: string, userId: string) {
+    async updateEmptyTeamByIdAndUserId(teamId: string, userId: string) {
         const team = await this.innerRepository.findOne({
             where: { id: teamId },
             relations: { captain: true }
@@ -77,7 +77,7 @@ export class TeamRepository extends BaseRepository<Team> {
         return this.innerRepository.save(team);
     }
 
-    async deleteTeamCaptainByIdAndUserEmail(teamId: string) {
+    async deleteTeamCaptainById(teamId: string) {
         const team = await this.innerRepository.findOne({
             where: { id: teamId },
             relations: { captain: true }

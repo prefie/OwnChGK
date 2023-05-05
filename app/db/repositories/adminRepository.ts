@@ -8,12 +8,12 @@ export class AdminRepository extends BaseRepository<Admin> {
     }
 
     findByEmail(email: string) {
-        return this.innerRepository.findOneBy({ email });
+        return this.innerRepository.findOneBy({ email: email.toLowerCase() });
     }
 
     insertByEmailAndPassword(email: string, password: string, name: string = null) {
         const admin = new Admin();
-        admin.email = email;
+        admin.email = email.toLowerCase();
         admin.password = password;
         admin.name = name ?? null;
 
@@ -21,13 +21,13 @@ export class AdminRepository extends BaseRepository<Admin> {
     }
 
     async updateByEmailAndPassword(email: string, password: string) {
-        const admin = await this.innerRepository.findOneBy({ email });
+        const admin = await this.innerRepository.findOneBy({ email: email.toLowerCase() });
         admin.password = password;
 
         return this.innerRepository.save(admin);
     }
 
     deleteByEmail(email: string) {
-        return this.innerRepository.delete({ email });
+        return this.innerRepository.delete({ email: email.toLowerCase() });
     }
 }

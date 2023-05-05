@@ -15,7 +15,7 @@ export interface TokenPayload extends JwtPayload {
 export const generateAccessToken = (id: string, email: string, roles: string, teamId: string, gameId: string, name?: string) => {
     const payload: TokenPayload = {
         id,
-        email,
+        email: email.toLowerCase(),
         roles,
         teamId,
         gameId,
