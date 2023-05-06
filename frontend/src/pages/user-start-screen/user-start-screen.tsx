@@ -208,22 +208,6 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
         switch (page) {
             case 'games':
                 return (
-                    // <div className={classes.contentWrapper}>
-                    //     <div className={classes.contentBox} style={{padding: gamesFromDB && gamesFromDB.length || !gamesFromDB ? (mediaMatch.matches ? '3vh 9vw' : '5vh 0.5vw 5vh 2vw') : 0}}>
-                    //         {
-                    //             gamesFromDB && !gamesFromDB.length
-                    //                 ?
-                    //                 <div className={classes.emptyGames}>
-                    //                     <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
-                    //                     <div className={classes.emptyGamesParagraph}>Вас ещё не добавили ни в одну игру</div>
-                    //                 </div>
-                    //                 :
-                    //                 <Scrollbar>
-                    //                     {renderGames()}
-                    //                 </Scrollbar>
-                    //         }
-                    //     </div>
-                    // </div>
                     <div className={classes.gamePage}>
                         <div className={classes.gamesHeader}>
                             <h1 className={classes.title}>Игры</h1>

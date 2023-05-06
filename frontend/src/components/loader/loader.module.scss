@@ -6,6 +6,7 @@ $Loader-timing: ease-in-out;
 .loader {
     position: relative;
     display: flex;
+    align-self: center;
     align-items: center;
     justify-content: center;
     width: 100%;

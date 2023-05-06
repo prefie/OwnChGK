@@ -29,6 +29,9 @@ function GameItem(props: GameItemProps) {
     const [isRedirectedToEdit, setIsRedirectedToEdit] = useState(false);
     const [isClicked, setIsClicked] = useState(false);
     const gameId = props.id;
+    const linkToGame = props.role === Roles.user
+        ? `/game/${props.id}`
+        : `/admin/start-game/${props.id}`
 
     useEffect(() => {
         function goToGame(event: MouseEvent) {
@@ -76,7 +79,7 @@ function GameItem(props: GameItemProps) {
         ? <Redirect to={{pathname: '/admin/game-creation/edit', state: {id: props.id, name: props.name}}}/>
         : (
             <div className={classes.gameContent} id={gameId}>
-                <Link to={`/admin/start-game/${props.id}`} className={classes.gameTitle}>{props.name}</Link>
+                <Link to={linkToGame} className={classes.gameTitle}>{props.name}</Link>
                 <GameTypeList types={props.games}/>
                 <div className={classes.gameFooter}>
                     <div className={classes.gameTeams}>
