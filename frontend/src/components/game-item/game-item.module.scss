@@ -1,81 +1,76 @@
-.games-header {
+.gamesHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 40px;
 }
 
-h1 {
-  margin: 0;
-  font-size: 56px;
-  line-height: 64px;
-}
-
-.game-content {
-  width: calc(25.25% - 48px);
+.gameContent {
+  text-decoration: none;
+  color: var(--color-text-icon-primary);
+  width: calc(20% - 48px);
   display: flex;
   flex-direction: column;
   gap: 12px;
   background-color: #00283d;
   padding: 16px;
   border-radius: 8px;
+  margin: 0 1rem 1rem 0;
 }
 
-.game-content:hover {
+.gameContent:hover {
   background-color: rgba(0, 40, 61, 0.8);
   cursor: pointer;
 }
 
 @media (max-width: 1280px) {
-  .game-content {
+  .gameContent {
     width: calc(33.33% - 48px);
   }
 }
 
 @media (max-width: 860px) {
-  .game-content {
+  .gameContent {
     width: calc(50% - 48px);
   }
 }
 
 @media (max-width: 600px) {
-  .game-content {
+  .gameContent {
     width: calc(100% - 48px);
   }
 }
 
-.game-title {
+.gameTitle {
   margin: 0;
-  font-size: 24px;
-  line-height: 32px;
+  text-decoration: none;
+  color: inherit;
+  font-size: var(--font-size-24);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-small);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
-.game-types-list {
+.gameTeamsCount {
+  font-size: var(--font-size-20);
+  line-height: var(--line-height-small);
+}
+
+.gameTeams {
   display: flex;
+  align-items: center;
   gap: 4px;
 }
 
-.game-type {
-  font-size: 18px;
-  line-height: 24px;
+.gameFooter {
   display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  align-items: center;
-  padding: 8px;
-  background-color: rgb(20, 57, 77);
-  width: 50%;
-  border-radius: 8px;
+  justify-content: space-between;
 }
 
-.game-type-name {
-  color: rgba(235, 248, 255, 0.64);
-}
-
-.game-type-qt {
-}
-
-.game-commands-count {
-  font-size: 18px;
-  line-height: 24px;
+.gameActions {
+  display: flex;
+  gap: 8px;
 }

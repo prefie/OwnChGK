@@ -27,6 +27,9 @@ import {connect} from 'react-redux';
 import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
 import Loader from '../../components/loader/loader';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import GameItem, {Roles} from "../../components/game-item/game-item";
+import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
+import {AddRounded} from "@mui/icons-material";
 
 const UserStartScreen: FC<UserStartScreenProps> = props => {
     const [page, setPage] = useState<string>('teams');
@@ -142,10 +145,20 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
         if (!gamesFromDB) {
             return Array.from(Array(5).keys()).map(i => <Skeleton key={`game_skeleton_${i}`} variant='rectangular' width='100%' height={mediaMatch.matches ? '5vh' : '7vh'} sx={{marginBottom: '2.5vh'}} />);
         }
+        // return gamesFromDB.map((game, index) =>
+        //     <div key={index} className={classes.gameOrTeam} onClick={() => handleClickOnGame(game.id)}>
+        //         <p className={classes.gameName}>{game.name}</p>
+        //     </div>);
         return gamesFromDB.map((game, index) =>
-            <div key={index} className={classes.gameOrTeam} onClick={() => handleClickOnGame(game.id)}>
-                <p className={classes.gameName}>{game.name}</p>
-            </div>);
+            <GameItem
+                key={index}
+                id={game.id}
+                name={game.name}
+                teamsCount={game.teamsCount}
+                status={game.status}
+                games={game.games}
+                role={Roles.user}
+            />);
     };
 
     const renderTeams = () => {
@@ -195,21 +208,38 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
         switch (page) {
             case 'games':
                 return (
-                    <div className={classes.contentWrapper}>
-                        <div className={classes.contentBox} style={{padding: gamesFromDB && gamesFromDB.length || !gamesFromDB ? (mediaMatch.matches ? '3vh 9vw' : '5vh 0.5vw 5vh 2vw') : 0}}>
-                            {
-                                gamesFromDB && !gamesFromDB.length
-                                    ?
-                                    <div className={classes.emptyGames}>
-                                        <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
-                                        <div className={classes.emptyGamesParagraph}>Вас ещё не добавили ни в одну игру</div>
-                                    </div>
-                                    :
-                                    <Scrollbar>
-                                        {renderGames()}
-                                    </Scrollbar>
-                            }
+                    // <div className={classes.contentWrapper}>
+                    //     <div className={classes.contentBox} style={{padding: gamesFromDB && gamesFromDB.length || !gamesFromDB ? (mediaMatch.matches ? '3vh 9vw' : '5vh 0.5vw 5vh 2vw') : 0}}>
+                    //         {
+                    //             gamesFromDB && !gamesFromDB.length
+                    //                 ?
+                    //                 <div className={classes.emptyGames}>
+                    //                     <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
+                    //                     <div className={classes.emptyGamesParagraph}>Вас ещё не добавили ни в одну игру</div>
+                    //                 </div>
+                    //                 :
+                    //                 <Scrollbar>
+                    //                     {renderGames()}
+                    //                 </Scrollbar>
+                    //         }
+                    //     </div>
+                    // </div>
+                    <div className={classes.gamePage}>
+                        <div className={classes.gamesHeader}>
+                            <h1 className={classes.title}>Игры</h1>
                         </div>
+                        {
+                            gamesFromDB && !gamesFromDB.length
+                            ?
+                                <div className={classes.gamesListEmpty}>
+                                    <img className={classes.emptyImage} src={require('../../images/owl-images/empty_owl.svg').default} alt="empty-owl"/>
+                                    <h3 className={classes.emptyTitle}>Пока нет ни одной игры</h3>
+                                </div>
+                            :
+                                <div className={classes.gamesList}>
+                                    {renderGames()}
+                                </div>
+                        }
                     </div>
                 );
             case 'teams':
