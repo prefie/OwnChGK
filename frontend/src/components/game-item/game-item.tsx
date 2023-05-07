@@ -72,9 +72,6 @@ function GameItem(props: GameItemProps) {
         setIsRedirectedToEdit(true);
     };
 
-    if (isClicked) {
-        return <Redirect to={`/admin/start-game/${props.id}`}/>;
-    }
     return isRedirectedToEdit
         ? <Redirect to={{pathname: '/admin/game-creation/edit', state: {id: props.id, name: props.name}}}/>
         : (

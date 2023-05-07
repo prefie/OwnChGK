@@ -130,7 +130,7 @@
 
 .scrollbarContainer {
     height: 91% !important;
-    align-self: flex-end;
+    align-self: center;
 }
 
 @media only screen and (max-width: 600px) {
@@ -158,6 +158,6 @@
 
     .scrollbarContainer {
         height: calc(100% - 33vw) !important;
-        align-self: flex-end;
+        align-self: center;
     }
 }
