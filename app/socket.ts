@@ -1,10 +1,10 @@
 import { GameStatus, GameTypeLogic } from './logic/Game';
 import { Status } from './logic/AnswerAndAppeal';
 import jwt from 'jsonwebtoken';
-import { secret, TokenPayload } from './jwtToken';
+import { secret, TokenPayload } from './utils/jwtToken';
 import { WebSocket } from 'ws';
 import { BigGameLogic } from './logic/BigGameLogic';
-import { AppConfig } from './app-config';
+import { allAdminRoles, userRoles } from './utils/roles';
 
 export const bigGames: { [id: string]: BigGameLogic; } = {};
 export const gameAdmins: { [id: string]: any; } = {};
@@ -607,9 +607,9 @@ export function HandlerWebsocket(ws: WebSocket, message: string) {
     if (!jsonMessage || !jsonMessage.cookie) {
         NotAuthorizeMessage(ws);
     } else {
-        const { roles: userRoles, teamId: teamId, gameId: gameId } =
+        const { role: userRole, teamId: teamId, gameId: gameId } =
             jwt.verify(jsonMessage.cookie, secret) as TokenPayload;
-        if (!bigGames[gameId] || (userRoles === 'user' && !bigGames[gameId].CurrentGame.teams[teamId])) {
+        if (!bigGames[gameId] || (userRoles.has(userRole) && !bigGames[gameId].CurrentGame.teams[teamId])) {
             ws.send(JSON.stringify({
                 'action': 'gameNotStarted'
             }));
@@ -636,7 +636,7 @@ export function HandlerWebsocket(ws: WebSocket, message: string) {
                 break;
         }
 
-        if (userRoles == 'admin' || userRoles == 'superadmin') {
+        if (allAdminRoles.has(userRole)) {
             AdminsAction(gameId, ws, jsonMessage, gameType);
         } else {
             UsersAction(gameId, ws, jsonMessage, gameType, teamId);

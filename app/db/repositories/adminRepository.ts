@@ -1,5 +1,5 @@
-import { Admin } from '../entities/Admin';
-import { AppDataSource } from '../../data-source';
+import { Admin, AdminRoles } from '../entities/Admin';
+import { AppDataSource } from '../../utils/data-source';
 import { BaseRepository } from './baseRepository';
 
 export class AdminRepository extends BaseRepository<Admin> {
@@ -11,11 +11,12 @@ export class AdminRepository extends BaseRepository<Admin> {
         return this.innerRepository.findOneBy({ email: email.toLowerCase() });
     }
 
-    insertByEmailAndPassword(email: string, password: string, name: string = null) {
+    insertByEmailAndPassword(email: string, password: string, name: string = null, role: AdminRoles = AdminRoles.ADMIN) {
         const admin = new Admin();
         admin.email = email.toLowerCase();
         admin.password = password;
         admin.name = name ?? null;
+        admin.role = role;
 
         return this.innerRepository.save(admin);
     }

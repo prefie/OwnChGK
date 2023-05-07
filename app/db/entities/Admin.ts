@@ -1,10 +1,17 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany } from 'typeorm';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    OneToMany,
+    ManyToMany,
+} from 'typeorm';
 import { Person } from './Person';
 import { BigGame } from './BigGame';
 
 export enum AdminRoles {
     ADMIN = 'admin',
-    SUPERADMIN = 'superadmin'
+    SUPERADMIN = 'superadmin',
+    DEMOADMIN = 'demoadmin',
 }
 
 @Entity('admins')

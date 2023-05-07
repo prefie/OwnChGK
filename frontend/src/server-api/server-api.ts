@@ -82,7 +82,7 @@ export const login = async (email: string, password: string, isAdmin: boolean) =
             password
         })
     });
-}
+};
 
 export const logout = async () => {
     return await fetch('/api/users/logout', {
@@ -93,7 +93,7 @@ export const logout = async () => {
             'Accept': 'application/json'
         }
     });
-}
+};
 
 export const changeToken = async (gameId: string) => {
     return fetch(`/api/users/${gameId}/changeToken`, {
@@ -104,11 +104,11 @@ export const changeToken = async (gameId: string) => {
             'Accept': 'application/json'
         }
     });
-}
+};
 
 export const startGame = async (gameId: string) => {
     return fetch(`/api/games/${gameId}/start`);
-}
+};
 
 export const editGame = async (gameId: string, newGameName: string, teams: string[], chgkSettings?: GamePartSettings, matrixSettings?: GamePartSettings) => {
     return await fetch(`/api/games/${gameId}/change`, {
@@ -186,16 +186,6 @@ export const editTeamCaptainByCurrentUser = async (teamId: string) => {
     });
 };
 
-export const deleteTeamCaptainById = async (teamId: string) => {
-    return await fetch(`/teams/${teamId}/deleteCaptain`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        }
-    });
-};
-
 export const getTeamByCurrentUser = async () => {
     return await fetch('/api/users/getTeam');
 };
@@ -220,7 +210,7 @@ export const sendTemporaryPassword = async (email: string, isAdmin: boolean) => 
             email
         })
     });
-}
+};
 
 export const checkTemporaryPassword = async (email: string, code: string, isAdmin: boolean) => {
     return await fetch(`/api/${isAdmin ? 'admins' : 'users'}/checkTemporaryPassword`, {
@@ -235,7 +225,7 @@ export const checkTemporaryPassword = async (email: string, code: string, isAdmi
             code
         })
     });
-}
+};
 
 export const changePassword = async (email: string, password: string, oldPassword: string, isAdmin = false) => {
     return await fetch(`/api/${isAdmin ? 'admins' : 'users'}/changePassword`, {
@@ -295,7 +285,7 @@ export const changeIntrigueGameStatus = async (gameId: string, isIntrigue: boole
             isIntrigue
         })
     });
-}
+};
 
 export const deleteAdmin = async (adminEmail: string) => {
     return await fetch(`/api/admins/delete`, {
@@ -309,7 +299,7 @@ export const deleteAdmin = async (adminEmail: string) => {
             email: adminEmail
         })
     });
-}
+};
 
 export const addAdmin = async (adminEmail: string, adminName = '') => {
     return await fetch(`/api/admins/insert`, {
@@ -324,4 +314,26 @@ export const addAdmin = async (adminEmail: string, adminName = '') => {
             name: adminName
         })
     });
-}
+};
+
+export const insertDemoAdmin = async () => {
+    return await fetch(`/api/admins/demo`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Accept': 'application/json'
+        },
+        credentials: 'include',
+    });
+};
+
+export const insertDemoUser = async () => {
+    return await fetch(`/api/users/demo`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Accept': 'application/json'
+        },
+        credentials: 'include',
+    });
+};

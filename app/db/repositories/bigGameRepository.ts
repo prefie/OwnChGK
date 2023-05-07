@@ -4,7 +4,7 @@ import { Admin } from '../entities/Admin';
 import { Team } from '../entities/Team';
 import { Game, GameStatus, GameType } from '../entities/Game';
 import { Round } from '../entities/Round';
-import { AppDataSource } from '../../data-source';
+import { AppDataSource } from '../../utils/data-source';
 import { Question } from '../entities/Questions';
 import { BaseRepository } from './baseRepository';
 
@@ -39,6 +39,18 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             relations: {
                 games: { rounds: { questions: true } },
                 teams: { captain: true },
+                admin: true,
+                additionalAdmins: true,
+            }
+        });
+    }
+
+    findWithAdminRelationsByBigGameId(bigGameId: string) {
+        return this.innerRepository.findOne({
+            where: { id: bigGameId },
+            relations: {
+                admin: true,
+                additionalAdmins: true,
             }
         });
     }
@@ -48,6 +60,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             relations: {
                 games: { rounds: { questions: true } },
                 teams: { captain: true },
+                admin: true,
+                additionalAdmins: true,
             }
         });
     }
@@ -58,7 +72,15 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             relations: {
                 games: { rounds: { questions: true } },
                 teams: { captain: true },
+                admin: true,
+                additionalAdmins: true,
             }
+        });
+    }
+
+    getQuantityByAdminId(adminId: string) {
+        return this.innerRepository.count({
+            where: { admin: { id: adminId } }
         });
     }
 

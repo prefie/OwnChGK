@@ -3,7 +3,7 @@ import { Round } from '../entities/Round';
 import { GameType } from '../entities/Game';
 import { BigGame } from '../entities/BigGame';
 import { Question } from '../entities/Questions';
-import { AppDataSource } from '../../data-source';
+import { AppDataSource } from '../../utils/data-source';
 import { BaseRepository } from './baseRepository';
 
 export class RoundRepository extends BaseRepository<Round> {

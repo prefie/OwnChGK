@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { TeamsController } from '../controllers/teamsController';
 import { authMiddleware } from '../middleware/authMiddleware';
 import { roleMiddleware } from '../middleware/roleMiddleware';
-import { adminAccess } from './mainRouter';
+import { allAdminRoles } from '../utils/roles';
 import { body, param, query } from 'express-validator';
 import { validationMiddleware } from '../middleware/validationMiddleware';
 
@@ -16,21 +16,24 @@ export const teamsRouter = () => {
         authMiddleware,
         query('withoutUser').optional().isBoolean(),
         validationMiddleware,
-        teamsController.getAll.bind(teamsController));
+        teamsController.getAll.bind(teamsController)
+    );
 
     router.get(
         '/:teamId',
         authMiddleware,
         param('teamId').isUUID(),
         validationMiddleware,
-        teamsController.getTeam.bind(teamsController));
+        teamsController.getTeam.bind(teamsController)
+    );
 
     router.get(
         '/:teamId/participants',
         authMiddleware,
         param('teamId').isUUID(),
         validationMiddleware,
-        teamsController.getParticipants.bind(teamsController));
+        teamsController.getParticipants.bind(teamsController)
+    );
 
     router.patch(
         '/:teamId/change',
@@ -42,28 +45,24 @@ export const teamsRouter = () => {
         body('participants.*.email').optional().isString(), // TODO: потом добавить валидацию на мыло
         body('participants.*.name').optional().isString(),
         validationMiddleware,
-        teamsController.editTeam.bind(teamsController)); // TODO: внутри есть проверка юзера, мб перенести в новый middleware
+        teamsController.editTeam.bind(teamsController)
+    );
 
     router.patch(
         '/:teamId/changeCaptain',
         authMiddleware,
         param('teamId').isUUID(),
         validationMiddleware,
-        teamsController.editTeamCaptainByCurrentUser.bind(teamsController));
+        teamsController.editTeamCaptainByCurrentUser.bind(teamsController)
+    );
 
     router.delete(
         '/:teamId',
-        roleMiddleware(adminAccess),
+        roleMiddleware(allAdminRoles),
         param('teamId').isUUID(),
         validationMiddleware,
-        teamsController.deleteTeam.bind(teamsController));
-
-    router.patch(
-        '/:teamId/deleteCaptain',
-        authMiddleware,
-        param('teamId').isUUID(),
-        validationMiddleware,
-        teamsController.deleteTeamCaptainById.bind(teamsController));
+        teamsController.deleteTeam.bind(teamsController)
+    );
 
     router.post(
         '/',
@@ -74,7 +73,8 @@ export const teamsRouter = () => {
         body('participants.*.email').optional().isString(), // TODO: потом добавить валидацию на мыло
         body('participants.*.name').optional().isString(),
         validationMiddleware,
-        teamsController.insertTeam.bind(teamsController));
+        teamsController.insertTeam.bind(teamsController)
+    );
 
     return router;
 };

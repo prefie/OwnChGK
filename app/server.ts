@@ -12,7 +12,7 @@ import boolParser from 'express-query-boolean';
 import path from 'path';
 import { Server as WSServer } from 'ws';
 import { HandlerWebsocket } from './socket';
-import { AppDataSource } from './data-source';
+import { AppDataSource } from './utils/data-source';
 
 export class Server {
     private app;

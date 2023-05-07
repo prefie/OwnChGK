@@ -1,5 +1,5 @@
 import { User } from '../entities/User';
-import { AppDataSource } from '../../data-source';
+import { AppDataSource } from '../../utils/data-source';
 import { BaseRepository } from './baseRepository';
 import { IsNull } from 'typeorm';
 

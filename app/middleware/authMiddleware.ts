@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { Response, NextFunction } from 'express';
-import { secret } from '../jwtToken';
+import { secret } from '../utils/jwtToken';
 import { MiddlewareRequestInterface } from '../entities/middleware/middleware.interfaces';
 
 export function authMiddleware(req: MiddlewareRequestInterface, res: Response, next: NextFunction) {
