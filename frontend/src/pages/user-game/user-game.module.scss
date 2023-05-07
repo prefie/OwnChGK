@@ -45,12 +45,12 @@
 }
 
 .contentWrapper {
-  height: 91%;
+  height: 90%;
   width: 80%;
   display: flex;
   align-items: center;
   flex-direction: column;
-  align-self: flex-end;
+  align-self: center;
   position: relative;
   overflow-y: auto;
   scrollbar-width: none;
@@ -61,7 +61,7 @@
 }
 
 .breakContentWrapper {
-  height: 100%;
+  height: 90%;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -141,7 +141,7 @@
 }
 
 .gameStartContentWrapper {
-  height: 100%;
+  height: 90%;
   width: 100%;
   display: flex;
   flex-direction: column;

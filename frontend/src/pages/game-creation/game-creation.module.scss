@@ -1,16 +1,16 @@
 .pageWrapper {
     width: 55%;
-    height: 91%;
+    height: 90%;
     flex-direction: column;
     justify-content: center;
-    align-self: flex-end;
+    align-self: center;
     position: relative;
 }
 
 .gameCreationForm {
     width: 100%;
     height: 90%;
-    align-self: flex-end;
+    align-self: center;
 }
 
 .pageTitle,
@@ -20,7 +20,6 @@
     text-align: center;
     font-weight: 300;
     margin-top: 5vh;
-    margin-bottom: -3vh;
 }
 
 .gameSettingsPageTitle {
@@ -45,7 +44,7 @@
     box-sizing: border-box;
     width: 47%;
     height: 90%;
-    align-self: flex-end;
+    align-self: center;
 }
 
 .teamsWrapper {
@@ -60,7 +59,7 @@
 .teamsDiv {
     box-sizing: border-box;
     display: flex;
-    align-self: flex-end;
+    align-self: center;
     width: 100%;
     height: 100%;
     padding-left: 1vw;
@@ -314,10 +313,10 @@
 
 .questionsWrapper {
     width: 80%;
-    height: 91%;
+    height: 90%;
     flex-direction: column;
     justify-content: center;
-    align-self: flex-end;
+    align-self: center;
     position: relative;
 
     .gameSettingsPageTitle {

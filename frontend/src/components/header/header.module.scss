@@ -1,10 +1,10 @@
 .Header {
   width: 100vw;
-  height: 9%;
-  position: fixed;
+  height: 10%;
+  position: sticky;
   top: 0;
   background-color: var(--color-bg-main);
-  filter: drop-shadow(0 1vh 1vh rgba(50, 130, 184, 0.25));
+  border-bottom: 1px solid var(--color-bg-plates);
   display: flex;
   z-index: 1;
   user-select: none;

@@ -1,10 +1,10 @@
 .contentWrapper {
-  height: 91%;
+  height: 90%;
   width: 35%;
   display: flex;
   justify-content: center;
   flex-direction: column;
-  align-self: flex-end;
+  align-self: center;
 }
 
 .contentBox {
@@ -18,6 +18,59 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+}
+
+.gamesHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 2.5rem 5rem;
+}
+
+.gamePage {
+  display: flex;
+  flex-direction: column;
+  height: 90%;
+}
+
+.gamesListEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  flex: auto;
+  border: 1px solid var(--color-bg-plates);
+  margin: 0 80px 40px;
+  border-radius: 16px;
+}
+
+.emptyImage {
+  width: 300px;
+  height: 300px;
+}
+
+.emptyTitle {
+  font-family: var(--font-family-secondary);
+  text-decoration: none;
+  margin: 0;
+  font-size: var(--font-size-32);
+  color: var(--color-text-icon-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.gamesList {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 80px;
+}
+
+.title {
+  margin: 0;
+  font-size: 56px;
+  line-height: var(--line-height-small);
+  font-family: var(--font-family-secondary);
+  color: var(--color-text-icon-primary);
 }
 
 .gameOrTeam {
@@ -138,4 +191,26 @@
     padding: 1vh 3vw 1vh 5vw;
     margin-bottom: 1.5vh;
   }
+
+  .gamesList {
+    padding: 1rem 2rem 3.5rem;
+  }
+
+  .gamesListEmpty {
+    margin: 1rem 2rem 3.5rem;
+  }
+
+  .gamesHeader {
+    display: none;
+  }
+
+  .emptyImage {
+    width: 50%;
+    height: auto;
+  }
+
+  .emptyTitle {
+    font-size: var(--font-size-20);
+  }
+
 }
