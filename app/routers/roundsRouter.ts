@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { RoundsController } from '../controllers/roundsController';
 import { roleMiddleware } from '../middleware/roleMiddleware';
 import { authMiddleware } from '../middleware/authMiddleware';
-import { adminAccess } from './mainRouter';
+import { allAdminRoles } from '../utils/roles';
 import { body, param } from 'express-validator';
 import { validationMiddleware } from '../middleware/validationMiddleware';
 
@@ -12,7 +12,7 @@ export const roundsRouter = () => {
     const roundsController = new RoundsController();
 
     // Пока не используется
-    router.get(
+    /*router.get(
         '/',
         authMiddleware,
         body('gameName').isString().notEmpty(),
@@ -21,7 +21,7 @@ export const roundsRouter = () => {
 
     router.patch(
         '/:gameId/:number/change',
-        roleMiddleware(adminAccess),
+        roleMiddleware(allAdminRoles), // TODO: проверка на то, что админ редактирует свою игру
         param('gameId').isUUID(),
         param('number').isInt(),
         body('newQuestionCount').isInt({ min: 0 }),
@@ -32,7 +32,7 @@ export const roundsRouter = () => {
 
     router.delete(
         '/:gameId/:number',
-        roleMiddleware(adminAccess),
+        roleMiddleware(allAdminRoles), // TODO: проверка на то, что админ редактирует свою игру
         param('gameId').isUUID(),
         param('number').isInt(),
         validationMiddleware,
@@ -40,14 +40,14 @@ export const roundsRouter = () => {
 
     router.post(
         '/',
-        roleMiddleware(adminAccess),
+        roleMiddleware(allAdminRoles), // TODO: проверка на то, что админ редактирует свою игру
         body('number').isInt(),
         body('gameName').isString().notEmpty(),
         body('questionCount').isInt({ min: 0 }),
         body('questionCost').isInt({ min: 0 }),
         body('questionTime').isInt({ min: 0 }),
         validationMiddleware,
-        roundsController.insertRound.bind(roundsController));
+        roundsController.insertRound.bind(roundsController));*/
 
     return router;
 };

@@ -18,6 +18,7 @@ import PageBackdrop from '../../components/backdrop/backdrop';
 import {login} from '../../server-api/server-api';
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
 import {Input} from "../../components/input/input";
+import { allAdminRoles } from '../../entities/common/common.constants';
 
 const Authorization: FC<AuthorizationProps> = props => {
     const [wrongEmailOrPassword, setWrongEmailOrPassword] = useState<boolean>(false);
@@ -57,7 +58,7 @@ const Authorization: FC<AuthorizationProps> = props => {
 
     return props.isLoggedIn ? (
         <Redirect
-            to={props.user.role === 'admin' || props.user.role === 'superadmin' ? '/admin/start-screen' : '/start-screen'}/>
+            to={allAdminRoles.includes(props.user.role) ? '/admin/start-screen' : '/start-screen'}/>
     ) : (
         <PageWrapper>
             <Header isAuthorized={false}/>

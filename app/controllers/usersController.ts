@@ -1,15 +1,15 @@
 import { compare, hash } from 'bcrypt';
 import { UserRepository } from '../db/repositories/userRepository';
-import { validationResult } from 'express-validator';
 import { Request, Response } from 'express';
-import { generateAccessToken, secret, TokenPayload } from '../jwtToken';
-import jwt from 'jsonwebtoken';
-import { makeTemporaryPassword, SendMailWithTemporaryPassword } from '../email';
-import { transporter } from '../email';
+import { generateAccessToken, getTokenFromRequest } from '../utils/jwtToken';
+import { makeTemporaryPassword, SendMailWithTemporaryPassword } from '../utils/email';
+import { transporter } from '../utils/email';
 import { UserDto } from '../dtos/userDto';
 import { TeamDto } from '../dtos/teamDto';
 import { AdminDto } from '../dtos/adminDto';
 import { AdminRepository } from '../db/repositories/adminRepository';
+import { allAdminRoles, demoAdminRoles, userRoles } from '../utils/roles';
+import { User } from '../db/entities/User';
 
 export class UsersController { // TODO: дописать смену имени пользователя, удаление
     private readonly userRepository: UserRepository;
@@ -23,9 +23,17 @@ export class UsersController { // TODO: дописать смену имени �
     public async getAll(req: Request, res: Response) {
         try {
             const { withoutTeam } = req.query;
-            const users = withoutTeam ?
-                await this.userRepository.findUsersWithoutTeam()
-                : await this.userRepository.find();
+
+            const { email, role } = getTokenFromRequest(req);
+            let users: User[];
+            if (demoAdminRoles.has(role)) {
+                const user = await this.userRepository.findByEmail(email);
+                users = withoutTeam && user.team ? [] : [user];
+            } else {
+                users = withoutTeam
+                    ? await this.userRepository.findUsersWithoutTeam()
+                    : await this.userRepository.find();
+            }
 
             return res.status(200).json({
                 users: users?.map(user => new UserDto(user))
@@ -93,30 +101,53 @@ export class UsersController { // TODO: дописать смену имени �
         }
     }
 
+    public async insertDemo(req: Request, res: Response) {
+        try {
+            const { email } = getTokenFromRequest(req);
+            const user = await this.userRepository.findByEmail(email);
+            if (!user) {
+                return res.status(404).json({ message: 'Юзера с таким e-mail нет' });
+            }
+
+            const token = generateAccessToken(user.id, user.email, 'user', user.team?.id, null, user.name);
+            res.cookie('authorization', token, {
+                maxAge: 86400 * 1000,
+                secure: true
+            });
+
+            return res.status(200).json(new UserDto(user));
+        } catch (error: any) {
+            return res.status(500).json({
+                message: error.message,
+                error,
+            });
+        }
+    }
+
     // вызывается только если знаем, что у юзера текущего точно есть команда
     public async changeTokenWhenGoIntoGame(req: Request, res: Response) {
         try {
             const { gameId } = req.params;
-            const oldToken = req.cookies['authorization'];
             const {
                 id: userId,
                 email: email,
-                roles: userRoles,
+                role: userRole,
                 name: name
-            } = jwt.verify(oldToken, secret) as TokenPayload;
-            if (userRoles === 'user') {
+            } = getTokenFromRequest(req);
+
+            if (userRoles.has(userRole)) {
                 const user = await this.userRepository.findById(userId);
 
                 if (user?.team !== null) {
-                    const token = generateAccessToken(userId, email, userRoles, user.team.id, gameId, name);
+                    const token = generateAccessToken(userId, email, userRole, user.team.id, gameId, name);
                     res.cookie('authorization', token, {
                         maxAge: 24 * 60 * 60 * 1000,
                         secure: true
                     });
                     return res.status(200).json({});
                 }
-            } else if (userRoles === 'admin' || userRoles === 'superadmin') {
-                const token = generateAccessToken(userId, email, userRoles, null, gameId, name);
+            } else if (allAdminRoles.has(userRole)) {
+                const token = generateAccessToken(userId, email, userRole, null, gameId, name);
                 res.cookie('authorization', token, {
                     maxAge: 24 * 60 * 60 * 1000,
                     secure: true
@@ -137,14 +168,13 @@ export class UsersController { // TODO: дописать смену имени �
         try {
             const { newName } = req.body;
 
-            const oldToken = req.cookies['authorization'];
-            const payload = jwt.verify(oldToken, secret) as TokenPayload;
+            const payload = getTokenFromRequest(req);
             if (payload.id) {
                 const user = await this.userRepository.findById(payload.id);
                 if (user) {
                     user.name = newName;
                     await user.save();
-                    const newToken = generateAccessToken(payload.id, payload.email, payload.roles, payload.teamId, payload.gameId, newName);
+                    const newToken = generateAccessToken(payload.id, payload.email, payload.role, payload.teamId, payload.gameId, newName);
                     res.cookie('authorization', newToken, {
                         maxAge: 24 * 60 * 60 * 1000,
                         secure: true
@@ -258,8 +288,7 @@ export class UsersController { // TODO: дописать смену имени �
 
     public async getTeam(req: Request, res: Response) {
         try {
-            const oldToken = req.cookies['authorization'];
-            const { id: userId } = jwt.verify(oldToken, secret) as TokenPayload;
+            const { id: userId } = getTokenFromRequest(req);
             const user = await this.userRepository.findById(userId);
 
             if (user.team !== null) {
@@ -277,18 +306,17 @@ export class UsersController { // TODO: дописать смену имени �
 
     public async get(req: Request, res: Response) {
         try {
-            const oldToken = req.cookies['authorization'];
             const {
-                id: userId,
-                roles: userRoles,
-            } = jwt.verify(oldToken, secret) as TokenPayload;
+                id,
+                role,
+            } = getTokenFromRequest(req);
 
-            if (userId !== undefined) {
-                if (userRoles === 'user') {
-                    const user = await this.userRepository.findById(userId);
+            if (id !== undefined) {
+                if (userRoles.has(role)) {
+                    const user = await this.userRepository.findById(id);
                     return res.status(200).json(new UserDto(user));
-                } else if (userRoles === 'admin' || userRoles === 'superadmin') {
-                    const admin = await this.adminRepository.findById(userId);
+                } else if (allAdminRoles.has(role)) {
+                    const admin = await this.adminRepository.findById(id);
                     return res.status(200).json(new AdminDto(admin));
                 } else {
                     return res.status(400).json({});

@@ -1,6 +1,6 @@
 import { Participant, Team } from '../entities/Team';
 import { User } from '../entities/User';
-import { AppDataSource } from '../../data-source';
+import { AppDataSource } from '../../utils/data-source';
 import { BaseRepository } from './baseRepository';
 import { IsNull } from 'typeorm';
 
@@ -12,6 +12,12 @@ export class TeamRepository extends BaseRepository<Team> {
     findWithCaptainRelations() {
         return this.innerRepository.find({
             relations: { captain: true }
+        });
+    }
+
+    findByCaptainEmail(email: string) {
+        return this.innerRepository.findOneBy({
+            captain: { email: email.toLowerCase() }
         });
     }
 

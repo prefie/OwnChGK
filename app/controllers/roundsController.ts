@@ -1,5 +1,4 @@
 import { RoundRepository } from '../db/repositories/roundRepository';
-import { validationResult } from 'express-validator';
 import { Request, Response } from 'express';
 import { RoundDto } from '../dtos/roundDto';
 

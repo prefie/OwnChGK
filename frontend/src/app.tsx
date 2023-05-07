@@ -11,7 +11,7 @@ import { checkToken } from './server-api/server-api';
 import { Dispatch } from 'redux';
 import { AppAction } from './redux/reducers/app-reducer/app-reducer.interfaces';
 import { authorizeUserWithRole, checkToken as testToken } from './redux/actions/app-actions/app-actions';
-import { adminRoles, userRoles } from './entities/common/common.constants';
+import { allAdminRoles, superAdminRoles, userRoles } from './entities/common/common.constants';
 import Loader from './components/loader/loader';
 import MobileMenu from './pages/mobile-menu/mobile-menu';
 import AdminGame from './pages/admin-game/admin-game';
@@ -75,56 +75,56 @@ const App: FC<AppProps> = props => {
 
                     <ProtectedRoute path="/admin/start-screen" exact
                                     currentUserRole={props.user.role}
-                                    neededRole={adminRoles}
+                                    neededRole={allAdminRoles}
                                     redirectPath={'/admin'}>
-                        <AdminStartScreen isSuperAdmin={props.user.role === 'superadmin'}/>
+                        <AdminStartScreen isSuperAdmin={superAdminRoles.includes(props.user.role)}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/profile" exact
                                     currentUserRole={props.user.role}
-                                    neededRole={adminRoles}
+                                    neededRole={allAdminRoles}
                                     redirectPath="/admin">
                         <Profile isAdmin={true}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/game-creation" exact
                                     currentUserRole={props.user.role}
-                                    neededRole={adminRoles}
+                                    neededRole={allAdminRoles}
                                     redirectPath="/admin">
                         <GameCreator mode="creation" isAdmin={true}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/game-creation/edit" exact
                                     currentUserRole={props.user.role}
-                                    neededRole={adminRoles}
+                                    neededRole={allAdminRoles}
                                     redirectPath="/admin">
                         <GameCreator mode="edit" isAdmin={true}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/team-creation" exact
                                     currentUserRole={props.user.role}
-                                    neededRole={adminRoles}
+                                    neededRole={allAdminRoles}
                                     redirectPath="/admin">
                         <TeamCreator mode="creation" isAdmin={true}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/team-creation/edit" exact
                                     currentUserRole={props.user.role}
-                                    neededRole={adminRoles}
+                                    neededRole={allAdminRoles}
                                     redirectPath="/admin">
                         <TeamCreator mode="edit" isAdmin={true}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/game/:gameId" exact
                                     currentUserRole={props.user.role}
-                                    neededRole={adminRoles}
+                                    neededRole={allAdminRoles}
                                     redirectPath="/admin">
                         <AdminGame/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/game/:gameId/:gamePart/answers/:tour/:question" exact
                                     currentUserRole={props.user.role}
-                                    neededRole={adminRoles}
+                                    neededRole={allAdminRoles}
                                     redirectPath="/admin">
                         <AdminAnswersPage/>
                     </ProtectedRoute>
@@ -132,14 +132,14 @@ const App: FC<AppProps> = props => {
 
                     <ProtectedRoute path="/admin/start-game/:gameId" exact
                                     currentUserRole={props.user.role}
-                                    neededRole={adminRoles}
+                                    neededRole={allAdminRoles}
                                     redirectPath="/admin">
                         <StartGame/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path='/admin/rating/:gameId' exact
                                     currentUserRole={props.user.role}
-                                    neededRole={adminRoles}
+                                    neededRole={allAdminRoles}
                                     redirectPath={'/admin'}>
                         <Rating isAdmin={true} />
                     </ProtectedRoute>
@@ -168,7 +168,7 @@ const App: FC<AppProps> = props => {
                         <UserAnswersPage/>
                     </ProtectedRoute>
 
-                    <ProtectedRoute path="/game-answers/:gameId/teamId/:teamId" exact currentUserRole={props.user.role} neededRole={adminRoles} redirectPath='/auth'>
+                    <ProtectedRoute path="/game-answers/:gameId/teamId/:teamId" exact currentUserRole={props.user.role} neededRole={allAdminRoles} redirectPath='/auth'>
                         <UserAnswersPageForAdmin/>
                     </ProtectedRoute>
 

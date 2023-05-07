@@ -1,7 +1,5 @@
-import { validationResult } from 'express-validator';
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import { secret, TokenPayload } from '../jwtToken';
+import { getTokenFromRequest } from '../utils/jwtToken';
 import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: избавиться
 import { Game, GameTypeLogic, Round } from '../logic/Game';
 import { Team } from '../logic/Team';
@@ -13,7 +11,8 @@ import { BigGame } from '../db/entities/BigGame';
 import { TeamDto } from '../dtos/teamDto';
 import { ChgkSettingsDto } from '../dtos/chgkSettingsDto';
 import { MatrixSettingsDto } from '../dtos/matrixSettingsDto';
-import { adminAccess, superAdminAccess } from '../routers/mainRouter';
+import { demoAdminRoles, smallAdminRoles, superAdminRoles, userRoles } from '../utils/roles';
+import { AccessType, CheckAccessResult } from '../utils/checkAccessResult';
 
 export class GamesController {
     private readonly bigGameRepository: BigGameRepository;
@@ -26,14 +25,13 @@ export class GamesController {
         try {
             const { amIParticipate } = req.query;
             let games: BigGame[] = [];
-            const oldToken = req.cookies['authorization'];
-            const { id, roles } = jwt.verify(oldToken, secret) as TokenPayload;
+            const { id, role } = getTokenFromRequest(req);
             console.log('user = ', id, 'try to getAllGames');
             if (amIParticipate) {
                 games = await this.bigGameRepository.findAmIParticipate(id);
-            } else if (superAdminAccess.has(roles)) {
+            } else if (superAdminRoles.has(role)) {
                 games = await this.bigGameRepository.findWithAllRelations();
-            } else if (adminAccess.has(roles)) {
+            } else if (smallAdminRoles.has(role)) {
                 games = await this.bigGameRepository.findWithAllRelationsByAdminId(id);
             }
 
@@ -72,11 +70,15 @@ export class GamesController {
         try {
             const { gameName, teams, chgkSettings, matrixSettings } = req.body;
 
-            const token = req.cookies['authorization'];
-            const { email } = jwt.verify(token, secret) as TokenPayload;
+            const { email, id, role } = getTokenFromRequest(req);
             const game = await this.bigGameRepository.findByName(gameName);
             if (game) {
                 return res.status(409).json({ message: 'Игра с таким названием уже есть' });
+            }
+
+            const gamesCount = await this.bigGameRepository.getQuantityByAdminId(id);
+            if (demoAdminRoles.has(role) && gamesCount >= 1) {
+                return res.status(403).json({ message: 'Больше 1 игры демо-админ создать не может' });
             }
 
             await this.bigGameRepository.insertByParams(gameName, email, teams, chgkSettings, matrixSettings);
@@ -93,6 +95,11 @@ export class GamesController {
         try {
             const { gameId } = req.params;
 
+            const checkAccessResult = await this.CheckAccess(req, gameId);
+            if (checkAccessResult.type === AccessType.FORBIDDEN) {
+                return res.status(403).json({ message: checkAccessResult.message });
+            }
+
             await this.bigGameRepository.deleteById(gameId);
             return res.status(200).json({});
         } catch (error: any) {
@@ -107,6 +114,12 @@ export class GamesController {
         try {
             const { gameId } = req.params;
             const { newGameName } = req.body;
+
+            const checkAccessResult = await this.CheckAccess(req, gameId);
+            if (checkAccessResult.type === AccessType.FORBIDDEN) {
+                return res.status(403).json({ message: checkAccessResult.message });
+            }
+
             await this.bigGameRepository.updateNameById(gameId, newGameName);
             return res.status(200).json({});
         } catch (error: any) {
@@ -121,6 +134,11 @@ export class GamesController {
         try {
             const { gameId } = req.params;
             const { adminEmail } = req.body;
+
+            const checkAccessResult = await this.CheckAccess(req, gameId);
+            if (checkAccessResult.type === AccessType.FORBIDDEN) {
+                return res.status(403).json({ message: checkAccessResult.message });
+            }
 
             await this.bigGameRepository.updateAdminByIdAndAdminEmail(gameId, adminEmail);
             return res.status(200).json({});
@@ -165,6 +183,12 @@ export class GamesController {
             if (!bigGame) {
                 return res.status(404).json({ message: 'game not found' });
             }
+            const { id, role } = getTokenFromRequest(req);
+            const additionalAdmins = bigGame.additionalAdmins?.map(a => a.id) ?? [];
+            if (smallAdminRoles.has(role) && bigGame.admin.id !== id && additionalAdmins.indexOf(id) === -1) {
+                return res.status(403).json({ message: 'Админ/Демо-админ может начать только свою игру' });
+            }
+
             gameAdmins[gameId] = new Set();
             gameUsers[gameId] = new Set();
 
@@ -232,7 +256,7 @@ export class GamesController {
             const { gameId } = req.params;
             const { newGameName, teams, chgkSettings, matrixSettings } = req.body;
 
-            const currentGame = await this.bigGameRepository.findById(gameId);
+            const currentGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
             if (!currentGame) {
                 return res.status(404).json({ message: 'game not found' });
             }
@@ -242,6 +266,11 @@ export class GamesController {
                 if (game) {
                     return res.status(409).json({ message: 'Игра с таким названием уже есть' });
                 }
+            }
+
+            const checkAccessResult = await this.CheckAccess(req, gameId);
+            if (checkAccessResult.type === AccessType.FORBIDDEN) {
+                return res.status(403).json({ message: checkAccessResult.message });
             }
 
             console.log('ChangeGame: ', gameId, ' teams is: ', teams);
@@ -263,6 +292,11 @@ export class GamesController {
 
             if (!bigGames[gameId]) {
                 return res.status(404).json({ 'message': 'Игра не началась' });
+            }
+
+            const checkAccessResult = await this.CheckAccess(req, gameId, true);
+            if (checkAccessResult.type === AccessType.FORBIDDEN) {
+                return res.status(403).json({ message: checkAccessResult.message });
             }
 
             bigGames[gameId].isIntrigue = isIntrigue;
@@ -303,20 +337,19 @@ export class GamesController {
                 return res.status(404).json({ 'message': 'Игра не началась' });
             }
 
-            const token = req.cookies['authorization'];
-            const { roles, teamId } = jwt.verify(token, secret) as TokenPayload;
+            const { role, teamId } = getTokenFromRequest(req);
 
-            if (roles === 'user' && !teamId) {
+            if (userRoles.has(role) && !teamId) {
                 return res.status(400).json({ message: 'user without team' });
             }
 
             const bigGame = bigGames[gameId];
             const game = bigGame.isFullGame() ? bigGame.ChGK : bigGame.CurrentGame;
-            const totalScoreForAllTeams = roles === 'user' && teamId && bigGame.isIntrigue
+            const totalScoreForAllTeams = userRoles.has(role) && teamId && bigGame.isIntrigue
                 ? game.getScoreTableForTeam(teamId)
                 : game.getScoreTable();
 
-            const teamsDictionary = roles === 'user' && teamId
+            const teamsDictionary = userRoles.has(role) && teamId
                 ? game.getTeamDictionary(teamId)
                 : game.getAllTeamsDictionary();
 
@@ -349,10 +382,9 @@ export class GamesController {
                 return res.status(404).json({ 'message': 'Игра не началась' });
             }
 
-            const token = req.cookies['authorization'];
-            const { roles, teamId } = jwt.verify(token, secret) as TokenPayload;
+            const { role, teamId } = getTokenFromRequest(req);
 
-            if (roles === 'user' && !teamId) {
+            if (userRoles.has(role) && !teamId) {
                 return res.status(400).json({ message: 'user without team' });
             }
 
@@ -375,7 +407,7 @@ export class GamesController {
             const totalScoreForAllTeams = game.getTotalScoreForAllTeams();
             const matrixSums = bigGame.isFullGame() ? bigGame.Matrix.getTotalScoreForAllTeams() : undefined;
 
-            const scoreTable = roles === 'user' && teamId && bigGames[gameId].isIntrigue
+            const scoreTable = userRoles.has(role) && teamId && bigGames[gameId].isIntrigue
                 ? game.getScoreTableForTeam(teamId)
                 : game.getScoreTable();
 
@@ -415,6 +447,12 @@ export class GamesController {
         try {
             const { gameId } = req.params;
             const { status } = req.body;
+
+            const checkAccessResult = await this.CheckAccess(req, gameId, true);
+            if (checkAccessResult.type === AccessType.FORBIDDEN) {
+                return res.status(403).json({ message: checkAccessResult.message });
+            }
+
             await this.bigGameRepository.updateByGameIdAndStatus(gameId, status);
             return res.status(200).json({});
         } catch (error: any) {
@@ -458,5 +496,24 @@ export class GamesController {
                 error,
             });
         }
+    }
+
+    private async CheckAccess(req: Request, gameId: string, withAdditionalAdmins = false): Promise<CheckAccessResult> {
+        const { id, role } = getTokenFromRequest(req);
+        const defaultAnswer = { type: AccessType.ACCESS };
+        if (superAdminRoles.has(role)) return defaultAnswer;
+
+        const game = await this.bigGameRepository.findWithAdminRelationsByBigGameId(gameId);
+        const additionalAdmins = game.additionalAdmins?.map(a => a.id) ?? [];
+        if (game.admin.id !== id && withAdditionalAdmins && additionalAdmins.indexOf(id) === -1) {
+            return {
+                type: AccessType.FORBIDDEN,
+                message: 'Админ/Демо-админ может изменять только свои игры',
+            };
+        }
+
+        return {
+            type: AccessType.ACCESS,
+        };
     }
 }

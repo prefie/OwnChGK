@@ -1,13 +1,11 @@
-import { validationResult } from 'express-validator';
 import { TeamRepository } from '../db/repositories/teamRepository';
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import { generateAccessToken, secret, TokenPayload } from '../jwtToken';
+import { generateAccessToken, getTokenFromRequest } from '../utils/jwtToken';
 import { TeamDto } from '../dtos/teamDto';
 import { BigGameDto } from '../dtos/bigGameDto';
-import { Participant } from '../db/entities/Team';
+import { Participant, Team } from '../db/entities/Team';
 import { UserRepository } from '../db/repositories/userRepository';
-import { adminAccess } from '../routers/mainRouter';
+import { demoAdminRoles, realAdminRoles, userRoles } from '../utils/roles';
 
 
 export class TeamsController {
@@ -22,9 +20,16 @@ export class TeamsController {
     public async getAll(req: Request, res: Response) {
         try {
             const { withoutUser } = req.query;
-            const teams = withoutUser ?
-                await this.teamRepository.findTeamsWithoutUser()
-                : await this.teamRepository.findWithCaptainRelations();
+            const { email, role } = getTokenFromRequest(req);
+            let teams: Team[];
+            if (demoAdminRoles.has(role)) {
+                const team = await this.teamRepository.findByCaptainEmail(email);
+                teams = team ? [team] : [];
+            } else {
+                teams = withoutUser
+                    ? await this.teamRepository.findTeamsWithoutUser()
+                    : await this.teamRepository.findWithCaptainRelations();
+            }
 
             return res.status(200).json({
                 teams: teams?.map(value => new TeamDto(value))
@@ -57,17 +62,17 @@ export class TeamsController {
         try {
             const { teamName, captain, participants } = req.body;
 
-            const oldToken = req.cookies['authorization'];
             const {
                 id,
                 email,
-                roles,
+                role,
                 name,
-                teamId,
-            } = jwt.verify(oldToken, secret) as TokenPayload;
+            } = getTokenFromRequest(req);
 
-            if (captain && email !== captain) {
-                return res.status(403).json({ message: 'Юзеру нельзя создать команду с другим капитаном' });
+            if (!realAdminRoles.has(role) && email.toLowerCase() !== captain?.toLowerCase()) {
+                return res.status(403).json({
+                    message: 'Юзеру/демо-админу нельзя создать команду с другим капитаном',
+                });
             }
 
             const team = await this.teamRepository.findByName(teamName);
@@ -78,8 +83,8 @@ export class TeamsController {
             const mappedParticipants = participants?.map(value => new Participant(value.email, value.name)); // избавляемся от мусора в JSON
             const newTeam = await this.teamRepository.insertTeam(teamName, captain, mappedParticipants);
 
-            if (!adminAccess.has(roles) && captain) {
-                const token = generateAccessToken(id, email, roles, newTeam.id, null, name);
+            if (userRoles.has(role) && captain) {
+                const token = generateAccessToken(id, email, role, newTeam.id, null, name);
                 res.cookie('authorization', token, {
                     maxAge: 24 * 60 * 60 * 1000,
                     secure: true
@@ -98,6 +103,14 @@ export class TeamsController {
     public async deleteTeam(req: Request, res: Response) {
         try {
             const { teamId } = req.params;
+            const { email, role } = getTokenFromRequest(req);
+            if (demoAdminRoles.has(role)) {
+                const team = await this.teamRepository.findByIdWithRelations(teamId);
+                if (team.captain?.email !== email) {
+                    return res.status(403).json({ message: 'Демо-админ может удалить только команду с собой' });
+                }
+            }
+
             await this.teamRepository.deleteById(teamId);
             return res.status(200).json({});
         } catch (error: any) {
@@ -123,27 +136,28 @@ export class TeamsController {
                 return res.status(409).json({ message: 'Команда с таким названием уже есть' });
             }
 
-            const oldToken = req.cookies['authorization'];
             const {
                 id,
                 email,
-                roles,
+                role,
                 name,
                 teamId: currentTeamId,
-            } = jwt.verify(oldToken, secret) as TokenPayload;
+            } = getTokenFromRequest(req);
 
-            if (!adminAccess.has(roles)) {
+            if (userRoles.has(role)) {
                 if (teamId !== currentTeamId) {
                     return res.status(403).json({ message: 'У пользователя нет прав' });
                 }
 
                 if (!captain) {
-                    const token = generateAccessToken(id, email, roles, null, null, name);
+                    const token = generateAccessToken(id, email, role, null, null, name);
                     res.cookie('authorization', token, {
                         maxAge: 24 * 60 * 60 * 1000,
                         secure: true
                     });
                 }
+            } else if (demoAdminRoles.has(role) && captain.toLowerCase() !== email.toLowerCase()) {
+                return res.status(403).json({ message: 'Демо-админ может занять команду только собой' });
             }
 
             const mappedParticipants = participants?.map(value => new Participant(value.email, value.name)); // избавляемся от мусора в JSON
@@ -161,17 +175,16 @@ export class TeamsController {
         try {
             const { teamId } = req.params;
 
-            const oldToken = req.cookies['authorization'];
             const {
                 id,
                 email,
-                roles,
+                role,
                 name
-            } = jwt.verify(oldToken, secret) as TokenPayload;
+            } = getTokenFromRequest(req);
 
             await this.teamRepository.updateEmptyTeamByIdAndUserId(teamId, id);
 
-            const token = generateAccessToken(id, email, roles, teamId, null, name);
+            const token = generateAccessToken(id, email, role, teamId, null, name);
             res.cookie('authorization', token, {
                 maxAge: 24 * 60 * 60 * 1000,
                 secure: true
@@ -202,40 +215,6 @@ export class TeamsController {
             });
         }
     }
-
-    public async deleteTeamCaptainById(req: Request, res: Response) {
-        try {
-            const { teamId } = req.params;
-
-            const oldToken = req.cookies['authorization'];
-            const {
-                id: userId,
-                email: email,
-                roles: userRoles,
-                name: name
-            } = jwt.verify(oldToken, secret) as TokenPayload;
-
-            const user = await this.userRepository.findById(userId);
-            if (user.team?.id === teamId) {
-                await this.teamRepository.deleteTeamCaptainById(teamId);
-                const token = generateAccessToken(userId, email, userRoles, null, null, name);
-                res.cookie('authorization', token, {
-                    maxAge: 24 * 60 * 60 * 1000,
-                    secure: true
-                });
-
-                return res.status(200).json({});
-            }
-
-            return res.status(403).json({ message: 'user not captain of this team' });
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message,
-                error,
-            });
-        }
-    }
-
 
     public async getParticipants(req: Request, res: Response) {
         try {

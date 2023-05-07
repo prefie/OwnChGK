@@ -6,8 +6,7 @@ export interface ModalProps {
     modalType: 'delete' | 'break' | 'delete-game-part';
     closeModal: Dispatch<SetStateAction<boolean>>;
     setGamePartUndefined?: Dispatch<SetStateAction<GamePartSettings | undefined>>;
-    deleteGame?: Dispatch<SetStateAction<Game[] | undefined>>;
-    deleteTeam?: Dispatch<SetStateAction<Team[] | undefined>>;
+    deleteElement?: Dispatch<SetStateAction<Game[] | Team[] | undefined>>;
     itemForDeleteName?: string;
     itemForDeleteId?: string;
     type?: 'team' | 'game';
