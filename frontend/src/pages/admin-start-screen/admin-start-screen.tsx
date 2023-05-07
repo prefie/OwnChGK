@@ -15,11 +15,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import Scrollbar from '../../components/scrollbar/scrollbar';
 import Loader from "../../components/loader/loader";
-import {AddRounded, PlusOneRounded} from "@mui/icons-material";
-import GameItem, {Roles} from "../../components/game-item/game-item";
-import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
-import {GameTypeItemProps} from "../../components/game-type-item/game-type-item";
-import {divide} from "lodash-es";
+import {PlusOneRounded} from "@mui/icons-material";
+import GameItem from "../../components/game-item/game-item";
 
 const inputStyles = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -81,11 +78,8 @@ const AdminComponent: FC<AdminProps> = props => {
 };
 
 export interface Game {
-    id: string;
-    name: string;
-    teamsCount: number;
-    status: string,
-    games: GameTypeItemProps[];
+    name: string,
+    id: string
 }
 
 export interface Team {
@@ -186,23 +180,10 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                                                   width="100%" height="7vh"
                                                                   sx={{marginBottom: '2.5vh'}}/>);
         }
-        // //return games.map((game, index) => <InputWithAdornment name={game.name} id={game.id} key={index} type="game"
-        //                                                       openModal={setIsModalVisible}
-        //                                                       setItemForDeleteName={setDeletedItemName}
-        //                                                       setItemForDeleteId={setDeletedItemId}/>);
-        return games.map((game, index) =>
-            <GameItem
-                key={index}
-                id={game.id}
-                name={game.name}
-                teamsCount={game.teamsCount}
-                status={game.status}
-                games={game.games}
-                openModal={setIsModalVisible}
-                setItemForDeleteName={setDeletedItemName}
-                setItemForDeleteId={setDeletedItemId}
-                role={Roles.admin}
-            />);
+        return games.map((game, index) => <InputWithAdornment name={game.name} id={game.id} key={index} type="game"
+                                                              openModal={setIsModalVisible}
+                                                              setItemForDeleteName={setDeletedItemName}
+                                                              setItemForDeleteId={setDeletedItemId}/>);
     };
 
     const renderAdmins = () => {
@@ -269,30 +250,25 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
         switch (page) {
             case 'games':
                 return (
-                    <div className={classes.gamePage}>
-                        <div className={classes.gamesHeader}>
-                            <h1 className={classes.title}>Игры</h1>
-                            <Link to={"/admin/game-creation"} className={classes.addButtonWrapper}>
-                                <CustomButton
-                                    type={"button"}
-                                    text={"Создать игру"}
-                                    buttonType={ButtonType.primary}
-                                    startIcon={<AddRounded fontSize={'large'}/>}
-                                />
-                            </Link>
-                        </div>
-                        {
-                            games && !games.length
-                            ?
-                                <div className={classes.gamesListEmpty}>
-                                    <img className={classes.emptyImage} src={require('../../images/owl-images/empty_owl.svg').default} alt="empty-owl"/>
-                                    <h3 className={classes.emptyTitle}>Пока нет ни одной игры</h3>
-                                </div>
-                            :
-                                <div className={classes.gamesList}>
+                    <div className={classes.containerWrapper}>
+                        <div className={classes.box}>
+                            <div className={classes.gamesWrapper}>
+                                <Scrollbar>
                                     {renderGames()}
-                                </div>
-                        }
+                                </Scrollbar>
+                            </div>
+
+                            <div className={classes.addButtonWrapper}>
+                                <Link to="/admin/game-creation">
+                                    <IconButton sx={{padding: '13px'}} id="addGameButton">
+                                        <AddCircleOutlineOutlinedIcon sx={{
+                                            color: 'white',
+                                            fontSize: '9vmin'
+                                        }}/>
+                                    </IconButton>
+                                </Link>
+                            </div>
+                        </div>
                     </div>
                 );
             case 'teams':
@@ -381,11 +357,11 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
             {
                 isModalVisible
                     ? <Modal modalType="delete"
-                             deleteGame={setGames}
+                             deleteElement={page === 'teams' ? setTeams : setGames}
                              closeModal={setIsModalVisible}
                              itemForDeleteName={deletedItemName}
                              itemForDeleteId={deletedItemId}
-                             type={'game'}/>
+                             type={page === 'teams' ? 'team' : 'game'}/>
                     : null
             }
 

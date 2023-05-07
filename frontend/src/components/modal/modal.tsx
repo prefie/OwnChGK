@@ -30,11 +30,10 @@ const Modal: FC<ModalProps> = props => {
         if (props.modalType === 'delete-game-part') {
             props.setGamePartUndefined?.(undefined);
         } else {
+            props.deleteElement?.(arr => arr?.filter(el => el.name !== props.itemForDeleteName));
             if (props.type === 'game') {
-                props.deleteGame?.(arr => arr?.filter(el => el.name !== props.itemForDeleteName))
                 deleteGame(props.itemForDeleteId as string);
             } else {
-                props.deleteTeam?.(arr => arr?.filter(el => el.name !== props.itemForDeleteName))
                 deleteTeam(props.itemForDeleteId as string);
             }
         }
