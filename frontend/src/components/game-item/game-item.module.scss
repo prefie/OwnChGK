@@ -37,7 +37,8 @@
 
 @media (max-width: 600px) {
   .gameContent {
-    width: calc(100% - 48px);
+    width: 100%;
+    margin-right: 0;
   }
 }
 

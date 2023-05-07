@@ -30,7 +30,7 @@
 .gamePage {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 90%;
 }
 
 .gamesListEmpty {
@@ -191,4 +191,26 @@
     padding: 1vh 3vw 1vh 5vw;
     margin-bottom: 1.5vh;
   }
+
+  .gamesList {
+    padding: 1rem 2rem 3.5rem;
+  }
+
+  .gamesListEmpty {
+    margin: 1rem 2rem 3.5rem;
+  }
+
+  .gamesHeader {
+    display: none;
+  }
+
+  .emptyImage {
+    width: 50%;
+    height: auto;
+  }
+
+  .emptyTitle {
+    font-size: var(--font-size-20);
+  }
+
 }
