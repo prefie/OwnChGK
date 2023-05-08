@@ -84,13 +84,27 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         });
     }
 
-    findAmIParticipate(userId: string) {
-        return this.innerRepository.find({
-            where: { teams: { captain: { id: userId } } },
-            relations: {
-                games: { rounds: { questions: true } },
-                teams: { captain: true },
-            }
+    findByCaptainId(userId: string) {
+        return this.innerRepository.manager.transaction(async (manager: EntityManager) => {
+            const games = await manager.find<BigGame>(BigGame, {
+                select: { id: true },
+                where: { teams: { captain: { id: userId } } },
+                relations: {
+                    teams: { captain: true },
+                }
+            });
+
+            const gameIds = games?.map(g => g.id) ?? [];
+
+            return gameIds.length > 0
+                ? await manager.find<BigGame>(BigGame, {
+                    where: { id: In(gameIds) },
+                    relations: {
+                        games: { rounds: { questions: true } },
+                        teams: { captain: true }
+                    }
+                })
+                : [];
         });
     }
 

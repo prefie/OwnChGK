@@ -28,7 +28,7 @@ export class GamesController {
             const { id, role } = getTokenFromRequest(req);
             console.log('user = ', id, 'try to getAllGames');
             if (amIParticipate) {
-                games = await this.bigGameRepository.findAmIParticipate(id);
+                games = await this.bigGameRepository.findByCaptainId(id);
             } else if (superAdminRoles.has(role)) {
                 games = await this.bigGameRepository.findWithAllRelations();
             } else if (smallAdminRoles.has(role)) {
