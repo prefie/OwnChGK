@@ -12,6 +12,9 @@ import {connect} from 'react-redux';
 import {Dispatch} from 'redux';
 import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces';
 import {addUserName} from '../../redux/actions/app-actions/app-actions';
+import {Input} from "../../components/input/input";
+import DemoVersionFrame from "../../components/demoversion-frame/demoversion-frame";
+import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
 
 const Profile: FC<ProfileProps> = props => {
     const [userName, setUserName] = useState<string>(props.userName);
@@ -139,52 +142,56 @@ const Profile: FC<ProfileProps> = props => {
 
                 <form className={classes.box} onSubmit={handleSubmit} autoComplete='off'>
                     <div className={classes.contentWrapper}>
-                        <div className={classes.infoWrapper}>
-                            <CustomInput type="text" id="name" name="name" placeholder="Имя" defaultValue={userName}
-                                         required={false} style={{marginTop: 'calc(2vw + 2vh)'}} value={userName}
-                                         onChange={handleUserNameChange}/>
+                        <div className={classes.infoAndDemoWrapper}>
+                            <div className={classes.infoWrapper}>
+                                <Input type={'text'}
+                                       id={'name'}
+                                       placeholder={"Можете указать ваше имя"}
+                                       defaultValue={userName}
+                                       required={false}
+                                       value={userName}
+                                       onChange={handleUserNameChange}/>
+                                {
+                                    !props.isAdmin && props.userTeam
+                                        ?
+                                        <div className={classes.infoCategoryWrapper}>
+                                            <p className={classes.category}>Команда</p>
+                                            <p className={classes.userData}>{userTeam}</p>
+                                        </div>
+                                        : null
+                                }
 
-                            {
-                                !props.isAdmin
-                                    ?
-                                    <div className={classes.infoCategoryWrapper}>
-                                        <p className={classes.category}>Команда</p>
-                                        <p className={classes.userData}>{userTeam}</p>
-                                    </div>
-                                    : null
-                            }
-
-                            <div className={classes.infoCategoryWrapper} style={{marginTop: '3vh'}}>
-                                <p className={classes.category}>Почта</p>
-                                <p id='email' className={classes.userData}>{userEmail}</p>
+                                <div className={classes.infoCategoryWrapper} style={{marginTop: '3vh'}}>
+                                    <p className={classes.category}>Почта</p>
+                                    <p id='email' className={classes.userData}>{userEmail}</p>
+                                </div>
                             </div>
+                            <DemoVersionFrame isAdmin={props.isAdmin} role={props.role}/>
                         </div>
-
                         <div className={classes.changePasswordWrapper}>
-                            <p className={classes.changePasswordParagraph}>Изменение пароля</p>
+                            <h3 className={classes.changePasswordParagraph}>Изменение пароля</h3>
 
-                            <CustomInput type="password" id="old-password" name="old-password"
+                            <Input type="password" id="old-password" name="old-password"
                                          placeholder="Введите старый пароль" style={{marginBottom: '3.5vh'}}
                                          isInvalid={isOldPasswordInvalid} required={false} value={userOldPassword}
                                          onChange={handleUserOldPassportChange}
                                          errorHelperText='Неверный старый пароль'
                                          onFocus={() => setIsOldPasswordInvalid(false)}/>
-                            <CustomInput type="password" id="new-password" name="new-password"
+                            <Input type="password" id="new-password" name="new-password"
                                          placeholder="Введите новый пароль" isInvalid={isRepeatedPasswordInvalid}
                                          required={false} value={userPassword}
                                          onChange={handleUserPassportChange}
                                          onFocus={() => setIsRepeatedPasswordInvalid(false)}/>
-                            <CustomInput type="password" id="repeat-new-password" name="repeat-new-password"
+                            <Input type="password" id="repeat-new-password" name="repeat-new-password"
                                          placeholder="Повторите новый пароль" isInvalid={isRepeatedPasswordInvalid}
                                          value={repeatedPassword} onChange={handleRepeatedPasswordChange}
                                          onBlur={checkRepeatedPassword} required={false}
                                          errorHelperText='Пароли не совпадают'
                                          onFocus={() => setIsRepeatedPasswordInvalid(false)}/>
+                            <div className={classes.buttonWrapper}>
+                                <CustomButton type={"submit"} text={"Сохранить"} buttonType={ButtonType.primary}/>
+                            </div>
                         </div>
-                    </div>
-
-                    <div className={classes.buttonWrapper}>
-                        <button className={classes.saveButton} type="submit">Сохранить</button>
                     </div>
                 </form>
                 <Snackbar open={flags.isSnackbarOpen} autoHideDuration={5000} onClose={handleClose}>

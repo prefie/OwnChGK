@@ -9,48 +9,50 @@
 }
 
 .box {
-  width: 60%;
-  height: 90%;
+  padding: 1rem 5rem;
+  width: 70%;
   display: flex;
-  align-self: center;
   flex-direction: column;
 }
 
 .contentWrapper {
   width: 100%;
-  height: 70%;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  gap: 16px;
 }
 
 .infoWrapper {
-  width: 50%;
-  height: 50%;
+  padding: 2rem 1.5rem;
+  border-radius: 1rem;
+  background-color: var(--color-bg-plates);
+  height: fit-content;
 }
 
 .changePasswordWrapper {
-  width: 40%;
-  height: 50%;
+  padding: 2rem 1.5rem;
+  border-radius: 1rem;
+  background-color: var(--color-bg-plates);
+  height: fit-content;
+  width: 50%;
 }
 
 .infoCategoryWrapper {
   width: 100%;
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
   font-weight: 300;
   font-size: 1.5vw;
   margin-top: 1.5vh;
 
   .category {
-    width: 25%;
-    color: white;
-    text-align: end;
+    font-size: var(--font-size-16);
+    margin-bottom: .25rem;
+    color: var(--color-text-icon-secondary);
   }
 
   .userData {
-    width: 65%;
-    color: var(--color-fill-accent-enabled);
+    color: var(--color-text-icon-primary);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -58,19 +60,24 @@
   }
 }
 
+.infoAndDemoWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 50%;
+}
+
 .changePasswordParagraph {
-  font-weight: 400;
-  color: white;
-  font-size: 1.7vw;
-  margin-bottom: 2vh;
+  margin: 0 0 2rem;
+  font-size: var(--font-size-40);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-icon-primary);
 }
 
 .buttonWrapper {
-  width: 23%;
   display: flex;
-  align-self: center;
-  justify-content: center;
   text-decoration: none;
+  margin-top: 1rem;
 }
 
 .saveButton {
@@ -104,32 +111,41 @@
 
   .box {
     width: 80%;
+    padding: 1rem 2rem;
   }
 
   .contentWrapper {
     flex-direction: column;
-    margin-top: 5vh;
+    margin: 0;
     height: 65%;
   }
 
-  .infoWrapper {
+  .infoAndDemoWrapper {
     width: 100%;
+  }
+
+  .infoWrapper {
+    width: auto;
+  }
+
+  .MuiOutlinedInput-root {
+    font-size: var(--font-size-16);
   }
 
   .changePasswordWrapper {
-    width: 100%;
+    width: auto;
   }
 
   .changePasswordParagraph {
-    font-size: 6.6vw;
+    font-size: var(--font-size-24);
   }
 
   .infoCategoryWrapper {
-    font-size: 4.4vw;
+    font-size: var(--font-size-16);
   }
 
   .buttonWrapper {
-    width: 65%;
+    width: auto;
   }
 
   .saveButton {

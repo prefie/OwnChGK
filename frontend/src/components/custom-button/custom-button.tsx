@@ -20,13 +20,16 @@ const PrimaryButton = styled(Button)<ButtonProps>({
     },
     '&:active': {
         backgroundColor: "var(--color-fill-accent-pressed)"
+    },
+    '&:disabled': {
+        backgroundColor: "var(--color-fill-accent-disabled)",
+        color: "var(--color-text-icon-disabled)"
     }
 });
 
 export enum ButtonType {
     primary,
     secondary,
-    disabled,
     link,
 }
 
@@ -34,16 +37,19 @@ interface CustomButtonProps {
     text: string;
     type: "button" | "submit" | "reset" | undefined;
     buttonType: ButtonType;
+    disabled?: boolean;
     startIcon: React.ReactNode | null;
     endIcon: React.ReactNode | null;
 }
 
 function CustomButton(props: CustomButtonProps) {
     return (
-        <PrimaryButton startIcon={props.startIcon}
-                       type={props.type}
-                       variant={"contained"}
-                       endIcon={props.endIcon}
+        <PrimaryButton
+            startIcon={props.startIcon}
+            type={props.type}
+            variant={"contained"}
+            disabled={props.disabled}
+            endIcon={props.endIcon}
         >{props.text}
         </PrimaryButton>
     );
@@ -51,7 +57,8 @@ function CustomButton(props: CustomButtonProps) {
 
 CustomButton.defaultProps = {
     startIcon: null,
-    endIcon: null
+    endIcon: null,
+    disabled: false
 }
 
 export default CustomButton;

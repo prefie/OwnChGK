@@ -59,7 +59,7 @@ const TeamCreator: FC<TeamCreatorProps> = props => {
     }, []);
 
     useEffect(() => {
-        if (!props.isAdmin) {
+        if (!props.isAdmin || props.role === "demoadmin") {
             setCaptain(props.userEmail);
             setOldCaptain(props.userEmail);
             setUsersFromDB([props.userEmail]);
@@ -271,7 +271,7 @@ const TeamCreator: FC<TeamCreatorProps> = props => {
                                                         options={usersFromDB || []}
                                                         defaultValue={oldCaptain}
                                                         onChange={handleAutocompleteChange}
-                                                        disabled={!props.isAdmin && props.mode === 'creation'}
+                                                        disabled={!props.isAdmin && props.mode === 'creation' || props.role === "demoadmin"}
                                                         sx={{
                                                             border: 'none',
                                                             fontSize: mediaMatch.matches ? '5.3vw' : '1.5vw',
