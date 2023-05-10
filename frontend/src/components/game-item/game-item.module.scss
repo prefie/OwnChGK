@@ -6,6 +6,7 @@
 }
 
 .gameContent {
+  position: relative;
   text-decoration: none;
   color: var(--color-text-icon-primary);
   width: calc(20% - 48px);
@@ -16,6 +17,12 @@
   padding: 16px;
   border-radius: 8px;
   margin: 0 1rem 1rem 0;
+}
+
+.gameActions {
+  position: absolute;
+  bottom: .5rem;
+  right: 1rem;
 }
 
 .gameContent:hover {

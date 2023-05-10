@@ -2,6 +2,7 @@ import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces
 
 export interface ProfileOwnProps {
     isAdmin: boolean;
+    role: string;
 }
 
 export interface ProfileStateProps {

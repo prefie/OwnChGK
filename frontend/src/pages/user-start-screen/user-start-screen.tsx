@@ -145,20 +145,18 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
         if (!gamesFromDB) {
             return Array.from(Array(5).keys()).map(i => <Skeleton key={`game_skeleton_${i}`} variant='rectangular' width='100%' height={mediaMatch.matches ? '5vh' : '7vh'} sx={{marginBottom: '2.5vh'}} />);
         }
-        // return gamesFromDB.map((game, index) =>
-        //     <div key={index} className={classes.gameOrTeam} onClick={() => handleClickOnGame(game.id)}>
-        //         <p className={classes.gameName}>{game.name}</p>
-        //     </div>);
         return gamesFromDB.map((game, index) =>
-            <GameItem
-                key={index}
-                id={game.id}
-                name={game.name}
-                teamsCount={game.teamsCount}
-                status={game.status}
-                games={game.games}
-                role={Roles.user}
-            />);
+                <GameItem
+                    key={index}
+                    id={game.id}
+                    name={game.name}
+                    teamsCount={game.teamsCount}
+                    status={game.status}
+                    games={game.games}
+                    role={Roles.user}
+                    onClick={() => handleClickOnGame(game.id)}
+                />);
+
     };
 
     const renderTeams = () => {

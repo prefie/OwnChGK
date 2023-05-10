@@ -22,7 +22,8 @@ interface GameItemProps {
     openModal?: Dispatch<SetStateAction<boolean>>;
     setItemForDeleteName?: Dispatch<SetStateAction<string>>;
     setItemForDeleteId?: Dispatch<SetStateAction<string>>;
-    role: Roles
+    role: Roles;
+    onClick?: React.MouseEventHandler
 }
 
 function GameItem(props: GameItemProps) {
@@ -72,52 +73,56 @@ function GameItem(props: GameItemProps) {
         setIsRedirectedToEdit(true);
     };
 
+    // if (isClicked) {
+    //     return <Redirect to={linkToGame}/>;
+    // }
+
     return isRedirectedToEdit
         ? <Redirect to={{pathname: '/admin/game-creation/edit', state: {id: props.id, name: props.name}}}/>
         : (
-            <div className={classes.gameContent} id={gameId}>
-                <Link to={linkToGame} className={classes.gameTitle}>{props.name}</Link>
+            <div className={classes.gameContent} onClick={props.onClick}>
+                <Link to={linkToGame} className={classes.gameTitle} id={gameId}>{props.name}</Link>
                 <GameTypeList types={props.games}/>
-                <div className={classes.gameFooter}>
+                <div className={classes.gameFooter} id={gameId}>
                     <div className={classes.gameTeams}>
                         <PeopleAltRounded fontSize={"medium"}/>
                         <div className="game-commands-count">{props.teamsCount}</div>
                     </div>
-                    {
-                        props.role === Roles.admin
-                            ?
-                            <div className={classes.gameActions}>
-                                <IconButton
-                                    onClick={handleEditClick}
-                                    edge={'end'}
-                                    sx={{
-                                        '& .MuiSvgIcon-root': {
-                                            color: 'var(--color-text-icon-link-enabled)',
-                                            fontSize: 'var(--font-size-24)'
-                                        }
-                                    }}
-                                >
-                                    <EditRounded/>
-                                </IconButton>
-                                <IconButton
-                                    onClick={handleDeleteClick}
-                                    edge={'end'}
-                                    sx={{
-                                        '& .MuiSvgIcon-root': {
-                                            color: 'var(--color-text-icon-error)',
-                                            fontSize: 'var(--font-size-24)'
-                                        }
-                                    }}
-                                >
-                                    <DeleteRounded/>
-                                </IconButton>
-                            </div>
-                            :
-                            null
-                    }
-
                 </div>
+                {
+                    props.role === Roles.admin
+                        ?
+                        <div className={classes.gameActions}>
+                            <IconButton
+                                onClick={handleEditClick}
+                                edge={'end'}
+                                sx={{
+                                    '& .MuiSvgIcon-root': {
+                                        color: 'var(--color-text-icon-link-enabled)',
+                                        fontSize: 'var(--font-size-24)'
+                                    }
+                                }}
+                            >
+                                <EditRounded/>
+                            </IconButton>
+                            <IconButton
+                                onClick={handleDeleteClick}
+                                edge={'end'}
+                                sx={{
+                                    '& .MuiSvgIcon-root': {
+                                        color: 'var(--color-text-icon-error)',
+                                        fontSize: 'var(--font-size-24)'
+                                    }
+                                }}
+                            >
+                                <DeleteRounded/>
+                            </IconButton>
+                        </div>
+                        :
+                        null
+                }
             </div>
+
         );
 }
 

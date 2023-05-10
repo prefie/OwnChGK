@@ -186,10 +186,6 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                                                   width="100%" height="7vh"
                                                                   sx={{marginBottom: '2.5vh'}}/>);
         }
-        // //return games.map((game, index) => <InputWithAdornment name={game.name} id={game.id} key={index} type="game"
-        //                                                       openModal={setIsModalVisible}
-        //                                                       setItemForDeleteName={setDeletedItemName}
-        //                                                       setItemForDeleteId={setDeletedItemId}/>);
         return games.map((game, index) =>
             <GameItem
                 key={index}
@@ -211,8 +207,10 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                 (
                     <div key={`admin_skeleton_${i}`}
                          className={props.isSuperAdmin ? classes.superAdminInfoWrapper : classes.adminInfoWrapper}>
-                        <Skeleton variant="rectangular" width="38%" height="7vh" sx={{marginBottom: '2vh', marginRight: !props.isSuperAdmin ? '2%' : 0}}/>
-                        <Skeleton variant="rectangular" width="52%" height="7vh" sx={{marginBottom: '2vh', marginRight: !props.isSuperAdmin ? '2%' : 0}}/>
+                        <Skeleton variant="rectangular" width="38%" height="7vh"
+                                  sx={{marginBottom: '2vh', marginRight: !props.isSuperAdmin ? '2%' : 0}}/>
+                        <Skeleton variant="rectangular" width="52%" height="7vh"
+                                  sx={{marginBottom: '2vh', marginRight: !props.isSuperAdmin ? '2%' : 0}}/>
                         {
                             props.isSuperAdmin
                                 ? <Skeleton variant="rectangular" width="7%" height="7vh" sx={{marginBottom: '2vh'}}/>
@@ -265,6 +263,17 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
         }
     };
 
+    let isDisabledGameButton = false;
+    if (games) {
+        isDisabledGameButton = props.role === "demoadmin" && games.length >= 1;
+    }
+
+    let isDisabledTeamButton = false;
+    if (teams) {
+        isDisabledTeamButton = props.role === "demoadmin" && teams.length >= 1;
+    }
+
+
     const renderPage = (page: string) => {
         switch (page) {
             case 'games':
@@ -272,8 +281,13 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                     <div className={classes.gamePage}>
                         <div className={classes.gamesHeader}>
                             <h1 className={classes.title}>Игры</h1>
-                            <Link to={"/admin/game-creation"} className={classes.addButtonWrapper}>
+                            <Link
+                                to={"/admin/game-creation"}
+                                className={classes.addButtonWrapper}
+                                style={{pointerEvents: isDisabledGameButton ? 'none' : 'auto'}}
+                            >
                                 <CustomButton
+                                    disabled={isDisabledGameButton}
                                     type={"button"}
                                     text={"Создать игру"}
                                     buttonType={ButtonType.primary}
@@ -283,12 +297,14 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                         </div>
                         {
                             games && !games.length
-                            ?
+                                ?
                                 <div className={classes.gamesListEmpty}>
-                                    <img className={classes.emptyImage} src={require('../../images/owl-images/empty_owl.svg').default} alt="empty-owl"/>
+                                    <img className={classes.emptyImage}
+                                         src={require('../../images/owl-images/empty_owl.svg').default}
+                                         alt="empty-owl"/>
                                     <h3 className={classes.emptyTitle}>Пока нет ни одной игры</h3>
                                 </div>
-                            :
+                                :
                                 <div className={classes.gamesList}>
                                     {renderGames()}
                                 </div>
@@ -305,11 +321,16 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                 </Scrollbar>
                             </div>
 
-                            <div className={classes.addButtonWrapper}>
-                                <Link to="/admin/team-creation">
-                                    <IconButton sx={{padding: '13px'}} id="addTeamButton">
+                            <div className={classes.addTeamButtonWrapper}>
+                                <Link
+                                    to="/admin/team-creation"
+                                    style={{pointerEvents: isDisabledTeamButton ? 'none' : 'auto'}}
+                                >
+                                    <IconButton
+                                        disabled={isDisabledTeamButton}
+                                        sx={{padding: '13px'}} id="addTeamButton">
                                         <AddCircleOutlineOutlinedIcon sx={{
-                                            color: 'white',
+                                            color: isDisabledTeamButton ? "var(--color-text-icon-disabled)" : "var(--color-text-icon-primary)",
                                             fontSize: '9vmin'
                                         }}/>
                                     </IconButton>
@@ -319,6 +340,9 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                     </div>
                 );
             case 'admins':
+                if (props.role === "demoadmin") {
+                    return(<></>);
+                }
                 return (
                     <div className={classes.adminsWrapper}>
                         <div className={props.isSuperAdmin ? classes.box : `${classes.box} ${classes.adminBox}`}>
@@ -346,7 +370,8 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                                 <OutlinedInput id="new-admin-email" type="email" sx={emailStyles}
                                                                className={`${classes.adminEmail} ${classes.adminInput} ${classes.newAdmin}`}
                                                                placeholder="Email*"/>
-                                                <Button className={classes.adminButton} onClick={handleAddNewAdmin} id="addAdminButton">
+                                                <Button className={classes.adminButton} onClick={handleAddNewAdmin}
+                                                        id="addAdminButton">
                                                     <AddIcon sx={{color: 'green', fontSize: '5vmin'}}/>
                                                 </Button>
                                             </div>
@@ -371,7 +396,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
         }
     };
 
-    return isLoading? <Loader /> : (
+    return isLoading ? <Loader/> : (
         <PageWrapper>
             <Header isAuthorized={true} isAdmin={true}>
                 <NavBar isAdmin={true} page={location.state !== undefined ? location.state.page : page}
@@ -382,10 +407,11 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                 isModalVisible
                     ? <Modal modalType="delete"
                              deleteGame={setGames}
+                             deleteTeam={setTeams}
                              closeModal={setIsModalVisible}
                              itemForDeleteName={deletedItemName}
                              itemForDeleteId={deletedItemId}
-                             type={'game'}/>
+                             type={page === 'teams' ? 'team' : 'game'}/>
                     : null
             }
 

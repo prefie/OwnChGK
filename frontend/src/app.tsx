@@ -77,14 +77,14 @@ const App: FC<AppProps> = props => {
                                     currentUserRole={props.user.role}
                                     neededRole={allAdminRoles}
                                     redirectPath={'/admin'}>
-                        <AdminStartScreen isSuperAdmin={superAdminRoles.includes(props.user.role)}/>
+                        <AdminStartScreen isSuperAdmin={superAdminRoles.includes(props.user.role)} role={props.user.role}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/profile" exact
                                     currentUserRole={props.user.role}
                                     neededRole={allAdminRoles}
                                     redirectPath="/admin">
-                        <Profile isAdmin={true}/>
+                        <Profile isAdmin={true} role={props.user.role}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/game-creation" exact
@@ -105,14 +105,14 @@ const App: FC<AppProps> = props => {
                                     currentUserRole={props.user.role}
                                     neededRole={allAdminRoles}
                                     redirectPath="/admin">
-                        <TeamCreator mode="creation" isAdmin={true}/>
+                        <TeamCreator mode="creation" isAdmin={true} role={props.user.role}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/team-creation/edit" exact
                                     currentUserRole={props.user.role}
                                     neededRole={allAdminRoles}
                                     redirectPath="/admin">
-                        <TeamCreator mode="edit" isAdmin={true}/>
+                        <TeamCreator mode="edit" isAdmin={true} role={props.user.role}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/game/:gameId" exact
@@ -149,15 +149,15 @@ const App: FC<AppProps> = props => {
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/profile" exact currentUserRole={props.user.role} neededRole={userRoles} redirectPath="/auth">
-                        <Profile isAdmin={false}/>
+                        <Profile isAdmin={false} role={props.user.role}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/team-creation" exact currentUserRole={props.user.role} neededRole={userRoles} redirectPath="/auth">
-                        <TeamCreator mode="creation" isAdmin={false}/>
+                        <TeamCreator mode="creation" isAdmin={false} role={props.user.role}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/team-creation/edit" exact currentUserRole={props.user.role} neededRole={userRoles} redirectPath="/auth">
-                        <TeamCreator mode="edit" isAdmin={false}/>
+                        <TeamCreator mode="edit" isAdmin={false} role={props.user.role}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/game/:gameId" exact currentUserRole={props.user.role} neededRole={userRoles} redirectPath="/auth">
