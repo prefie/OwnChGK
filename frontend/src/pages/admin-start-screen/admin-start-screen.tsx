@@ -407,10 +407,11 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                 isModalVisible
                     ? <Modal modalType="delete"
                              deleteGame={setGames}
+                             deleteTeam={setTeams}
                              closeModal={setIsModalVisible}
                              itemForDeleteName={deletedItemName}
                              itemForDeleteId={deletedItemId}
-                             type={'game'}/>
+                             type={page === 'teams' ? 'team' : 'game'}/>
                     : null
             }
 
