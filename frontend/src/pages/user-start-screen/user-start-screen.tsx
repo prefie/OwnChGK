@@ -35,7 +35,12 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
     const [page, setPage] = useState<string>('teams');
     const [gamesFromDB, setGamesFromDB] = useState<Game[]>();
     const [teamsFromDB, setTeamsFromDB] = useState<Team[]>();
-    const [userTeam, setUserTeam] = useState<Team>({name: '', id: ''});
+    const [userTeam, setUserTeam] = useState<Team>({
+        captainEmail: "",
+        captainId: "",
+        participantsCount: 0,
+        participants: [],
+        name: '', id: ''});
     const [gameId, setGameId] = useState<string>('');
     const [isTeamNotFree, setIsTeamNotFree] = useState<boolean>(false);
     const [numberLoading, setNumberLoading] = useState<number>(0);
@@ -64,10 +69,10 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
     useEffect(() => {
         getTeamByCurrentUser().then(res => {
             if (res.status === 200) {
-                res.json().then(({name, id}) => {
-                    if (name !== undefined) {
-                        setUserTeam({name, id});
-                        setTeamsFromDB([{name, id}]);
+                res.json().then((team) => {
+                    if (team.name !== undefined) {
+                        setUserTeam(team);
+                        setTeamsFromDB([team]);
                         setNumberLoading(prev => Math.min(prev + 1, 2));
                     } else {
                         getTeamsWithoutUser().then(res => {
@@ -106,7 +111,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                     if (res.status === 200) {
                         setUserTeam({
                             name: dataset.teamName,
-                            id: dataset.teamId
+                            id: dataset.teamId, captainEmail: "", captainId: "", participantsCount: 0, participants: []
                         });
                         setIsTeamNotFree(false);
                         props.onAddUserTeam(dataset.teamName);

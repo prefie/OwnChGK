@@ -823,9 +823,9 @@ const UserGame: FC<UserGameProps> = props => {
                 <PageWrapper>
                     <Header isAuthorized={true} isAdmin={false}>
                         {
-                            !mediaMatch.matches
-                                ? <NavBar isAdmin={false} page=""/>
-                                : null
+                            <div className={classes.gameName}>
+                                {gameName}
+                            </div>
                         }
                     </Header>
 
@@ -835,10 +835,11 @@ const UserGame: FC<UserGameProps> = props => {
                             : null
                     }
                     <div className={classes.gameStartContentWrapper}>
-                        <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
+                        <img className={classes.image} src={require('../../images/owl-images/ready-owl.svg').default} alt="logo"/>
 
-                        <div className={classes.pageText}>{getGameNameForWaitingScreen()}<br/> скоро начнется</div>
-                        <div className={classes.pageText}>Подождите</div>
+                        <div className={classes.pageText}>Приготовьтесь!</div>
+                        <div className={classes.pageText}>Вот-вот, и мы начнём</div>
+
                     </div>
                     <Snackbar sx={{marginTop: '8vh'}} open={isConnectionError}
                               anchorOrigin={{vertical: 'top', horizontal: 'right'}} autoHideDuration={5000}>
@@ -867,7 +868,7 @@ const UserGame: FC<UserGameProps> = props => {
                                 : null
                         }
 
-                        <div className={classes.breakHeader}>Перерыв</div>
+                        <div className={classes.breakHeader}>Перерыв ⋅ {gameName}</div>
                     </Header>
 
                     {
@@ -876,9 +877,12 @@ const UserGame: FC<UserGameProps> = props => {
                             : null
                     }
                     <div className={classes.breakContentWrapper}>
-                        <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
+                        <img className={classes.image} src={require('../../images/owl-images/break_owl.svg').default} alt="logo"/>
 
-                        <div className={classes.breakTime}>{parseTimer()}</div>
+                        <div className={classes.breakTime}>
+                            {parseTimer()}
+                            <p className={classes.breakTimeText}>Отдохни, да выпей чаю</p>
+                        </div>
                     </div>
                     <Snackbar sx={{marginTop: '8vh'}} open={isConnectionError}
                               anchorOrigin={{vertical: 'top', horizontal: 'right'}} autoHideDuration={5000}>
