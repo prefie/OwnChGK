@@ -317,12 +317,18 @@
   }
 
   .breakContentWrapper {
+    flex-direction: column-reverse;
+
     .logo {
-      margin: 23vh auto 8vh;
+      width: 200px;
     }
 
     .breakTime {
-      font-size: 28vmin;
+      font-size: 6rem;
+    }
+
+    .breakTimeText {
+      display: none;
     }
   }
 

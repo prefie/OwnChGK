@@ -1,9 +1,10 @@
-import {Link, Redirect} from "react-router-dom";
+import {Redirect} from "react-router-dom";
 import classes from "../team-item/team-item.module.scss";
-import {DeleteRounded, EditRounded, PeopleAltRounded, PersonRounded} from "@mui/icons-material";
+import {DeleteRounded, EditRounded, PeopleAltRounded, PersonAddAltRounded, PersonRounded} from "@mui/icons-material";
 import {IconButton} from "@mui/material";
 import React, {Dispatch, SetStateAction, useCallback, useState} from "react";
 import {Roles} from "../game-item/game-item";
+import {Team} from "../../pages/admin-start-screen/admin-start-screen";
 
 export interface Participant {
     email: string;
@@ -18,14 +19,17 @@ interface TeamItemProps {
     participants: Participant[];
     participantsCount: number;
     role: Roles;
+    userTeam?: Team;
     openModal?: Dispatch<SetStateAction<boolean>>;
     setItemForDeleteName?: Dispatch<SetStateAction<string>>;
     setItemForDeleteId?: Dispatch<SetStateAction<string>>;
+    onClick?: React.MouseEventHandler;
 }
 
 function TeamItem(props: TeamItemProps) {
     const [isRedirectedToEdit, setIsRedirectedToEdit] = useState(false);
     const [isClicked, setIsClicked] = useState(false);
+    const [isClickedOnCurrentTeam, setIsClickedOnCurrentTeam] = useState<boolean>(false);
     const linkToTeam = props.role === Roles.user
         ? `/team-creation/edit`
         : `/admin/team-creation/edit`
@@ -40,7 +44,33 @@ function TeamItem(props: TeamItemProps) {
         } else {
             return `Нет знатоков`;
         }
+    }
 
+    function CaptainBlock() {
+        if (props.captainId) {
+            return (
+                <div className={classes.captain}>
+                    <PersonRounded fontSize={"medium"}/>
+                    <p className={classes.captainName}>{props.captainEmail}</p>
+                </div>
+            );
+        } else {
+            if (props.role === Roles.user) {
+                return (
+                    <div className={classes.captainLink} onClick={props.onClick}>
+                        <PersonAddAltRounded fontSize={"medium"}/>
+                        <p className={classes.captainName}>Стать капитаном</p>
+                    </div>
+                );
+            } else {
+                return (
+                    <div className={classes.captainNull}>
+                        <PersonRounded fontSize={"medium"}/>
+                        <p className={classes.captainName}>Нет капитана</p>
+                    </div>
+                );
+            }
+        }
     }
 
     const setItemName = useCallback(e => {
@@ -67,24 +97,13 @@ function TeamItem(props: TeamItemProps) {
         setIsRedirectedToEdit(true);
     };
 
-    return isRedirectedToEdit
-        ? <Redirect to={{pathname: '/admin/team-creation/edit', state: {id: props.id, name: props.name}}}/>
-        : (
+    if (isRedirectedToEdit) {
+        return <Redirect to={{pathname: linkToTeam, state: {id: props.id, name: props.name}}}/>
+    } else {
+        return (
             <div className={classes.teamContent}>
-                <Link to={"#"} className={classes.teamTitle}>{props.name}</Link>
-                {
-                    props.captainId
-                        ?
-                        <div className={classes.captain}>
-                            <PersonRounded fontSize={"medium"}/>
-                            <p className={classes.captainName}>{props.captainEmail}</p>
-                        </div>
-                        :
-                        <div className={classes.captainNull}>
-                            <PersonRounded fontSize={"medium"}/>
-                            <p className={classes.captainName}>Нет капитана</p>
-                        </div>
-                }
+                <div className={classes.teamTitle}>{props.name}</div>
+                <CaptainBlock/>
                 <div className={classes.teamFooter}>
                     <div className={classes.teamsParticipants}>
                         <PeopleAltRounded fontSize={"medium"}/>
@@ -93,40 +112,46 @@ function TeamItem(props: TeamItemProps) {
                         </div>
                     </div>
                 </div>
-                {
-                    props.role === Roles.admin
+                <div className={classes.teamActions}>
+                    {
+                        !(props.userTeam) || props.userTeam.name
+                            ?
+                        <IconButton
+                            onClick={handleEditClick}
+                            edge={'end'}
+                            sx={{
+                                '& .MuiSvgIcon-root': {
+                                    color: 'var(--color-text-icon-link-enabled)',
+                                    fontSize: 'var(--font-size-24)'
+                                }
+                            }}
+                        >
+                            <EditRounded/>
+                        </IconButton>
+                            : null
+                    }
+                    {
+                        props.role === Roles.admin
                         ?
-                        <div className={classes.teamActions}>
-                            <IconButton
-                                onClick={handleEditClick}
-                                edge={'end'}
-                                sx={{
-                                    '& .MuiSvgIcon-root': {
-                                        color: 'var(--color-text-icon-link-enabled)',
-                                        fontSize: 'var(--font-size-24)'
-                                    }
-                                }}
-                            >
-                                <EditRounded/>
-                            </IconButton>
-                            <IconButton
-                                onClick={handleDeleteClick}
-                                edge={'end'}
-                                sx={{
-                                    '& .MuiSvgIcon-root': {
-                                        color: 'var(--color-text-icon-error)',
-                                        fontSize: 'var(--font-size-24)'
-                                    }
-                                }}
-                            >
-                                <DeleteRounded/>
-                            </IconButton>
-                        </div>
+                        <IconButton
+                            onClick={handleDeleteClick}
+                            edge={'end'}
+                            sx={{
+                                '& .MuiSvgIcon-root': {
+                                    color: 'var(--color-text-icon-error)',
+                                    fontSize: 'var(--font-size-24)'
+                                }
+                            }}
+                        >
+                            <DeleteRounded/>
+                        </IconButton>
                         :
                         null
-                }
+                    }
+                </div>
             </div>
         );
+    }
 }
 
 export default TeamItem;

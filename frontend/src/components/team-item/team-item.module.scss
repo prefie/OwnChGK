@@ -82,6 +82,15 @@
     text-decoration: none;
 }
 
+.captainLink {
+    display: flex;
+    gap: 4px;
+    font-size: var(--font-size-20);
+    line-height: var(--line-height-small);
+    color: var(--color-text-icon-link-enabled);
+    text-decoration: none;
+}
+
 .captain {
     display: flex;
     gap: 4px;

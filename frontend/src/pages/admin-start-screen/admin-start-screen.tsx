@@ -292,8 +292,8 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
         switch (page) {
             case 'games':
                 return (
-                    <div className={classes.gamePage}>
-                        <div className={classes.gamesHeader}>
+                    <div className={classes.sectionPage}>
+                        <div className={classes.sectionHeader}>
                             <h1 className={classes.title}>Игры</h1>
                             <Link
                                 to={"/admin/game-creation"}
@@ -312,14 +312,14 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                         {
                             games && !games.length
                                 ?
-                                <div className={classes.gamesListEmpty}>
+                                <div className={classes.sectionListEmpty}>
                                     <img className={classes.emptyImage}
                                          src={require('../../images/owl-images/empty_owl.svg').default}
                                          alt="empty-owl"/>
                                     <h3 className={classes.emptyTitle}>Пока нет ни одной игры</h3>
                                 </div>
                                 :
-                                <div className={classes.gamesList}>
+                                <div className={classes.sectionList}>
                                     {renderGames()}
                                 </div>
                         }
@@ -327,8 +327,8 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                 );
             case 'teams':
                 return (
-                    <div className={classes.gamePage}>
-                        <div className={classes.gamesHeader}>
+                    <div className={classes.sectionPage}>
+                        <div className={classes.sectionHeader}>
                             <h1 className={classes.title}>Команды</h1>
                             <Link
                                 to={"/admin/team-creation"}
@@ -347,14 +347,14 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                         {
                             teams && !teams.length
                                 ?
-                                <div className={classes.gamesListEmpty}>
+                                <div className={classes.sectionListEmpty}>
                                     <img className={classes.emptyImage}
                                          src={require('../../images/owl-images/empty_owl.svg').default}
                                          alt="empty-owl"/>
                                     <h3 className={classes.emptyTitle}>Пока нет ни одной команды</h3>
                                 </div>
                                 :
-                                <div className={classes.gamesList}>
+                                <div className={classes.sectionList}>
                                     {renderTeams()}
                                 </div>
                         }
