@@ -11,6 +11,7 @@ export interface ModalProps {
     itemForDeleteName?: string;
     itemForDeleteId?: string;
     type?: 'team' | 'game';
+    gameId?: string | undefined;
     startBreak?: Dispatch<SetStateAction<boolean>>;
     setBreakTime?: Dispatch<SetStateAction<number>>;
 }

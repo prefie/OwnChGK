@@ -1,4 +1,4 @@
-import {Game, GameStatus} from './Game';
+import { Game, GameStatus } from './Game';
 
 
 export class BigGameLogic {
@@ -12,7 +12,7 @@ export class BigGameLogic {
     private interval: any;
     public isIntrigue: boolean;
 
-    constructor(name:String, ChGK: Game = null, Matrix: Game = null) {
+    constructor(name: String, ChGK: Game = null, Matrix: Game = null) {
         this.Matrix = Matrix;
         this.ChGK = ChGK;
         this.name = name;

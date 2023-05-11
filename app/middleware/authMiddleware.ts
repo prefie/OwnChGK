@@ -1,6 +1,5 @@
-import jwt from 'jsonwebtoken';
 import { Response, NextFunction } from 'express';
-import { secret } from '../utils/jwtToken';
+import { getTokenFromString } from '../utils/jwtToken';
 import { MiddlewareRequestInterface } from '../entities/middleware/middleware.interfaces';
 
 export function authMiddleware(req: MiddlewareRequestInterface, res: Response, next: NextFunction) {
@@ -14,7 +13,7 @@ export function authMiddleware(req: MiddlewareRequestInterface, res: Response, n
             return res.status(401).json({ message: 'Пользователь не авторизован' });
         }
 
-        req.user = jwt.verify(token, secret);
+        req.user = getTokenFromString(token);
         next();
     } catch (exception) {
         return res.status(403).json({ message: 'Пользователь не авторизован' });

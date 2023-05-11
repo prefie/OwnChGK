@@ -1,11 +1,11 @@
-import {IconButton} from '@mui/material';
+import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import React, {FC, useCallback, useState} from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import classes from './modal.module.scss';
-import {ModalProps} from '../../entities/modal/modal.interfaces';
-import {deleteGame, deleteTeam} from '../../server-api/server-api';
-import {getCookie, getUrlForSocket} from '../../commonFunctions';
-import {createPortal} from 'react-dom';
+import { ModalProps } from '../../entities/modal/modal.interfaces';
+import { deleteGame, deleteTeam } from '../../server-api/server-api';
+import { getCookie, getUrlForSocket } from '../../commonFunctions';
+import { createPortal } from 'react-dom';
 
 let conn: WebSocket;
 
@@ -31,10 +31,10 @@ const Modal: FC<ModalProps> = props => {
             props.setGamePartUndefined?.(undefined);
         } else {
             if (props.type === 'game') {
-                props.deleteGame?.(arr => arr?.filter(el => el.name !== props.itemForDeleteName))
+                props.deleteGame?.(arr => arr?.filter(el => el.name !== props.itemForDeleteName));
                 deleteGame(props.itemForDeleteId as string);
             } else {
-                props.deleteTeam?.(arr => arr?.filter(el => el.name !== props.itemForDeleteName))
+                props.deleteTeam?.(arr => arr?.filter(el => el.name !== props.itemForDeleteName));
                 deleteTeam(props.itemForDeleteId as string);
             }
         }
@@ -53,15 +53,16 @@ const Modal: FC<ModalProps> = props => {
             conn.onopen = () => {
                 conn.send(JSON.stringify({
                             'cookie': getCookie('authorization'),
+                            'gameId': props.gameId,
                             'action': 'breakTime',
                             'time': minutes * 60
                         }
                     )
-                )
-            }
+                );
+            };
         }
         handleCloseModal(e);
-    }
+    };
 
     return createPortal(
         <React.Fragment>
@@ -77,12 +78,14 @@ const Modal: FC<ModalProps> = props => {
 
                 {
                     props.modalType === 'delete'
-                        ? <p className={classes.modalText}>Вы уверены, что хотите удалить «{props.itemForDeleteName}»?</p>
+                        ?
+                        <p className={classes.modalText}>Вы уверены, что хотите удалить «{props.itemForDeleteName}»?</p>
                         :
                         (
                             props.modalType === 'delete-game-part'
                                 ?
-                                <p className={classes.modalText}>Вы уверены, что хотите удалить {props.itemForDeleteName}?</p>
+                                <p className={classes.modalText}>Вы уверены, что хотите
+                                    удалить {props.itemForDeleteName}?</p>
                                 :
                                 <p className={`${classes.modalText} ${classes.breakModalText}`}>
                                     Перерыв
@@ -92,13 +95,14 @@ const Modal: FC<ModalProps> = props => {
                                            name="minutes"
                                            value={minutes || ''}
                                            required={true}
-                                           onChange={handleMinutesCountChange} />
+                                           onChange={handleMinutesCountChange}/>
                                     минут
                                 </p>
                         )
                 }
                 <div className={classes.modalButtonWrapper}>
-                    <button className={classes.modalButton} onClick={props.modalType === 'delete' || props.modalType === 'delete-game-part' ? handleDeleteClick : handleStartBreak}>
+                    <button className={classes.modalButton}
+                            onClick={props.modalType === 'delete' || props.modalType === 'delete-game-part' ? handleDeleteClick : handleStartBreak}>
                         {props.modalType === 'delete' || props.modalType === 'delete-game-part' ? 'Да' : 'Запустить'}
                     </button>
                 </div>

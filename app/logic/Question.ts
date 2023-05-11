@@ -1,5 +1,5 @@
-import {Team} from "./Team";
-import {Answer, Appeal, Status} from './AnswerAndAppeal';
+import { Team } from './Team';
+import { Answer, Appeal, Status } from './AnswerAndAppeal';
 
 export class Question {
     public readonly cost: number;
@@ -60,7 +60,7 @@ export class Question {
         }
     }
 
-    rejectAnswers(wrongAnswer: string, isMatrixType=false): void {
+    rejectAnswers(wrongAnswer: string, isMatrixType = false): void {
         for (let answer of this.answers) {
             if (answer.text === wrongAnswer) {
                 isMatrixType ? answer.reject(this.cost) : answer.reject(0);
@@ -68,8 +68,8 @@ export class Question {
         }
     }
 
-    acceptAppeal(answer: string, comment: string = ""): void {
-        const appeals = this.appeals.filter((value, index, obj) =>
+    acceptAppeal(answer: string, comment: string = ''): void {
+        const appeals = this.appeals.filter((value) =>
             value.wrongAnswer === answer);
 
         for (const appeal of appeals) {
@@ -79,8 +79,8 @@ export class Question {
         this.acceptAnswers(answer);
     }
 
-    rejectAppeal(answer: string, comment: string = ""): void {
-        const appeals = this.appeals.filter((value, index, obj) =>
+    rejectAppeal(answer: string, comment: string = ''): void {
+        const appeals = this.appeals.filter((value) =>
             value.wrongAnswer === answer);
         for (const appeal of appeals) {
             appeal.reject(comment);

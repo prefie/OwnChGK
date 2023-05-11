@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer'
+import nodemailer from 'nodemailer';
 import { AppConfig } from './app-config';
 
 export const transporter = CreateTransporter(AppConfig.emailLogin, AppConfig.emailPassword);
@@ -8,7 +8,7 @@ const ignoreMessage = 'Если вы не запрашивали код, то п
 
 export function CreateTransporter(user: string, pass: string) {
     return nodemailer.createTransport({
-        host: "smtp.yandex.ru",
+        host: 'smtp.yandex.ru',
         port: 465,
         secure: true,
         auth: {
@@ -20,10 +20,9 @@ export function CreateTransporter(user: string, pass: string) {
 
 export function makeTemporaryPassword(length) {
     let result = '';
-    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let charactersLength = characters.length;
-    for (let i = 0; i < length; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return result;
 }
@@ -34,7 +33,7 @@ export async function SendMailWithTemporaryPassword(transporter, email: string, 
         to: email,
         subject: 'Смена пароля',
         html: `${changePasswordMessage} <b>${code}</b><br>${ignoreMessage}`
-    })
+    });
 }
 
 export async function SendMailWithTemporaryPasswordToAdmin(transporter, email: string, code: string) {
@@ -43,7 +42,7 @@ export async function SendMailWithTemporaryPasswordToAdmin(transporter, email: s
         to: email,
         subject: 'Временный пароль',
         html: `${adminPasswordMessage} <b>${code}</b><br>${ignoreMessage}`
-    })
+    });
 }
 
 export function validateEmail(email: string) {

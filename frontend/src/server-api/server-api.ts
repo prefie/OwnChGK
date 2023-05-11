@@ -95,17 +95,6 @@ export const logout = async () => {
     });
 };
 
-export const changeToken = async (gameId: string) => {
-    return fetch(`/api/users/${gameId}/changeToken`, {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        }
-    });
-};
-
 export const startGame = async (gameId: string) => {
     return fetch(`/api/games/${gameId}/start`);
 };

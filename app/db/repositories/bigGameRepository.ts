@@ -1,4 +1,4 @@
-import { EntityManager, In, Repository } from 'typeorm';
+import { EntityManager, In } from 'typeorm';
 import { BigGame } from '../entities/BigGame';
 import { Admin } from '../entities/Admin';
 import { Team } from '../entities/Team';
@@ -108,13 +108,17 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         });
     }
 
-    async insertByParams(name: string,
-                         adminEmail: string,
-                         teams: string[],
-                         chgkSettings: ChgkSettings,
-                         matrixSettings: MatrixSettings) {
-        const admin = await this.innerRepository.manager.findOneBy<Admin>(Admin, { email: adminEmail.toLowerCase() });
-        const teamsFromDb = await this.innerRepository.manager.findBy<Team>(Team, { name: In(teams) });
+    async insertByParams(
+        name: string,
+        adminEmail: string,
+        teams: string[],
+        chgkSettings: ChgkSettings,
+        matrixSettings: MatrixSettings
+    ) {
+        const admin = await this.innerRepository.manager
+            .findOneBy<Admin>(Admin, { email: adminEmail.toLowerCase() });
+        const teamsFromDb = await this.innerRepository.manager
+            .findBy<Team>(Team, { name: In(teams) });
         const bigGame = new BigGame();
         bigGame.name = name;
         bigGame.admin = admin;
@@ -129,7 +133,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
                 await manager.save(chgk);
 
-                await this.createRoundsWithQuestions(
+                await BigGameRepository.createRoundsWithQuestions(
                     manager,
                     chgkSettings?.roundCount ?? 0,
                     chgkSettings?.questionCount ?? 0,
@@ -148,7 +152,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
                 await manager.save(matrix);
 
-                await this.createRoundsWithQuestions(
+                await BigGameRepository.createRoundsWithQuestions(
                     manager,
                     matrixSettings?.roundCount ?? 0,
                     matrixSettings?.questionCount ?? 0,
@@ -164,11 +168,13 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         });
     }
 
-    async updateByParams(bigGameId: string,
-                         newName: string,
-                         teams: string[],
-                         chgkSettings: ChgkSettings,
-                         matrixSettings: MatrixSettings) {
+    async updateByParams(
+        bigGameId: string,
+        newName: string,
+        teams: string[],
+        chgkSettings: ChgkSettings,
+        matrixSettings: MatrixSettings
+    ) {
         const teamsFromDb = await this.innerRepository.manager.findBy<Team>(Team, { name: In(teams) });
         const bigGame = await this.innerRepository.manager.findOne<BigGame>(BigGame, {
             where: { id: bigGameId },
@@ -194,7 +200,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
                 await manager.save(game);
 
-                await this.createRoundsWithQuestions(
+                await BigGameRepository.createRoundsWithQuestions(
                     manager,
                     chgkSettings?.roundCount ?? 0,
                     chgkSettings?.questionCount ?? 0,
@@ -212,7 +218,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 game.bigGame = bigGame;
                 await manager.save(game);
 
-                await this.createRoundsWithQuestions(
+                await BigGameRepository.createRoundsWithQuestions(
                     manager,
                     matrixSettings?.roundCount ?? 0,
                     matrixSettings?.questionCount ?? 0,
@@ -236,7 +242,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     }
 
     async updateAdminByIdAndAdminEmail(bigGameId: string, newAdminEmail: string) {
-        const admin = await this.innerRepository.manager.findOneBy<Admin>(Admin, { email: newAdminEmail.toLowerCase() });
+        const admin = await this.innerRepository.manager
+            .findOneBy<Admin>(Admin, { email: newAdminEmail.toLowerCase() });
         const bigGame = await this.innerRepository.findOneBy({ id: bigGameId });
         bigGame.admin = admin;
 
@@ -250,7 +257,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         return this.innerRepository.save(bigGame);
     }
 
-    private async createRoundsWithQuestions(
+    private static async createRoundsWithQuestions(
         manager: EntityManager, roundCount: number, questionCount: number, game: Game,
         questionTime: number, questionCost: number, roundNames?: string[],
         questionsText?: Record<number, string[]>) {

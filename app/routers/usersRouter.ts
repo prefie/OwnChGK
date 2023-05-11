@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { UsersController } from '../controllers/usersController';
 import { authMiddleware } from '../middleware/authMiddleware';
-import { body, param, query } from 'express-validator';
+import { body, query } from 'express-validator';
 
 export const usersRouter = () => {
     const router = Router();
@@ -63,13 +63,6 @@ export const usersRouter = () => {
         authMiddleware,
         usersController.getTeam.bind(usersController)
     );
-
-    router.patch(
-        '/:gameId/changeToken',
-        authMiddleware,
-        param('gameId').isUUID(),
-        usersController.changeTokenWhenGoIntoGame.bind(usersController)
-    ); // TODO url
 
     router.patch(
         '/changePasswordByCode',

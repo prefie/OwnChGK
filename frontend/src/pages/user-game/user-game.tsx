@@ -53,22 +53,19 @@ const UserGame: FC<UserGameProps> = props => {
     const [focusedMatrixAnswerInfo, setFocusedMatrixAnswerInfo] = useState<{ index: number, roundName: string, roundNumber: number }>();
 
     const requester = {
+        getPayload: (obj: any) => JSON.stringify({
+            'cookie': getCookie('authorization'),
+            'gameId': gameId,
+            ...obj,
+        }),
+
         startRequests: () => {
-            conn.send(JSON.stringify({
-                'action': 'checkStart',
-                'cookie': getCookie('authorization'),
-            }));
-
-
+            conn.send(requester.getPayload({ 'action': 'checkStart' }));
             requester.getTeamAnswers();
-
             clearInterval(checkStart);
             checkStart = setInterval(() => {
                 if (!isGameStarted) {
-                    conn.send(JSON.stringify({
-                        'action': 'checkStart',
-                        'cookie': getCookie('authorization'),
-                    }));
+                    conn.send(requester.getPayload({ 'action': 'checkStart' }));
                 } else {
                     clearInterval(checkStart);
                 }
@@ -76,51 +73,35 @@ const UserGame: FC<UserGameProps> = props => {
 
             clearInterval(ping);
             ping = setInterval(() => {
-                conn.send(JSON.stringify({
-                    'action': 'ping'
-                }));
+                conn.send(JSON.stringify({ 'action': 'ping' }));
             }, 30000);
         },
 
         checkBreak: () => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
-                'action': 'isOnBreak'
-            }));
+            conn.send(requester.getPayload({ 'action': 'isOnBreak' }));
         },
 
         getQuestionNumber: () => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
-                'action': 'getQuestionNumber'
-            }));
+            conn.send(requester.getPayload({ 'action': 'getQuestionNumber' }));
         },
 
         getQuestionTime: () => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
-                'action': 'time'
-            }));
+            conn.send(requester.getPayload({ 'action': 'time' }));
         },
 
         checkTime: () => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
-                'action': 'checkTime',
-            }))
+            conn.send(requester.getPayload({ 'action': 'checkTime' }))
         },
 
         giveAnswerToChgk: (answer: string) => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'Answer',
                 'answer': answer
             }));
         },
 
         giveAnswerToMatrix: (answer: string, roundNumber: number, questionNumber: number, roundName: string) => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'Answer',
                 'answer': answer,
                 'roundNumber': roundNumber,
@@ -130,15 +111,11 @@ const UserGame: FC<UserGameProps> = props => {
         },
 
         getTeamAnswers: () => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
-                'action': 'getTeamAnswers'
-            }));
+            conn.send(requester.getPayload({ 'action': 'getTeamAnswers' }));
         },
 
         checkBreakTime: (time: number) => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'checkBreakTime',
                 'time': time,
             }))

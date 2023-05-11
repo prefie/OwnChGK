@@ -11,7 +11,12 @@ export class AdminRepository extends BaseRepository<Admin> {
         return this.innerRepository.findOneBy({ email: email.toLowerCase() });
     }
 
-    insertByEmailAndPassword(email: string, password: string, name: string = null, role: AdminRoles = AdminRoles.ADMIN) {
+    insertByEmailAndPassword(
+        email: string,
+        password: string,
+        name: string = null,
+        role: AdminRoles = AdminRoles.ADMIN
+    ) {
         const admin = new Admin();
         admin.email = email.toLowerCase();
         admin.password = password;
@@ -26,6 +31,22 @@ export class AdminRepository extends BaseRepository<Admin> {
         admin.password = password;
 
         return this.innerRepository.save(admin);
+    }
+
+    updateName(admin: Admin, newName: string) {
+        admin.name = newName;
+        return admin.save();
+    }
+
+    updatePassword(admin: Admin, newPassword: string) {
+        admin.password = newPassword;
+        admin.temporary_code = null;
+        return admin.save();
+    }
+
+    updateTemporaryCode(admin: Admin, temporaryCode: string) {
+        admin.temporary_code = temporaryCode;
+        return admin.save();
     }
 
     deleteByEmail(email: string) {

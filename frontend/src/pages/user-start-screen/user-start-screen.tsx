@@ -12,7 +12,6 @@ import {Link, Redirect, useLocation} from 'react-router-dom';
 import {Alert, IconButton, Skeleton, Snackbar} from '@mui/material';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import {
-    changeToken,
     editTeamCaptainByCurrentUser,
     getAmIParticipateGames,
     getTeamByCurrentUser,
@@ -130,11 +129,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
     };
 
     const handleClickOnGame = (id: string) => {
-        changeToken(id).then((res) => {
-            if (res.status === 200) {
-                setGameId(id);
-            }
-        });
+        setGameId(id);
     };
 
     const handleEditClick = () => {

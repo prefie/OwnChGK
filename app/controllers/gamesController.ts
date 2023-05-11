@@ -26,7 +26,7 @@ export class GamesController {
             const { amIParticipate } = req.query;
             let games: BigGame[] = [];
             const { id, role } = getTokenFromRequest(req);
-            console.log('user = ', id, 'try to getAllGames');
+
             if (amIParticipate) {
                 games = await this.bigGameRepository.findByCaptainId(id);
             } else if (superAdminRoles.has(role)) {
@@ -37,26 +37,6 @@ export class GamesController {
 
             return res.status(200).json({
                 games: games?.map(value => new BigGameDto(value))
-            });
-        } catch (error) {
-            return res.status(500).json({
-                message: error.message,
-                error,
-            });
-        }
-    }
-
-    // Не юзается, использует название игры из параметров - плохо
-    public async getAllTeams(req: Request, res: Response) {
-        try {
-            const { gameName } = req.params;
-            const game = await this.bigGameRepository.findByName(gameName);
-            if (!game) {
-                return res.status(404).json({ message: 'game not found' });
-            }
-
-            return res.status(200).json({
-                teams: game.teams?.map(team => new TeamDto(team))
             });
         } catch (error) {
             return res.status(500).json({
@@ -157,8 +137,10 @@ export class GamesController {
             if (!bigGame) {
                 return res.status(404).json({ message: 'game not found' });
             }
+
             const chgk = bigGame.games.find(game => game.type == GameType.CHGK);
             const matrix = bigGame.games.find(game => game.type == GameType.MATRIX);
+
             const answer = { // TODO: DTO
                 name: bigGame.name,
                 isStarted: !!bigGames[gameId],
@@ -167,6 +149,7 @@ export class GamesController {
                 chgkSettings: chgk ? new ChgkSettingsDto(chgk) : null,
                 matrixSettings: matrix ? new MatrixSettingsDto(matrix) : null,
             };
+
             return res.status(200).json(answer);
         } catch (error: any) {
             return res.status(500).json({
@@ -180,9 +163,11 @@ export class GamesController {
         try {
             const { gameId } = req.params;
             const bigGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
+
             if (!bigGame) {
                 return res.status(404).json({ message: 'game not found' });
             }
+
             const { id, role } = getTokenFromRequest(req);
             const additionalAdmins = bigGame.additionalAdmins?.map(a => a.id) ?? [];
             if (smallAdminRoles.has(role) && bigGame.admin.id !== id && additionalAdmins.indexOf(id) === -1) {
@@ -231,7 +216,6 @@ export class GamesController {
                 delete bigGames[gameId];
                 delete gameUsers[gameId];
                 delete gameAdmins[gameId];
-                console.log('delete game ', bigGames[gameId]);
             }, 1000 * 60 * 60 * 24 * 3); // TODO: избавиться
 
             const answer = { // TODO: DTO
@@ -273,7 +257,6 @@ export class GamesController {
                 return res.status(403).json({ message: checkAccessResult.message });
             }
 
-            console.log('ChangeGame: ', gameId, ' teams is: ', teams);
             await this.bigGameRepository.updateByParams(gameId, newGameName, teams, chgkSettings, matrixSettings);
             return res.status(200).json({});
         } catch (error: any) {
@@ -300,7 +283,6 @@ export class GamesController {
             }
 
             bigGames[gameId].isIntrigue = isIntrigue;
-            isIntrigue ? console.log('intrigue started') : console.log('intrigue finished');
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
@@ -316,11 +298,13 @@ export class GamesController {
             if (!bigGames[gameId]) {
                 return res.status(404).json({ 'message': 'Игра не началась' });
             }
+
             const totalScore = bigGames[gameId].CurrentGame.getTotalScoreForAllTeams();
             const answer = {
                 totalScoreForAllTeams: totalScore,
             };
-            return res.status(200).json(answer); // TODO: убрать answer
+
+            return res.status(200).json(answer);
 
         } catch (error: any) {
             return res.status(500).json({
@@ -345,6 +329,7 @@ export class GamesController {
 
             const bigGame = bigGames[gameId];
             const game = bigGame.isFullGame() ? bigGame.ChGK : bigGame.CurrentGame;
+
             const totalScoreForAllTeams = userRoles.has(role) && teamId && bigGame.isIntrigue
                 ? game.getScoreTableForTeam(teamId)
                 : game.getScoreTable();
@@ -422,7 +407,8 @@ export class GamesController {
                     roundsResultList.push(scoreTable[team][i].join(';'));
                     roundSum = 0;
                 }
-                teamRows.push(team + ';' + totalScoreForAllTeams[team] + ';' + (matrixSums ? `${matrixSums[team]};` : '') + roundsResultList.join(';'));
+                teamRows.push(team + ';' + totalScoreForAllTeams[team] + ';' +
+                    (matrixSums ? `${matrixSums[team]};` : '') + roundsResultList.join(';'));
                 roundsResultList = [];
             }
 
@@ -433,7 +419,6 @@ export class GamesController {
                 totalTable: [headers, value].join('\n')
             };
 
-            console.log(answer.totalTable, 'gameId = ', gameId);
             return res.status(200).json(answer);
         } catch (error: any) {
             return res.status(500).json({
@@ -476,10 +461,12 @@ export class GamesController {
                 }
                 if (team.participants) {
                     table.push(['Имя', 'Почта'].join(';'));
+
                     const participantsList = [];
                     for (let participant of team.participants) {
                         participantsList.push(participant.name + ';' + participant.email + ';');
                     }
+
                     table.push(participantsList.join('\n'));
                 }
                 table.push('\n');

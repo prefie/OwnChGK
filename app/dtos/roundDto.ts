@@ -1,4 +1,4 @@
-import {Round} from "../db/entities/Round";
+import { Round } from '../db/entities/Round';
 
 export class RoundDto {
     public readonly number: number;
