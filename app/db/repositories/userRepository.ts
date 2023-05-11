@@ -11,7 +11,7 @@ export class UserRepository extends BaseRepository<User> {
     findById(userId: string) {
         return this.innerRepository.findOne({
             where: { id: userId },
-            relations: { team: true }
+            relations: { team: { captain: true } }
         });
     }
 
