@@ -31,9 +31,9 @@ export const getGame = async (gameId: string) => {
 };
 
 export interface GamePartSettings {
-    roundCount: number;
-    questionCount: number;
-    questions?: Record<number, string[]>;
+    roundsCount: number;
+    questionsCount: number;
+    questions?: Record<number, string[]> | undefined;
     roundNames?: string[];
 }
 

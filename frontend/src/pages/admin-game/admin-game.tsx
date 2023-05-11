@@ -212,7 +212,7 @@ const AdminGame: FC<AdminGameProps> = props => {
                     setGameName(name);
                     setMatrixSettings(matrixSettings ?? null);
                     setChgkSettings(chgkSettings ?? null);
-                    setIsAppeal(new Array(chgkSettings ? chgkSettings.roundCount * chgkSettings.questionCount : 0).fill(false));
+                    setIsAppeal(new Array(chgkSettings ? chgkSettings.roundsCount * chgkSettings.questionsCount : 0).fill(false));
                 });
             }
         });
@@ -510,7 +510,7 @@ const AdminGame: FC<AdminGameProps> = props => {
                                         ?
                                         <>
                                             <div className={classes.gamePartWrapper}>Матрица</div>
-                                            {renderTours(matrixSettings.roundCount, 'matrix', matrixSettings.roundNames)}
+                                            {renderTours(matrixSettings.roundsCount, 'matrix', matrixSettings.roundNames)}
                                         </>
                                         : null
                                 }
@@ -519,7 +519,7 @@ const AdminGame: FC<AdminGameProps> = props => {
                                         ?
                                         <>
                                             <div className={classes.gamePartWrapper}>ЧГК</div>
-                                            {renderTours(chgkSettings.roundCount, 'chgk')}
+                                            {renderTours(chgkSettings.roundsCount, 'chgk')}
                                         </>
                                         : null
                                 }
@@ -528,12 +528,12 @@ const AdminGame: FC<AdminGameProps> = props => {
                             <div className={classes.questionsWrapper}>
                                 {
                                     clickedGamePart === 'matrix'
-                                        ? renderQuestions(matrixSettings?.questionCount || 0, 'matrix')
+                                        ? renderQuestions(matrixSettings?.questionsCount || 0, 'matrix')
                                         : null
                                 }
                                 {
                                     clickedGamePart === 'chgk'
-                                        ? renderQuestions(chgkSettings?.questionCount || 0, 'chgk')
+                                        ? renderQuestions(chgkSettings?.questionsCount || 0, 'chgk')
                                         : null
                                 }
                             </div>

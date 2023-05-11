@@ -51,6 +51,7 @@ const UserGame: FC<UserGameProps> = props => {
     const [activeMatrixRound, setActiveMatrixRound] = useState<{ name: string, index: number }>();
     const [activeMatrixQuestion, setActiveMatrixQuestion] = useState<number>(1);
     const [focusedMatrixAnswerInfo, setFocusedMatrixAnswerInfo] = useState<{ index: number, roundName: string, roundNumber: number }>();
+    const [currentQuestion, setCurrentQuestion] = useState<string>('');
 
     const requester = {
         getPayload: (obj: any) => JSON.stringify({
@@ -79,10 +80,6 @@ const UserGame: FC<UserGameProps> = props => {
 
         checkBreak: () => {
             conn.send(requester.getPayload({ 'action': 'isOnBreak' }));
-        },
-
-        getQuestionNumber: () => {
-            conn.send(requester.getPayload({ 'action': 'getQuestionNumber' }));
         },
 
         getQuestionTime: () => {
@@ -128,14 +125,24 @@ const UserGame: FC<UserGameProps> = props => {
             setIsLoading(false);
         },
 
-        handleGameStatusMessage: (isStarted: boolean, gamePart: 'chgk' | 'matrix', isOnBreak: boolean,
-                                  breakTime: number, questionNumber: number, matrixActive: { round: number, question: number }, maxTime: number, time: number) => {
+        handleGameStatusMessage: (
+            isStarted: boolean,
+            gamePart: 'chgk' | 'matrix',
+            isOnBreak: boolean,
+            breakTime: number,
+            questionNumber: number,
+            matrixActive: { round: number, question: number },
+            maxTime: number,
+            time: number,
+            text: string,
+        ) => {
             if (isStarted) {
                 setGamePart(gamePart);
                 setIsGameStarted(true);
                 clearInterval(checkStart);
                 clearInterval(interval);
                 setQuestionNumber(questionNumber);
+                setCurrentQuestion(text);
                 if (gamePart === 'matrix') {
                     const matrixRoundName = matrixSettingsCurrent?.roundNames?.[matrixActive.round - 1];
                     if (matrixRoundName) {
@@ -248,7 +255,12 @@ const UserGame: FC<UserGameProps> = props => {
             }
         },
 
-        handleChangeQuestionNumberMessage: (gamePart: 'chgk' | 'matrix', number: number, matrixActive: { round: number, question: number }) => {
+        handleChangeQuestionNumberMessage: (
+            gamePart: 'chgk' | 'matrix',
+            number: number,
+            matrixActive: { round: number, question: number },
+            text: string,
+        ) => {
             clearInterval(progressBarInterval);
             setAnswer('');
             let progress = document.querySelector('#progress-bar') as HTMLDivElement;
@@ -266,10 +278,11 @@ const UserGame: FC<UserGameProps> = props => {
                 setAcceptedAnswer(undefined);
             }
             setQuestionNumber(number);
+            setCurrentQuestion(text);
             if (gamePart === 'matrix') {
                 const matrixRoundName = matrixSettingsCurrent?.roundNames?.[matrixActive.round - 1];
                 if (matrixRoundName) {
-                    setActiveMatrixRound({name: matrixRoundName, index: matrixActive.round});
+                    setActiveMatrixRound({ name: matrixRoundName, index: matrixActive.round });
                 }
                 setActiveMatrixQuestion(matrixActive.question);
             }
@@ -393,7 +406,7 @@ const UserGame: FC<UserGameProps> = props => {
                     case 'gameStatus':
                         handler.handleGameStatusMessage(jsonMessage.isStarted, jsonMessage.activeGamePart,
                             jsonMessage.isOnBreak, jsonMessage.breakTime, jsonMessage.currentQuestionNumber,
-                            jsonMessage.matrixActive, jsonMessage.maxTime, jsonMessage.time);
+                            jsonMessage.matrixActive, jsonMessage.maxTime, jsonMessage.time, jsonMessage.text);
                         break;
                     case 'time':
                         handler.handleTimeMessage(jsonMessage.time, jsonMessage.maxTime, jsonMessage.isStarted, jsonMessage.gamePart);
@@ -414,7 +427,12 @@ const UserGame: FC<UserGameProps> = props => {
                         handler.handleStopMessage(jsonMessage.activeGamePart);
                         break;
                     case 'changeQuestionNumber':
-                        handler.handleChangeQuestionNumberMessage(jsonMessage.activeGamePart, jsonMessage.number, jsonMessage.matrixActive);
+                        handler.handleChangeQuestionNumberMessage(
+                            jsonMessage.activeGamePart,
+                            jsonMessage.number,
+                            jsonMessage.matrixActive,
+                            jsonMessage.text,
+                        );
                         break;
                     case 'currentQuestionNumber':
                         handler.handleCurrentQuestionNumberMessage(jsonMessage.activeGamePart, jsonMessage.number, jsonMessage.matrixActive);
@@ -447,7 +465,7 @@ const UserGame: FC<UserGameProps> = props => {
                     matrixSettingsCurrent = undefined;
                     if (matrixSettings) {
                         matrixSettingsCurrent = matrixSettings;
-                        fillMatrixAnswers(matrixSettings.roundCount, matrixSettings.questionCount);
+                        fillMatrixAnswers(matrixSettings.roundsCount, matrixSettings.questionsCount);
                     }
                     if (chgkSettings) {
                         setChgkSettings(chgkSettings);
@@ -608,10 +626,10 @@ const UserGame: FC<UserGameProps> = props => {
                     <div className={classes.tourName}>{tourName}</div>
 
                     {
-                        Array.from(Array(matrixSettingsCurrent?.questionCount).keys()).map((j) => {
+                        Array.from(Array(matrixSettingsCurrent?.questionsCount).keys()).map((j) => {
                             return (
                                 <div key={`matrix_question_${j}`}
-                                     style={{marginBottom: j === (matrixSettingsCurrent?.questionCount as number) - 1 && i !== ((matrixSettingsCurrent?.roundNames?.length || 0) - 1) ? (mediaMatch.matches ? '10vw' : '4vh') : 0}}>
+                                     style={{marginBottom: j === (matrixSettingsCurrent?.questionsCount as number) - 1 && i !== ((matrixSettingsCurrent?.roundNames?.length || 0) - 1) ? (mediaMatch.matches ? '10vw' : '4vh') : 0}}>
                                     <p className={classes.matrixAnswerNumber}>Вопрос за {j + 1}0</p>
 
                                     <div className={classes.answerInputWrapper}>
@@ -668,24 +686,20 @@ const UserGame: FC<UserGameProps> = props => {
     };
 
     const renderChgkQuestionText = () => {
-        const roundIndex = Math.ceil(questionNumber / (chgkSettings?.questionCount as number));
-        const questionInRoundIndex = questionNumber - (roundIndex - 1) * (chgkSettings?.questionCount as number);
-        const question = chgkSettings?.questions?.[roundIndex]?.[questionInRoundIndex - 1];
         return (
             <>
-                <div className={classes.answerNumber} style={{marginBottom: question ? '1.5vh' : '0'}}>
+                <div className={classes.answerNumber} style={{marginBottom: currentQuestion ? '1.5vh' : '0'}}>
                     {`Вопрос ${questionNumber}`}
                 </div>
-                {question || ''}
+                {currentQuestion || ''}
             </>
         );
     };
 
     const renderMatrixQuestionText = () => {
-        const question = matrixSettingsCurrent?.questions?.[activeMatrixRound?.index as number]?.[activeMatrixQuestion - 1];
-        if (question) {
+        if (currentQuestion) {
             return (
-                <div className={classes.matrixQuestion}>{question}</div>
+                <div className={classes.matrixQuestion}>{currentQuestion}</div>
             );
         }
         return null;

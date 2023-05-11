@@ -10,8 +10,8 @@ import { BaseRepository } from './baseRepository';
 
 
 export interface ChgkSettings {
-    roundCount: number,
-    questionCount: number,
+    roundsCount: number,
+    questionsCount: number,
     questionCost: number,
     questionTime: number,
     questions: Record<number, string[]>
@@ -135,8 +135,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
                 await BigGameRepository.createRoundsWithQuestions(
                     manager,
-                    chgkSettings?.roundCount ?? 0,
-                    chgkSettings?.questionCount ?? 0,
+                    chgkSettings?.roundsCount ?? 0,
+                    chgkSettings?.questionsCount ?? 0,
                     chgk,
                     chgkSettings?.questionTime ?? 60,
                     chgkSettings?.questionCost ?? 1,
@@ -154,8 +154,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
                 await BigGameRepository.createRoundsWithQuestions(
                     manager,
-                    matrixSettings?.roundCount ?? 0,
-                    matrixSettings?.questionCount ?? 0,
+                    matrixSettings?.roundsCount ?? 0,
+                    matrixSettings?.questionsCount ?? 0,
                     matrix,
                     matrixSettings?.questionTime ?? 20,
                     matrixSettings?.questionCost ?? 10,
@@ -202,8 +202,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
                 await BigGameRepository.createRoundsWithQuestions(
                     manager,
-                    chgkSettings?.roundCount ?? 0,
-                    chgkSettings?.questionCount ?? 0,
+                    chgkSettings?.roundsCount ?? 0,
+                    chgkSettings?.questionsCount ?? 0,
                     game,
                     chgkSettings?.questionTime ?? 60,
                     chgkSettings?.questionCost ?? 1,
@@ -220,8 +220,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
                 await BigGameRepository.createRoundsWithQuestions(
                     manager,
-                    matrixSettings?.roundCount ?? 0,
-                    matrixSettings?.questionCount ?? 0,
+                    matrixSettings?.roundsCount ?? 0,
+                    matrixSettings?.questionsCount ?? 0,
                     game,
                     matrixSettings?.questionTime ?? 20,
                     matrixSettings?.questionCost ?? 10,
@@ -258,14 +258,14 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     }
 
     private static async createRoundsWithQuestions(
-        manager: EntityManager, roundCount: number, questionCount: number, game: Game,
+        manager: EntityManager, roundsCount: number, questionsCount: number, game: Game,
         questionTime: number, questionCost: number, roundNames?: string[],
         questionsText?: Record<number, string[]>) {
-        if (roundNames && roundCount !== roundNames.length) {
-            throw new Error('roundNames.length !== roundCount');
+        if (roundNames && roundsCount !== roundNames.length) {
+            throw new Error('roundNames.length !== roundsCount');
         }
 
-        for (let i = 1; i <= roundCount; i++) {
+        for (let i = 1; i <= roundsCount; i++) {
             const round = new Round();
             round.number = i;
             round.game = game;
@@ -274,7 +274,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             await manager.save(round);
 
             const questions = [];
-            for (let j = 1; j <= questionCount; j++) {
+            for (let j = 1; j <= questionsCount; j++) {
                 const question = new Question();
                 question.number = j;
                 question.cost = game.type === GameType.CHGK ? j * questionCost : questionCost;

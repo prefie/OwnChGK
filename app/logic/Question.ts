@@ -6,16 +6,18 @@ export class Question {
     public readonly number: number;
     public readonly time: number;
     public readonly roundNumber: number;
+    public readonly text: string;
     public readonly answers: Answer[];
     public readonly appeals: Appeal[];
 
-    constructor(cost: number, roundNumber: number, number: number, time: number) {
+    constructor(cost: number, roundNumber: number, number: number, time: number, text: string = null) {
         this.cost = cost;
         this.roundNumber = roundNumber;
         this.number = number;
         this.time = time;
         this.answers = [];
         this.appeals = [];
+        this.text = text;
     }
 
     giveAnswer(team: Team, text: string): void {

@@ -71,6 +71,7 @@ function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber
             'action': 'changeQuestionNumber',
             'matrixActive': { round: tourNumber, question: questionNumber },
             'number': bigGames[gameId].CurrentGame.rounds[0].questionsCount * (tourNumber - 1) + questionNumber,
+            'text': bigGames[gameId].CurrentGame.rounds[tourNumber - 1].questions[questionNumber - 1].text,
             'activeGamePart': activeGamePart
         }));
     }
@@ -304,17 +305,6 @@ function GetQuestionNumber(gameId, ws) {
     }));
 }
 
-function GetQuestionNumberForUser(gameId, ws) {
-    const game = bigGames[gameId].CurrentGame;
-    const result = game.rounds[0].questionsCount * (game.currentQuestion[0] - 1) + game.currentQuestion[1];
-    ws.send(JSON.stringify({
-        'action': 'currentQuestionNumber',
-        'number': result,
-        'matrixActive': { round: game.currentQuestion[0], question: game.currentQuestion[1] },
-        'activeGamePart': game.type === GameTypeLogic.ChGK ? 'chgk' : 'matrix',
-    }));
-}
-
 function GetTeamAnswers(gameId, teamId, ws) {
     let answer: { [key: string]: { number: number, answer: string, status: Status }[] };
     answer = {};
@@ -490,9 +480,6 @@ function UsersAction(gameId, ws, jsonMessage, gameType, teamId) {
         case 'getTeamAnswers':
             GetTeamAnswers(gameId, teamId, ws);
             break;
-        case 'getQuestionNumber':
-            GetQuestionNumberForUser(gameId, ws);
-            break;
     }
 }
 
@@ -549,8 +536,10 @@ function GetGameStatus(gameId, ws) {
     const currentGame = bigGames[gameId]?.CurrentGame;
 
     if (currentGame) {
+        const currentRound = currentGame.currentQuestion[0];
+        const currentQuestion = currentGame.currentQuestion[1];
         const currentQuestionNumber = currentGame.currentQuestion
-            ? currentGame.rounds[0].questionsCount * (currentGame.currentQuestion[0] - 1) + currentGame.currentQuestion[1]
+            ? currentGame.rounds[0].questionsCount * (currentRound - 1) + currentQuestion
             : undefined;
 
         ws.send(JSON.stringify({
@@ -561,9 +550,10 @@ function GetGameStatus(gameId, ws) {
             'breakTime': bigGames[gameId].breakTime,
             'currentQuestionNumber': currentQuestionNumber, //todo: тут вроде надо ток для чгк
             'matrixActive': currentGame.type === GameTypeLogic.Matrix && currentGame.currentQuestion ? {
-                round: currentGame.currentQuestion[0],
-                question: currentGame.currentQuestion[1]
+                round: currentRound,
+                question: currentQuestion
             } : null,
+            'text': currentGame.rounds[currentRound - 1].questions[currentQuestion - 1].text,
             'maxTime': currentGame.maxTime,
             'time': GetPreliminaryTime(gameId),
         }));

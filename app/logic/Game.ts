@@ -10,23 +10,34 @@ export class Round {
     public readonly questionTime: number;
     public readonly gameType: GameTypeLogic;
 
-    constructor(number: number, questionsCount: number, questionTime: number, gameType = GameTypeLogic.ChGK) {
+    constructor(
+        number: number,
+        questionsCount: number,
+        questionTime: number,
+        gameType = GameTypeLogic.ChGK,
+        questions?: Record<number, string[]> | undefined,
+    ) {
         this.gameType = gameType;
         this.questionsCount = questionsCount;
         this.questionTime = questionTime;
         this.number = number;
-        this.questions = this.createQuestions();
+        this.questions = this.createQuestions(questions);
     }
 
-    createQuestions(): Question[] {
+    createQuestions(questions: Record<number, string[]> | undefined): Question[] {
         const result = [];
-        if (this.gameType == GameTypeLogic.ChGK) {
-            for (let i = 1; i <= this.questionsCount; i++) {
-                result.push(new Question(1, this.number, i, this.questionTime));
-            }
-        } else for (let i = 1; i <= this.questionsCount; i++) {
-            result.push(new Question(i * 10, this.number, i, this.questionTime));
+        for (let i = 1; i <= this.questionsCount; i++) {
+            result.push(
+                new Question(
+                    this.gameType === GameTypeLogic.ChGK ? 1 : i * 10,
+                    this.number,
+                    i,
+                    this.questionTime,
+                    questions ? questions[this.number][i - 1] : null
+                )
+            );
         }
+
         return result;
     }
 }

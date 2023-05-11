@@ -3,15 +3,14 @@ import { getTokenFromRequest } from '../utils/jwtToken';
 import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: избавиться
 import { Game, GameTypeLogic, Round } from '../logic/Game';
 import { Team } from '../logic/Team';
-import { BigGameDto } from '../dtos/bigGameDto';
+import { BigGameDto, GameDto, MatrixGameDto } from '../dtos/bigGameDto';
 import { BigGameLogic } from '../logic/BigGameLogic';
 import { BigGameRepository } from '../db/repositories/bigGameRepository';
 import { GameStatus, GameType } from '../db/entities/Game';
 import { BigGame } from '../db/entities/BigGame';
-import { TeamDto } from '../dtos/teamDto';
-import { ChgkSettingsDto } from '../dtos/chgkSettingsDto';
-import { MatrixSettingsDto } from '../dtos/matrixSettingsDto';
-import { demoAdminRoles, smallAdminRoles, superAdminRoles, userRoles } from '../utils/roles';
+import { ChgkSettingsInternal } from '../entities/chgkSettingsInternal';
+import { MatrixSettingsInternal } from '../entities/matrixSettingsInternal';
+import { allAdminRoles, demoAdminRoles, smallAdminRoles, superAdminRoles, userRoles } from '../utils/roles';
 import { AccessType, CheckAccessResult } from '../utils/checkAccessResult';
 
 export class GamesController {
@@ -141,13 +140,15 @@ export class GamesController {
             const chgk = bigGame.games.find(game => game.type == GameType.CHGK);
             const matrix = bigGame.games.find(game => game.type == GameType.MATRIX);
 
+            const { role } = getTokenFromRequest(req);
+
             const answer = { // TODO: DTO
                 name: bigGame.name,
                 isStarted: !!bigGames[gameId],
                 id: bigGame.id,
                 teams: bigGame.teams.map(value => value.name),
-                chgkSettings: chgk ? new ChgkSettingsDto(chgk) : null,
-                matrixSettings: matrix ? new MatrixSettingsDto(matrix) : null,
+                chgkSettings: chgk ? new GameDto(chgk, allAdminRoles.has(role)) : null,
+                matrixSettings: matrix ? new MatrixGameDto(matrix, allAdminRoles.has(role)) : null,
             };
 
             return res.status(200).json(answer);
@@ -168,10 +169,9 @@ export class GamesController {
                 return res.status(404).json({ message: 'game not found' });
             }
 
-            const { id, role } = getTokenFromRequest(req);
-            const additionalAdmins = bigGame.additionalAdmins?.map(a => a.id) ?? [];
-            if (smallAdminRoles.has(role) && bigGame.admin.id !== id && additionalAdmins.indexOf(id) === -1) {
-                return res.status(403).json({ message: 'Админ/Демо-админ может начать только свою игру' });
+            const checkAccessResult = await this.CheckAccess(req, gameId, true);
+            if (checkAccessResult.type === AccessType.FORBIDDEN) {
+                return res.status(403).json({ message: checkAccessResult.message });
             }
 
             gameAdmins[gameId] = new Set();
@@ -179,16 +179,22 @@ export class GamesController {
 
             const chgkFromDB = bigGame.games.find(game => game.type == GameType.CHGK);
             const matrixFromDB = bigGame.games.find(game => game.type == GameType.MATRIX);
-            let matrixSettings: MatrixSettingsDto;
-            let chgkSettings: ChgkSettingsDto;
 
             const chgk = new Game(bigGame.name, GameTypeLogic.ChGK);
             const matrix = new Game(bigGame.name, GameTypeLogic.Matrix);
 
             if (chgkFromDB) {
-                chgkSettings = new ChgkSettingsDto(chgkFromDB);
-                for (let i = 0; i < chgkSettings.roundCount; i++) {
-                    chgk.addRound(new Round(i + 1, chgkSettings.questionCount, 60, GameTypeLogic.ChGK));
+                const chgkSettings = new ChgkSettingsInternal(chgkFromDB);
+                for (let i = 0; i < chgkSettings.roundsCount; i++) {
+                    chgk.addRound(
+                        new Round(
+                            i + 1,
+                            chgkSettings.questionsCount,
+                            60,
+                            GameTypeLogic.ChGK,
+                            chgkSettings.questions
+                        )
+                    );
                 }
 
                 for (const team of bigGame.teams) {
@@ -197,9 +203,17 @@ export class GamesController {
             }
 
             if (matrixFromDB) {
-                matrixSettings = new MatrixSettingsDto(matrixFromDB);
-                for (let i = 0; i < matrixSettings.roundCount; i++) {
-                    matrix.addRound(new Round(i + 1, matrixSettings.questionCount, 20, GameTypeLogic.Matrix));
+                const matrixSettings = new MatrixSettingsInternal(matrixFromDB);
+                for (let i = 0; i < matrixSettings.roundsCount; i++) {
+                    matrix.addRound(
+                        new Round(
+                            i + 1,
+                            matrixSettings.questionsCount,
+                            20,
+                            GameTypeLogic.Matrix,
+                            matrixSettings.questions
+                        )
+                    );
                 }
 
                 for (const team of bigGame.teams) {
@@ -220,9 +234,10 @@ export class GamesController {
 
             const answer = { // TODO: DTO
                 name: bigGame.name,
+                id: bigGame.id,
                 teams: bigGame.teams.map(value => value.name),
-                chgkSettings: chgkSettings,
-                matrixSettings: matrixSettings
+                chgkSettings: new GameDto(chgkFromDB),
+                matrixSettings: new MatrixGameDto(matrixFromDB)
             };
 
             await this.bigGameRepository.updateByGameIdAndStatus(gameId, GameStatus.STARTED);
