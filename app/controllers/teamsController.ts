@@ -182,7 +182,7 @@ export class TeamsController {
                 name
             } = getTokenFromRequest(req);
 
-            await this.teamRepository.updateEmptyTeamByIdAndUserId(teamId, id);
+            const newTeam = await this.teamRepository.updateEmptyTeamByIdAndUserId(teamId, id);
 
             const token = generateAccessToken(id, email, role, teamId, null, name);
             res.cookie('authorization', token, {
@@ -190,7 +190,7 @@ export class TeamsController {
                 secure: true
             });
 
-            return res.status(200).json({});
+            return res.status(200).json(new TeamDto(newTeam));
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
