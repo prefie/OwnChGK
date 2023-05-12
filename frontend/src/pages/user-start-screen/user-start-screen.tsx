@@ -108,16 +108,18 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
             editTeamCaptainByCurrentUser(team.id)
                 .then(res => {
                     if (res.status === 200) {
-                        setUserTeam({
-                            name: team.name,
-                            id: team.id,
-                            captainEmail: team.captainEmail,
-                            captainId: team.captainId,
-                            participantsCount: team.participantsCount,
-                            participants: team.participants
+                        res.json().then(({name, id, captainEmail, captainId, participants, participantsCount}) => {
+                            setUserTeam({
+                                name: name,
+                                id: id,
+                                captainEmail: captainEmail,
+                                captainId: captainId,
+                                participantsCount: participantsCount,
+                                participants: participants
+                            });
+                            setIsTeamNotFree(false);
+                            props.onAddUserTeam(name);
                         });
-                        setIsTeamNotFree(false);
-                        props.onAddUserTeam(team.name);
                         getAmIParticipateGames().then(res => {
                             if (res.status === 200) {
                                 res.json().then(({games}) => {
@@ -128,7 +130,6 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                                 // TODO: код не 200, мейби всплывашку, что что-то не так?
                             }
                         });
-                        window.location.reload();
                     } else {
                         setTeamsFromDB(arr => arr?.filter(x => x.id != team.id));
                         setIsTeamNotFree(true);
