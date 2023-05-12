@@ -1,4 +1,4 @@
-import {Participant, Team} from "../db/entities/Team";
+import { Participant, Team } from '../db/entities/Team';
 
 export class TeamDto {
     public readonly name: string;
@@ -11,7 +11,7 @@ export class TeamDto {
     constructor(team: Team) {
         this.name = team.name;
         this.id = team.id.toString();
-        this.captainEmail = team.captain?.email; // TODO: мб на UserDto?
+        this.captainEmail = team.captain?.email;
         this.captainId = team.captain?.id.toString();
         this.participants = team.participants;
         this.participantsCount = team.participants?.length ?? 0;

@@ -1,6 +1,6 @@
 import { TeamRepository } from '../db/repositories/teamRepository';
 import { Request, Response } from 'express';
-import { generateAccessToken, getTokenFromRequest } from '../utils/jwtToken';
+import { generateAccessToken, getTokenFromRequest, setTokenInResponse } from '../utils/jwtToken';
 import { TeamDto } from '../dtos/teamDto';
 import { BigGameDto } from '../dtos/bigGameDto';
 import { Participant, Team } from '../db/entities/Team';
@@ -42,22 +42,6 @@ export class TeamsController {
         }
     }
 
-    public async getAllGames(req: Request, res: Response) {
-        try {
-            const { teamName } = req.params;
-            const team = await this.teamRepository.findByName(teamName);
-            return res.status(200).json({
-                games: team.bigGames?.map(game => new BigGameDto(game))
-            });
-
-        } catch (error) {
-            return res.status(500).json({
-                message: error.message,
-                error,
-            });
-        }
-    }
-
     public async insertTeam(req: Request, res: Response) {
         try {
             const { teamName, captain, participants } = req.body;
@@ -84,11 +68,8 @@ export class TeamsController {
             const newTeam = await this.teamRepository.insertTeam(teamName, captain, mappedParticipants);
 
             if (userRoles.has(role) && captain) {
-                const token = generateAccessToken(id, email, role, newTeam.id, null, name);
-                res.cookie('authorization', token, {
-                    maxAge: 24 * 60 * 60 * 1000,
-                    secure: true
-                });
+                const token = generateAccessToken(id, email, role, newTeam.id, name);
+                setTokenInResponse(res, token);
             }
 
             return res.status(200).json({});
@@ -150,11 +131,8 @@ export class TeamsController {
                 }
 
                 if (!captain) {
-                    const token = generateAccessToken(id, email, role, null, null, name);
-                    res.cookie('authorization', token, {
-                        maxAge: 24 * 60 * 60 * 1000,
-                        secure: true
-                    });
+                    const token = generateAccessToken(id, email, role, null, name);
+                    setTokenInResponse(res, token);
                 }
             } else if (demoAdminRoles.has(role) && captain.toLowerCase() !== email.toLowerCase()) {
                 return res.status(403).json({ message: 'Демо-админ может занять команду только собой' });
@@ -184,11 +162,8 @@ export class TeamsController {
 
             const newTeam = await this.teamRepository.updateEmptyTeamByIdAndUserId(teamId, id);
 
-            const token = generateAccessToken(id, email, role, teamId, null, name);
-            res.cookie('authorization', token, {
-                maxAge: 24 * 60 * 60 * 1000,
-                secure: true
-            });
+            const token = generateAccessToken(id, email, role, teamId, name);
+            setTokenInResponse(res, token);
 
             return res.status(200).json(new TeamDto(newTeam));
         } catch (error: any) {

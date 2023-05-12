@@ -10,9 +10,14 @@ const UserAnswer: FC<UserAnswerProps> = props => {
     const [answerStatus, setAnswerStatus] = useState<'success' | 'error' | 'opposition' | 'no-answer'>(props.status);
 
     const requester = {
+        getPayload: (obj: any) => JSON.stringify({
+            'cookie': getCookie('authorization'),
+            'gameId': props.gameId,
+            ...obj,
+        }),
+
         sendAppeal: (ws: WebSocket, opposition: string) => {
-            ws.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            ws.send(requester.getPayload({
                 'action': 'appeal',
                 'number': props.order,
                 'appeal': opposition,
@@ -22,8 +27,7 @@ const UserAnswer: FC<UserAnswerProps> = props => {
         },
 
         changeAnswer: (ws: WebSocket) => {
-            ws.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            ws.send(requester.getPayload({
                 'action': 'changeAnswer',
                 'gamePart': props.gamePart,
                 'teamId': props.teamId,

@@ -1,7 +1,7 @@
 import { compare, hash } from 'bcrypt';
 import { UserRepository } from '../db/repositories/userRepository';
 import { Request, Response } from 'express';
-import { generateAccessToken, getTokenFromRequest } from '../utils/jwtToken';
+import { generateAccessToken, getTokenFromRequest, setTokenInResponse } from '../utils/jwtToken';
 import { makeTemporaryPassword, SendMailWithTemporaryPassword } from '../utils/email';
 import { transporter } from '../utils/email';
 import { UserDto } from '../dtos/userDto';
@@ -57,11 +57,8 @@ export class UsersController { // TODO: дописать смену имени �
 
             const isPasswordMatching = await compare(password, user.password);
             if (isPasswordMatching) {
-                const token = generateAccessToken(user.id, user.email, 'user', user.team?.id, null, user.name);
-                res.cookie('authorization', token, {
-                    maxAge: 86400 * 1000,
-                    secure: true
-                });
+                const token = generateAccessToken(user.id, user.email, 'user', user.team?.id, user.name);
+                setTokenInResponse(res, token);
                 return res.status(200).json(new UserDto(user));
             } else {
                 return res.status(400).json({ message: 'Not your password' });
@@ -85,12 +82,9 @@ export class UsersController { // TODO: дописать смену имени �
 
             const hashedPassword = await hash(password, 10);
             const userFromDb = await this.userRepository.insertByEmailAndPassword(email, hashedPassword);
-            const userId = userFromDb.id;
-            const token = generateAccessToken(userId, email, 'user', null, null);
-            res.cookie('authorization', token, {
-                maxAge: 24 * 60 * 60 * 1000,
-                secure: true
-            });
+
+            const token = generateAccessToken(userFromDb.id, email, 'user', null, null);
+            setTokenInResponse(res, token);
 
             return res.status(200).json({});
         } catch (error: any) {
@@ -109,53 +103,10 @@ export class UsersController { // TODO: дописать смену имени �
                 return res.status(404).json({ message: 'Юзера с таким e-mail нет' });
             }
 
-            const token = generateAccessToken(user.id, user.email, 'user', user.team?.id, null, user.name);
-            res.cookie('authorization', token, {
-                maxAge: 86400 * 1000,
-                secure: true
-            });
+            const token = generateAccessToken(user.id, user.email, 'user', user.team?.id, user.name);
+            setTokenInResponse(res, token);
 
             return res.status(200).json(new UserDto(user));
-        } catch (error: any) {
-            return res.status(500).json({
-                message: error.message,
-                error,
-            });
-        }
-    }
-
-    // вызывается только если знаем, что у юзера текущего точно есть команда
-    public async changeTokenWhenGoIntoGame(req: Request, res: Response) {
-        try {
-            const { gameId } = req.params;
-            const {
-                id: userId,
-                email: email,
-                role: userRole,
-                name: name
-            } = getTokenFromRequest(req);
-
-            if (userRoles.has(userRole)) {
-                const user = await this.userRepository.findById(userId);
-
-                if (user?.team !== null) {
-                    const token = generateAccessToken(userId, email, userRole, user.team.id, gameId, name);
-                    res.cookie('authorization', token, {
-                        maxAge: 24 * 60 * 60 * 1000,
-                        secure: true
-                    });
-                    return res.status(200).json({});
-                }
-            } else if (allAdminRoles.has(userRole)) {
-                const token = generateAccessToken(userId, email, userRole, null, gameId, name);
-                res.cookie('authorization', token, {
-                    maxAge: 24 * 60 * 60 * 1000,
-                    secure: true
-                });
-                return res.status(200).json({});
-            } else {
-                return res.status(400).json({});
-            }
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
@@ -174,11 +125,8 @@ export class UsersController { // TODO: дописать смену имени �
                 if (user) {
                     user.name = newName;
                     await user.save();
-                    const newToken = generateAccessToken(payload.id, payload.email, payload.role, payload.teamId, payload.gameId, newName);
-                    res.cookie('authorization', newToken, {
-                        maxAge: 24 * 60 * 60 * 1000,
-                        secure: true
-                    });
+                    const newToken = generateAccessToken(payload.id, payload.email, payload.role, payload.teamId, newName);
+                    setTokenInResponse(res, newToken);
                     return res.status(200).json({});
                 } else {
                     return res.status(404).json({});

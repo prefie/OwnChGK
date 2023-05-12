@@ -1,9 +1,9 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import classes from './user-answers-for-admin.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import {Link, useParams} from 'react-router-dom';
 import Header from '../../components/header/header';
-import {Answer, UserAnswersPageProps} from '../../entities/user-answers/user-answers.interfaces';
+import {Answer} from '../../entities/user-answers/user-answers.interfaces';
 import UserAnswer from '../../components/user-answer/user-answer';
 import Scrollbar from '../../components/scrollbar/scrollbar';
 import {getGame, getTeam} from '../../server-api/server-api';
@@ -26,17 +26,20 @@ const UserAnswersPageForAdmin = () => {
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
 
     const requester = {
+        getPayload: (obj: any) => JSON.stringify({
+            'cookie': getCookie('authorization'),
+            'gameId': gameId,
+            ...obj,
+        }),
+
         startRequests: () => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'getTeamAnswersForAdmin',
                 'teamId': teamId
             }));
 
             ping = setInterval(() => {
-                conn.send(JSON.stringify({
-                    'action': 'ping'
-                }));
+                conn.send(JSON.stringify({ 'action': 'ping' }));
             }, 30000);
         }
     };
@@ -190,9 +193,17 @@ const UserAnswersPageForAdmin = () => {
         return answers[gamePart]?.sort((answer1, answer2) => answer1.number > answer2.number ? 1 : -1)
             .map((answer, index) => {
                 return (
-                    <UserAnswer key={`${gamePart}_{answer.answer}_${index}`} answer={answer.answer} status={answer.status}
-                                onChangeStatus={(gamePart, order, status) => changeStatusHandler(gamePart, order, status)}
-                                order={answer.number} gamePart={gamePart} isAdmin={true} teamId={teamId}/>
+                    <UserAnswer
+                        key={`${gamePart}_{answer.answer}_${index}`}
+                        answer={answer.answer}
+                        status={answer.status}
+                        onChangeStatus={(gamePart, order, status) => changeStatusHandler(gamePart, order, status)}
+                        order={answer.number}
+                        gamePart={gamePart}
+                        isAdmin={true}
+                        gameId={gameId}
+                        teamId={teamId}
+                    />
                 );
             });
     };

@@ -10,7 +10,7 @@ export interface InputProps {
     onBlur?: () => void;
     onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
     style?: object;
-    value?: string;
+    value?: string | undefined;
     defaultValue?: string;
     required?: boolean;
     onFocus?: () => void;

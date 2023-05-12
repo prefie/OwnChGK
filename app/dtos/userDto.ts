@@ -1,11 +1,11 @@
-import {User} from "../db/entities/User";
+import { User } from '../db/entities/User';
 
 export class UserDto {
     public readonly name: string;
     public readonly id: string;
     public readonly email: string;
     public readonly role = 'user';
-    public readonly team: string; // TODO: мб TeamDto?
+    public readonly team: string;
     public readonly teamId: string;
 
     constructor(user: User) {

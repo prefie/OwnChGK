@@ -5,7 +5,6 @@ import { usersRouter } from './routers/usersRouter';
 import { adminsRouter } from './routers/adminsRouter';
 import { teamsRouter } from './routers/teamsRouter';
 import { gamesRouter } from './routers/gamesRouter';
-import { roundsRouter } from './routers/roundsRouter';
 import { mainRouter } from './routers/mainRouter';
 import cookieParser from 'cookie-parser';
 import boolParser from 'express-query-boolean';
@@ -25,24 +24,14 @@ export class Server {
         });
     }
 
-    private async DBconnection() {
-        try {
-            AppDataSource.initialize()
-                .then(() => {
-                    console.log('Connected to Postgres');
-                });
-        } catch (error) {
-            console.error(error);
-            console.log('Try again after 10 seconds');
-            setTimeout(async () => {
-                AppDataSource.initialize()
-                    .then(() => {
-                        console.log('Connected to Postgres');
-                    }).catch(() => {
-                    throw new Error('Unable to connect to db');
-                });
-            }, 10000);
-        }
+    private DBconnection() {
+        return AppDataSource.initialize()
+            .then(() => {
+                console.log('Connected to Postgres');
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
     private config() {
@@ -59,7 +48,6 @@ export class Server {
         this.app.use('/api/admins', adminsRouter());
         this.app.use('/api/teams', teamsRouter());
         this.app.use('/api/games', gamesRouter());
-        this.app.use('/api/rounds', roundsRouter());
         this.app.use('/', mainRouter());
     }
 

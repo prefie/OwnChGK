@@ -4,6 +4,7 @@ export interface UserAnswerProps {
     order: number;
     gamePart: 'chgk' | 'matrix';
     isAdmin: boolean;
+    gameId: string;
     teamId?: string;
     onChangeStatus?: (gamePart: string, order: number, status: 'success' | 'error' | 'opposition' | 'no-answer') => void;
 }

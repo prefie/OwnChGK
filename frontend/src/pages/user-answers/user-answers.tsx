@@ -26,16 +26,17 @@ const UserAnswersPage: FC<UserAnswersPageProps> = props => {
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
 
     const requester = {
+        getPayload: (obj: any) => JSON.stringify({
+            'cookie': getCookie('authorization'),
+            'gameId': gameId,
+            ...obj,
+        }),
+
         startRequests: () => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
-                'action': 'getTeamAnswers'
-            }));
+            conn.send(requester.getPayload({ 'action': 'getTeamAnswers' }));
 
             ping = setInterval(() => {
-                conn.send(JSON.stringify({
-                    'action': 'ping'
-                }));
+                conn.send(JSON.stringify({ 'action': 'ping' }));
             }, 30000);
         }
     };
@@ -156,8 +157,15 @@ const UserAnswersPage: FC<UserAnswersPageProps> = props => {
         return answers[gamePart]?.sort((answer1, answer2) => answer1.number > answer2.number ? 1 : -1)
             .map((answer, index) => {
                 return (
-                    <UserAnswer key={`${answer.answer}_${index}`} answer={answer.answer} status={answer.status}
-                                order={answer.number} gamePart={gamePart} isAdmin={false}/>
+                    <UserAnswer
+                        key={`${answer.answer}_${index}`}
+                        answer={answer.answer}
+                        status={answer.status}
+                        order={answer.number}
+                        gameId={gameId}
+                        gamePart={gamePart}
+                        isAdmin={false}
+                    />
                 );
             });
     };

@@ -1,6 +1,5 @@
-import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import { secret, TokenPayload } from '../utils/jwtToken';
+import { getTokenFromString } from '../utils/jwtToken';
 
 export function roleMiddleware(roles: Set<string>) {
     return function (req: Request, res: Response, next: NextFunction) {
@@ -14,7 +13,7 @@ export function roleMiddleware(roles: Set<string>) {
                 return res.status(401).json({ message: 'Пользователь не авторизован' });
             }
 
-            const { role: userRole } = jwt.verify(token, secret) as TokenPayload;
+            const { role: userRole } = getTokenFromString(token);
             if (!roles.has(userRole)) {
                 return res.status(403).json({ message: 'У пользователя нет прав' });
             }

@@ -43,34 +43,25 @@ const AdminGame: FC<AdminGameProps> = props => {
     const [isStop, setIsStop] = useState<boolean>(false);
 
     const requester = {
+        getPayload: (obj: any) => JSON.stringify({
+            'cookie': getCookie('authorization'),
+            'gameId': gameId,
+            ...obj,
+        }),
+
         startRequests: () => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
-                'action': 'time'
-            }));
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
-                'action': 'getAllAppeals'
-            }));
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
-                'action': 'isOnBreak'
-            }));
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
-                'action': 'getQuestionNumber'
-            }));
+            conn.send(requester.getPayload({ 'action': 'time' }));
+            conn.send(requester.getPayload({ 'action': 'getAllAppeals' }));
+            conn.send(requester.getPayload({ 'action': 'isOnBreak' }));
+            conn.send(requester.getPayload({ 'action': 'getQuestionNumber' }));
 
             ping = setInterval(() => {
-                conn.send(JSON.stringify({
-                    'action': 'ping'
-                }));
+                conn.send(JSON.stringify({ 'action': 'ping' }));
             }, 30000);
         },
 
         changeQuestion: (questionNumber: number, roundNumber: number, gamePart: 'chgk' | 'matrix') => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'changeQuestion',
                 'questionNumber': questionNumber,
                 'tourNumber': roundNumber,
@@ -79,61 +70,47 @@ const AdminGame: FC<AdminGameProps> = props => {
         },
 
         getQuestionNumber: () => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
-                'action': 'getQuestionNumber',
-            }));
+            conn.send(requester.getPayload({ 'action': 'getQuestionNumber', }));
         },
 
         startGame: (gamePart: 'chgk' | 'matrix') => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'Start',
                 'gamePart': gamePart,
             }));
         },
 
         pauseGame: (gamePart: 'chgk' | 'matrix') => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'Pause',
                 'gamePart': gamePart,
             }));
         },
 
         stopGame: (gamePart: 'chgk' | 'matrix') => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'Stop',
                 'gamePart': gamePart
             }));
         },
 
         addTenSeconds: (gamePart: 'chgk' | 'matrix') => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': '+10sec',
                 'gamePart': gamePart
             }));
         },
 
         stopBreak: () => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
-                'action': 'stopBreak'
-            }));
+            conn.send(requester.getPayload({ 'action': 'stopBreak' }));
         },
 
         checkTime: () => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
-                'action': 'checkTime',
-            }));
+            conn.send(requester.getPayload({ 'action': 'checkTime' }));
         },
 
         checkBreakTime: (time: number) => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'checkBreakTime',
                 'time': time,
             }));
@@ -235,7 +212,7 @@ const AdminGame: FC<AdminGameProps> = props => {
                     setGameName(name);
                     setMatrixSettings(matrixSettings ?? null);
                     setChgkSettings(chgkSettings ?? null);
-                    setIsAppeal(new Array(chgkSettings ? chgkSettings.roundCount * chgkSettings.questionCount : 0).fill(false));
+                    setIsAppeal(new Array(chgkSettings ? chgkSettings.roundsCount * chgkSettings.questionsCount : 0).fill(false));
                 });
             }
         });
@@ -455,7 +432,13 @@ const AdminGame: FC<AdminGameProps> = props => {
 
             {
                 isModalOpen
-                    ? <Modal modalType="break" closeModal={setIsModalOpen} startBreak={setIsBreak} setBreakTime={setBreakTime}/>
+                    ? <Modal
+                        modalType={'break'}
+                        gameId={gameId}
+                        closeModal={setIsModalOpen}
+                        startBreak={setIsBreak}
+                        setBreakTime={setBreakTime}
+                    />
                     : null
             }
 
@@ -527,7 +510,7 @@ const AdminGame: FC<AdminGameProps> = props => {
                                         ?
                                         <>
                                             <div className={classes.gamePartWrapper}>Матрица</div>
-                                            {renderTours(matrixSettings.roundCount, 'matrix', matrixSettings.roundNames)}
+                                            {renderTours(matrixSettings.roundsCount, 'matrix', matrixSettings.roundNames)}
                                         </>
                                         : null
                                 }
@@ -536,7 +519,7 @@ const AdminGame: FC<AdminGameProps> = props => {
                                         ?
                                         <>
                                             <div className={classes.gamePartWrapper}>ЧГК</div>
-                                            {renderTours(chgkSettings.roundCount, 'chgk')}
+                                            {renderTours(chgkSettings.roundsCount, 'chgk')}
                                         </>
                                         : null
                                 }
@@ -545,12 +528,12 @@ const AdminGame: FC<AdminGameProps> = props => {
                             <div className={classes.questionsWrapper}>
                                 {
                                     clickedGamePart === 'matrix'
-                                        ? renderQuestions(matrixSettings?.questionCount || 0, 'matrix')
+                                        ? renderQuestions(matrixSettings?.questionsCount || 0, 'matrix')
                                         : null
                                 }
                                 {
                                     clickedGamePart === 'chgk'
-                                        ? renderQuestions(chgkSettings?.questionCount || 0, 'chgk')
+                                        ? renderQuestions(chgkSettings?.questionsCount || 0, 'chgk')
                                         : null
                                 }
                             </div>

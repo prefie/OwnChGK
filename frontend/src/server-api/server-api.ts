@@ -31,9 +31,9 @@ export const getGame = async (gameId: string) => {
 };
 
 export interface GamePartSettings {
-    roundCount: number;
-    questionCount: number;
-    questions?: Record<number, string[]>;
+    roundsCount: number;
+    questionsCount: number;
+    questions?: Record<number, string[]> | undefined;
     roundNames?: string[];
 }
 
@@ -87,17 +87,6 @@ export const login = async (email: string, password: string, isAdmin: boolean) =
 export const logout = async () => {
     return await fetch('/api/users/logout', {
         method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        }
-    });
-};
-
-export const changeToken = async (gameId: string) => {
-    return fetch(`/api/users/${gameId}/changeToken`, {
-        method: 'PATCH',
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',

@@ -1,6 +1,6 @@
 import { compare, hash } from 'bcrypt';
 import { Request, Response } from 'express';
-import { generateAccessToken, getTokenFromRequest } from '../utils/jwtToken';
+import { generateAccessToken, getTokenFromRequest, setTokenInResponse } from '../utils/jwtToken';
 import {
     makeTemporaryPassword,
     SendMailWithTemporaryPassword,
@@ -54,11 +54,8 @@ export class AdminsController {
 
             const isPasswordMatching = await compare(password, admin.password);
             if (isPasswordMatching) {
-                const token = generateAccessToken(admin.id, admin.email, admin.role, null, null, admin.name);
-                res.cookie('authorization', token, {
-                    maxAge: 24 * 60 * 60 * 1000,
-                    secure: true
-                });
+                const token = generateAccessToken(admin.id, admin.email, admin.role, null, admin.name);
+                setTokenInResponse(res, token);
 
                 return res.status(200).json(new AdminDto(admin));
             } else {
@@ -99,14 +96,12 @@ export class AdminsController {
             let admin = await this.adminRepository.findByEmail(email);
             if (!admin) {
                 const user = await this.userRepository.findByEmail(email);
-                admin = await this.adminRepository.insertByEmailAndPassword(user.email, user.password, user.name, AdminRoles.DEMOADMIN);
+                admin = await this.adminRepository
+                    .insertByEmailAndPassword(user.email, user.password, user.name, AdminRoles.DEMOADMIN);
             }
 
-            const token = generateAccessToken(admin.id, admin.email, admin.role, null, null, admin.name);
-            res.cookie('authorization', token, {
-                maxAge: 24 * 60 * 60 * 1000,
-                secure: true
-            });
+            const token = generateAccessToken(admin.id, admin.email, admin.role, null, admin.name);
+            setTokenInResponse(res, token);
 
             return res.status(200).json(new AdminDto(admin));
         } catch (error: any) {
@@ -124,9 +119,8 @@ export class AdminsController {
             let admin = await this.adminRepository.findByEmail(email);
             if (admin) {
                 const code = makeTemporaryPassword(8);
+                await this.adminRepository.updateTemporaryCode(admin, code);
                 await SendMailWithTemporaryPassword(transporter, email, code);
-                admin.temporary_code = code;
-                await admin.save();
                 return res.status(200).json({});
             } else {
                 return res.status(404).json({ message: 'admin not found' });
@@ -168,13 +162,9 @@ export class AdminsController {
             if (payload.id) {
                 const admin = await this.adminRepository.findById(payload.id);
                 if (admin) {
-                    admin.name = newName;
-                    await admin.save();
-                    const newToken = generateAccessToken(payload.id, payload.email, payload.role, payload.teamId, payload.gameId, newName);
-                    res.cookie('authorization', newToken, {
-                        maxAge: 24 * 60 * 60 * 1000,
-                        secure: true
-                    });
+                    await this.adminRepository.updateName(admin, newName);
+                    const newToken = generateAccessToken(payload.id, payload.email, payload.role, payload.teamId, newName);
+                    setTokenInResponse(res, newToken);
                     return res.status(200).json({});
                 } else {
                     return res.status(404).json({ message: 'admin not found' });
@@ -196,8 +186,7 @@ export class AdminsController {
             let admin = await this.adminRepository.findByEmail(email);
             if (admin) {
                 if (await compare(oldPassword, admin.password)) {
-                    admin.password = hashedPassword;
-                    await admin.save();
+                    await this.adminRepository.updatePassword(admin, hashedPassword);
                     return res.status(200).json({});
                 } else {
                     return res.status(403).json({ message: 'oldPassword is invalid' });
@@ -221,16 +210,14 @@ export class AdminsController {
             let admin = await this.adminRepository.findByEmail(email);
             if (admin) {
                 if (admin.temporary_code === code) {
-                    admin.password = hashedPassword;
-                    admin.temporary_code = null;
-                    await admin.save();
+                    await this.adminRepository.updatePassword(admin, hashedPassword);
+                    return res.status(200).json({});
                 } else {
                     return res.status(403).json({ message: 'code is invalid' });
                 }
             } else {
                 return res.status(404).json({ message: 'admin not found' });
             }
-            return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,

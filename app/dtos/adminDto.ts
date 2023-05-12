@@ -1,4 +1,4 @@
-import {Admin} from "../db/entities/Admin";
+import { Admin } from '../db/entities/Admin';
 
 export class AdminDto {
     public readonly name: string;

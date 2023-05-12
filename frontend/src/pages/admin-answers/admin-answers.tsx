@@ -29,17 +29,21 @@ const AdminAnswersPage: FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const requester = {
+        getPayload: (obj: any) => JSON.stringify({
+            'cookie': getCookie('authorization'),
+            'gameId': gameId,
+            ...obj,
+        }),
+
         startRequests: () => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'getAnswers',
                 'roundNumber': +tour,
                 'questionNumber': +question,
                 'gamePart': gamePart,
             }));
 
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'getAppealsByNumber',
                 'roundNumber': +tour,
                 'questionNumber': +question,
@@ -47,15 +51,12 @@ const AdminAnswersPage: FC = () => {
             }));
 
             ping = setInterval(() => {
-                conn.send(JSON.stringify({
-                    'action': 'ping'
-                }));
+                conn.send(JSON.stringify({ 'action': 'ping' }));
             }, 30000);
         },
 
         rejectAnswers: (answers: string[]) => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'RejectAnswer',
                 'gamePart': gamePart,
                 'roundNumber': tour,
@@ -65,8 +66,7 @@ const AdminAnswersPage: FC = () => {
         },
 
         acceptAnswers: (answers: string[]) => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'AcceptAnswer',
                 'gamePart': gamePart,
                 'roundNumber': tour,
@@ -76,8 +76,7 @@ const AdminAnswersPage: FC = () => {
         },
 
         rejectAppeals: (appeals: string[]) => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'RejectAppeals',
                 'gamePart': gamePart,
                 'appeals': appeals,
@@ -87,8 +86,7 @@ const AdminAnswersPage: FC = () => {
         },
 
         acceptAppeals: (appeals: string[]) => {
-            conn.send(JSON.stringify({
-                'cookie': getCookie('authorization'),
+            conn.send(requester.getPayload({
                 'action': 'AcceptAppeals',
                 'gamePart': gamePart,
                 'appeals': appeals,
