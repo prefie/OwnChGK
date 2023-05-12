@@ -23,7 +23,7 @@ function GameTypeItem(props: GameTypeItemProps) {
     return (
         <div className={classes.gameType}>
             <div className={classes.gameTypeName}>{getTypeName(type)}</div>
-            <div className={classes.gameTypeQr}>{questionsCount * roundsCount} ⋅ {roundsCount}</div>
+            <div className={classes.gameTypeQr}>{roundsCount} по {questionsCount}</div>
         </div>
     );
 }

@@ -34,20 +34,20 @@ function GameItem(props: GameItemProps) {
         ? `/game/${props.id}`
         : `/admin/start-game/${props.id}`
 
-    useEffect(() => {
-        function goToGame(event: MouseEvent) {
-            const clickedElement = event.target as HTMLElement;
-            if (clickedElement.id === props.id) {
-                setIsClicked(true);
-            }
-        }
-
-        window.addEventListener('click', goToGame, true);
-
-        return () => {
-            window.removeEventListener('click', goToGame, true);
-        };
-    });
+    // useEffect(() => {
+    //     function goToGame(event: MouseEvent) {
+    //         const clickedElement = event.target as HTMLElement;
+    //         if (clickedElement.id === props.id) {
+    //             setIsClicked(true);
+    //         }
+    //     }
+    //
+    //     window.addEventListener('click', goToGame, true);
+    //
+    //     return () => {
+    //         window.removeEventListener('click', goToGame, true);
+    //     };
+    // });
 
     const handleDeleteClick = (event: React.SyntheticEvent) => {
         setItemName(event);
@@ -73,10 +73,6 @@ function GameItem(props: GameItemProps) {
         setIsRedirectedToEdit(true);
     };
 
-    // if (isClicked) {
-    //     return <Redirect to={linkToGame}/>;
-    // }
-
     return isRedirectedToEdit
         ? <Redirect to={{pathname: '/admin/game-creation/edit', state: {id: props.id, name: props.name}}}/>
         : (
@@ -86,7 +82,7 @@ function GameItem(props: GameItemProps) {
                 <div className={classes.gameFooter} id={gameId}>
                     <div className={classes.gameTeams}>
                         <PeopleAltRounded fontSize={"medium"}/>
-                        <div className="game-commands-count">{props.teamsCount}</div>
+                        <div className={classes.gameTeamsCount}>{props.teamsCount}</div>
                     </div>
                 </div>
                 {
@@ -122,7 +118,6 @@ function GameItem(props: GameItemProps) {
                         null
                 }
             </div>
-
         );
 }
 

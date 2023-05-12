@@ -30,12 +30,18 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import GameItem, {Roles} from "../../components/game-item/game-item";
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
 import {AddRounded} from "@mui/icons-material";
+import TeamItem, {Participant} from "../../components/team-item/team-item";
 
 const UserStartScreen: FC<UserStartScreenProps> = props => {
     const [page, setPage] = useState<string>('teams');
     const [gamesFromDB, setGamesFromDB] = useState<Game[]>();
     const [teamsFromDB, setTeamsFromDB] = useState<Team[]>();
-    const [userTeam, setUserTeam] = useState<Team>({name: '', id: ''});
+    const [userTeam, setUserTeam] = useState<Team>({
+        captainEmail: "",
+        captainId: "",
+        participantsCount: 0,
+        participants: [],
+        name: '', id: ''});
     const [gameId, setGameId] = useState<string>('');
     const [isTeamNotFree, setIsTeamNotFree] = useState<boolean>(false);
     const [numberLoading, setNumberLoading] = useState<number>(0);
@@ -64,10 +70,10 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
     useEffect(() => {
         getTeamByCurrentUser().then(res => {
             if (res.status === 200) {
-                res.json().then(({name, id}) => {
-                    if (name !== undefined) {
-                        setUserTeam({name, id});
-                        setTeamsFromDB([{name, id}]);
+                res.json().then((team) => {
+                    if (team.name !== undefined) {
+                        setUserTeam(team);
+                        setTeamsFromDB([team]);
                         setNumberLoading(prev => Math.min(prev + 1, 2));
                     } else {
                         getTeamsWithoutUser().then(res => {
@@ -97,19 +103,23 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
         });
     }, []);
 
-    const handleChooseTeam = (event: React.SyntheticEvent) => {
+     const handleChooseTeam = (team: Team) => {
         if (userTeam.name === '') {
-            const element = event.currentTarget as HTMLDivElement;
-            const dataset = element.dataset as {teamName: string, teamId: string};
-            editTeamCaptainByCurrentUser(dataset.teamId)
+            editTeamCaptainByCurrentUser(team.id)
                 .then(res => {
                     if (res.status === 200) {
-                        setUserTeam({
-                            name: dataset.teamName,
-                            id: dataset.teamId
+                        res.json().then(({name, id, captainEmail, captainId, participants, participantsCount}) => {
+                            setUserTeam({
+                                name: name,
+                                id: id,
+                                captainEmail: captainEmail,
+                                captainId: captainId,
+                                participantsCount: participantsCount,
+                                participants: participants
+                            });
+                            setIsTeamNotFree(false);
+                            props.onAddUserTeam(name);
                         });
-                        setIsTeamNotFree(false);
-                        props.onAddUserTeam(dataset.teamName);
                         getAmIParticipateGames().then(res => {
                             if (res.status === 200) {
                                 res.json().then(({games}) => {
@@ -121,7 +131,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                             }
                         });
                     } else {
-                        setTeamsFromDB(arr => arr?.filter(x => x.id != dataset.teamId));
+                        setTeamsFromDB(arr => arr?.filter(x => x.id != team.id));
                         setIsTeamNotFree(true);
                         setTimeout(() => setIsTeamNotFree(false), 5000);
                     }
@@ -140,6 +150,11 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
     const handleEditClick = () => {
         setIsClickedOnCurrentTeam(true);
     };
+
+    let isDisabledTeamButton = false;
+    if (userTeam.id !== "") {
+        isDisabledTeamButton = true;
+    }
 
     const renderGames = () => {
         if (!gamesFromDB) {
@@ -163,62 +178,49 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
         if (!teamsFromDB) {
             return Array.from(Array(5).keys()).map(i => <Skeleton key={`team_skeleton_${i}`} variant='rectangular' width='100%' height={mediaMatch.matches ? '5vh' : '7vh'} sx={{marginBottom: '2.5vh'}} />);
         }
+
         return userTeam.name !== ''
-            ?
-            <div key={userTeam.name} className={classes.gameOrTeam} style={{cursor: 'default'}}>
-                <div className={classes.selectedIconWrapper}>
-                    <CheckCircleOutlinedIcon color="success" sx={{fontSize: mediaMatch.matches ? '3vmax' : '1.5vw', cursor: 'default'}}/>
-                </div>
-
-                <div className={classes.userTeamNameWrapper}>
-                    <p className={classes.teamName}>{userTeam.name}</p>
-                </div>
-
-                <div className={classes.editIconWrapper}>
-                    <IconButton
-                        onClick={handleEditClick}
-                        edge="end"
-                        sx={{
-                            height: '3vh',
-                            '& .MuiSvgIcon-root': {
-                                color: 'var(--background-color)',
-                                cursor: 'pointer',
-                            },
-                            '&:hover': {
-                                background: 'none !important'
-                            }
-                        }}
-                    >
-                        <EditOutlinedIcon sx={{fontSize: mediaMatch.matches ? '3vmax' : '1.5vw', cursor: 'default'}}/>
-                    </IconButton>
-                </div>
-            </div>
-            :
-            teamsFromDB.map((team, index) =>
-                <div key={index} data-team-id={team.id} data-team-name={team.name} className={classes.gameOrTeam} onClick={handleChooseTeam}>
-                    <div className={classes.teamNameWrapper}>
-                        <p className={classes.teamName}>{team.name}</p>
-                    </div>
-                </div>);
+            ? <TeamItem
+                id={userTeam.id}
+                name={userTeam.name}
+                captainId={userTeam.captainId}
+                captainEmail={userTeam.captainEmail}
+                participants={userTeam.participants}
+                participantsCount={userTeam.participantsCount}
+                role={Roles.user}
+                userTeam={userTeam}
+            />
+            :  teamsFromDB.map((team, index) =>
+                <TeamItem
+                    id={team.id}
+                    name={team.name}
+                    captainId={team.captainId}
+                    captainEmail={team.captainEmail}
+                    participants={team.participants}
+                    participantsCount={team.participantsCount}
+                    role={Roles.user}
+                    userTeam={userTeam}
+                    onClick={() => handleChooseTeam(team)}
+                />);
     };
 
     const renderPage = (page: string) => {
         switch (page) {
             case 'games':
                 return (
-                    <div className={classes.gamePage}>
-                        <div className={classes.gamesHeader}>
+                    <div className={classes.sectionPage}>
+                        <div className={classes.sectionHeader}>
                             <h1 className={classes.title}>Игры</h1>
                         </div>
                         {
                             gamesFromDB && !gamesFromDB.length
                             ?
-                                <div className={classes.gamesListEmpty}>
+                                <div className={classes.sectionListEmpty}>
                                     <img className={classes.emptyImage} src={require('../../images/owl-images/empty_owl.svg').default} alt="empty-owl"/>
                                     <h3 className={classes.emptyTitle}>Пока нет ни одной игры</h3>
                                 </div>
                             :
-                                <div className={classes.gamesList}>
+                                <div className={classes.sectionList}>
                                     {renderGames()}
                                 </div>
                         }
@@ -226,30 +228,38 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                 );
             case 'teams':
                 return (
-                    <div className={classes.contentWrapper}>
-                        <div className={classes.box}>
-                            <p className={classes.teamParagraph}>Выбери команду из списка или создай новую</p>
-
-                            <div className={classes.contentBox} style={{height: '92%', padding: mediaMatch.matches ? '3vh 9vw 0.5vh' : '5vh 0.5vw 3vh 2vw'}}>
-                                <div className={classes.teamsWrapper}>
-                                    <Scrollbar>
-                                        {renderTeams()}
-                                    </Scrollbar>
-                                </div>
-
-                                <div className={classes.addButtonWrapper}>
-                                    <Link to="/team-creation"
-                                          style={{pointerEvents: userTeam.name !== '' ? 'none' : 'auto'}}>
-                                        <IconButton disabled={userTeam.name !== ''} sx={{padding: mediaMatch.matches ? '0' : '13px'}}>
-                                            <AddCircleOutlineOutlinedIcon sx={{
-                                                color: userTeam.name === '' ? 'white' : 'gray',
-                                                fontSize: mediaMatch.matches ? '17vmin' : '9vmin'
-                                            }}/>
-                                        </IconButton>
-                                    </Link>
-                                </div>
-                            </div>
+                    <div className={classes.sectionPage}>
+                        <div className={classes.sectionHeader}>
+                            <h1 className={classes.title}>Команды</h1>
+                            <Link
+                                to={"/team-creation"}
+                                className={classes.addButtonWrapper}
+                                style={{pointerEvents: isDisabledTeamButton ? 'none' : 'auto'}}
+                            >
+                                <CustomButton
+                                    disabled={isDisabledTeamButton}
+                                    type={"button"}
+                                    text={"Создать команду"}
+                                    buttonType={ButtonType.primary}
+                                    startIcon={<AddRounded fontSize={'large'}
+                                    sx={{
+                                        fontSize: '3rem'
+                                    }}/>}
+                                />
+                            </Link>
                         </div>
+                        {
+                            teamsFromDB && !teamsFromDB.length
+                                ?
+                                <div className={classes.sectionListEmpty}>
+                                    <img className={classes.emptyImage} src={require('../../images/owl-images/empty_owl.svg').default} alt="empty-owl"/>
+                                    <h3 className={classes.emptyTitle}>Нет ни одной свободной команды<br/>Создайте свою</h3>
+                                </div>
+                                :
+                                <div className={classes.sectionList}>
+                                    {renderTeams()}
+                                </div>
+                        }
                         <Snackbar sx={{marginTop: '8vh'}} open={isTeamNotFree} anchorOrigin={{vertical: 'top', horizontal: 'right'}} autoHideDuration={5000}>
                             <Alert severity='error' sx={{width: '100%'}}>
                                 Кто-то уже занял эту команду
