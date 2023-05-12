@@ -9,7 +9,7 @@
   background-color: var(--color-bg-main);
 }
 
-.gamesHeader {
+.sectionHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -36,19 +36,19 @@
   font-size: var(--font-size-32) !important;
 }
 
-.gamePage {
+.sectionPage {
   display: flex;
   flex-direction: column;
   height: 90%;
 }
 
-.gamesList {
+.sectionList {
   display: flex;
   flex-wrap: wrap;
   padding: 0 80px;
 }
 
-.gamesListEmpty {
+.sectionListEmpty {
   display: flex;
   align-items: center;
   justify-content: center;

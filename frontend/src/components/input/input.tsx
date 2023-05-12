@@ -14,7 +14,7 @@ import {Visibility, VisibilityOff} from '@mui/icons-material';
 const StyledInput = styled(OutlinedInput)<OutlinedInputProps>({
     backgroundColor: "var(--color-bg-plates)",
     color: "var(--color-text-icon-primary)",
-    fontSize: "var(--font-size-32)",
+    fontSize: "var(--font-size-24)",
     lineHeight: "var(--line-height-small)",
     borderRadius: 8
 });

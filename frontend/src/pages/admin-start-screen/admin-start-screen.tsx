@@ -20,6 +20,7 @@ import GameItem, {Roles} from "../../components/game-item/game-item";
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
 import {GameTypeItemProps} from "../../components/game-type-item/game-type-item";
 import {divide} from "lodash-es";
+import TeamItem, {Participant} from "../../components/team-item/team-item";
 
 const inputStyles = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -91,6 +92,10 @@ export interface Game {
 export interface Team {
     name: string,
     id: string
+    captainEmail: string;
+    captainId: string;
+    participantsCount: number;
+    participants: Participant[];
 }
 
 export interface User {
@@ -174,10 +179,19 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                                                   width="100%" height="7vh"
                                                                   sx={{marginBottom: '2.5vh'}}/>);
         }
-        return teams.map((team, index) => <InputWithAdornment name={team.name} id={team.id} key={index} type="team"
-                                                              openModal={setIsModalVisible}
-                                                              setItemForDeleteName={setDeletedItemName}
-                                                              setItemForDeleteId={setDeletedItemId}/>);
+        return teams.map((team, index) =>
+            <TeamItem
+                id={team.id}
+                name={team.name}
+                captainId={team.captainId}
+                captainEmail={team.captainEmail}
+                participants={team.participants}
+                participantsCount={team.participantsCount}
+                openModal={setIsModalVisible}
+                setItemForDeleteName={setDeletedItemName}
+                setItemForDeleteId={setDeletedItemId}
+                role={Roles.admin}/>
+        )
     };
 
     const renderGames = () => {
@@ -278,8 +292,8 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
         switch (page) {
             case 'games':
                 return (
-                    <div className={classes.gamePage}>
-                        <div className={classes.gamesHeader}>
+                    <div className={classes.sectionPage}>
+                        <div className={classes.sectionHeader}>
                             <h1 className={classes.title}>Игры</h1>
                             <Link
                                 to={"/admin/game-creation"}
@@ -298,14 +312,14 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                         {
                             games && !games.length
                                 ?
-                                <div className={classes.gamesListEmpty}>
+                                <div className={classes.sectionListEmpty}>
                                     <img className={classes.emptyImage}
                                          src={require('../../images/owl-images/empty_owl.svg').default}
                                          alt="empty-owl"/>
                                     <h3 className={classes.emptyTitle}>Пока нет ни одной игры</h3>
                                 </div>
                                 :
-                                <div className={classes.gamesList}>
+                                <div className={classes.sectionList}>
                                     {renderGames()}
                                 </div>
                         }
@@ -313,30 +327,37 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                 );
             case 'teams':
                 return (
-                    <div className={classes.containerWrapper}>
-                        <div className={classes.box}>
-                            <div className={classes.teamsWrapper}>
-                                <Scrollbar>
-                                    {renderTeams()}
-                                </Scrollbar>
-                            </div>
-
-                            <div className={classes.addTeamButtonWrapper}>
-                                <Link
-                                    to="/admin/team-creation"
-                                    style={{pointerEvents: isDisabledTeamButton ? 'none' : 'auto'}}
-                                >
-                                    <IconButton
-                                        disabled={isDisabledTeamButton}
-                                        sx={{padding: '13px'}} id="addTeamButton">
-                                        <AddCircleOutlineOutlinedIcon sx={{
-                                            color: isDisabledTeamButton ? "var(--color-text-icon-disabled)" : "var(--color-text-icon-primary)",
-                                            fontSize: '9vmin'
-                                        }}/>
-                                    </IconButton>
-                                </Link>
-                            </div>
+                    <div className={classes.sectionPage}>
+                        <div className={classes.sectionHeader}>
+                            <h1 className={classes.title}>Команды</h1>
+                            <Link
+                                to={"/admin/team-creation"}
+                                className={classes.addButtonWrapper}
+                                style={{pointerEvents: isDisabledTeamButton ? 'none' : 'auto'}}
+                            >
+                                <CustomButton
+                                    disabled={isDisabledTeamButton}
+                                    type={"button"}
+                                    text={"Создать команду"}
+                                    buttonType={ButtonType.primary}
+                                    startIcon={<AddRounded fontSize={'large'}/>}
+                                />
+                            </Link>
                         </div>
+                        {
+                            teams && !teams.length
+                                ?
+                                <div className={classes.sectionListEmpty}>
+                                    <img className={classes.emptyImage}
+                                         src={require('../../images/owl-images/empty_owl.svg').default}
+                                         alt="empty-owl"/>
+                                    <h3 className={classes.emptyTitle}>Пока нет ни одной команды</h3>
+                                </div>
+                                :
+                                <div className={classes.sectionList}>
+                                    {renderTeams()}
+                                </div>
+                        }
                     </div>
                 );
             case 'admins':
