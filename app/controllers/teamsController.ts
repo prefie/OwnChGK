@@ -2,7 +2,6 @@ import { TeamRepository } from '../db/repositories/teamRepository';
 import { Request, Response } from 'express';
 import { generateAccessToken, getTokenFromRequest, setTokenInResponse } from '../utils/jwtToken';
 import { TeamDto } from '../dtos/teamDto';
-import { BigGameDto } from '../dtos/bigGameDto';
 import { Participant, Team } from '../db/entities/Team';
 import { UserRepository } from '../db/repositories/userRepository';
 import { demoAdminRoles, realAdminRoles, userRoles } from '../utils/roles';
