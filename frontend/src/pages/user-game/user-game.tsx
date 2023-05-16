@@ -4,17 +4,16 @@ import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import Header from '../../components/header/header';
 import {Link, useParams} from 'react-router-dom';
-import {CustomInput} from '../../components/custom-input/custom-input';
 import {Alert, Snackbar} from '@mui/material';
 import {UserGameProps} from '../../entities/user-game/user-game.interfaces';
 import {GamePartSettings, getGame} from '../../server-api/server-api';
 import {getCookie, getUrlForSocket} from '../../commonFunctions';
-import NavBar from '../../components/nav-bar/nav-bar';
 import Loader from '../../components/loader/loader';
 import {AppState} from '../../entities/app/app.interfaces';
 import {connect} from 'react-redux';
 import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
 import Scrollbar from '../../components/scrollbar/scrollbar';
+import {Input} from "../../components/input/input";
 
 let progressBarInterval: any;
 let interval: any;
@@ -22,6 +21,11 @@ let checkStart: any;
 let ping: any;
 let conn: WebSocket;
 let matrixSettingsCurrent: GamePartSettings | undefined;
+
+export enum GameType {
+    chgk = 'chgk',
+    matrix = 'matrix'
+}
 
 const UserGame: FC<UserGameProps> = props => {
     const {gameId} = useParams<{ gameId: string }>();
@@ -42,7 +46,7 @@ const UserGame: FC<UserGameProps> = props => {
     const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
     const [isConnectionError, setIsConnectionError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [gamePart, setGamePart] = useState<'matrix' | 'chgk'>(); // активная часть игры
+    const [gamePart, setGamePart] = useState<GameType>(); // активная часть игры
     const [chgkSettings, setChgkSettings] = useState<GamePartSettings>();
     const [matrixAnswers, setMatrixAnswers] = useState<{ [key: number]: string[] } | null>(null); // Заполнить там же, где matrixSettings, вызвав fillMatrixAnswers(tourNames, questionsCount)
     const [acceptedMatrixAnswers, setAcceptedMatrixAnswers] = useState<{ [key: number]: string[] } | null>(null); // Заполнить там же, где matrixSettings, вызвав fillMatrixAnswers(tourNames, questionsCount)
@@ -127,7 +131,7 @@ const UserGame: FC<UserGameProps> = props => {
 
         handleGameStatusMessage: (
             isStarted: boolean,
-            gamePart: 'chgk' | 'matrix',
+            gamePart: GameType,
             isOnBreak: boolean,
             breakTime: number,
             questionNumber: number,
@@ -143,7 +147,7 @@ const UserGame: FC<UserGameProps> = props => {
                 clearInterval(interval);
                 setQuestionNumber(questionNumber);
                 setCurrentQuestion(text);
-                if (gamePart === 'matrix') {
+                if (gamePart === GameType.matrix) {
                     const matrixRoundName = matrixSettingsCurrent?.roundNames?.[matrixActive.round - 1];
                     if (matrixRoundName) {
                         setActiveMatrixRound({name: matrixRoundName, index: matrixActive.round});
@@ -186,7 +190,7 @@ const UserGame: FC<UserGameProps> = props => {
             });
         },
 
-        handleTimeMessage: (time: number, maxTime: number, isStarted: boolean, gamePart: 'chgk' | 'matrix') => {
+        handleTimeMessage: (time: number, maxTime: number, isStarted: boolean, gamePart: GameType) => {
             setTimeForAnswer(() => {
                 const progress = document.querySelector('#progress-bar') as HTMLDivElement;
                 const width = Math.ceil(100 * time / maxTime);
@@ -205,7 +209,7 @@ const UserGame: FC<UserGameProps> = props => {
             setMaxTime(maxTime / 1000);
         },
 
-        handleCheckTimeMessage: (time: number, maxTime: number, gamePart: 'chgk' | 'matrix') => {
+        handleCheckTimeMessage: (time: number, maxTime: number, gamePart: GameType) => {
             const progressBar = document.querySelector('#progress-bar') as HTMLDivElement;
             if (!progressBar || time == 0) {
                 clearInterval(progressBarInterval);
@@ -245,18 +249,18 @@ const UserGame: FC<UserGameProps> = props => {
             clearInterval(progressBarInterval);
         },
 
-        handleStopMessage: (gamePart: 'chgk' | 'matrix') => {
+        handleStopMessage: (gamePart: GameType) => {
             clearInterval(progressBarInterval);
-            setTimeForAnswer(gamePart === 'chgk' ? 70 : 20);
+            setTimeForAnswer(gamePart === GameType.chgk ? 70 : 20);
             let progress = document.querySelector('#progress-bar') as HTMLDivElement;
             if (progress) {
                 progress.style.width = '100%';
-                changeColor(progress, gamePart, gamePart === 'chgk' ? 70 : 20);
+                changeColor(progress, gamePart, gamePart === GameType.chgk ? 70 : 20);
             }
         },
 
         handleChangeQuestionNumberMessage: (
-            gamePart: 'chgk' | 'matrix',
+            gamePart: GameType,
             number: number,
             matrixActive: { round: number, question: number },
             text: string,
@@ -268,18 +272,18 @@ const UserGame: FC<UserGameProps> = props => {
                 progress.style.width = '100%';
             }
             let answerInput = document.querySelector('#answer') as HTMLInputElement;
-            if (answerInput && gamePart === 'chgk') {
+            if (answerInput && gamePart === GameType.chgk) {
                 answerInput.focus();
             }
-            changeColor(progress, gamePart, gamePart === 'chgk' ? 70 : 20);
-            setTimeForAnswer(gamePart === 'chgk' ? 70 : 20);
-            setMaxTime(gamePart === 'chgk' ? 70 : 20);
+            changeColor(progress, gamePart, gamePart === GameType.chgk ? 70 : 20);
+            setTimeForAnswer(gamePart === GameType.chgk ? 70 : 20);
+            setMaxTime(gamePart === GameType.chgk ? 70 : 20);
             if (number != questionNumber) {
                 setAcceptedAnswer(undefined);
             }
             setQuestionNumber(number);
             setCurrentQuestion(text);
-            if (gamePart === 'matrix') {
+            if (gamePart === GameType.matrix) {
                 const matrixRoundName = matrixSettingsCurrent?.roundNames?.[matrixActive.round - 1];
                 if (matrixRoundName) {
                     setActiveMatrixRound({ name: matrixRoundName, index: matrixActive.round });
@@ -289,9 +293,9 @@ const UserGame: FC<UserGameProps> = props => {
             setGamePart(gamePart);
         },
 
-        handleCurrentQuestionNumberMessage: (gamePart: 'chgk' | 'matrix', questionNumber: number, matrixActive: { round: number, question: number }) => {
+        handleCurrentQuestionNumberMessage: (gamePart: GameType, questionNumber: number, matrixActive: { round: number, question: number }) => {
             setQuestionNumber(questionNumber);
-            if (gamePart === 'matrix') {
+            if (gamePart === GameType.matrix) {
                 const matrixRoundName = matrixSettingsCurrent?.roundNames?.[matrixActive.round - 1];
                 if (matrixRoundName) {
                     setActiveMatrixRound({name: matrixRoundName, index: matrixActive.round});
@@ -301,8 +305,8 @@ const UserGame: FC<UserGameProps> = props => {
             setGamePart(gamePart);
         },
 
-        handleStatusAnswerMessage: (gamePart: 'chgk' | 'matrix', newAnswer: string, roundNumber: number, questionNumber: number, isAccepted: boolean) => {
-            if (gamePart === 'chgk') {
+        handleStatusAnswerMessage: (gamePart: GameType, newAnswer: string, roundNumber: number, questionNumber: number, isAccepted: boolean) => {
+            if (gamePart === GameType.chgk) {
                 setAcceptedAnswer(newAnswer);
             } else {
                 setAcceptedMatrixAnswers((prevValue) => {
@@ -371,11 +375,11 @@ const UserGame: FC<UserGameProps> = props => {
     useEffect(() => {
         const enterEventHandler = (e: KeyboardEvent) => {
             if (e.key === 'Enter') {
-                if (gamePart === 'matrix') {
+                if (gamePart === GameType.matrix) {
                     if (focusedMatrixAnswerInfo) {
                         handleSendMatrixAnswer(focusedMatrixAnswerInfo.index, focusedMatrixAnswerInfo.roundName, focusedMatrixAnswerInfo.roundNumber);
                     }
-                } else if (gamePart === 'chgk') {
+                } else if (gamePart === GameType.chgk) {
                     handleSendButtonClick();
                 }
             }
@@ -497,21 +501,13 @@ const UserGame: FC<UserGameProps> = props => {
         return teamName;
     }
 
-    const getGameNameForWaitingScreen = () => {
-        const maxLength = mediaMatch.matches ? 30 : 52;
-        if ((gameName as string).length > maxLength) {
-            return `«${(gameName as string).substring(0, maxLength + 1)}\u2026»`;
-        }
-        return `«${gameName}»`;
-    }
-
     const parseTimer = () => {
         const minutes = Math.floor(breakTime / 60).toString().padStart(1, '0');
         const sec = Math.floor(breakTime % 60).toString().padStart(2, '0');
         return `${minutes}:${sec}`;
     };
 
-    const changeColor = (progressBar: HTMLDivElement, gamePart: 'chgk' | 'matrix', time: number) => {
+    const changeColor = (progressBar: HTMLDivElement, gamePart: GameType, time: number) => {
         if (!progressBar) {
             return;
         }
@@ -521,17 +517,16 @@ const UserGame: FC<UserGameProps> = props => {
         }
     };
 
-    const chooseColor = (time: number, gamePart: 'chgk' | 'matrix') => {
-        const redTime = (gamePart === 'chgk' ? 10 : 5);
-        const yellowTime = (gamePart === 'chgk' ? 20 : 10);
+    const chooseColor = (time: number, gamePart: GameType) => {
+        const redTime = (gamePart === GameType.chgk ? 10 : 5);
+        const yellowTime = (gamePart === GameType.chgk ? 20 : 10);
         switch (true) {
             case (time <= redTime): // 10-0, 5-0
-                return 'red';
+                return 'var(--color-fill-progressBar-red)';
             case (redTime < time && time <= yellowTime): // 35-11, 10-6
-                return 'yellow';
+                return 'var(--color-fill-progressBar-yellow)';
         }
-
-        return 'green';  // 70-36, 20-11
+        return 'var(--color-fill-progressBar-green)';  // 70-36, 20-11
     }
 
     const moveProgressBar = (time: number, maxTime: number) => {
@@ -619,6 +614,36 @@ const UserGame: FC<UserGameProps> = props => {
         return `${answer}`;
     };
 
+    const renderAnswerSnackbar = () => {
+        return(
+            <Snackbar open={flags.isSnackbarOpen} autoHideDuration={5000} onClose={handleClose}
+                      sx={{marginTop: '8vh'}}
+                      anchorOrigin={{vertical: 'top', horizontal: 'center'}}>
+                <Alert onClose={handleClose}
+                       severity={flags.isAnswerAccepted ? 'success' : 'error'}
+                       sx={{width: '100%'}}
+                >
+                    {
+                        flags.isAnswerAccepted
+                            ? 'Ответ успешно отправлен'
+                            : 'Не удалось отправить. Давайте еще раз'
+                    }
+                </Alert>
+            </Snackbar>
+        );
+    }
+
+    const renderErrorSnackbar = () => {
+        return(
+            <Snackbar sx={{marginTop: '8vh'}} open={isConnectionError}
+                      anchorOrigin={{vertical: 'top', horizontal: 'right'}} autoHideDuration={5000}>
+                <Alert severity="error" sx={{width: '100%'}}>
+                    Пропало соединение. Обновите страницу
+                </Alert>
+            </Snackbar>
+        );
+    }
+
     const renderMatrix = () => {
         return matrixSettingsCurrent?.roundNames?.map((tourName, i) => {
             return (
@@ -629,54 +654,51 @@ const UserGame: FC<UserGameProps> = props => {
                         Array.from(Array(matrixSettingsCurrent?.questionsCount).keys()).map((j) => {
                             return (
                                 <div key={`matrix_question_${j}`}
-                                     style={{marginBottom: j === (matrixSettingsCurrent?.questionsCount as number) - 1 && i !== ((matrixSettingsCurrent?.roundNames?.length || 0) - 1) ? (mediaMatch.matches ? '10vw' : '4vh') : 0}}>
-                                    <p className={classes.matrixAnswerNumber}>Вопрос за {j + 1}0</p>
-
-                                    <div className={classes.answerInputWrapper}>
-                                        <div className={classes.answerButtonWrapper}>
-                                            <CustomInput type="text" id="answer" name="answer" placeholder="Ответ"
-                                                         style={{
-                                                             width: mediaMatch.matches ? '70%' : '79%',
-                                                             marginBottom: '4%',
-                                                             height: mediaMatch.matches ? '8.7vw' : '7vh',
-                                                             marginRight: mediaMatch.matches ? '0' : '2%'
-                                                         }} value={matrixAnswers?.[i + 1][j]}
-                                                         onFocus={() => setFocusedMatrixAnswerInfo({
-                                                             index: j + 1,
-                                                             roundName: tourName,
-                                                             roundNumber: i + 1
-                                                         })}
-                                                         onChange={(event) => handleMatrixAnswer(event, j, i + 1)}/>
-
-                                            <button className={classes.sendAnswerButton}
-                                                    onClick={() => handleSendMatrixAnswer(j + 1, tourName, i + 1)}><span
-                                                className={classes.sendText}>Отправить</span>
-                                                <SendRoundedIcon className={classes.sendIcon}/>
-                                            </button>
-                                        </div>
+                                     style={{
+                                         marginBottom: j === (matrixSettingsCurrent?.questionsCount as number) - 1 && i !== ((matrixSettingsCurrent?.roundNames?.length || 0) - 1)
+                                             ? (mediaMatch.matches ? '2rem' : '2.5rem')
+                                             : 0
+                                     }}
+                                >
+                                    <div className={classes.matrixAnswerNumberWrapper}>
+                                        <p className={classes.matrixAnswerNumber}>Вопрос за {j + 1}0</p>
                                         {
                                             acceptedMatrixAnswers?.[i + 1][j]
                                                 ?
-                                                <small className={classes.accepted}>{'Принятый ответ: '}
-                                                    <span
-                                                        className={classes.acceptedAnswer}>{getShortenedAnswer(acceptedMatrixAnswers?.[i + 1][j] as string)}</span>
+                                                <small className={classes.accepted}>{'Ответ: '}
+                                                    <span className={classes.acceptedAnswer}>
+                                                        {getShortenedAnswer(acceptedMatrixAnswers?.[i + 1][j] as string)}
+                                                    </span>
                                                 </small>
                                                 : null
                                         }
                                     </div>
-
-                                    <Snackbar open={flags.isSnackbarOpen} autoHideDuration={6000} onClose={handleClose}
-                                              sx={{
-                                                  position: mediaMatch.matches ? 'absolute' : 'fixed',
-                                                  bottom: mediaMatch.matches ? '-8vh' : 'unset'
-                                              }}>
-                                        <Alert onClose={handleClose}
-                                               severity={flags.isAnswerAccepted ? 'success' : 'error'}
-                                               sx={{width: '100%'}}>
-                                            {flags.isAnswerAccepted ? 'Ответ успешно отправлен' : 'Ответ не отправлен'}
-                                        </Alert>
-                                    </Snackbar>
+                                    <div className={classes.answerInputWrapper}>
+                                        <Input type="text" id="answer" name="answer" placeholder="Ответ"
+                                                     style={{
+                                                         width: mediaMatch.matches ? '80%' : '',
+                                                         margin: mediaMatch.matches ? '0' : '0 1rem 0 0',
+                                                         border: '2px solid var(--color-text-icon-secondary)',
+                                                         borderRadius: '.5rem'
+                                                     }} value={matrixAnswers?.[i + 1][j]}
+                                                     onFocus={() => setFocusedMatrixAnswerInfo({
+                                                         index: j + 1,
+                                                         roundName: tourName,
+                                                         roundNumber: i + 1
+                                                     })}
+                                                     onChange={(event) => handleMatrixAnswer(event, j, i + 1)}
+                                        />
+                                        <div className={classes.answerButtonWrapper}>
+                                            <button className={classes.sendAnswerButton}
+                                                    onClick={() => handleSendMatrixAnswer(j + 1, tourName, i + 1)}
+                                            >
+                                                <span className={classes.sendText}>Отправить</span>
+                                                <SendRoundedIcon className={classes.sendIcon}/>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
+
                             );
                         })
                     }
@@ -685,21 +707,12 @@ const UserGame: FC<UserGameProps> = props => {
         });
     };
 
-    const renderChgkQuestionText = () => {
-        return (
-            <>
-                <div className={classes.answerNumber} style={{marginBottom: currentQuestion ? '1.5vh' : '0'}}>
-                    {`Вопрос ${questionNumber}`}
-                </div>
-                {currentQuestion || ''}
-            </>
-        );
-    };
-
-    const renderMatrixQuestionText = () => {
+    const renderQuestionText = () => {
         if (currentQuestion) {
             return (
-                <div className={classes.matrixQuestion}>{currentQuestion}</div>
+                <div className={classes.questionText}>
+                    {currentQuestion}
+                </div>
             );
         }
         return null;
@@ -708,23 +721,31 @@ const UserGame: FC<UserGameProps> = props => {
     const renderGamePart = () => {
         const width = Math.ceil(100 * (timeForAnswer / maxTime));
 
-        if (gamePart === 'matrix') {
+        if (gamePart === GameType.matrix) {
             return (
                 <>
                     <div className={classes.teamWrapper}>
-                        <div className={classes.team}>{'Команда '}</div>
+                        <div className={classes.team}>{'Играет команда'}</div>
                         <div className={classes.teamName}>{getTeamName()}</div>
                     </div>
 
                     <div className={classes.answersWrapper}>
                         <div className={classes.questionWrapper}>
-                            <div className={classes.activeRoundName}>
+                            <div className={classes.activeQuestionHeader}>
                                 <div>Вопрос за {activeMatrixQuestion}0</div>
-                                <div style={{maxWidth: '60%'}}>{activeMatrixRound?.name}</div>
+                                <div className={classes.matrixRoundName}
+                                     style={{maxWidth: '60%'}}
+                                >
+                                    {activeMatrixRound?.name}
+                                </div>
                             </div>
-                            {renderMatrixQuestionText()}
-                            <div
-                                className={classes.matrixTime}>Осталось: {Math.ceil(timeForAnswer ?? 0) >= 0 ? Math.ceil(timeForAnswer ?? 0) : 0} сек.
+                            {
+                                renderQuestionText()
+                            }
+                            <div className={classes.leftTime}
+                                 style={{color: chooseColor(timeForAnswer, gamePart)}}
+                            >
+                                Осталось: {Math.ceil(timeForAnswer ?? 0) >= 0 ? Math.ceil(timeForAnswer ?? 0) : 0} сек.
                             </div>
                         </div>
 
@@ -742,65 +763,65 @@ const UserGame: FC<UserGameProps> = props => {
                 </>
             );
         }
-        if (gamePart === 'chgk') {
+        if (gamePart === GameType.chgk) {
             return (
                 <>
                     <div className={classes.teamWrapper}>
-                        <div className={classes.team}>{'Команда '}</div>
+                        <div className={classes.team}>{'Играет команда'}</div>
                         <div className={classes.teamName}>{getTeamName()}</div>
                     </div>
 
-                    <div className={classes.answerWrapper}>
+                    <div className={classes.answersWrapper}>
                         <div className={classes.questionWrapper}>
+                            <div className={classes.activeQuestionHeader}>{`Вопрос ${questionNumber}`}</div>
                             {
-                                renderChgkQuestionText()
+                                renderQuestionText()
                             }
+                            <div className={classes.leftTime}
+                                 style={{color: chooseColor(timeForAnswer, gamePart)}}
+                            >
+                                Осталось: {Math.ceil(timeForAnswer ?? 0) >= 0 ? Math.ceil(timeForAnswer ?? 0) : 0} сек.
+                            </div>
                         </div>
+
                         <div style={{width: '100%', height: '2%', minHeight: '10px'}}>
                             <div className={classes.progressBar} id="progress-bar"
                                  style={{width: width + '%', backgroundColor: chooseColor(timeForAnswer, gamePart)}}/>
                         </div>
                         <div className={classes.answerBox}>
-                            <div style={{display: 'flex', flexDirection: 'column', width: '85%'}}>
-                                <p className={classes.timeLeft}>Осталось: {Math.ceil(timeForAnswer ?? 0) >=
-                                0 ? Math.ceil(timeForAnswer ?? 0) : 0} сек.</p>
-
+                            <div className={classes.formWrapper}>
                                 <div className={classes.answerInputWrapper}>
+                                    <Input type="text" id="answer" name="answer" placeholder="Ответ"
+                                           style={{
+                                               width: mediaMatch.matches ? '80%' : '',
+                                               margin: mediaMatch.matches ? '0' : '0 1rem 0 0',
+                                               border: '2px solid var(--color-text-icon-secondary)',
+                                               borderRadius: '.5rem'
+                                           }}
+                                           value={answer}
+                                           onChange={handleAnswer}
+                                    />
                                     <div className={classes.answerButtonWrapper}>
-                                        <CustomInput type="text" id="answer" name="answer" placeholder="Ответ"
-                                                     style={{
-                                                         width: mediaMatch.matches ? '70%' : '79%',
-                                                         height: mediaMatch.matches ? '8.7vw' : '7vh',
-                                                         marginRight: mediaMatch.matches ? 0 : '20px'
-                                                     }} value={answer} onChange={handleAnswer}/>
-
                                         <button className={classes.sendAnswerButton}
                                                 onClick={handleSendButtonClick}><span
                                             className={classes.sendText}>Отправить</span>
                                             <SendRoundedIcon className={classes.sendIcon}/>
                                         </button>
                                     </div>
-                                    {
-                                        acceptedAnswer
-                                            ?
-                                            <small className={classes.acceptedChgk}>{'Принятый ответ: '}
-                                                <span className={classes.acceptedAnswer}>{getShortenedAnswer(acceptedAnswer)}</span>
-                                            </small>
-                                            : null
-                                    }
                                 </div>
+                                {
+                                    acceptedAnswer
+                                        ?
+                                        <small className={classes.accepted}>{'Ответ: '}
+                                            <span className={classes.acceptedAnswer}>
+                                                    {
+                                                        getShortenedAnswer(acceptedAnswer)
+                                                    }
+                                                </span>
+                                        </small>
+                                        : null
+                                }
                             </div>
-
-                            <Snackbar open={flags.isSnackbarOpen} autoHideDuration={6000} onClose={handleClose}
-                                      sx={{
-                                          position: mediaMatch.matches ? 'absolute' : 'fixed',
-                                          bottom: mediaMatch.matches ? '-8vh' : 'unset'
-                                      }}>
-                                <Alert onClose={handleClose} severity={flags.isAnswerAccepted ? 'success' : 'error'}
-                                       sx={{width: '100%'}}>
-                                    {flags.isAnswerAccepted ? 'Ответ успешно отправлен' : 'Ответ не отправлен'}
-                                </Alert>
-                            </Snackbar>
                         </div>
                     </div>
                 </>
@@ -819,7 +840,6 @@ const UserGame: FC<UserGameProps> = props => {
                             </div>
                         }
                     </Header>
-
                     {
                         mediaMatch.matches
                             ? <MobileNavbar isAdmin={false} page="" isGame={false}/>
@@ -830,14 +850,8 @@ const UserGame: FC<UserGameProps> = props => {
 
                         <div className={classes.pageText}>Приготовьтесь!</div>
                         <div className={classes.pageText}>Вот-вот, и мы начнём</div>
-
                     </div>
-                    <Snackbar sx={{marginTop: '8vh'}} open={isConnectionError}
-                              anchorOrigin={{vertical: 'top', horizontal: 'right'}} autoHideDuration={5000}>
-                        <Alert severity="error" sx={{width: '100%'}}>
-                            Ошибка соединения. Обновите страницу
-                        </Alert>
-                    </Snackbar>
+                    { renderErrorSnackbar() }
                 </PageWrapper>
             )
         }
@@ -859,7 +873,7 @@ const UserGame: FC<UserGameProps> = props => {
                                 : null
                         }
 
-                        <div className={classes.breakHeader}>Перерыв ⋅ {gameName}</div>
+                        <div className={classes.breakHeader}>{gameName}</div>
                     </Header>
 
                     {
@@ -869,18 +883,12 @@ const UserGame: FC<UserGameProps> = props => {
                     }
                     <div className={classes.breakContentWrapper}>
                         <img className={classes.image} src={require('../../images/owl-images/break_owl.svg').default} alt="logo"/>
-
                         <div className={classes.breakTime}>
                             {parseTimer()}
                             <p className={classes.breakTimeText}>Отдохни, да выпей чаю</p>
                         </div>
                     </div>
-                    <Snackbar sx={{marginTop: '8vh'}} open={isConnectionError}
-                              anchorOrigin={{vertical: 'top', horizontal: 'right'}} autoHideDuration={5000}>
-                        <Alert severity="error" sx={{width: '100%'}}>
-                            Ошибка соединения. Обновите страницу
-                        </Alert>
-                    </Snackbar>
+                    { renderErrorSnackbar() }
                 </PageWrapper>
             );
         }
@@ -911,19 +919,17 @@ const UserGame: FC<UserGameProps> = props => {
                         : null
                 }
                 <div className={classes.contentWrapper}>
-                    {renderGamePart()}
+                    { renderGamePart() }
                 </div>
-                <Snackbar sx={{marginTop: '8vh'}} open={isConnectionError}
-                          anchorOrigin={{vertical: 'top', horizontal: 'right'}} autoHideDuration={5000}>
-                    <Alert severity="error" sx={{width: '100%'}}>
-                        Ошибка соединения. Обновите страницу
-                    </Alert>
-                </Snackbar>
+                { renderErrorSnackbar() }
+                { renderAnswerSnackbar() }
             </PageWrapper>
         );
     }
 
-    return isLoading || !gameName ? <Loader/> : renderPage();
+    return isLoading || !gameName
+        ? <Loader/>
+        : renderPage();
 };
 
 function mapStateToProps(state: AppState) {
