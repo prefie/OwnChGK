@@ -1,54 +1,54 @@
 .menuLink {
   text-decoration: none;
-  color: white;
+  color: var(--color-text-icon-link-enabled);
   display: flex;
   align-items: center;
-  font-weight: 300;
-  font-size: 2.5vmin;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-24);
 }
 
 .ratingLink {
-  margin-right: 16px;
+  margin-right: 1.5rem;
 }
 
 .answerButtonWrapper {
   display: flex;
-  width: 100%;
 }
 
 .gameName {
-  margin-left: 60px;
   flex: 1;
-  font-size: 2.5vmax;
-  line-height: 3vmax;
-  color: #fff;
+  font-size: var(--font-size-32);
+  line-height: var(--line-height-small);
+  color: var(--color-text-icon-primary);
   word-break: break-all;
   display: -webkit-box;
   overflow: hidden;
   text-overflow: ellipsis;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
-  font-weight: 300;
-  height: 3vmax;
   align-self: center;
   text-align: center;
+  width: 100%;
+  margin: 0 1rem;
 }
 
 .breakHeader {
-  font-size: 2.5vmax;
-  color: white;
+  font-size: var(--font-size-40);
+  color: var(--color-text-icon-primary);
+  justify-content: center;
   display: flex;
-  text-align: center;
   align-self: center;
-  font-weight: 300;
-  margin: auto;
+  margin: 0 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 .contentWrapper {
   height: 90%;
-  width: 80%;
+  width: 70%;
   display: flex;
-  align-items: center;
   flex-direction: column;
   align-self: center;
   position: relative;
@@ -93,57 +93,41 @@
 }
 
 .teamWrapper {
-  font-weight: 300;
-  font-size: 2.5vw;
+  font-size: var(--font-size-20);
   display: flex;
-  width: 90%;
-  padding: 2.5% 0;
+  width: auto;
+  padding: 1rem;
+  border-radius: .5rem;
   pointer-events: none;
   white-space: pre-wrap;
 
   .team {
-    color: white;
-    margin-right: 1vw;
+    color: var(--color-text-icon-secondary);
+    margin-right: 1rem;
   }
 
   .teamName {
-    font-weight: 400;
-    color: var(--color-fill-accent-enabled);
+    color: var(--color-text-icon-primary);
   }
 }
 
-.answerWrapper {
-  width: 90%;
+.answerBox {
+  background-color: var(--color-bg-plates);
+  border-radius: 0 0 12px 12px;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  height: 80%;
-
-  .answerBox {
-    border: 3px solid white;
-    border-radius: 0 0 12px 12px;
-    width: 100%;
-    box-shadow: 0 0 3vh 1vh rgba(50, 130, 184, 0.25);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-    position: relative;
-    padding: 4vh 0;
-  }
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  position: relative;
+  padding: 2rem;
 }
 
-.timeLeft {
-  color: white;
-  font-weight: 400;
-  font-size: 1.5vw;
-  margin-bottom: 2vh;
-}
-
-.answerNumber {
-  color: white;
-  font-weight: 300;
-  font-size: 2vw;
+.formWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .progressBar {
@@ -177,126 +161,127 @@
 }
 
 .answersWrapper {
-  width: 90%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  height: 87%;
+  height: 90%;
 }
 
 .answersBox {
-  border: 3px solid white;
+  background-color: var(--color-bg-plates);
   border-radius: 0 0 12px 12px;
   width: 100%;
   min-height: 80%;
-  box-shadow: 0 0 3vh 1vh rgba(50, 130, 184, 0.25);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
   position: relative;
-  padding: 2vh 2vw;
+  padding: 1rem 2rem;
 }
 
 .answerInputWrapper {
   display: flex;
   width: 100%;
   position: relative;
+  margin-bottom: 1rem;
 
   .sendAnswerButton {
-    height: 7vh;
+    background-color: var(--color-fill-accent-enabled);
+    color: var(--color-text-icon-primary);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-24);
+    font-weight: var(--font-weight-medium);
     flex: 1;
-    font-size: 1.3vw;
-    font-weight: 700;
-    padding: 0 0.5vw;
-    border: 2px solid var(--color-fill-accent-enabled);
-    border-radius: 10px;
-    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.25));
-    overflow: hidden;
+    padding: 1rem;
+    border-radius: .5rem;
     user-select: none;
-    font-family: Roboto, sans-serif;
-    min-height: 26px;
+    min-height: 2rem;
 
     &:not(:disabled):hover {
       cursor: pointer;
-      box-shadow: 0 0 2vh 2px var(--color-fill-accent-enabled);
+      background-color: var(--color-fill-accent-hover);
     }
 
     &:not(:disabled):active {
-      box-shadow: inset 3px 3px 5px rgba(0, 0, 0, .50);
+      background-color: var(--color-fill-accent-pressed);
     }
   }
 }
 
-.activeRoundName {
+.activeQuestionHeader {
   display: flex;
+  gap: 1rem;
   width: 100%;
-  justify-content: space-between;
-  color: white;
-  font-size: 1.8vmax;
-  font-weight: 300;
-  margin-bottom: 1.5vh;
+  color: var(--color-text-icon-primary);
+  font-size: var(--font-size-32);
+  font-weight: var(--font-weight-bold);
+  align-items: center;
+  margin-bottom: 1rem;
+
+  .matrixRoundName {
+    color: var(--color-text-icon-secondary);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-20);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 }
 
 .tourName {
   display: flex;
-  font-size: 2.3vmax;
-  color: white;
-  font-weight: 300;
-  margin-bottom: 4vh;
+  font-size: var(--font-size-24);
+  color: var(--color-text-icon-primary);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: 1rem;
+}
+
+.matrixAnswerNumberWrapper {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: .5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .matrixAnswerNumber {
-  font-size: 1.4vmax;
-  color: white;
-  font-weight: 400;
-  margin-bottom: 1vh;
+  font-size: var(--font-size-20);
+  color: var(--color-text-icon-primary);
 }
 
-.accepted,
-.acceptedChgk {
-  position: absolute;
-  bottom: 15%;
-  color: white;
-  font-weight: 300;
-  font-size: 1.2vmax;
-  height: 1.4vmax;
-  white-space: pre-wrap;
+.accepted, .acceptedChgk {
+  color: var(--color-text-icon-secondary);
+  font-size: var(--font-size-20);
+  white-space: nowrap;
 }
 
 .acceptedChgk {
   bottom: 0;
 }
 
-.acceptedAnswer {
-  font-weight: 500;
-}
-
 .questionWrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 3vh 2vw;
-  color: white;
-  border: 3px solid white;
+  padding: 2rem;
+  color: var(--color-text-icon-primary);
+  background-color: var(--color-bg-plates);
   border-radius: 12px 12px 0 0;
-  box-shadow: 0 0 3vh 1vh rgba(50, 130, 184, 0.25);
   box-sizing: border-box;
-  font-weight: 400;
-  font-size: 1.3vw;
 }
 
-.matrixQuestion {
-  font-weight: 400;
-  font-size: 1.35vw;
-  color: white;
-  margin-bottom: 1.5vh;
+.questionText {
+  font-size: var(--font-size-20);
+  color: var(--color-text-icon-primary);
+  margin-bottom: 1rem;
 }
 
-.matrixTime {
-  color: white;
-  font-weight: 400;
-  font-size: 1.4vw;
+.leftTime {
+  color: var(--color-text-icon-primary);
+  font-size: var(--font-size-24);
 }
 
 @media only screen and (min-width: 601px) {
@@ -307,13 +292,19 @@
 
 @media only screen and (max-width: 600px) {
   .gameStartContentWrapper {
-    .logo {
-      margin: 25vh auto 8vh;
+    .image {
+      width: 150px;
+      height: 150px;
     }
 
     .pageText {
-      font-size: 7vmin;
+      font-size: var(--font-size-32);
     }
+  }
+
+  .breakHeader {
+    font-size: var(--font-size-16);
+    margin: 0;
   }
 
   .breakContentWrapper {
@@ -334,124 +325,89 @@
 
   .gameName {
     width: 100%;
-    font-size: 4.7vw;
+    font-size: var(--font-size-16);
   }
 
   .contentWrapper {
     width: 90%;
+    margin-bottom: 3rem;
   }
 
   .teamWrapper {
     width: 100%;
-    justify-content: unset;
-    font-size: 4.4vw;
-    padding: 15vw 0 6vw;
+    font-size: var(--font-size-16);
 
     .team {
-      margin-left: 0;
-      margin-right: 7vw;
-    }
-  }
-
-  .answerWrapper {
-    width: 100%;
-
-    .timeLeft {
-      font-size: 4.5vw;
-      margin-bottom: 2vw;
+      margin-right: 1rem;
     }
 
-    .answerBox {
-      border-radius: 0 0 8px 8px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 6vw 0;
-
-      .answerInputWrapper {
-
-        .sendAnswerButton {
-          padding: 2px 5px;
-          height: 8.7vw;
-          width: 30%;
-          font-size: 4.5vw;
-          margin-left: 2vw;
-        }
-
-        .sendText {
-          display: none;
-        }
-      }
-
-      .answerNumber {
-        font-size: 6.6vw;
-      }
+    .teamName {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
   }
 
   .questionWrapper {
-    padding: 4vw;
-    font-size: 4.5vw;
+    padding: 1rem;
   }
 
   .acceptedChgk,
   .accepted {
-    position: relative;
-    align-self: flex-start;
-    margin-top: -2vw;
-    font-size: 3vw;
-  }
-
-  .answerNumber {
-    font-size: 6vw;
+    font-size: var(--font-size-16);
   }
 
   .answersWrapper {
     width: 100%;
   }
 
-  .matrixTime {
-    font-size: 4vw;
+  .leftTime {
+    font-size: var(--font-size-16);
   }
 
-  .activeRoundName {
-    font-size: 5vw;
+  .activeQuestionHeader {
+    font-size: var(--font-size-20);
+    white-space: nowrap;
   }
 
-  .matrixQuestion {
-    font-size: 4.5vw;
-    margin-bottom: 5vw;
+  .matrixRoundName {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   .answersBox {
-    padding: 2vw 3vw;
+    padding: 1rem;
+  }
+
+  .answerBox {
+    padding: 1rem;
   }
 
   .tourName {
-    font-size: 7.5vw;
-    margin-bottom: 6vw;
+    font-size: var(--font-size-24);
+    margin-bottom: 1rem;
+  }
+
+  .matrixAnswerNumberWrapper {
+    gap: .5rem;
   }
 
   .matrixAnswerNumber {
-    font-size: 4.5vw;
+    font-size: var(--font-size-16);
   }
 
   .answerButtonWrapper {
     display: flex;
-    width: 100%;
   }
 
   .answerInputWrapper {
-    flex-wrap: wrap;
-    margin-bottom: 10px;
+    margin-bottom: 1rem;
 
     .sendAnswerButton {
-      padding: 2px 5px;
-      height: 8.7vw;
-      width: 30%;
-      font-size: 4.5vw;
-      margin-left: 2vw;
+      padding: 1rem;
+      font-size: var(--font-size-20);
+      margin-left: 0.5rem;
     }
 
     .sendText {
