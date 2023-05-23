@@ -536,8 +536,8 @@ function GetGameStatus(gameId, ws) {
     const currentGame = bigGames[gameId]?.CurrentGame;
 
     if (currentGame) {
-        const currentRound = currentGame.currentQuestion[0];
-        const currentQuestion = currentGame.currentQuestion[1];
+        const currentRound = currentGame.currentQuestion ? currentGame.currentQuestion[0] : null;
+        const currentQuestion = currentGame.currentQuestion ? currentGame.currentQuestion[1] : null;
         const currentQuestionNumber = currentGame.currentQuestion
             ? currentGame.rounds[0].questionsCount * (currentRound - 1) + currentQuestion
             : undefined;
@@ -553,7 +553,7 @@ function GetGameStatus(gameId, ws) {
                 round: currentRound,
                 question: currentQuestion
             } : null,
-            'text': currentGame.rounds[currentRound - 1].questions[currentQuestion - 1].text,
+            'text': currentGame.rounds[currentRound - 1]?.questions[currentQuestion - 1]?.text,
             'maxTime': currentGame.maxTime,
             'time': GetPreliminaryTime(gameId),
         }));

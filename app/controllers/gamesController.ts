@@ -236,8 +236,8 @@ export class GamesController {
                 name: bigGame.name,
                 id: bigGame.id,
                 teams: bigGame.teams.map(value => value.name),
-                chgkSettings: new GameDto(chgkFromDB),
-                matrixSettings: new MatrixGameDto(matrixFromDB)
+                chgkSettings: chgkFromDB ? new GameDto(chgkFromDB) : null,
+                matrixSettings: matrixFromDB ? new MatrixGameDto(matrixFromDB) : null
             };
 
             await this.bigGameRepository.updateByGameIdAndStatus(gameId, GameStatus.STARTED);
