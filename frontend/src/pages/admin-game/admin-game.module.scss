@@ -1,8 +1,8 @@
-.menuLink {
+.ratingLink {
   text-decoration: none;
-  color: white;
-  font-weight: 300;
-  font-size: 2.5vmin;
+  color: var(--color-text-icon-link-enabled);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-24);
   display: flex;
   align-items: center;
 }
@@ -26,30 +26,52 @@
 }
 
 .button {
-  height: 7vh;
-  font-size: 1.4vw;
-  font-weight: 500;
-  border: 2px solid var(--color-fill-accent-enabled);
-  border-radius: 8px;
-  filter: drop-shadow(0px 4px 4px rgba(255, 255, 255, 0.25));
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--font-size-24);
+  border-radius: .5rem;
+  padding: .75rem 1.5rem;
   overflow: hidden;
   user-select: none;
-  font-family: Roboto, sans-serif;
   min-height: 26px;
+}
+
+.primaryButton {
+  background-color: var(--color-fill-accent-enabled);
+  color: var(--color-text-icon-primary);
 
   &:disabled {
-    background-color: #F6F7FF;
-    color: rgba(27, 38, 44, .5);
-    border-color: rgba(27, 38, 44, .5);
+    background-color: var(--color-fill-default-disabled);
+    color: var(--color-text-icon-disabled);
   }
 
   &:not(:disabled):hover {
     cursor: pointer;
-    box-shadow: 0 0 2vh 2px var(--color-fill-accent-enabled);
+    background-color: var(--color-fill-accent-hover);
   }
 
   &:not(:disabled):active {
-    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, .50);
+    background-color: var(--color-fill-accent-pressed);
+  }
+}
+
+.defaultButton {
+  background-color: var(--color-fill-default-enabled);
+  color: var(--color-text-icon-primary);
+
+  &:disabled {
+    background-color: var(--color-fill-default-disabled);
+    color: var(--color-text-icon-disabled);
+  }
+
+  &:not(:disabled):hover {
+    cursor: pointer;
+    background-color: var(--color-fill-default-hover);
+  }
+
+  &:not(:disabled):active {
+    background-color: var(--color-fill-default-pressed);
   }
 }
 
@@ -63,11 +85,12 @@
 
 .contentWrapper {
   display: flex;
-  align-self: center;
+  width: 100%;
   flex-direction: column;
-  width: 75%;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  padding: 0 80px;
+  margin: 2rem 0;
 
   &::-webkit-scrollbar {
     display: none;
@@ -75,26 +98,25 @@
 
   .buttonsWrapper {
     display: flex;
-    width: 100%;
+    height: 124px;
     justify-content: space-between;
-    margin-top: 30px;
-    border-radius: 16px;
-    padding: 34px 24px;
-    background-color: #1A2C37;
+    border-radius: 1rem;
+    padding: 2rem;
+    background-color: var(--color-bg-plates);
     box-sizing: border-box;
 
     .buttons {
       display: flex;
-      gap: 20px;
+      gap: 1rem;
     }
 
     .breakButton {
-      padding: 0 50px;
+      padding: 0 2rem;
     }
 
     .playButton,
     .stopButton {
-      padding: 1vh;
+      width: 3.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -119,33 +141,16 @@
 
   .tablesWrapper {
     width: 100%;
+    height: 100%;
     display: flex;
     gap: 20px;
 
     .toursWrapper,
     .questionsWrapper {
-      margin-top: 20px;
-      border-radius: 15px;
+      margin-top: 1rem;
+      border-radius: 1rem;
       height: 100%;
-      background-color: #1A2C37;
-      box-sizing: border-box;
-    }
-
-    .tour,
-    .question {
-      position: relative;
-      height: 6.5vh;
-      border: 2px solid var(--color-fill-accent-enabled);
-      background-color: white;
-      font-size: 1.2vw;
-      font-weight: 700;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      border-radius: 8px;
-      width: 100%;
-      margin-bottom: 2vh;
-      cursor: pointer;
+      background-color: var(--color-bg-plates);
       box-sizing: border-box;
     }
 
@@ -158,60 +163,60 @@
       justify-content: center;
     }
 
-    .toursWrapper {
-      width: 35%;
-      padding: 3vh 2vw;
+    .toursWrapper,
+    .questionsWrapper {
+      width: 30%;
+      padding: 1.5rem 2rem 3rem;
 
-      .tour {
-        color: var(--color-fill-accent-enabled);
+      .tour,
+      .question {
+        display: flex;
+        align-items: center;
+        font-size: var(--font-size-24);
+        border-radius: .5rem;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.5rem;
+        text-align: left;
+        background-color: transparent;
+        color: var(--color-text-icon-primary);
       }
 
-      .activeTour {
-        color: white;
+      .tour:hover,
+      .question:hover {
+        background-color: rgba(255, 255, 255, .06);
+      }
+
+      .tour:active,
+      .question:active {
+        background-color: rgba(255, 255, 255, .02);
+      }
+
+      .activeTour,
+      .activeQuestion {
+        background-color: rgba(255, 255, 255, .06);
+        font-weight: var(--font-weight-bold);
       }
     }
 
     .questionsWrapper {
       flex: 1;
-      padding: 3vh 2vw;
-
-      .questionWrapper {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-
-        .question {
-          filter: drop-shadow(0px 4px 4px rgba(255, 255, 255, 0.25));
-          color: black;
-          position: relative;
-          width: 70%;
-        }
-
-        .answersButtonLink {
-          width: 25%;
-        }
-
-        .answersButton {
-          width: 100%;
-          border-radius: 8px;
-          font-weight: 700;
-          position: relative;
-          overflow: visible;
-          height: 6.5vh;
-          font-size: 1.4vw;
-          text-decoration: none;
-        }
-
-        .activeQuestion {
-          color: white;
-        }
-      }
     }
 
-    .activeTour,
-    .activeQuestion {
-      background-color: var(--color-fill-accent-enabled);
-      border-color: white;
+    .questionWrapper {
+      display: flex;
+      width: 100%;
+
+      .question {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .answersButtonLink {
+        text-decoration: none;
+        color: var(--color-text-icon-link-enabled);
+        font-weight: var(--font-weight-medium);
+        font-size: var(--font-size-24);
+      }
     }
   }
 }
@@ -223,13 +228,13 @@
 }
 
 .scrollbarView {
-  padding: 1vh;
+  padding-bottom: 1rem;
 }
 
 .opposition {
   position: absolute;
-  right: 0.6vw;
-  top: -0.8vw;
+  right: 0;
+  top: .25rem;
   user-select: none;
   pointer-events: none;
 }
@@ -242,15 +247,16 @@
 
 .gamePartWrapper {
   display: flex;
-  font-size: 2vmax;
-  color: white;
-  font-weight: 300;
-  margin-bottom: 2vh;
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-size-40);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-icon-primary);
+  margin-bottom: 1rem;
 }
 
 .tourName {
   position: relative;
-  width: 80%;
+  width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -267,6 +273,5 @@
 }
 
 .scrollbarContainer {
-  height: 90% !important;
   align-self: center;
 }

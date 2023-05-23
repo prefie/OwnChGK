@@ -12,8 +12,10 @@ import {GamePartSettings, getGame} from '../../server-api/server-api';
 import {getCookie, getUrlForSocket} from '../../commonFunctions';
 import Modal from '../../components/modal/modal';
 import Loader from '../../components/loader/loader';
-import {Alert, Snackbar} from '@mui/material';
+import {Alert, Divider, Snackbar} from '@mui/material';
 import {Scrollbars} from 'rc-scrollbars';
+import TimeWidget from "../../components/timeWidget/timeWidget";
+import {BarChartRounded, CircleNotificationsTwoTone, CircleOutlined, CircleTwoTone} from "@mui/icons-material";
 
 let interval: any;
 let breakInterval: any;
@@ -274,27 +276,30 @@ const AdminGame: FC<AdminGameProps> = props => {
 
         return (
             <div
-                className={`${classes.tour} ${props.tourIndex ===
-                clickedTourIndex &&
-                clickedGamePart ===
-                props.gamePart ? classes.activeTour : ''}`}
-                id={`${props.tourIndex}_${props.gamePart}`}
-                onClick={handleTourClick} key={`tour_${props.tourNumber}`}>
-                {
-                    activeTourIndex !==
-                    undefined &&
-                    props.tourIndex ===
-                    activeTourIndex &&
-                    activeGamePart ===
-                    props.gamePart
-                        ? <span>&#9654;</span>
-                        : <span style={{color: 'transparent'}}>&#9654;</span>
+                className={`${classes.tour} ${props.tourIndex === clickedTourIndex && clickedGamePart === props.gamePart 
+                    ? classes.activeTour 
+                    : '' }`
                 }
+                id={`${props.tourIndex}_${props.gamePart}`}
+                onClick={handleTourClick}
+                key={`tour_${props.tourNumber}`}
+            >
                 <div className={classes.tourName}>
                     {
                         props.tourName || `Тур ${props.tourNumber}`
                     }
                 </div>
+                {
+                    activeTourIndex !== undefined &&
+                    props.tourIndex === activeTourIndex &&
+                    activeGamePart === props.gamePart
+                        ? <PlayArrowIcon
+                            sx={{
+                                fontSize: 'var(--font-size-32)',
+                                color: 'var(--color-text-icon-secondary)'
+                            }}/>
+                        : null
+                }
             </div>
         );
     };
@@ -369,28 +374,27 @@ const AdminGame: FC<AdminGameProps> = props => {
         return Array.from(Array(questionsCount).keys()).map(i => {
             return (
                 <div className={classes.questionWrapper} key={`tour_${activeTourIndex}_question_${i + 1}`}>
-                    <div
-                        className={`${classes.question} ${activeQuestionNumber !==
-                        undefined &&
-                        i ===
-                        activeQuestionNumber -
-                        1 ? classes.activeQuestion : ''}`}
+                    <div className={`${classes.question} ${activeQuestionNumber !== undefined &&
+                                    i === activeQuestionNumber - 1 
+                            ? classes.activeQuestion 
+                            : ''}`
+                        }
                         id={`${i + 1}`}
-                        onClick={(event) => handleQuestionClick(event, gamePart)}>
+                        onClick={(event) => handleQuestionClick(event, gamePart)}
+                    >
                         Вопрос {questionsCount * (clickedTourIndex-1) + (i+1)}
-                    </div>
-
-                    <Link className={classes.answersButtonLink}
-                          to={`/admin/game/${gameId}/${gamePart}/answers/${clickedTourIndex}/${i + 1}`}>
-                        <button className={`${classes.button} ${classes.answersButton}`}>
+                        <Link
+                            className={classes.answersButtonLink}
+                            to={`/admin/game/${gameId}/${gamePart}/answers/${clickedTourIndex}/${i + 1}`}
+                        >
                             Ответы
                             {
                                 clickedGamePart === 'chgk' && isAppeal[(clickedTourIndex - 1) * questionsCount + i]
                                     ?
                                     <div className={classes.opposition}>
-                                        <CircleOutlinedIcon sx={{
-                                            fill: 'red',
-                                            fontSize: '1.2vw',
+                                        <CircleOutlined sx={{
+                                            fill: 'var(--color-fill-notify)',
+                                            fontSize: 'var(--font-size-24)',
                                             color: 'darkred',
                                             userSelect: 'none',
                                             pointerEvents: 'none'
@@ -398,8 +402,8 @@ const AdminGame: FC<AdminGameProps> = props => {
                                     </div>
                                     : null
                             }
-                        </button>
-                    </Link>
+                        </Link>
+                    </div>
                 </div>
             );
         });
@@ -423,8 +427,6 @@ const AdminGame: FC<AdminGameProps> = props => {
     return (
         <PageWrapper>
             <Header isAuthorized={true} isAdmin={true}>
-                <Link to={`/admin/rating/${gameId}`} className={classes.menuLink}>Рейтинг</Link>
-
                 <div className={classes.gameName}>
                     {gameName}
                 </div>
@@ -443,110 +445,136 @@ const AdminGame: FC<AdminGameProps> = props => {
             }
 
             <div className={classes.mainWrapper}>
-                <Scrollbars autoHide autoHideTimeout={500}
-                            autoHideDuration={200}
-                            renderThumbVertical={() =>
-                                <div style={{backgroundColor: 'white', borderRadius: '4px', cursor: 'pointer'}}/>
-                            }
-                            renderTrackHorizontal={props => <div {...props} style={{display: 'none'}}/>}
-                            classes={{
-                                view: classes.scrollbarView,
-                                trackVertical: classes.verticalTrack,
-                                root: classes.scrollbarContainer
-                            }}>
                     <div className={classes.contentWrapper}>
                         <div className={classes.buttonsWrapper}>
                             <div className={classes.buttons}>
-                                <button className={`${classes.button} ${classes.breakButton}`}
-                                        onClick={isBreak ? stopBreak : openBreakModal}>{isBreak ? 'Остановить перерыв' : 'Запустить перерыв'}</button>
-
-                                <button className={`${classes.button} ${classes.playButton}`}
+                                <button className={`${classes.button} ${classes.primaryButton}`}
                                         disabled={isBreak || activeQuestionNumber === undefined}
                                         onClick={() => handlePlayClick(activeGamePart as 'chgk' | 'matrix')}>
                                     {
                                         playOrPause === 'play'
                                             ? <PlayArrowIcon
                                                 sx={{
-                                                    fontSize: '2.5vw',
-                                                    color: isBreak ||
-                                                    activeQuestionNumber ===
-                                                    undefined ? 'rgba(27, 38, 44, 0.5)' : 'black'
+                                                    fontSize: 'var(--font-size-48)',
+                                                    color: isBreak || activeQuestionNumber === undefined
+                                                        ? 'var(--color-text-icon-disabled)'
+                                                        : 'var(--color-text-icon-primary)'
                                                 }}/>
                                             : <PauseIcon
                                                 sx={{
-                                                    fontSize: '2.5vw',
-                                                    color: isBreak ||
-                                                    activeQuestionNumber ===
-                                                    undefined ? 'rgba(27, 38, 44, 0.5)' : 'black'
+                                                    fontSize: 'var(--font-size-48)',
+                                                    color: isBreak || activeQuestionNumber === undefined
+                                                        ? 'var(--color-text-icon-disabled)'
+                                                        : 'var(--color-text-icon-primary)'
                                                 }}/>
                                     }
                                 </button>
 
-                                <button className={`${classes.button} ${classes.stopButton}`}
+                                <button className={`${classes.button} ${classes.defaultButton}`}
                                         disabled={isBreak || activeQuestionNumber === undefined}
                                         onClick={() => handleStopClick(activeGamePart)}>
                                     <StopIcon sx={{
-                                        fontSize: '2.5vw',
-                                        color: isBreak ||
-                                        activeQuestionNumber ===
-                                        undefined ? 'rgba(27, 38, 44, 0.5)' : 'black'
+                                        fontSize: 'var(--font-size-48)',
+                                        color: isBreak || activeQuestionNumber === undefined
+                                            ? 'var(--color-text-icon-disabled)'
+                                            : 'var(--color-text-icon-primary)'
                                     }}/>
                                 </button>
-
-                                <button className={`${classes.button} ${classes.tenSecondsButton}`}
+                                <button className={`${classes.button} ${classes.defaultButton}`}
                                         disabled={isBreak || activeQuestionNumber === undefined}
                                         onClick={() => handleAddedTimeClick(activeGamePart as 'chgk' | 'matrix')}>
                                     + 10 сек.
                                 </button>
+                                <button className={`${classes.button} ${classes.defaultButton}`}
+                                        onClick={
+                                            isBreak
+                                                ? stopBreak
+                                                : openBreakModal
+                                        }
+                                >{
+                                    isBreak
+                                        ? `Закончить перерыв`
+                                        : `Начать перерыв`
+                                }
+                                </button>
                             </div>
-
-                            <div className={classes.answerTime}>{parseTimer(timer)}</div>
+                            <Link to={`/admin/rating/${gameId}`} className={classes.ratingLink}>
+                                <BarChartRounded sx={{fontSize: 'var(--font-size-32)'}}/>
+                                Рейтинг
+                            </Link>
                         </div>
 
                         <div className={classes.tablesWrapper}>
                             <div className={classes.toursWrapper}>
-                                {
-                                    matrixSettings
-                                        ?
-                                        <>
-                                            <div className={classes.gamePartWrapper}>Матрица</div>
-                                            {renderTours(matrixSettings.roundsCount, 'matrix', matrixSettings.roundNames)}
-                                        </>
-                                        : null
-                                }
-                                {
-                                    chgkSettings
-                                        ?
-                                        <>
-                                            <div className={classes.gamePartWrapper}>ЧГК</div>
-                                            {renderTours(chgkSettings.roundsCount, 'chgk')}
-                                        </>
-                                        : null
-                                }
+                                <Scrollbars autoHide autoHideTimeout={500}
+                                            autoHideDuration={200}
+                                            renderThumbVertical={() =>
+                                                <div style={{backgroundColor: 'white', borderRadius: '4px', cursor: 'pointer'}}/>
+                                            }
+                                            renderTrackHorizontal={props => <div {...props} style={{display: 'none'}}/>}
+                                            classes={{
+                                                view: classes.scrollbarView,
+                                                trackVertical: classes.verticalTrack,
+                                                root: classes.scrollbarContainer
+                                            }}
+                                >
+                                    {
+                                        matrixSettings
+                                            ?
+                                            <>
+                                                <div className={classes.gamePartWrapper}>Матрица</div>
+                                                {
+                                                    renderTours(matrixSettings.roundsCount, 'matrix', matrixSettings.roundNames)
+                                                }
+                                                <Divider sx={{margin: '1rem 0 2rem 0', borderColor:'rgba(255,255,255,.12)'}}/>
+                                            </>
+                                            : null
+                                    }
+                                    {
+                                        chgkSettings
+                                            ?
+                                            <>
+                                                <div className={classes.gamePartWrapper}>ЧГК</div>
+                                                {
+                                                    renderTours(chgkSettings.roundsCount, 'chgk')
+                                                }
+                                            </>
+                                            : null
+                                    }
+                                </Scrollbars>
                             </div>
 
                             <div className={classes.questionsWrapper}>
-                                {
-                                    clickedGamePart === 'matrix'
-                                        ? renderQuestions(matrixSettings?.questionsCount || 0, 'matrix')
-                                        : null
-                                }
-                                {
-                                    clickedGamePart === 'chgk'
-                                        ? renderQuestions(chgkSettings?.questionsCount || 0, 'chgk')
-                                        : null
-                                }
+                                <Scrollbars autoHide autoHideTimeout={500}
+                                            autoHideDuration={200}
+                                            renderThumbVertical={() =>
+                                                <div style={{backgroundColor: 'white', borderRadius: '4px', cursor: 'pointer'}}/>
+                                            }
+                                            renderTrackHorizontal={props => <div {...props} style={{display: 'none'}}/>}
+                                            classes={{
+                                                view: classes.scrollbarView,
+                                                trackVertical: classes.verticalTrack,
+                                                root: classes.scrollbarContainer
+                                            }}
+                                >
+                                    {
+                                        clickedGamePart === 'matrix'
+                                            ? renderQuestions(matrixSettings?.questionsCount || 0, 'matrix')
+                                            : null
+                                    }
+                                    {
+                                        clickedGamePart === 'chgk'
+                                            ? renderQuestions(chgkSettings?.questionsCount || 0, 'chgk')
+                                            : null
+                                    }
+                                </Scrollbars>
                             </div>
+                            <TimeWidget
+                                time={isBreak ? parseTimer(breakTime * 1000) : parseTimer(timer)}
+                                isBreak={isBreak}
+                            />
                         </div>
-                        {
-                            isBreak
-                                ? <p className={classes.breakInformer}>Идет перерыв: <b>{parseTimer(breakTime *
-                                    1000)}</b>
-                                </p>
-                                : null
-                        }
                     </div>
-                </Scrollbars>
             </div>
             <Snackbar sx={{marginTop: '8vh'}} open={isConnectionError}
                       anchorOrigin={{vertical: 'top', horizontal: 'right'}} autoHideDuration={5000}>

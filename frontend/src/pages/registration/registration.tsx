@@ -12,6 +12,8 @@ import {authorizeUserWithRole} from '../../redux/actions/app-actions/app-actions
 import {connect} from 'react-redux';
 import PageBackdrop from '../../components/backdrop/backdrop';
 import {createUser} from '../../server-api/server-api';
+import {Input} from "../../components/input/input";
+import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
 
 const Registration: FC<RegistrationProps> = props => {
     const [isRepeatedPasswordInvalid, setIsRepeatedPasswordInvalid] = useState<boolean>(false);
@@ -79,26 +81,65 @@ const Registration: FC<RegistrationProps> = props => {
             <div className={classes.contentWrapper}>
                 <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
 
-                <form onSubmit={validateForm}>
-                    <CustomInput type="email" id="email" name="email" placeholder="Почта"
-                                 style={{marginBottom: '9%'}} autocomplete={true}
-                                 value={email} onChange={handleEmailChange}
-                                 isInvalid={isError || isRegisteredAlready}
-                                 errorHelperText={isRegisteredAlready ? 'Эта почта уже зарегистрирована' : ''}
-                                 onFocus={() => {
-                                     setIsRegisteredAlready(false);
-                                     setIsError(false);
-                                 }}/>
-                    <CustomInput type="password" id="password" name="password" placeholder="Пароль" value={password}
-                                 autocomplete={true}
-                                 isInvalid={isRepeatedPasswordInvalid || isError} onChange={handlePasswordChange}/>
-                    <CustomInput type="password" id="repeatPassword" name="repeatPassword" placeholder="Повторите пароль"
-                                 value={repeatedPassword} autocomplete={true}
-                                 isInvalid={isRepeatedPasswordInvalid || isError} onChange={handleRepeatedPasswordChange}
-                                 errorHelperText={isRepeatedPasswordInvalid ? 'Пароли не совпадают' : 'Ошибка регистрации, попробуйте снова'}
+                <form onSubmit={validateForm} className={classes.authForm}>
+                    {/*<CustomInput type="email" id="email" name="email" placeholder="Почта"*/}
+                    {/*             style={{marginBottom: '9%'}} autocomplete={true}*/}
+                    {/*             value={email} onChange={handleEmailChange}*/}
+                    {/*             isInvalid={isError || isRegisteredAlready}*/}
+                    {/*             errorHelperText={isRegisteredAlready ? 'Эта почта уже зарегистрирована' : ''}*/}
+                    {/*             onFocus={() => {*/}
+                    {/*                 setIsRegisteredAlready(false);*/}
+                    {/*                 setIsError(false);*/}
+                    {/*             }}/>*/}
+                    <Input
+                        type="email"
+                        id="email"
+                        placeholder="Почта"
+                        style={{marginBottom: '2rem'}}
+                        value={email}
+                        onChange={handleEmailChange}
+                        isInvalid={isError || isRegisteredAlready}
+                        errorHelperText={isRegisteredAlready ? 'Эта почта уже зарегистрирована' : ''}
+                        autocomplete={true}
+                        onFocus={() => {
+                            setIsRegisteredAlready(false);
+                            setIsError(false);
+                        }}
                     />
-
-                    <FormButton type="signUpButton" text="Зарегистрироваться"/>
+                    {/*<CustomInput type="password" id="password" name="password" placeholder="Пароль" value={password}*/}
+                    {/*             autocomplete={true}*/}
+                    {/*             isInvalid={isRepeatedPasswordInvalid || isError} onChange={handlePasswordChange}/>*/}
+                    <Input
+                        type="password"
+                        id="password"
+                        placeholder="Пароль"
+                        value={password}
+                        onChange={handlePasswordChange}
+                        isInvalid={isRepeatedPasswordInvalid || isError}
+                        autocomplete={true}
+                    />
+                    {/*<CustomInput type="password" id="repeatPassword" name="repeatPassword" placeholder="Повторите пароль"*/}
+                    {/*             value={repeatedPassword} autocomplete={true}*/}
+                    {/*             isInvalid={isRepeatedPasswordInvalid || isError} onChange={handleRepeatedPasswordChange}*/}
+                    {/*             errorHelperText={isRepeatedPasswordInvalid ? 'Пароли не совпадают' : 'Ошибка регистрации, попробуйте снова'}*/}
+                    {/*/>*/}
+                    <Input
+                        type="password"
+                        id="repeatPassword"
+                        placeholder="Ещё раз пароль"
+                        value={password}
+                        onChange={handleRepeatedPasswordChange}
+                        isInvalid={isRepeatedPasswordInvalid || isError}
+                        autocomplete={true}
+                        errorHelperText={isRepeatedPasswordInvalid
+                            ? 'Пароли не совпадают'
+                            : 'Не удалось зарегистрировать, попробуйте ещё раз'
+                        }
+                    />
+                    <div className={classes.buttonWrapper}>
+                        <CustomButton type={"submit"} text={"Зарегистрироваться"} buttonType={ButtonType.primary}/>
+                    </div>
+                    {/*<FormButton type="signUpButton" text="Зарегистрироваться"/>*/}
                 </form>
 
                 <div className={classes.toAuthorizationWrapper}>
