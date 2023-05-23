@@ -1,18 +1,24 @@
 .contentWrapper {
-  height: 100%;
-  width: 26%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   align-self: center;
-  position: relative;
+  height: 90%;
+  width: 100%;
+  padding: 0 80px;
 }
 
 .logo {
-  width: 48%;
-  height: 14%;
-  margin: 18vh 0 8vh;
-  transform: translateX(50%);
+  margin-bottom: 3rem;
   user-select: none;
+}
+
+.authForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 25%;
 }
 
 .toRegistrationParagraph {
@@ -37,14 +43,15 @@
 
 .toRegistrationWrapper {
   width: 100%;
-  font-size: 1vmax;
+  font-size: var(--font-size-24);
   text-align: center;
-  margin-top: 10vh;
+  margin-top: 2rem;
   user-select: none;
 }
 
 .restorePasswordLink {
   color: var(--color-text-icon-link-enabled);
+  font-weight: var(--font-weight-medium);
   text-decoration: none;
   user-select: none;
 }
@@ -57,14 +64,14 @@
 }
 
 @media only screen and (max-width: 1400px) {
-  .contentWrapper {
-    width: 35%
+  .authForm {
+    width: 30%
   }
 }
 
 @media only screen and (max-width: 992px) {
-  .contentWrapper {
-    width: 50%
+  .authForm {
+    width: 40%
   }
 }
 
@@ -73,18 +80,24 @@
     width: 80%;
   }
 
+  .authForm {
+    width: 100%;
+  }
+
   .logo {
     width: 48%;
     height: 14%;
   }
 
-  .restoreLinkWrapper {
-    font-size: 3.7vw;
+  .restoreLinkWrapper,
+  .toRegistrationParagraph,
+  .toRegistrationLink {
+    font-size: var(--font-size-16);
   }
 
   .toRegistrationWrapper {
-    font-size: 3.9vw;
-    margin-top: 50vw;
+    font-size: var(--font-size-16);
+    margin-top: 2rem;
   }
 }
 

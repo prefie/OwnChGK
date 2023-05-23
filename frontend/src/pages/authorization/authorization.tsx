@@ -66,7 +66,7 @@ const Authorization: FC<AuthorizationProps> = props => {
             <div className={classes.contentWrapper}>
                 <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} className={classes.authForm}>
                     <Input
                         type="email"
                         id="email"
@@ -103,7 +103,7 @@ const Authorization: FC<AuthorizationProps> = props => {
                         ? null
                         :
                         <div className={classes.toRegistrationWrapper}>
-                            <p className={classes.toRegistrationParagraph}>Раньше не играл?</p>
+                            <p className={classes.toRegistrationParagraph}>Ещё нет аккаунта?</p>
                             <Link className={classes.toRegistrationLink} to="/registration"
                                   id="toRegistration"> Зарегистрироваться</Link>
                         </div>

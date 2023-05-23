@@ -35,9 +35,16 @@
   --color-fill-accent-pressed: #005787;
   --color-fill-accent-disabled: #00283D;
 
+  --color-fill-default-enabled: rgba(255,255,255, .16);
+  --color-fill-default-hover: rgba(255,255,255, .24);
+  --color-fill-default-pressed: rgba(255,255,255, .06);
+  --color-fill-default-disabled: rgba(255,255,255, .06);
+
   --color-fill-progressBar-green: #2AB027;
   --color-fill-progressBar-yellow: #D9BB1F;
   --color-fill-progressBar-red: #E42E2E;
+
+  --color-fill-notify: #FF00E5;
 
   // Text&Icon
   --color-text-icon-primary: rgba(235, 248, 255, 1);
