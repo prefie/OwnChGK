@@ -1,10 +1,8 @@
 import React, {FC, useState} from 'react';
 import classes from './registration.module.scss';
 import Header from '../../components/header/header';
-import {FormButton} from '../../components/form-button/form-button';
 import {Link, Redirect} from 'react-router-dom';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
-import {CustomInput} from '../../components/custom-input/custom-input';
 import {RegistrationDispatchProps, RegistrationProps} from '../../entities/registration/registration.interfaces';
 import {Dispatch} from 'redux';
 import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces';
@@ -82,15 +80,6 @@ const Registration: FC<RegistrationProps> = props => {
                 <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
 
                 <form onSubmit={validateForm} className={classes.authForm}>
-                    {/*<CustomInput type="email" id="email" name="email" placeholder="Почта"*/}
-                    {/*             style={{marginBottom: '9%'}} autocomplete={true}*/}
-                    {/*             value={email} onChange={handleEmailChange}*/}
-                    {/*             isInvalid={isError || isRegisteredAlready}*/}
-                    {/*             errorHelperText={isRegisteredAlready ? 'Эта почта уже зарегистрирована' : ''}*/}
-                    {/*             onFocus={() => {*/}
-                    {/*                 setIsRegisteredAlready(false);*/}
-                    {/*                 setIsError(false);*/}
-                    {/*             }}/>*/}
                     <Input
                         type="email"
                         id="email"
@@ -106,9 +95,6 @@ const Registration: FC<RegistrationProps> = props => {
                             setIsError(false);
                         }}
                     />
-                    {/*<CustomInput type="password" id="password" name="password" placeholder="Пароль" value={password}*/}
-                    {/*             autocomplete={true}*/}
-                    {/*             isInvalid={isRepeatedPasswordInvalid || isError} onChange={handlePasswordChange}/>*/}
                     <Input
                         type="password"
                         id="password"
@@ -118,16 +104,11 @@ const Registration: FC<RegistrationProps> = props => {
                         isInvalid={isRepeatedPasswordInvalid || isError}
                         autocomplete={true}
                     />
-                    {/*<CustomInput type="password" id="repeatPassword" name="repeatPassword" placeholder="Повторите пароль"*/}
-                    {/*             value={repeatedPassword} autocomplete={true}*/}
-                    {/*             isInvalid={isRepeatedPasswordInvalid || isError} onChange={handleRepeatedPasswordChange}*/}
-                    {/*             errorHelperText={isRepeatedPasswordInvalid ? 'Пароли не совпадают' : 'Ошибка регистрации, попробуйте снова'}*/}
-                    {/*/>*/}
                     <Input
                         type="password"
                         id="repeatPassword"
                         placeholder="Ещё раз пароль"
-                        value={password}
+                        value={repeatedPassword}
                         onChange={handleRepeatedPasswordChange}
                         isInvalid={isRepeatedPasswordInvalid || isError}
                         autocomplete={true}
@@ -139,7 +120,6 @@ const Registration: FC<RegistrationProps> = props => {
                     <div className={classes.buttonWrapper}>
                         <CustomButton type={"submit"} text={"Зарегистрироваться"} buttonType={ButtonType.primary}/>
                     </div>
-                    {/*<FormButton type="signUpButton" text="Зарегистрироваться"/>*/}
                 </form>
 
                 <div className={classes.toAuthorizationWrapper}>

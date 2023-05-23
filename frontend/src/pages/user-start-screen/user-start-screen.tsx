@@ -248,7 +248,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                                 ?
                                 <div className={classes.sectionListEmpty}>
                                     <img className={classes.emptyImage} src={require('../../images/owl-images/empty_owl.svg').default} alt="empty-owl"/>
-                                    <h3 className={classes.emptyTitle}>Нет ни одной свободной команды<br/>Создайте свою</h3>
+                                    <h3 className={classes.emptyTitle}>Создайте свою команду</h3>
                                 </div>
                                 :
                                 <div className={classes.sectionList}>
@@ -257,7 +257,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                         }
                         <Snackbar sx={{marginTop: '8vh'}} open={isTeamNotFree} anchorOrigin={{vertical: 'top', horizontal: 'right'}} autoHideDuration={5000}>
                             <Alert severity='error' sx={{width: '100%'}}>
-                                Кто-то уже занял эту команду
+                                Эта команда уже кем-то занята :(
                             </Alert>
                         </Snackbar>
                     </div>
