@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Game } from './game';
-import { Question } from './questions';
+import { Question } from './question';
 import { BaseCreature } from './base-creature';
 
 @Entity('rounds')

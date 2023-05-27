@@ -5,7 +5,7 @@ import { Admin } from '../db/entities/admin';
 import { Team } from '../db/entities/team';
 import { Round } from '../db/entities/round';
 import { BigGame } from '../db/entities/big-game';
-import { Question } from '../db/entities/questions';
+import { Question } from '../db/entities/question';
 import { AppConfig } from './app-config';
 import { Answer } from '../db/entities/answer';
 import { Appeal } from '../db/entities/appeal';

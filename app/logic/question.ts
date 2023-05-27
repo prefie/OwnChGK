@@ -4,6 +4,7 @@ import { Appeal } from './appeal';
 import { AnswerStatus } from '../db/entities/answer';
 
 export class Question {
+    public readonly id: string;
     public readonly cost: number;
     public readonly number: number;
     public readonly time: number;
@@ -13,14 +14,24 @@ export class Question {
     private readonly _answers: Record<string, Answer>;
     private readonly _appeals: Record<string, Appeal>;
 
-    constructor(cost: number, roundNumber: number, number: number, time: number, text: string = null) {
+    constructor(
+        id: string,
+        cost: number,
+        roundNumber: number,
+        number: number,
+        time: number,
+        text: string = null,
+        answers?: Answer[] | undefined,
+        appeals?: Appeal[] | undefined
+    ) {
+        this.id = id;
         this.cost = cost;
         this.roundNumber = roundNumber;
         this.number = number;
         this.time = time;
-        this._answers = {};
-        this._appeals = {};
         this.text = text;
+        this._answers = answers ? Question.mapAnswersToRecord(answers) : {};
+        this._appeals = appeals ? Question.mapAppealsToRecord(appeals) : {};
     }
 
     get answers(): Answer[] {
@@ -32,14 +43,13 @@ export class Question {
     }
 
     giveAnswer(team: Team, text: string): void {
-        const answer = new Answer(team.id, this.roundNumber, this.number, text);
-        this._answers[team.id] = answer;
-        team.addAnswer(answer);
+        this._answers[team.id] = new Answer(team.id, this.roundNumber, this.number, text);
+        team.addAnswer(this._answers[team.id]);
     }
 
     giveAppeal(teamId: string, text: string, wrongAnswer: string): void {
         this._appeals[teamId] = new Appeal(teamId, this.roundNumber, this.number, text, wrongAnswer);
-        this._answers[teamId].onAppeal();
+        this._answers[teamId].onAppeal(this._appeals[teamId]);
     }
 
     changeAnswer(team: Team, roundNumber: number, questionNumber: number, isMatrixType = false): void {
@@ -92,5 +102,25 @@ export class Question {
         }
 
         this.rejectAnswers(answer);
+    }
+
+    private static mapAnswersToRecord(answers: Answer[]): Record<string, Answer> {
+        const answersWrapper: Record<string, Answer> = {};
+
+        for (let answer of answers) {
+            answersWrapper[answer.teamId] = answer;
+        }
+
+        return answersWrapper;
+    }
+
+    private static mapAppealsToRecord(appeals: Appeal[]): Record<string, Appeal> {
+        const appealsWrapper: Record<string, Appeal> = {};
+
+        for (let appeal of appeals) {
+            appealsWrapper[appeal.teamId] = appeal;
+        }
+
+        return appealsWrapper;
     }
 }

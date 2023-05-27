@@ -1,19 +1,13 @@
 import { Request, Response } from 'express';
 import { getTokenFromRequest } from '../utils/jwt-token';
 import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: избавиться
-import { Game } from '../logic/game';
-import { Team } from '../logic/team';
 import { BigGameDto, GameDto, MatrixGameDto } from '../dtos/big-game.dto';
-import { BigGameLogic } from '../logic/big-game-logic';
 import { BigGameRepository } from '../db/repositories/big-game.repository';
 import { GameStatus, GameType } from '../db/entities/game';
 import { BigGame } from '../db/entities/big-game';
-import { ChgkSettingsInternal } from '../entities/chgk-settings-internal';
-import { MatrixSettingsInternal } from '../entities/matrix-settings-internal';
 import { allAdminRoles, demoAdminRoles, smallAdminRoles, superAdminRoles, userRoles } from '../utils/roles';
 import { AccessType, CheckAccessResult } from '../utils/check-access-result';
-import { GameTypeLogic } from '../logic/enums/game-type-logic.enum';
-import { Round } from '../logic/round';
+import { BigGameLogic } from '../logic/big-game-logic';
 
 export class GamesController {
     private readonly bigGameRepository: BigGameRepository;
@@ -76,12 +70,14 @@ export class GamesController {
         try {
             const { gameId } = req.params;
 
-            const checkAccessResult = await this.CheckAccess(req, gameId);
+            const checkAccessResult = await this.checkAccess(req, gameId);
             if (checkAccessResult.type == AccessType.FORBIDDEN) {
                 return res.status(403).json({ message: checkAccessResult.message });
             }
 
             await this.bigGameRepository.deleteById(gameId);
+            delete bigGames[gameId];
+
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
@@ -96,7 +92,7 @@ export class GamesController {
             const { gameId } = req.params;
             const { newGameName } = req.body;
 
-            const checkAccessResult = await this.CheckAccess(req, gameId);
+            const checkAccessResult = await this.checkAccess(req, gameId);
             if (checkAccessResult.type == AccessType.FORBIDDEN) {
                 return res.status(403).json({ message: checkAccessResult.message });
             }
@@ -116,7 +112,7 @@ export class GamesController {
             const { gameId } = req.params;
             const { adminEmail } = req.body;
 
-            const checkAccessResult = await this.CheckAccess(req, gameId);
+            const checkAccessResult = await this.checkAccess(req, gameId);
             if (checkAccessResult.type == AccessType.FORBIDDEN) {
                 return res.status(403).json({ message: checkAccessResult.message });
             }
@@ -143,6 +139,8 @@ export class GamesController {
             const matrix = bigGame.games.find(game => game.type == GameType.MATRIX);
 
             const { role } = getTokenFromRequest(req);
+
+            await this.restoreBigGameIfNeeded(bigGame.id, bigGame.status);
 
             const answer = { // TODO: DTO
                 name: bigGame.name,
@@ -171,68 +169,26 @@ export class GamesController {
                 return res.status(404).json({ message: 'game not found' });
             }
 
-            const checkAccessResult = await this.CheckAccess(req, gameId, true);
+            const checkAccessResult = await this.checkAccess(req, gameId, true);
             if (checkAccessResult.type == AccessType.FORBIDDEN) {
                 return res.status(403).json({ message: checkAccessResult.message });
             }
 
-            gameAdmins[gameId] = new Set();
-            gameUsers[gameId] = new Set();
+            if (!bigGames[bigGame.id]) {
+                gameAdmins[gameId] = new Set();
+                gameUsers[gameId] = new Set();
+
+                bigGames[bigGame.id] = await this.bigGameRepository.createBigGameLogic(bigGame);
+
+                setTimeout(async () => {
+                    delete bigGames[gameId];
+                    delete gameUsers[gameId];
+                    delete gameAdmins[gameId];
+                }, 1000 * 60 * 60 * 24); // TODO: избавиться
+            }
 
             const chgkFromDB = bigGame.games.find(game => game.type == GameType.CHGK);
             const matrixFromDB = bigGame.games.find(game => game.type == GameType.MATRIX);
-
-            const chgk = new Game(bigGame.name, GameTypeLogic.ChGK);
-            const matrix = new Game(bigGame.name, GameTypeLogic.Matrix);
-
-            if (chgkFromDB) {
-                const chgkSettings = new ChgkSettingsInternal(chgkFromDB);
-                for (let i = 0; i < chgkSettings.roundsCount; i++) {
-                    chgk.addRound(
-                        new Round(
-                            i + 1,
-                            chgkSettings.questionsCount,
-                            60,
-                            GameTypeLogic.ChGK,
-                            chgkSettings.questions
-                        )
-                    );
-                }
-
-                for (const team of bigGame.teams) {
-                    chgk.addTeam(new Team(team.name, team.id));
-                }
-            }
-
-            if (matrixFromDB) {
-                const matrixSettings = new MatrixSettingsInternal(matrixFromDB);
-                for (let i = 0; i < matrixSettings.roundsCount; i++) {
-                    matrix.addRound(
-                        new Round(
-                            i + 1,
-                            matrixSettings.questionsCount,
-                            20,
-                            GameTypeLogic.Matrix,
-                            matrixSettings.questions
-                        )
-                    );
-                }
-
-                for (const team of bigGame.teams) {
-                    matrix.addTeam(new Team(team.name, team.id));
-                }
-            }
-
-            bigGames[bigGame.id] = new BigGameLogic(
-                bigGame.name,
-                chgkFromDB ? chgk : null,
-                matrixFromDB ? matrix : null);
-
-            setTimeout(() => {
-                delete bigGames[gameId];
-                delete gameUsers[gameId];
-                delete gameAdmins[gameId];
-            }, 1000 * 60 * 60 * 24 * 3); // TODO: избавиться
 
             const answer = { // TODO: DTO
                 name: bigGame.name,
@@ -262,6 +218,10 @@ export class GamesController {
                 return res.status(404).json({ message: 'game not found' });
             }
 
+            if (currentGame.status != GameStatus.NOT_STARTED) {
+                return res.status(400).json({ message: 'Нельзя редактировать начатые игры' });
+            }
+
             if (currentGame.name !== newGameName) {
                 const game = await this.bigGameRepository.findByName(newGameName);
                 if (game) {
@@ -269,7 +229,7 @@ export class GamesController {
                 }
             }
 
-            const checkAccessResult = await this.CheckAccess(req, gameId);
+            const checkAccessResult = await this.checkAccess(req, gameId);
             if (checkAccessResult.type == AccessType.FORBIDDEN) {
                 return res.status(403).json({ message: checkAccessResult.message });
             }
@@ -294,7 +254,7 @@ export class GamesController {
                 return res.status(404).json({ 'message': 'Игра не началась' });
             }
 
-            const checkAccessResult = await this.CheckAccess(req, gameId, true);
+            const checkAccessResult = await this.checkAccess(req, gameId, true);
             if (checkAccessResult.type == AccessType.FORBIDDEN) {
                 return res.status(403).json({ message: checkAccessResult.message });
             }
@@ -334,14 +294,16 @@ export class GamesController {
     public async getGameResultScoreTable(req: Request, res: Response) {
         try {
             const { gameId } = req.params;
-            if (!bigGames[gameId]) {
-                return res.status(404).json({ 'message': 'Игра не началась' });
-            }
 
             const { role, teamId } = getTokenFromRequest(req);
 
             if (userRoles.has(role) && !teamId) {
                 return res.status(400).json({ message: 'user without team' });
+            }
+
+            if (!bigGames[gameId]) {
+                const bigGameFromDb = await this.bigGameRepository.findById(gameId);
+                await this.restoreBigGameIfNeeded(gameId, bigGameFromDb.status);
             }
 
             const bigGame = bigGames[gameId];
@@ -361,7 +323,7 @@ export class GamesController {
             const answer = { // TODO: DTO
                 gameId,
                 isIntrigue: bigGame.intrigueEnabled,
-                roundsCount: game.rounds.length,
+                roundsCount: game.getRoundsCount(),
                 questionsCount: game.rounds[0].questionsCount,
                 matrixSums,
                 totalScoreForAllTeams,
@@ -380,9 +342,6 @@ export class GamesController {
     public async getResultWithFormat(req: Request, res: Response) {
         try {
             const { gameId } = req.params;
-            if (!bigGames[gameId]) {
-                return res.status(404).json({ 'message': 'Игра не началась' });
-            }
 
             const { role, teamId } = getTokenFromRequest(req);
 
@@ -390,7 +349,13 @@ export class GamesController {
                 return res.status(400).json({ message: 'user without team' });
             }
 
-            const bigGame = bigGames[gameId];
+            if (!bigGames[gameId]) {
+                const bigGameFromDb = await this.bigGameRepository.findById(gameId);
+                await this.restoreBigGameIfNeeded(gameId, bigGameFromDb.status);
+            }
+
+            let bigGame = bigGames[gameId];
+
             const headersList = ['Название команды', 'Сумма']; // TODO: DTO
             if (bigGame.isFullGame()) {
                 headersList.push('Матрица');
@@ -398,7 +363,7 @@ export class GamesController {
 
             const game = bigGame.isFullGame() ? bigGame.chGKGame : bigGame.currentGame;
 
-            for (let i = 1; i <= game.rounds.length; i++) {
+            for (let i = 1; i <= game.getRoundsCount(); i++) {
                 headersList.push('Тур ' + i);
                 for (let j = 1; j <= game.rounds[i - 1].questionsCount; j++) {
                     headersList.push('Вопрос ' + j);
@@ -416,7 +381,7 @@ export class GamesController {
             let roundsResultList = [];
             for (const team in scoreTable) {
                 let roundSum = 0;
-                for (let i = 0; i < game.rounds.length; i++) {
+                for (let i = 0; i < game.getRoundsCount(); i++) {
                     for (let j = 0; j < game.rounds[i].questionsCount; j++) {
                         roundSum += scoreTable[team][i][j];
                     }
@@ -436,6 +401,9 @@ export class GamesController {
                 totalTable: [headers, value].join('\n')
             };
 
+            this.bigGameRepository.updateBigGameState(bigGame)
+                .catch(e => console.log(`Ошибка при сохранении состояния игры ${bigGame.id} -- ${bigGame.name} -- ${e}`));
+
             return res.status(200).json(answer);
         } catch (error: any) {
             return res.status(500).json({
@@ -450,7 +418,7 @@ export class GamesController {
             const { gameId } = req.params;
             const { status } = req.body;
 
-            const checkAccessResult = await this.CheckAccess(req, gameId, true);
+            const checkAccessResult = await this.checkAccess(req, gameId, true);
             if (checkAccessResult.type == AccessType.FORBIDDEN) {
                 return res.status(403).json({ message: checkAccessResult.message });
             }
@@ -502,7 +470,25 @@ export class GamesController {
         }
     }
 
-    private async CheckAccess(req: Request, gameId: string, withAdditionalAdmins = false): Promise<CheckAccessResult> {
+    private async restoreBigGameIfNeeded(gameId: string, status: string): Promise<BigGameLogic> {
+        if (bigGames[gameId]) return;
+
+        if (status == GameStatus.STARTED || status == GameStatus.FINISHED) {
+            bigGames[gameId] = await this.bigGameRepository.restoreBigGame(gameId);
+            gameAdmins[gameId] = new Set();
+            gameUsers[gameId] = new Set();
+
+            setTimeout(async () => {
+                delete bigGames[gameId];
+                delete gameUsers[gameId];
+                delete gameAdmins[gameId];
+            }, 1000 * 60 * 60 * 24); // TODO: избавиться
+
+            return bigGames[gameId];
+        }
+    }
+
+    private async checkAccess(req: Request, gameId: string, withAdditionalAdmins = false): Promise<CheckAccessResult> {
         const { id, role } = getTokenFromRequest(req);
         const defaultAnswer = { type: AccessType.ACCESS };
         if (superAdminRoles.has(role)) return defaultAnswer;

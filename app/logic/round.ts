@@ -2,6 +2,7 @@ import { Question } from './question';
 import { GameTypeLogic } from './enums/game-type-logic.enum';
 
 export class Round {
+    public readonly id: string;
     public readonly number: number;
     public readonly questions: Question[];
     public readonly questionsCount: number;
@@ -9,29 +10,32 @@ export class Round {
     public readonly gameType: GameTypeLogic;
 
     constructor(
+        id: string,
         number: number,
         questionsCount: number,
         questionTime: number,
         gameType = GameTypeLogic.ChGK,
-        questions?: Record<number, string[]> | undefined,
+        questions?: Question[] | undefined,
     ) {
+        this.id = id;
         this.gameType = gameType;
         this.questionsCount = questionsCount;
         this.questionTime = questionTime;
         this.number = number;
-        this.questions = this.createQuestions(questions);
+        this.questions = questions ?? this.createQuestions();
     }
 
-    createQuestions(questions: Record<number, string[]> | undefined): Question[] {
+    createQuestions(): Question[] {
         const result = [];
         for (let i = 1; i <= this.questionsCount; i++) {
             result.push(
                 new Question(
+                    'fake-id',
                     this.gameType == GameTypeLogic.ChGK ? 1 : i * 10,
                     this.number,
                     i,
                     this.questionTime,
-                    questions ? questions[this.number][i - 1] : null
+                    null
                 )
             );
         }

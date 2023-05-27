@@ -9,14 +9,23 @@ export class Appeal {
     private _comment: string;
     private _status: AppealStatus;
 
-    constructor(teamId: string, roundNumber: number, questionNumber: number, text: string, wrongAnswer: string) {
+    constructor(
+        teamId: string,
+        roundNumber: number,
+        questionNumber: number,
+        text: string,
+        wrongAnswer: string,
+        status: AppealStatus = AppealStatus.UNCHECKED,
+        comment: string = ''
+    ) {
         this.teamId = teamId;
         this.roundNumber = roundNumber;
         this.questionNumber = questionNumber;
         this.text = text;
         this._status = AppealStatus.UNCHECKED;
         this.wrongAnswer = wrongAnswer;
-        this._comment = '';
+        this._comment = comment;
+        this._status = status;
     }
 
     public get status() {

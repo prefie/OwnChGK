@@ -241,7 +241,7 @@ function GetAppealsByNumber(gameId: number, gameType: GameTypeLogic, roundNumber
 
 function GetAllAppeals(gameId: number, ws) { // Тут вроде CurrentGame законно: метод нужен для индикации апелляций в текущей игре
     const res = [];
-    for (let roundNumber = 0; roundNumber < bigGames[gameId].currentGame.rounds.length; roundNumber++) {
+    for (let roundNumber = 0; roundNumber < bigGames[gameId].currentGame.getRoundsCount(); roundNumber++) {
         for (let questionNumber = 0; questionNumber < bigGames[gameId].currentGame.rounds[roundNumber].questions.length; questionNumber++) {
             if (bigGames[gameId].currentGame.rounds[roundNumber].questions[questionNumber].appeals
                 .filter(a => a.status == AppealStatus.UNCHECKED).length > 0)
@@ -383,8 +383,12 @@ function GetTeamAnswersForAdmin(gameId, teamId, ws) {
         'action': 'teamAnswersForAdmin',
         'chgkAnswers': answer['chgk'],
         'matrixAnswers': answer['matrix'],
-        'chgkQuestionsCount': bigGames[gameId].chGKGame ? bigGames[gameId].chGKGame.rounds.length * bigGames[gameId].chGKGame.rounds[0].questionsCount : 0,
-        'matrixQuestionsCount': bigGames[gameId].matrixGame ? bigGames[gameId].matrixGame.rounds.length * bigGames[gameId].matrixGame.rounds[0].questionsCount : 0,
+        'chgkQuestionsCount': bigGames[gameId].chGKGame
+            ? bigGames[gameId].chGKGame.getRoundsCount() * bigGames[gameId].chGKGame.rounds[0].questionsCount
+            : 0,
+        'matrixQuestionsCount': bigGames[gameId].matrixGame
+            ? bigGames[gameId].matrixGame.getRoundsCount() * bigGames[gameId].matrixGame.rounds[0].questionsCount
+            : 0,
     }));
 }
 

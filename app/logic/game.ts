@@ -7,7 +7,7 @@ import { GameTypeLogic } from './enums/game-type-logic.enum';
 export class Game {
     public readonly id: string;
     public readonly name: string;
-    public readonly rounds: Round[];
+    public readonly rounds: Record<number, Round>; // нумерация ключей с 0
     public readonly teams: Record<string, Team>;
     public readonly type: GameTypeLogic;
 
@@ -19,10 +19,10 @@ export class Game {
     public timeIsOnPause: boolean;
 
 
-    constructor(name: string, type: GameTypeLogic) {
-        this.id = Math.round(Math.random() * 1000000).toString(); // TODO: принимать из БД
+    constructor(id: string, name: string, type: GameTypeLogic) {
+        this.id = id;
         this.name = name;
-        this.rounds = [];
+        this.rounds = {};
         this.teams = {};
         this.currentQuestion = undefined;
         this.type = type;
@@ -33,12 +33,34 @@ export class Game {
         this.maxTime = type == GameTypeLogic.ChGK ? seconds70PerQuestion : seconds20PerQuestion;
     }
 
+    get roundValues(): Round[] {
+        return Object.values(this.rounds);
+    }
+
+    get teamValues(): Team[] {
+        return Object.values(this.teams);
+    }
+
     addTeam(team: Team): void {
         this.teams[team.id] = team;
     }
 
     addRound(round: Round): void {
-        this.rounds.push(round);
+        this.rounds[round.number - 1] = round;
+        const answers = round.questions.map(q => q.answers).reduce((arr, e) => arr.concat(e), []);
+        for (let answer of answers) {
+            this.teams[answer.teamId]?.addAnswer(answer);
+        }
+    }
+
+    addRounds(rounds: Round[]): void {
+        for (let round of rounds) {
+            this.addRound(round);
+        }
+    }
+
+    getRoundsCount() {
+        return Object.keys(this.rounds).length;
     }
 
     getTeamDictionary(teamId: string): { [name: string]: string } {
@@ -58,7 +80,7 @@ export class Game {
 
     getScoreTable(): Record<string, number[][]> {
         let table = {};
-        const roundsCount = this.rounds.length;
+        const roundsCount = this.getRoundsCount();
         const questionsCount = this.rounds[0].questions.length;
 
         for (let teamId of Object.keys(this.teams)) {
@@ -76,7 +98,7 @@ export class Game {
 
     getScoreTableForTeam(teamId: string): Record<string, number[][]> {
         let table = {};
-        const roundsCount = this.rounds.length;
+        const roundsCount = this.getRoundsCount();
         const questionsCount = this.rounds[0].questions.length;
 
         table[this.teams[teamId].name] = new Array(roundsCount);
@@ -100,7 +122,7 @@ export class Game {
 
     static getScoreTableWithFormat(game: Game, scoreTable: Record<string, number[][]>): string {
         const headersList = ['Название команды', 'Сумма'];
-        for (let i = 1; i <= game.rounds.length; i++) {
+        for (let i = 1; i <= game.getRoundsCount(); i++) {
             headersList.push('Тур ' + i);
             for (let j = 1; j <= game.rounds[i - 1].questionsCount; j++) {
                 headersList.push('Вопрос ' + j);
@@ -113,7 +135,7 @@ export class Game {
         let roundsResultList = [];
         for (const team in scoreTable) {
             let roundSum = 0;
-            for (let i = 0; i < game.rounds.length; i++) {
+            for (let i = 0; i < game.getRoundsCount(); i++) {
                 for (let j = 0; j < game.rounds[i].questionsCount; j++) {
                     roundSum += scoreTable[team][i][j];
                 }

@@ -5,8 +5,18 @@ import { Team } from '../entities/team';
 import { Game, GameStatus, GameType } from '../entities/game';
 import { Round } from '../entities/round';
 import { AppDataSource } from '../../utils/data-source';
-import { Question } from '../entities/questions';
+import { Question } from '../entities/question';
 import { BaseRepository } from './base.repository';
+import { BigGameLogic } from '../../logic/big-game-logic';
+import { Answer, AnswerStatus } from '../entities/answer';
+import { Appeal, AppealStatus } from '../entities/appeal';
+import { GameTypeLogic } from '../../logic/enums/game-type-logic.enum';
+import { Game as GameLogic } from '../../logic/game';
+import { Question as QuestionLogic } from '../../logic/question';
+import { Round as RoundLogic } from '../../logic/round';
+import { Team as TeamLogic } from '../../logic/team';
+import { Answer as AnswerLogic } from '../../logic/answer';
+import { Appeal as AppealLogic } from '../../logic/appeal';
 
 
 export interface ChgkSettings {
@@ -257,6 +267,74 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         return this.innerRepository.save(bigGame);
     }
 
+    async updateBigGameState(bigGame: BigGameLogic) {
+        const bigGameFromDb = await this.findWithAllRelationsByBigGameId(bigGame.id);
+        const teams: Record<string, Team> = {};
+        for (let team of bigGameFromDb.teams) {
+            teams[team.id] = team;
+        }
+
+        const questions: Record<string, Question> = {};
+        const questionsFromDb = bigGameFromDb.games
+            .map(g => g.rounds)
+            .reduce((arr, e) => arr.concat(e), [])
+            .map(r => r.questions)
+            .reduce((arr, e) => arr.concat(e), []);
+        for (let question of questionsFromDb) {
+            questions[question.id] = question;
+        }
+
+        const questionsFromCurrentGame = [bigGame.chGKGame, bigGame.matrixGame]
+            .map(g => g.roundValues)
+            .reduce((arr, e) => arr.concat(e), [])
+            .map(r => r.questions)
+            .reduce((arr, e) => arr.concat(e), []);
+
+        const answers: Answer[] = [];
+        const appeals: Appeal[] = [];
+
+        for (let question of questionsFromCurrentGame) {
+            for (let answerFromCurrentGame of question.answers) {
+                const answer = new Answer();
+                answer.text = answerFromCurrentGame.text;
+                answer.status = answerFromCurrentGame.status;
+                answer.question = questions[question.id];
+                answer.score = answerFromCurrentGame.score;
+                answer.team = teams[answerFromCurrentGame.teamId];
+
+                answers.push(answer);
+
+                if (answerFromCurrentGame.appeal) {
+                    const appeal = new Appeal();
+                    appeal.text = answerFromCurrentGame.appeal.text;
+                    appeal.comment = answerFromCurrentGame.appeal.comment;
+                    appeal.status = answerFromCurrentGame.appeal.status;
+                    appeal.answer = answer;
+
+                    appeals.push(appeal);
+                }
+            }
+        }
+
+        return this.innerRepository.manager.transaction(async (manager: EntityManager) => {
+            await manager.delete(Answer, { question: { id: In(questionsFromCurrentGame.map(q => q.id)) } });
+            await manager.save(answers);
+            await manager.save(appeals);
+        });
+    }
+
+    async restoreBigGame(bigGameId: string): Promise<BigGameLogic> {
+        const bigGame = await this.innerRepository.findOne({
+            where: { id: bigGameId },
+            relations: {
+                games: { rounds: { questions: { answers: { appeal: true, team: true } } } },
+                teams: { captain: true },
+            }
+        });
+
+        return this.createBigGameLogic(bigGame);
+    }
+
     private static async createRoundsWithQuestions(
         manager: EntityManager, roundsCount: number, questionsCount: number, game: Game,
         questionTime: number, questionCost: number, roundNames?: string[],
@@ -277,7 +355,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             for (let j = 1; j <= questionsCount; j++) {
                 const question = new Question();
                 question.number = j;
-                question.cost = game.type == GameType.CHGK ? j * questionCost : questionCost;
+                question.cost = game.type == GameType.MATRIX ? j * questionCost : questionCost;
                 question.round = round;
                 question.text = Object.keys(questionsText).length !== 0 ? questionsText[i][j - 1] : null;
 
@@ -286,5 +364,84 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
             await manager.save(questions);
         }
+    }
+
+    async createBigGameLogic(bigGame: BigGame) {
+        const chgkFromDB = bigGame.games.find(game => game.type == GameType.CHGK);
+        const matrixFromDB = bigGame.games.find(game => game.type == GameType.MATRIX);
+
+        const chgk = new GameLogic(chgkFromDB.id, bigGame.name, GameTypeLogic.ChGK);
+        const matrix = new GameLogic(matrixFromDB.id, bigGame.name, GameTypeLogic.Matrix);
+
+        if (chgkFromDB) {
+            for (const team of bigGame.teams) {
+                chgk.addTeam(new TeamLogic(team.name, team.id));
+            }
+
+            const rounds = this.getRoundsLogicFromDb(chgkFromDB.rounds);
+            chgk.addRounds(rounds);
+        }
+
+        if (matrixFromDB) {
+            for (const team of bigGame.teams) {
+                matrix.addTeam(new TeamLogic(team.name, team.id));
+            }
+
+            const rounds = this.getRoundsLogicFromDb(matrixFromDB.rounds);
+            matrix.addRounds(rounds);
+        }
+
+        return new BigGameLogic(
+            bigGame.id,
+            bigGame.name,
+            chgkFromDB ? chgk : null,
+            matrixFromDB ? matrix : null
+        );
+    }
+
+    private getRoundsLogicFromDb(rounds: Round[]): RoundLogic[] {
+        return rounds.map(r => {
+            const questions = r.questions.map(q => {
+                const answers = q.answers?.map(a => new AnswerLogic(
+                    a.team.id,
+                    r.number,
+                    q.number,
+                    a.text,
+                    a.status as AnswerStatus,
+                    a.score
+                ));
+
+                const appeals = q.answers
+                    ?.filter(a => a.appeal)
+                    .map(a => new AppealLogic(
+                        a.team.id,
+                        r.number,
+                        q.number,
+                        a.appeal.text,
+                        a.text,
+                        a.appeal.status as AppealStatus,
+                        a.appeal.comment
+                    ));
+                return new QuestionLogic(
+                    q.id,
+                    q.cost,
+                    r.number,
+                    q.number,
+                    r.questionTime,
+                    q.text,
+                    answers,
+                    appeals
+                );
+            });
+
+            return new RoundLogic(
+                r.id,
+                r.number,
+                questions.length,
+                r.questionTime,
+                GameTypeLogic.ChGK,
+                questions
+            );
+        });
     }
 }

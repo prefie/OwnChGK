@@ -1,7 +1,7 @@
 import { BaseCreature } from './base-creature';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Team } from './team';
-import { Question } from './questions';
+import { Question } from './question';
 import { Appeal } from './appeal';
 
 export enum AnswerStatus {
