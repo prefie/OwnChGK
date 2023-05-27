@@ -352,6 +352,9 @@ export class GamesController {
             if (!bigGames[gameId]) {
                 const bigGameFromDb = await this.bigGameRepository.findById(gameId);
                 await this.restoreBigGameIfNeeded(gameId, bigGameFromDb.status);
+            } else if (allAdminRoles.has(role)) {
+                this.bigGameRepository.updateBigGameState(bigGames[gameId])
+                    .catch(e => console.log(`Ошибка при сохранении состояния игры ${bigGame.id} -- ${bigGame.name} -- ${e}`));
             }
 
             let bigGame = bigGames[gameId];
@@ -400,9 +403,6 @@ export class GamesController {
             const answer = {
                 totalTable: [headers, value].join('\n')
             };
-
-            this.bigGameRepository.updateBigGameState(bigGame)
-                .catch(e => console.log(`Ошибка при сохранении состояния игры ${bigGame.id} -- ${bigGame.name} -- ${e}`));
 
             return res.status(200).json(answer);
         } catch (error: any) {
