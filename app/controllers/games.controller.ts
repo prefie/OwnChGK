@@ -77,6 +77,8 @@ export class GamesController {
 
             await this.bigGameRepository.deleteById(gameId);
             delete bigGames[gameId];
+            delete gameUsers[gameId];
+            delete gameAdmins[gameId];
 
             return res.status(200).json({});
         } catch (error: any) {
