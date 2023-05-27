@@ -8,6 +8,7 @@
     "build": "tsc && cd frontend && npm install && npm run build",
     "build-win": "tsc && cd frontend && npm install && npm run build-win",
     "start": "node build/app/app.js",
+    "full": "npm run build-win && npm start",
     "heroku-postbuild": "tsc && cd frontend && npm install && npm run build",
     "test": "jest"
   },
