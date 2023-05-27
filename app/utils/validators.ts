@@ -1,6 +1,6 @@
-import { Participant } from '../db/entities/Team';
+import { Participant } from '../db/entities/team';
 import { validateEmail } from './email';
-import { GameStatus } from '../db/entities/Game';
+import { GameStatus } from '../db/entities/game';
 
 export const validateParticipants = (value: any) => {
     try {

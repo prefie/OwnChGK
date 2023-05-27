@@ -6,7 +6,7 @@ import Header from '../../components/header/header';
 import {Answer} from '../../entities/user-answers/user-answers.interfaces';
 import UserAnswer from '../../components/user-answer/user-answer';
 import Scrollbar from '../../components/scrollbar/scrollbar';
-import {getGame, getTeam} from '../../server-api/server-api';
+import { AnswerStatus, getGame, getTeam } from '../../server-api/server-api';
 import {getCookie, getUrlForSocket} from '../../commonFunctions';
 import Loader from '../../components/loader/loader';
 import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
@@ -45,17 +45,17 @@ const UserAnswersPageForAdmin = () => {
     };
 
     const handler = {
-        handleTeamAnswersMessage: (chgkAnswers: { answer: string; status: number; number: number }[],
-                                   matrixAnswers: { answer: string; status: number; number: number }[],
+        handleTeamAnswersMessage: (chgkAnswers: { answer: string; status: AnswerStatus; number: number }[],
+                                   matrixAnswers: { answer: string; status: AnswerStatus; number: number }[],
                                    chgkQuestionsCount: number,
                                    matrixQuestionsCount: number) => {
             let dictionary: { [key: string]: Answer[] };
             dictionary = {};
             if (matrixAnswers) {
-                dictionary['matrix'] = matrixAnswers.map((ans: { answer: string; status: number; number: number; }) => {
+                dictionary['matrix'] = matrixAnswers.map((ans: { answer: string; status: AnswerStatus; number: number; }) => {
                     return {
                         answer: ans.answer,
-                        status: ans.status === 0 ? 'success' : (ans.status === 1 ? 'error' : 'opposition'),
+                        status: ans.status == AnswerStatus.RIGHT ? 'success' : (ans.status == AnswerStatus.WRONG ? 'error' : 'opposition'),
                         number: ans.number
                     };
                 });
@@ -68,10 +68,10 @@ const UserAnswersPageForAdmin = () => {
             }
 
             if (chgkAnswers) {
-                dictionary['chgk'] = chgkAnswers.map((ans: { answer: string; status: number; number: number; }) => {
+                dictionary['chgk'] = chgkAnswers.map((ans: { answer: string; status: AnswerStatus; number: number; }) => {
                     return {
                         answer: ans.answer,
-                        status: ans.status === 0 ? 'success' : (ans.status === 1 ? 'error' : 'opposition'),
+                        status: ans.status == AnswerStatus.RIGHT ? 'success' : (ans.status == AnswerStatus.WRONG ? 'error' : 'opposition'),
                         number: ans.number
                     };
                 });

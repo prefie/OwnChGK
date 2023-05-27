@@ -326,3 +326,10 @@ export const insertDemoUser = async () => {
         credentials: 'include',
     });
 };
+
+export enum AnswerStatus {
+    RIGHT = 'right',
+    WRONG = 'wrong',
+    UNCHECKED = 'unchecked',
+    ON_APPEAL = 'on_appeal'
+}
