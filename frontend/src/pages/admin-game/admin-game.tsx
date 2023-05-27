@@ -7,7 +7,6 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import {AdminGameProps, TourProps} from '../../entities/admin-game/admin-game.interfaces';
 import PauseIcon from '@mui/icons-material/Pause';
-import CircleOutlinedIcon from '@mui/icons-material/Circle';
 import {GamePartSettings, getGame} from '../../server-api/server-api';
 import {getCookie, getUrlForSocket} from '../../commonFunctions';
 import Modal from '../../components/modal/modal';
@@ -15,7 +14,10 @@ import Loader from '../../components/loader/loader';
 import {Alert, Divider, Snackbar} from '@mui/material';
 import {Scrollbars} from 'rc-scrollbars';
 import TimeWidget from "../../components/timeWidget/timeWidget";
-import {BarChartRounded, CircleNotificationsTwoTone, CircleOutlined, CircleTwoTone} from "@mui/icons-material";
+import {
+    BarChartRounded,
+    CircleRounded,
+} from "@mui/icons-material";
 
 let interval: any;
 let breakInterval: any;
@@ -383,27 +385,27 @@ const AdminGame: FC<AdminGameProps> = props => {
                         onClick={(event) => handleQuestionClick(event, gamePart)}
                     >
                         Вопрос {questionsCount * (clickedTourIndex-1) + (i+1)}
-                        <Link
-                            className={classes.answersButtonLink}
-                            to={`/admin/game/${gameId}/${gamePart}/answers/${clickedTourIndex}/${i + 1}`}
-                        >
-                            Ответы
-                            {
-                                clickedGamePart === 'chgk' && isAppeal[(clickedTourIndex - 1) * questionsCount + i]
-                                    ?
-                                    <div className={classes.opposition}>
-                                        <CircleOutlined sx={{
-                                            fill: 'var(--color-fill-notify)',
-                                            fontSize: 'var(--font-size-24)',
-                                            color: 'darkred',
-                                            userSelect: 'none',
-                                            pointerEvents: 'none'
-                                        }}/>
-                                    </div>
-                                    : null
-                            }
-                        </Link>
                     </div>
+                    <Link
+                        className={classes.answersButtonLink}
+                        to={`/admin/game/${gameId}/${gamePart}/answers/${clickedTourIndex}/${i + 1}`}
+                    >
+                        Ответы
+                        {
+                            clickedGamePart === 'chgk' && isAppeal[(clickedTourIndex - 1) * questionsCount + i]
+                                ?
+                                <div className={classes.opposition}>
+                                    <CircleRounded sx={{
+                                        fill: 'var(--color-fill-notify)',
+                                        fontSize: 'var(--font-size-24)',
+                                        color: 'darkred',
+                                        userSelect: 'none',
+                                        pointerEvents: 'none'
+                                    }}/>
+                                </div>
+                                : null
+                        }
+                    </Link>
                 </div>
             );
         });

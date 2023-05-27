@@ -204,6 +204,8 @@
 
     .questionWrapper {
       display: flex;
+      align-items: center;
+      gap: 1rem;
       width: 100%;
 
       .question {
@@ -213,6 +215,7 @@
 
       .answersButtonLink {
         text-decoration: none;
+        position: relative;
         color: var(--color-text-icon-link-enabled);
         font-weight: var(--font-weight-medium);
         font-size: var(--font-size-24);
@@ -234,7 +237,7 @@
 .opposition {
   position: absolute;
   right: 0;
-  top: .25rem;
+  top: -0.5rem;
   user-select: none;
   pointer-events: none;
 }
