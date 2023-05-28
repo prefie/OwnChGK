@@ -14,6 +14,7 @@ import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOu
 import {
     editTeamCaptainByCurrentUser,
     getAmIParticipateGames,
+    getAmIParticipateAndPublicGames,
     getTeamByCurrentUser,
     getTeamsWithoutUser
 } from '../../server-api/server-api';
@@ -90,7 +91,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
             }
         });
 
-        getAmIParticipateGames().then(res => {
+        getAmIParticipateAndPublicGames().then(res => {
             if (res.status === 200) {
                 res.json().then(({games}) => {
                     setGamesFromDB(games.sort((game1: Game, game2: Game) => game1.name.toLowerCase() > game2.name.toLowerCase() ? 1 : -1));
@@ -119,7 +120,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                             setIsTeamNotFree(false);
                             props.onAddUserTeam(name);
                         });
-                        getAmIParticipateGames().then(res => {
+                        getAmIParticipateAndPublicGames().then(res => {
                             if (res.status === 200) {
                                 res.json().then(({games}) => {
                                     setGamesFromDB(games.sort((game1: Game, game2: Game) => game1.name.toLowerCase() > game2.name.toLowerCase() ? 1 : -1));
@@ -164,6 +165,8 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                     status={game.status}
                     games={game.games}
                     role={Roles.user}
+                    accessLevel={game.accessLevel}
+                    amIParticipate={game.amIParticipate}
                     onClick={() => handleClickOnGame(game.id)}
                 />);
 

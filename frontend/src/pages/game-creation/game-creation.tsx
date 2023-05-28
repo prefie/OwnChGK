@@ -10,7 +10,15 @@ import {createGame, editGame, GamePartSettings, getAll, getGame} from '../../ser
 import {Redirect, useLocation} from 'react-router-dom';
 import NavBar from '../../components/nav-bar/nav-bar';
 import {Team} from '../admin-start-screen/admin-start-screen';
-import {IconButton, InputAdornment, OutlinedInput, Skeleton, TextareaAutosize} from '@mui/material';
+import {
+    Checkbox,
+    FormControlLabel,
+    IconButton,
+    InputAdornment,
+    OutlinedInput,
+    Skeleton,
+    TextareaAutosize
+} from '@mui/material';
 import PageBackdrop from '../../components/backdrop/backdrop';
 import Loader from '../../components/loader/loader';
 import SearchIcon from '@mui/icons-material/Search';
@@ -18,6 +26,7 @@ import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import Modal from '../../components/modal/modal';
 import Scrollbar from '../../components/scrollbar/scrollbar';
+import {AccessLevel} from "../../components/game-item/game-item";
 
 const GameCreator: FC<GameCreatorProps> = props => {
     const [teamsFromDB, setTeamsFromDB] = useState<Team[]>();
@@ -25,6 +34,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
     const location = useLocation<{ id: string, name: string }>();
     const [gameName, setGameName] = useState<string>(props.mode === 'edit' ? location.state.name : '');
     const [chosenTeams, setChosenTeams] = useState<string[]>();
+    const [gameAccessLevel, setGameAccessLevel] = useState<AccessLevel>(AccessLevel.PRIVATE);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isGameNameInvalid, setIsGameNameInvalid] = useState<boolean>(false);
     const [isPageLoading, setIsPageLoading] = useState<boolean>(true);
@@ -70,14 +80,11 @@ const GameCreator: FC<GameCreatorProps> = props => {
         if (props.mode === 'edit') {
             getGame(oldGameId).then(res => {
                 if (res.status === 200) {
-                    res.json().then(({
-                                         teams,
-                                         chgkSettings,
-                                         matrixSettings
-                                     }) => {
+                    res.json().then(({teams, chgkSettings, matrixSettings, accessLevel}) => {
                         setChgkSettings(chgkSettings);
                         setMatrixSettings(matrixSettings);
                         setChosenTeams(teams);
+                        setGameAccessLevel(accessLevel);
                     });
                 }
             });
@@ -104,6 +111,34 @@ const GameCreator: FC<GameCreatorProps> = props => {
             });
         }
     };
+
+    const handleCheckboxAccessLevelChange = (event: React.SyntheticEvent) => {
+        const element = event.target as HTMLInputElement;
+        if (element.checked) {
+            setGameAccessLevel(AccessLevel.PUBLIC);
+        } else {
+            setGameAccessLevel(AccessLevel.PRIVATE);
+        }
+    };
+
+    const renderAccessLevelGameCheckbox = () => {
+        return(
+            <FormControlLabel sx={{color: 'var(--color-text-icon-primary)', fontSize: 'var(--font-size-24)'}}
+                control={
+                    <Checkbox
+                        onChange={handleCheckboxAccessLevelChange}
+                        checked={gameAccessLevel === AccessLevel.PUBLIC}
+                    />
+                }
+                label={'Публичная регистрация команд'}
+            />
+            // <CustomCheckbox
+            //     name={'Публичная регистрация команд'}
+            //     onChange={handleCheckboxAccessLevelChange}
+            //     checked={gameAccessLevel === AccessLevel.PUBLIC}
+            // />
+        );
+    }
 
     const renderTeams = () => {
         if (props.mode === 'edit' && !chosenTeams || !teamsFromDB) {
@@ -194,7 +229,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
         }
         setIsLoading(true);
         if (props.mode === 'creation') {
-            await createGame(gameName, chosenTeams ?? [], chgkSettings, matrixSettings)
+            await createGame(gameName, chosenTeams ?? [], chgkSettings, matrixSettings, gameAccessLevel)
                 .then(res => {
                     if (res.status === 200) {
                         setIsCreatedSuccessfully(true);
@@ -204,7 +239,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                     }
                 });
         } else {
-            await editGame(oldGameId, gameName, chosenTeams ?? [], chgkSettings, matrixSettings)
+            await editGame(oldGameId, gameName, chosenTeams ?? [], chgkSettings, matrixSettings, gameAccessLevel)
                 .then(res => {
                     if (res.status === 200) {
                         setIsCreatedSuccessfully(true);
@@ -305,7 +340,6 @@ const GameCreator: FC<GameCreatorProps> = props => {
                         <form className={classes.gameCreationForm} onSubmit={handleSubmit}>
                             <div className={classes.contentWrapper}>
                                 <div className={classes.gameParametersWrapper}>
-
                                     {
                                         (props.mode !== 'edit' || (props.mode === 'edit' && chosenTeams)) && teamsFromDB
                                             ? (
@@ -423,6 +457,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                                             }}>Добавьте хотя бы один режим в игру</small>
                                                             : null
                                                     }
+                                                    { renderAccessLevelGameCheckbox() }
                                                 </>
                                             )
                                             : (

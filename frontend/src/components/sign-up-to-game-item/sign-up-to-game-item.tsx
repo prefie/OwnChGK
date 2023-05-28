@@ -12,13 +12,10 @@ function SignUpToGameItem(props: SignUpToGameItemProps) {
         props.isAddToGame
             ?
             <div className={classes.signUpLinkSuccess}>
-                Вы в игре
-                <p className={classes.signOutLink} onClick={props.handleOut}>Отменить</p>
+                <p className={classes.signOutLink} onClick={props.handleOut}>Выйти из игры</p>
             </div>
             :
-            <div className={classes.signUpLink} onClick={props.handleAdd}>
-                Записаться на игру
-            </div>
+            <p className={classes.signUpLink} onClick={props.handleAdd}>Вступить в игру</p>
     );
 }
 
