@@ -40,15 +40,21 @@ export class MatrixGameDto extends GameDto {
 export class BigGameDto {
     public readonly name: string;
     public readonly id: string;
+    public readonly accessLevel: string;
+    public readonly amIParticipate: boolean;
     public readonly teamsCount: number;
     public readonly status: GameStatus;
     public readonly games: GameDto[];
 
-    constructor(game: BigGame) {
+    constructor(game: BigGame, currentTeamId?: string | undefined) {
         this.name = game.name;
         this.id = game.id.toString();
+        this.accessLevel = game.accessLevel;
         this.teamsCount = game.teams?.length ?? 0;
         this.games = game.games?.map(g => new GameDto(g)) ?? [];
         this.status = game.status as GameStatus;
+
+        const teamIds = game.teams.map(t => t.id);
+        this.amIParticipate = !!(currentTeamId && teamIds.indexOf(currentTeamId) != -1);
     }
 }

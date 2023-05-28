@@ -12,6 +12,11 @@ import { Admin } from './admin';
 import { Team } from './team';
 import { BaseCreature } from './base-creature';
 
+export enum AccessLevel {
+    PUBLIC = 'public',
+    PRIVATE = 'private'
+}
+
 @Entity('big_games')
 export class BigGame extends BaseCreature {
     @PrimaryGeneratedColumn('uuid', { name: 'big_game_id' })
@@ -28,6 +33,14 @@ export class BigGame extends BaseCreature {
         default: GameStatus.NOT_STARTED
     })
     status: string;
+
+    @Column({
+        name: 'access_level',
+        type: 'enum',
+        enum: AccessLevel,
+        default: AccessLevel.PRIVATE
+    })
+    accessLevel: string;
 
     @OneToMany(
         () => Game,

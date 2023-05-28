@@ -4,7 +4,7 @@ import { authMiddleware } from '../middleware/auth.middleware';
 import { GamesController } from '../controllers/games.controller';
 import { allAdminRoles } from '../utils/roles';
 import { body, param, query } from 'express-validator';
-import { validateGameStatus } from '../utils/validators';
+import { validateAccessLevel, validateGameStatus } from '../utils/validators';
 import { validationMiddleware } from '../middleware/validation.middleware';
 
 export const gamesRouter = () => {
@@ -44,11 +44,28 @@ export const gamesRouter = () => {
         gamesController.getParticipants.bind(gamesController)
     );
 
+    router.post(
+        '/:gameId/team',
+        authMiddleware,
+        param('gameId').isUUID(),
+        validationMiddleware,
+        gamesController.addTeamInBigGame.bind(gamesController)
+    );
+
+    router.delete(
+        '/:gameId/team',
+        authMiddleware,
+        param('gameId').isUUID(),
+        validationMiddleware,
+        gamesController.deleteTeamFromBigGame.bind(gamesController)
+    );
+
     router.patch(
         '/:gameId/change',
         roleMiddleware(allAdminRoles),
         param('gameId').isUUID(),
         body('newGameName').isString().notEmpty(),
+        body('accessLevel').optional().custom(validateAccessLevel),
         body('chgkSettings.roundsCount').optional().isInt({ min: 0, max: 30 }),
         body('chgkSettings.questionsCount').optional().isInt({ min: 0, max: 30 }),
         body('matrixSettings.roundsCount').optional().isInt({ min: 0, max: 30 }),
@@ -131,6 +148,7 @@ export const gamesRouter = () => {
         roleMiddleware(allAdminRoles),
         body('gameName').isString().notEmpty(),
         body('teams').isArray(),
+        body('accessLevel').optional().custom(validateAccessLevel),
         body('chgkSettings.roundsCount').optional().isInt({ min: 0, max: 30 }),
         body('chgkSettings.questionsCount').optional().isInt({ min: 0, max: 30 }),
         body('matrixSettings.roundsCount').optional().isInt({ min: 0, max: 30 }),

@@ -38,7 +38,7 @@ export class AdminsController {
         } catch (error) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -64,7 +64,7 @@ export class AdminsController {
         } catch (error) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -85,7 +85,7 @@ export class AdminsController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -107,7 +107,7 @@ export class AdminsController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -128,7 +128,7 @@ export class AdminsController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -149,7 +149,7 @@ export class AdminsController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -173,7 +173,7 @@ export class AdminsController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -197,7 +197,7 @@ export class AdminsController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -221,7 +221,7 @@ export class AdminsController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -234,7 +234,7 @@ export class AdminsController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -247,7 +247,7 @@ export class AdminsController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }

@@ -4,7 +4,7 @@ import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: избав
 import { BigGameDto, GameDto, MatrixGameDto } from '../dtos/big-game.dto';
 import { BigGameRepository } from '../db/repositories/big-game.repository';
 import { GameStatus, GameType } from '../db/entities/game';
-import { BigGame } from '../db/entities/big-game';
+import { AccessLevel, BigGame } from '../db/entities/big-game';
 import { allAdminRoles, demoAdminRoles, smallAdminRoles, superAdminRoles, userRoles } from '../utils/roles';
 import { AccessType, CheckAccessResult } from '../utils/check-access-result';
 import { BigGameLogic } from '../logic/big-game-logic';
@@ -18,12 +18,14 @@ export class GamesController {
 
     public async getAll(req: Request, res: Response) {
         try {
-            const { amIParticipate } = req.query;
+            const { amIParticipate, publicEnabled } = req.query;
             let games: BigGame[] = [];
-            const { id, role } = getTokenFromRequest(req);
+            const { id, role, teamId } = getTokenFromRequest(req);
 
             if (amIParticipate) {
-                games = await this.bigGameRepository.findByCaptainId(id);
+                games = publicEnabled
+                    ? await this.bigGameRepository.findPublicGamesByCaptainId(id)
+                    : await this.bigGameRepository.findByCaptainId(id);
             } else if (superAdminRoles.has(role)) {
                 games = await this.bigGameRepository.findWithAllRelations();
             } else if (smallAdminRoles.has(role)) {
@@ -31,19 +33,19 @@ export class GamesController {
             }
 
             return res.status(200).json({
-                games: games?.map(value => new BigGameDto(value))
+                games: games?.map(value => new BigGameDto(value, teamId))
             });
         } catch (error) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
 
     public async insertGame(req: Request, res: Response) {
         try {
-            const { gameName, teams, chgkSettings, matrixSettings } = req.body;
+            const { gameName, teams, accessLevel, chgkSettings, matrixSettings } = req.body;
 
             const { email, id, role } = getTokenFromRequest(req);
             const game = await this.bigGameRepository.findByName(gameName);
@@ -56,12 +58,12 @@ export class GamesController {
                 return res.status(403).json({ message: 'Больше 1 игры демо-админ создать не может' });
             }
 
-            await this.bigGameRepository.insertByParams(gameName, email, teams, chgkSettings, matrixSettings);
+            await this.bigGameRepository.insertByParams(gameName, email, teams, accessLevel, chgkSettings, matrixSettings);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -84,7 +86,7 @@ export class GamesController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -104,7 +106,7 @@ export class GamesController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -124,7 +126,7 @@ export class GamesController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -157,7 +159,7 @@ export class GamesController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -205,7 +207,7 @@ export class GamesController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -213,7 +215,7 @@ export class GamesController {
     public async changeGame(req: Request, res: Response) {
         try {
             const { gameId } = req.params;
-            const { newGameName, teams, chgkSettings, matrixSettings } = req.body;
+            const { newGameName, teams, accessLevel, chgkSettings, matrixSettings } = req.body;
 
             const currentGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
             if (!currentGame) {
@@ -236,12 +238,12 @@ export class GamesController {
                 return res.status(403).json({ message: checkAccessResult.message });
             }
 
-            await this.bigGameRepository.updateByParams(gameId, newGameName, teams, chgkSettings, matrixSettings);
+            await this.bigGameRepository.updateByParams(gameId, newGameName, teams, accessLevel, chgkSettings, matrixSettings);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -266,7 +268,7 @@ export class GamesController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -288,7 +290,7 @@ export class GamesController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -336,7 +338,7 @@ export class GamesController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -410,7 +412,7 @@ export class GamesController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -430,7 +432,61 @@ export class GamesController {
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
+            });
+        }
+    }
+
+    public async addTeamInBigGame(req: Request, res: Response) {
+        try {
+            const { gameId } = req.params;
+
+            const { role, teamId } = getTokenFromRequest(req);
+
+            if (!userRoles.has(role) || !teamId) {
+                return res.status(400).json({ message: 'Неподходящая роль или нет команды у текущего юзера' });
+            }
+
+            const bigGame = await this.bigGameRepository.findAccessLevelAndStatusById(gameId);
+            if (bigGame.status != GameStatus.NOT_STARTED) {
+                return res.status(400).json({ message: 'Нельзя редактировать начатые игры' });
+            }
+
+            if (bigGame.accessLevel != AccessLevel.PUBLIC) {
+                return res.status(403).json({ message: 'Нельзя присоединиться к непубличной игре' });
+            }
+
+            const updatedBigGame = await this.bigGameRepository.addTeamInBigGame(gameId, teamId);
+            return res.status(200).json(new BigGameDto(updatedBigGame, teamId));
+        } catch (error: any) {
+            return res.status(500).json({
+                message: error.message,
+                error: JSON.stringify(error?.stack),
+            });
+        }
+    }
+
+    public async deleteTeamFromBigGame(req: Request, res: Response) {
+        try {
+            const { gameId } = req.params;
+
+            const { role, teamId } = getTokenFromRequest(req);
+
+            if (!userRoles.has(role) || !teamId) {
+                return res.status(400).json({ message: 'Неподходящая роль или нет команды у текущего юзера' });
+            }
+
+            const bigGame = await this.bigGameRepository.findAccessLevelAndStatusById(gameId);
+            if (bigGame.status != GameStatus.NOT_STARTED) {
+                return res.status(400).json({ message: 'Нельзя редактировать начатые игры' });
+            }
+
+            const updatedBigGame = await this.bigGameRepository.deleteTeamFromBigGame(gameId, teamId);
+            return res.status(200).json(new BigGameDto(updatedBigGame, teamId));
+        } catch (error: any) {
+            return res.status(500).json({
+                message: error.message,
+                error: JSON.stringify(error?.stack),
             });
         }
     }

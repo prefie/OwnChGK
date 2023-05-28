@@ -1,5 +1,5 @@
 import { EntityManager, In } from 'typeorm';
-import { BigGame } from '../entities/big-game';
+import { AccessLevel, BigGame } from '../entities/big-game';
 import { Admin } from '../entities/admin';
 import { Team } from '../entities/team';
 import { Game, GameStatus, GameType } from '../entities/game';
@@ -57,6 +57,11 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
     findWithAdminRelationsByBigGameId(bigGameId: string) {
         return this.innerRepository.findOne({
+            select: {
+                id: true,
+                admin: { id: true },
+                additionalAdmins: { id: true },
+            },
             where: { id: bigGameId },
             relations: {
                 admin: true,
@@ -94,6 +99,42 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         });
     }
 
+    findAccessLevelAndStatusById(bigGameId: string) {
+        return this.innerRepository.findOne({
+            select: { id: true, accessLevel: true, status: true },
+            where: { id: bigGameId }
+        });
+    }
+
+    async addTeamInBigGame(bigGameId: string, teamId: string) {
+        const team = await this.innerRepository.manager.findOne<Team>(Team, {
+            where: { id: teamId },
+            relations: { bigGames: true }
+        });
+        const bigGame = await this.findWithAllRelationsByBigGameId(bigGameId);
+
+        if (bigGame.teams.map(t => t.id).indexOf(teamId) == -1) {
+            team.bigGames.push(bigGame);
+            bigGame.teams.push(team);
+        }
+
+        await this.innerRepository.manager.save(Team, team);
+        return bigGame;
+    }
+
+    async deleteTeamFromBigGame(bigGameId: string, teamId: string) {
+        const team = await this.innerRepository.manager.findOne<Team>(Team, {
+            where: { id: teamId },
+            relations: { bigGames: true }
+        });
+        const bigGame = await this.findWithAllRelationsByBigGameId(bigGameId);
+        team.bigGames = team.bigGames.filter(g => g.id != bigGameId);
+        bigGame.teams = bigGame.teams.filter(t => t.id != teamId);
+
+        await this.innerRepository.manager.save(Team, team);
+        return bigGame;
+    }
+
     findByCaptainId(userId: string) {
         return this.innerRepository.manager.transaction(async (manager: EntityManager) => {
             const games = await manager.find<BigGame>(BigGame, {
@@ -106,15 +147,35 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
             const gameIds = games?.map(g => g.id) ?? [];
 
-            return gameIds.length > 0
-                ? await manager.find<BigGame>(BigGame, {
-                    where: { id: In(gameIds) },
-                    relations: {
-                        games: { rounds: { questions: true } },
-                        teams: { captain: true }
-                    }
-                })
-                : [];
+            return gameIds.length > 0 ? await BigGameRepository.findByGameIds(manager, gameIds) : [];
+        });
+    }
+
+    findPublicGamesByCaptainId(userId: string) {
+        return this.innerRepository.manager.transaction(async (manager: EntityManager) => {
+            const games = await manager.find<BigGame>(BigGame, {
+                select: { id: true },
+                where: [{ teams: { captain: { id: userId } } }, { accessLevel: AccessLevel.PUBLIC }],
+                relations: {
+                    teams: { captain: true },
+                }
+            });
+
+            const gameIds = games?.map(g => g.id) ?? [];
+
+            return gameIds.length > 0 ? await BigGameRepository.findByGameIds(manager, gameIds) : [];
+        });
+    }
+
+    private static async findByGameIds(manager: EntityManager, gameIds: string[]): Promise<BigGame[]> {
+        if (gameIds.length < 1) return [];
+
+        return await manager.find<BigGame>(BigGame, {
+            where: { id: In(gameIds) },
+            relations: {
+                games: { rounds: { questions: true } },
+                teams: { captain: true }
+            }
         });
     }
 
@@ -122,6 +183,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         name: string,
         adminEmail: string,
         teams: string[],
+        accessLevel: AccessLevel | undefined,
         chgkSettings: ChgkSettings,
         matrixSettings: MatrixSettings
     ) {
@@ -133,6 +195,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         bigGame.name = name;
         bigGame.admin = admin;
         bigGame.teams = teamsFromDb;
+        bigGame.accessLevel = accessLevel ?? AccessLevel.PRIVATE;
 
         return this.innerRepository.manager.transaction(async (manager: EntityManager) => {
             await manager.save(bigGame);
@@ -182,6 +245,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         bigGameId: string,
         newName: string,
         teams: string[],
+        accessLevel: AccessLevel | undefined,
         chgkSettings: ChgkSettings,
         matrixSettings: MatrixSettings
     ) {
@@ -192,6 +256,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         });
         bigGame.teams = teamsFromDb;
         bigGame.name = newName;
+        bigGame.accessLevel = accessLevel ?? AccessLevel.PRIVATE;
 
         const chgk = bigGame.games.find(game => game.type == GameType.CHGK);
         const matrix = bigGame.games.find(game => game.type == GameType.MATRIX);
@@ -285,6 +350,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         }
 
         const questionsFromCurrentGame = [bigGame.chGKGame, bigGame.matrixGame]
+            .filter(g => g)
             .map(g => g.roundValues)
             .reduce((arr, e) => arr.concat(e), [])
             .map(r => r.questions)
@@ -370,10 +436,11 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         const chgkFromDB = bigGame.games.find(game => game.type == GameType.CHGK);
         const matrixFromDB = bigGame.games.find(game => game.type == GameType.MATRIX);
 
-        const chgk = new GameLogic(chgkFromDB.id, bigGame.name, GameTypeLogic.ChGK);
-        const matrix = new GameLogic(matrixFromDB.id, bigGame.name, GameTypeLogic.Matrix);
+        let chgk: GameLogic;
+        let matrix: GameLogic;
 
         if (chgkFromDB) {
+            chgk = new GameLogic(chgkFromDB.id, bigGame.name, GameTypeLogic.ChGK);
             for (const team of bigGame.teams) {
                 chgk.addTeam(new TeamLogic(team.name, team.id));
             }
@@ -383,6 +450,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         }
 
         if (matrixFromDB) {
+            matrix = new GameLogic(matrixFromDB.id, bigGame.name, GameTypeLogic.Matrix);
             for (const team of bigGame.teams) {
                 matrix.addTeam(new TeamLogic(team.name, team.id));
             }

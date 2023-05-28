@@ -4,9 +4,13 @@ import { BaseEntity, CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm'
 export abstract class BaseCreature extends BaseEntity {
     id: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({
+        name: 'created_date'
+    })
     createdDate: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({
+        name: 'updated_date'
+    })
     updatedDate: Date;
 }

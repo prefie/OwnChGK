@@ -41,7 +41,7 @@ export class UsersController { // TODO: дописать смену имени �
         } catch (error) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -66,7 +66,7 @@ export class UsersController { // TODO: дописать смену имени �
         } catch (error) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -90,7 +90,7 @@ export class UsersController { // TODO: дописать смену имени �
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -110,7 +110,7 @@ export class UsersController { // TODO: дописать смену имени �
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -135,7 +135,7 @@ export class UsersController { // TODO: дописать смену имени �
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -160,7 +160,7 @@ export class UsersController { // TODO: дописать смену имени �
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -186,7 +186,7 @@ export class UsersController { // TODO: дописать смену имени �
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -208,7 +208,7 @@ export class UsersController { // TODO: дописать смену имени �
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -229,7 +229,7 @@ export class UsersController { // TODO: дописать смену имени �
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -247,7 +247,7 @@ export class UsersController { // TODO: дописать смену имени �
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -279,7 +279,7 @@ export class UsersController { // TODO: дописать смену имени �
 
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
@@ -292,7 +292,7 @@ export class UsersController { // TODO: дописать смену имени �
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
-                error,
+                error: JSON.stringify(error?.stack),
             });
         }
     }
