@@ -1,6 +1,7 @@
-import { Participant } from '../db/entities/Team';
+import { Participant } from '../db/entities/team';
 import { validateEmail } from './email';
-import { GameStatus } from '../db/entities/Game';
+import { GameStatus } from '../db/entities/game';
+import { AccessLevel } from '../db/entities/big-game';
 
 export const validateParticipants = (value: any) => {
     try {
@@ -20,3 +21,7 @@ export const validateParticipants = (value: any) => {
 export const validateGameStatus = (value: any) => {
     return Object.values(GameStatus).includes(value);
 };
+
+export const validateAccessLevel = (value: any) => {
+    return Object.values(AccessLevel).includes(value);
+}

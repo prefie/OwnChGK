@@ -6,6 +6,10 @@ export const getAmIParticipateGames = async () => {
     return await fetch('/api/games/?amIParticipate=true');
 };
 
+export const getAmIParticipateAndPublicGames = async () => {
+    return await fetch('/api/games/?amIParticipate=true&publicEnabled=true');
+};
+
 export const getTeamsParticipants = async (gameId: string) => {
     return await fetch(`/api/games/${gameId}/teamsParticipants`);
 };
@@ -37,7 +41,13 @@ export interface GamePartSettings {
     roundNames?: string[];
 }
 
-export const createGame = async (gameName: string, teams: string[], chgkSettings?: GamePartSettings, matrixSettings?: GamePartSettings) => {
+export const createGame = async (
+    gameName: string,
+    teams: string[],
+    chgkSettings?: GamePartSettings,
+    matrixSettings?: GamePartSettings,
+    accessLevel?: 'public' | 'private' = 'private',
+) => {
     return await fetch('/api/games/', {
         method: 'POST',
         headers: {
@@ -49,7 +59,8 @@ export const createGame = async (gameName: string, teams: string[], chgkSettings
             gameName,
             teams,
             chgkSettings,
-            matrixSettings
+            matrixSettings,
+            accessLevel
         })
     });
 };
@@ -99,7 +110,14 @@ export const startGame = async (gameId: string) => {
     return fetch(`/api/games/${gameId}/start`);
 };
 
-export const editGame = async (gameId: string, newGameName: string, teams: string[], chgkSettings?: GamePartSettings, matrixSettings?: GamePartSettings) => {
+export const editGame = async (
+    gameId: string,
+    newGameName: string,
+    teams: string[],
+    chgkSettings?: GamePartSettings,
+    matrixSettings?: GamePartSettings,
+    accessLevel?: 'public' | 'private' = 'private',
+) => {
     return await fetch(`/api/games/${gameId}/change`, {
         method: 'PATCH',
         headers: {
@@ -111,10 +129,28 @@ export const editGame = async (gameId: string, newGameName: string, teams: strin
             newGameName,
             teams,
             chgkSettings,
-            matrixSettings
+            matrixSettings,
+            accessLevel
         })
     });
 };
+
+export const addCurrentTeamInGame = async (gameId: string) => {
+    return await fetch(`/api/games/${gameId}/team`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Accept': 'application/json'
+        },
+        credentials: 'include',
+    });
+}
+
+export const deleteCurrentTeamFromGame = async (gameId: string) => {
+    return await fetch(`/api/games/${gameId}/team`, {
+        method: 'DELETE'
+    });
+}
 
 export const deleteGame = async (gameId: string) => {
     return await fetch(`/api/games/${gameId}`, {
@@ -326,3 +362,10 @@ export const insertDemoUser = async () => {
         credentials: 'include',
     });
 };
+
+export enum AnswerStatus {
+    RIGHT = 'right',
+    WRONG = 'wrong',
+    UNCHECKED = 'unchecked',
+    ON_APPEAL = 'on_appeal'
+}

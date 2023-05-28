@@ -1,7 +1,7 @@
-import {Team} from "../app/logic/Team";
-import {Question} from "../app/logic/Question";
-import {Status} from "../app/logic/AnswerAndAppeal"
-import {Game, GameTypeLogic, Round} from "../app/logic/Game";
+import {Team} from "../app/logic/team";
+import {Question} from "../app/logic/question";
+import {AnswerStatus} from "../app/logic/answer"
+import {Game, GameTypeLogic, Round} from "../app/logic/game";
 
 let game;
 let team;
@@ -24,7 +24,7 @@ test('Should_set_right_answer', () => {
     const teamAnswer = team.getAnswer(1, 1);
     expect(teamAnswer).not.toBeUndefined();
     if (teamAnswer !== undefined) {
-        expect(teamAnswer.status).toBe(Status.Right);
+        expect(teamAnswer.status).toBe(AnswerStatus.Right);
         expect(teamAnswer.score).toBe(question.cost);
     }
 });
@@ -36,7 +36,7 @@ test('Should_not_set_wrong_answer', () => {
 
     expect(teamAnswer).not.toBeUndefined();
     if (teamAnswer !== undefined) {
-        expect(teamAnswer.status).toBe(Status.UnChecked);
+        expect(teamAnswer.status).toBe(AnswerStatus.UnChecked);
         expect(teamAnswer.score).toBe(0);
     }
 });
@@ -108,7 +108,7 @@ test('Should_get_team_answer_when_it_exist', () => {
     if (answer !== undefined) {
         expect(answer.text).toBe("right2");
         expect(answer.score).toBe(round1.questions[1].cost);
-        expect(answer.status).toBe(Status.Right);
+        expect(answer.status).toBe(AnswerStatus.Right);
     }
 })
 
@@ -143,7 +143,7 @@ test('Should_not_change_score_when_answer_already_accept', () => {
     expect(team.getTotalScore()).toBe(question.cost);
     const answer = team.getAnswer(1, 1);
     expect(answer.score).toBe(question.cost);
-    expect(answer.status).toBe(Status.Right);
+    expect(answer.status).toBe(AnswerStatus.Right);
 });
 
 test('Should_change_score_when_accept_answer_reject', () => {
@@ -155,7 +155,7 @@ test('Should_change_score_when_accept_answer_reject', () => {
 
     expect(team.getTotalScore()).toBe(-question.cost);
     expect(answer.score).toBe(-question.cost);
-    expect(answer.status).toBe(Status.Wrong);
+    expect(answer.status).toBe(AnswerStatus.Wrong);
 });
 
 test('Should_change_score_when_answer_reject', () => {
@@ -167,7 +167,7 @@ test('Should_change_score_when_answer_reject', () => {
 
     expect(team.getTotalScore()).toBe(-question.cost);
     expect(answer.score).toBe(-question.cost);
-    expect(answer.status).toBe(Status.Wrong);
+    expect(answer.status).toBe(AnswerStatus.Wrong);
 });
 
 test('Should_change_score_when_rejected_answer_accept', () => {
@@ -179,5 +179,5 @@ test('Should_change_score_when_rejected_answer_accept', () => {
     const answer = team.getAnswer(1, 1);
     expect(team.getTotalScore()).toBe(question.cost);
     expect(answer.score).toBe(question.cost);
-    expect(answer.status).toBe(Status.Right);
+    expect(answer.status).toBe(AnswerStatus.Right);
 });

@@ -1,11 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { usersRouter } from './routers/usersRouter';
-import { adminsRouter } from './routers/adminsRouter';
-import { teamsRouter } from './routers/teamsRouter';
-import { gamesRouter } from './routers/gamesRouter';
-import { mainRouter } from './routers/mainRouter';
+import { usersRouter } from './routers/users.router';
+import { adminsRouter } from './routers/admins.router';
+import { teamsRouter } from './routers/teams.router';
+import { gamesRouter } from './routers/games.router';
+import { mainRouter } from './routers/main.router';
 import cookieParser from 'cookie-parser';
 import boolParser from 'express-query-boolean';
 import path from 'path';
