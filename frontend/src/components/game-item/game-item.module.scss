@@ -67,6 +67,12 @@
   line-height: var(--line-height-small);
 }
 
+.gameTeamsAddCount {
+  font-size: var(--font-size-20);
+  line-height: var(--line-height-small);
+  color: var(--color-text-icon-link-enabled);
+}
+
 .gameTeams {
   display: flex;
   align-items: center;

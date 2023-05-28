@@ -626,7 +626,7 @@ const UserGame: FC<UserGameProps> = props => {
                     {
                         flags.isAnswerAccepted
                             ? 'Ответ успешно отправлен'
-                            : 'Не удалось отправить. Давайте еще раз'
+                            : 'Не удалось отправить. Попробуйте еще раз'
                     }
                 </Alert>
             </Snackbar>

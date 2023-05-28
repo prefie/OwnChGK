@@ -3,14 +3,21 @@ import {GameTypeItemProps} from "../game-type-item/game-type-item";
 import classes from './game-item.module.scss';
 import GameTypeList from "../game-type-list/game-type-list";
 import {IconButton} from "@mui/material";
-import React, {Dispatch, SetStateAction, useCallback, useEffect, useState} from "react";
+import React, {Dispatch, SetStateAction, useCallback, useState} from "react";
 import {Redirect} from "react-router-dom";
 import {Link} from 'react-router-dom';
+import SignUpToGameItem from "../sign-up-to-game-item/sign-up-to-game-item";
+import {addCurrentTeamInGame, deleteCurrentTeamFromGame} from "../../server-api/server-api";
 
 export enum Roles {
     user,
     admin,
     superAdmin
+}
+
+export enum AccessLevel {
+    PUBLIC = 'public',
+    PRIVATE = 'private'
 }
 
 interface GameItemProps {
@@ -19,6 +26,7 @@ interface GameItemProps {
     teamsCount: number;
     status: string,
     games: GameTypeItemProps[];
+    accessLevel: AccessLevel;
     openModal?: Dispatch<SetStateAction<boolean>>;
     setItemForDeleteName?: Dispatch<SetStateAction<string>>;
     setItemForDeleteId?: Dispatch<SetStateAction<string>>;
@@ -29,25 +37,11 @@ interface GameItemProps {
 function GameItem(props: GameItemProps) {
     const [isRedirectedToEdit, setIsRedirectedToEdit] = useState(false);
     const [isClicked, setIsClicked] = useState(false);
+    const [isAddToGame, setIsAddToGame] = useState(false);
     const gameId = props.id;
     const linkToGame = props.role === Roles.user
         ? `/game/${props.id}`
         : `/admin/start-game/${props.id}`
-
-    // useEffect(() => {
-    //     function goToGame(event: MouseEvent) {
-    //         const clickedElement = event.target as HTMLElement;
-    //         if (clickedElement.id === props.id) {
-    //             setIsClicked(true);
-    //         }
-    //     }
-    //
-    //     window.addEventListener('click', goToGame, true);
-    //
-    //     return () => {
-    //         window.removeEventListener('click', goToGame, true);
-    //     };
-    // });
 
     const handleDeleteClick = (event: React.SyntheticEvent) => {
         setItemName(event);
@@ -73,6 +67,22 @@ function GameItem(props: GameItemProps) {
         setIsRedirectedToEdit(true);
     };
 
+    function handleAddToGame() {
+        addCurrentTeamInGame(props.id).then(res => {
+            if (res.status === 200) {
+                setIsAddToGame(true);
+            }
+        });
+    }
+
+    function handleOutOfGame() {
+        deleteCurrentTeamFromGame(props.id).then(res => {
+            if (res.status === 200) {
+                setIsAddToGame(false);
+            }
+        })
+    }
+
     return isRedirectedToEdit
         ? <Redirect to={{pathname: '/admin/game-creation/edit', state: {id: props.id, name: props.name}}}/>
         : (
@@ -84,6 +94,16 @@ function GameItem(props: GameItemProps) {
                         <PeopleAltRounded fontSize={"medium"}/>
                         <div className={classes.gameTeamsCount}>{props.teamsCount}</div>
                     </div>
+                    {
+                        props.role === Roles.user && props.accessLevel === AccessLevel.PUBLIC
+                            ?
+                            <SignUpToGameItem
+                                isAddToGame={isAddToGame}
+                                handleAdd={handleAddToGame}
+                                handleOut={handleOutOfGame}
+                            />
+                            : null
+                    }
                 </div>
                 {
                     props.role === Roles.admin

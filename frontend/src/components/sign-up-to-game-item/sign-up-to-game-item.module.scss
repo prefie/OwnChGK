@@ -1,0 +1,12 @@
+.signUpLink,
+.signOutLink {
+  font-size: var(--font-size-20);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-icon-link-enabled);
+}
+
+.signUpLinkSuccess {
+  font-size: var(--font-size-20);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-icon-secondary);
+}

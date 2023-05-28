@@ -1,0 +1,29 @@
+.statusWrapperNotStarted {
+  background-color: var(--color-bg-overlay-default);
+  padding: .25rem;
+}
+
+.statusWrapperStarted {
+  background-color: var(--color-bg-overlay-success);
+  padding: .25rem;
+}
+
+.statusWrapperFinished {
+  background-color: var(--color-bg-overlay-default);
+  padding: .25rem;
+}
+
+.statusStateNotStarted {
+  font-size: var(--font-size-20);
+  color: var(--color-text-icon-primary);
+}
+
+.statusStateStarted {
+  font-size: var(--font-size-20);
+  color: var(--color-text-icon-success);
+}
+
+.statusStateFinished {
+  font-size: var(--font-size-20);
+  color: var(--color-text-icon-disabled);
+}
