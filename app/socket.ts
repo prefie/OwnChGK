@@ -223,11 +223,19 @@ function RejectAnswer(gameId: string, gameType: GameTypeLogic, roundNumber: numb
     }
 }
 
-function GetAllTeamsAnswers(gameId: string, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, ws: WebSocket) {
+function GetAllTeamsAnswers(
+    gameId: string,
+    gameType: GameTypeLogic,
+    roundNumber: number,
+    questionNumber: number,
+    ws: WebSocket
+) {
     const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
     if (!game) return;
 
     const answers = game.rounds[roundNumber - 1].questions[questionNumber - 1].answers.filter(ans => ans.text.length > 0);
+    console.log(game.rounds[roundNumber - 1]);
+    console.log(game.rounds[roundNumber - 1].questions[questionNumber - 1]);
     const acceptedAnswers = answers
         .filter(ans => ans.status == AnswerStatus.RIGHT)
         .map(ans => ans.text);
