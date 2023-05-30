@@ -16,7 +16,7 @@ export class GameDto {
             for (let i = 0; i < this.roundsCount; i++) {
                 questions[i + 1] = game.rounds[i].questions
                     .sort((a, b) => a.number > b.number ? 1 : -1)
-                    .map(q => q.text);
+                    .map(q => q.text || '');
             }
             this.questions = questions;
         }
@@ -32,7 +32,7 @@ export class MatrixGameDto extends GameDto {
         this.roundNames = this.roundsCount !== 0
             ? game.rounds
                 .sort((a, b) => a.number > b.number ? 1 : -1)
-                .map(round => round.name)
+                .map(round => round.name || '')
             : [];
     }
 }
@@ -46,7 +46,7 @@ export class BigGameDto {
     public readonly status: GameStatus;
     public readonly games: GameDto[];
 
-    constructor(game: BigGame, currentTeamId?: string | undefined) {
+    constructor(game: BigGame, currentTeamId?: string | undefined | null) {
         this.name = game.name;
         this.id = game.id.toString();
         this.accessLevel = game.accessLevel;

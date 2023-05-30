@@ -14,7 +14,7 @@ export class Round extends BaseCreature {
     @Column({
         nullable: true
     })
-    name: string;
+    name: string | null;
 
     @Column({
         name: 'questions_time'

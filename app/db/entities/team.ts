@@ -8,7 +8,7 @@ export class Participant {
     name: string;
     email: string;
 
-    constructor(email?: string, name?: string) {
+    constructor(email: string, name: string) {
         this.email = email;
         this.name = name;
     }
@@ -34,7 +34,7 @@ export class Team extends BaseCreature {
     @JoinColumn({
         name: 'captain_id'
     })
-    captain: User;
+    captain: User | null;
 
     @ManyToMany(
         () => BigGame,
@@ -49,7 +49,7 @@ export class Team extends BaseCreature {
     @Column('json', {
         nullable: true
     })
-    participants: Participant[];
+    participants: Participant[] | null;
 
     @OneToMany(
         () => Answer,

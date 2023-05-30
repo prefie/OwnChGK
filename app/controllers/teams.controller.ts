@@ -3,17 +3,14 @@ import { Request, Response } from 'express';
 import { generateAccessToken, getTokenFromRequest, setTokenInResponse } from '../utils/jwt-token';
 import { TeamDto } from '../dtos/team.dto';
 import { Participant, Team } from '../db/entities/team';
-import { UserRepository } from '../db/repositories/user.repository';
 import { demoAdminRoles, realAdminRoles, userRoles } from '../utils/roles';
 
 
 export class TeamsController {
     private readonly teamRepository: TeamRepository;
-    private readonly userRepository: UserRepository;
 
     constructor() {
         this.teamRepository = new TeamRepository();
-        this.userRepository = new UserRepository();
     }
 
     public async getAll(req: Request, res: Response) {
@@ -33,7 +30,7 @@ export class TeamsController {
             return res.status(200).json({
                 teams: teams?.map(value => new TeamDto(value))
             });
-        } catch (error) {
+        } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
                 error: JSON.stringify(error?.stack),
@@ -63,7 +60,7 @@ export class TeamsController {
                 return res.status(409).json({ message: 'Команда с таким названием уже есть' });
             }
 
-            const mappedParticipants = participants?.map(value => new Participant(value.email, value.name)); // избавляемся от мусора в JSON
+            const mappedParticipants = participants?.map((value: any) => new Participant(value.email, value.name)); // избавляемся от мусора в JSON
             const newTeam = await this.teamRepository.insertTeam(teamName, captain, mappedParticipants);
 
             if (userRoles.has(role) && captain) {
@@ -86,7 +83,7 @@ export class TeamsController {
             const { email, role } = getTokenFromRequest(req);
             if (demoAdminRoles.has(role)) {
                 const team = await this.teamRepository.findByIdWithRelations(teamId);
-                if (team.captain?.email !== email) {
+                if (team?.captain?.email !== email) {
                     return res.status(403).json({ message: 'Демо-админ может удалить только команду с собой' });
                 }
             }
@@ -137,7 +134,7 @@ export class TeamsController {
                 return res.status(403).json({ message: 'Демо-админ может занять команду только собой' });
             }
 
-            const mappedParticipants = participants?.map(value => new Participant(value.email, value.name)); // избавляемся от мусора в JSON
+            const mappedParticipants = participants?.map((value: any) => new Participant(value.email, value.name)); // избавляемся от мусора в JSON
             await this.teamRepository.updateByParams(teamId, newTeamName, captain, mappedParticipants);
             return res.status(200).json({});
         } catch (error: any) {
@@ -195,7 +192,7 @@ export class TeamsController {
             const { teamId } = req.params;
             const team = await this.teamRepository.findById(teamId);
             return res.status(200).json({
-                participants: team.participants
+                participants: team?.participants
             });
 
         } catch (error: any) {

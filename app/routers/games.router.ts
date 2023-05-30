@@ -6,6 +6,7 @@ import { allAdminRoles } from '../utils/roles';
 import { body, param, query } from 'express-validator';
 import { validateAccessLevel, validateGameStatus } from '../utils/validators';
 import { validationMiddleware } from '../middleware/validation.middleware';
+import asyncHandler from 'express-async-handler';
 
 export const gamesRouter = () => {
     const router = Router();
@@ -14,7 +15,7 @@ export const gamesRouter = () => {
 
     router.get(
         '/',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         query('amIParticipate').optional().isBoolean(),
         validationMiddleware,
         gamesController.getAll.bind(gamesController)
@@ -22,7 +23,7 @@ export const gamesRouter = () => {
 
     router.get(
         '/:gameId',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         param('gameId').isUUID(),
         validationMiddleware,
         gamesController.getGame.bind(gamesController)
@@ -46,7 +47,7 @@ export const gamesRouter = () => {
 
     router.post(
         '/:gameId/team',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         param('gameId').isUUID(),
         validationMiddleware,
         gamesController.addTeamInBigGame.bind(gamesController)
@@ -54,7 +55,7 @@ export const gamesRouter = () => {
 
     router.delete(
         '/:gameId/team',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         param('gameId').isUUID(),
         validationMiddleware,
         gamesController.deleteTeamFromBigGame.bind(gamesController)
@@ -121,7 +122,7 @@ export const gamesRouter = () => {
 
     router.get(
         '/:gameId/result',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         param('gameId').isUUID(),
         validationMiddleware,
         gamesController.getGameResult.bind(gamesController)
@@ -129,7 +130,7 @@ export const gamesRouter = () => {
 
     router.get(
         '/:gameId/resultTable',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         param('gameId').isUUID(),
         validationMiddleware,
         gamesController.getGameResultScoreTable.bind(gamesController)
@@ -137,7 +138,7 @@ export const gamesRouter = () => {
 
     router.get(
         '/:gameId/resultTable/format',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         param('gameId').isUUID(),
         validationMiddleware,
         gamesController.getResultWithFormat.bind(gamesController)

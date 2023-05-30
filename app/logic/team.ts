@@ -5,7 +5,7 @@ export class Team {
     public readonly id: string;
     private readonly _answers: Record<number, Record<number, Answer>>;
 
-    constructor(name: string, id: string, answers?: Answer[] | undefined) {
+    constructor(name: string, id: string) {
         this.name = name;
         this.id = id;
         this._answers = {};

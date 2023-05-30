@@ -1,7 +1,7 @@
 import { Admin } from '../db/entities/admin';
 
 export class AdminDto {
-    public readonly name: string;
+    public readonly name: string | null;
     public readonly id: string;
     public readonly email: string;
     public readonly role: string;

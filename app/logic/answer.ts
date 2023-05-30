@@ -6,7 +6,7 @@ export class Answer {
     public readonly text: string;
     public readonly roundNumber: number;
     public readonly questionNumber: number;
-    private _appeal: Appeal;
+    private _appeal: Appeal | undefined;
     private _score: number;
     private _status: AnswerStatus;
 

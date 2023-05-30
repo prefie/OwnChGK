@@ -67,6 +67,8 @@ export class TeamRepository extends BaseRepository<Team> {
         participants: Participant[]
     ) {
         const team = await this.innerRepository.findOneBy({ id: teamId });
+        if (!team) throw new Error('Нет команды');
+
         const captain = captainEmail
             ? await this.innerRepository.manager
                 .findOneBy<User>(User, { email: captainEmail.toLowerCase() })
@@ -83,11 +85,13 @@ export class TeamRepository extends BaseRepository<Team> {
             where: { id: teamId },
             relations: { captain: true }
         });
-        if (team.captain !== null) {
-            throw new Error('Команда уже с капитаном');
+        if (!team || team.captain != null) {
+            throw new Error('Команды нет или команда уже с капитаном');
         }
 
-        team.captain = await this.innerRepository.manager.findOneBy<User>(User, { id: userId });
+        const user = await this.innerRepository.manager.findOneBy<User>(User, { id: userId });
+        if (!user) throw new Error('Нет такого юзера');
+        team.captain = user;
         return this.innerRepository.save(team);
     }
 }

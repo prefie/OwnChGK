@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { UsersController } from '../controllers/users.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
 import { body, query } from 'express-validator';
+import asyncHandler from 'express-async-handler';
 
 export const usersRouter = () => {
     const router = Router();
@@ -10,7 +11,7 @@ export const usersRouter = () => {
 
     router.get(
         '/',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         query('withoutTeam').optional().isBoolean(),
         usersController.getAll.bind(usersController)
     );
@@ -36,7 +37,7 @@ export const usersRouter = () => {
 
     router.post(
         '/demo',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         usersController.insertDemo.bind(usersController)
     );
 
@@ -60,7 +61,7 @@ export const usersRouter = () => {
 
     router.get(
         '/getTeam',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         usersController.getTeam.bind(usersController)
     );
 
@@ -74,14 +75,14 @@ export const usersRouter = () => {
 
     router.patch(
         '/changeName',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         body('newName').isString(),
         usersController.changeName.bind(usersController)
     );
 
     router.patch(
         '/changePassword',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         body('email').isEmail(),
         body('password').isString().notEmpty(),
         body('oldPassword').isString().notEmpty(),

@@ -10,17 +10,20 @@ export function roleMiddleware(roles: Set<string>) {
         try {
             const token = req.cookies['authorization'];
             if (!token) {
-                return res.status(401).json({ message: 'Пользователь не авторизован' });
+                res.status(401).json({ message: 'Пользователь не авторизован' });
+                return;
             }
 
             const { role: userRole } = getTokenFromString(token);
             if (!roles.has(userRole)) {
-                return res.status(403).json({ message: 'У пользователя нет прав' });
+                res.status(403).json({ message: 'У пользователя нет прав' });
+                return;
             }
 
             next();
         } catch (exception) {
-            return res.status(403).json({ message: 'Пользователь не авторизован' });
+            res.status(403).json({ message: 'Пользователь не авторизован' });
+            return;
         }
     };
 }

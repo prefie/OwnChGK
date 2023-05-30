@@ -9,7 +9,7 @@ export class Question {
     public readonly number: number;
     public readonly time: number;
     public readonly roundNumber: number;
-    public readonly text: string;
+    public readonly text: string | null;
 
     private readonly _answers: Record<string, Answer>;
     private readonly _appeals: Record<string, Appeal>;
@@ -20,7 +20,7 @@ export class Question {
         roundNumber: number,
         number: number,
         time: number,
-        text: string = null,
+        text: string | null = null,
         answers?: Answer[] | undefined,
         appeals?: Appeal[] | undefined
     ) {
@@ -52,7 +52,7 @@ export class Question {
         this._answers[teamId].onAppeal(this._appeals[teamId]);
     }
 
-    changeAnswer(team: Team, roundNumber: number, questionNumber: number, isMatrixType = false): void {
+    changeAnswer(team: Team, isMatrixType = false): void {
         let answer = this._answers[team.id];
         if (answer) {
             answer.status == AnswerStatus.RIGHT

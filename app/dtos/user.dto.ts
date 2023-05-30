@@ -1,9 +1,9 @@
 import { User } from '../db/entities/user';
 
 export class UserDto {
-    public readonly name: string;
+    public readonly name: string | null;
     public readonly id: string;
-    public readonly email: string;
+    public readonly email: string | null;
     public readonly role = 'user';
     public readonly team: string;
     public readonly teamId: string;

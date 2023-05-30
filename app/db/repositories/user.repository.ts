@@ -39,6 +39,7 @@ export class UserRepository extends BaseRepository<User> {
 
     async updateByEmailAndPassword(email: string, password: string) {
         const user = await this.innerRepository.findOneBy({ email: email.toLowerCase() });
+        if (!user) throw new Error('Нет юзера');
         user.password = password;
 
         return this.innerRepository.save(user);

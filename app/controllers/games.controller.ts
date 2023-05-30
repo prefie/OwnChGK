@@ -35,7 +35,7 @@ export class GamesController {
             return res.status(200).json({
                 games: games?.map(value => new BigGameDto(value, teamId))
             });
-        } catch (error) {
+        } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
                 error: JSON.stringify(error?.stack),
@@ -280,7 +280,7 @@ export class GamesController {
                 return res.status(404).json({ 'message': 'Игра не началась' });
             }
 
-            const totalScore = bigGames[gameId].currentGame.getTotalScoreForAllTeams();
+            const totalScore = bigGames[gameId].currentGame?.getTotalScoreForAllTeams();
             const answer = {
                 totalScoreForAllTeams: totalScore,
             };
@@ -307,11 +307,12 @@ export class GamesController {
 
             if (!bigGames[gameId]) {
                 const bigGameFromDb = await this.bigGameRepository.findById(gameId);
-                await this.restoreBigGameIfNeeded(gameId, bigGameFromDb.status);
+                await this.restoreBigGameIfNeeded(gameId, bigGameFromDb?.status);
             }
 
             const bigGame = bigGames[gameId];
             const game = bigGame.isFullGame() ? bigGame.chGKGame : bigGame.currentGame;
+            if (!game) return;
 
             const totalScoreForAllTeams = userRoles.has(role) && teamId && bigGame.intrigueEnabled
                 ? game.getScoreTableForTeam(teamId)
@@ -322,7 +323,7 @@ export class GamesController {
                 : game.getAllTeamsDictionary();
 
 
-            const matrixSums = bigGame.isFullGame() ? bigGame.matrixGame.getTotalScoreForAllTeams() : undefined;
+            const matrixSums = bigGame.isFullGame() ? bigGame.matrixGame?.getTotalScoreForAllTeams() : undefined;
 
             const answer = { // TODO: DTO
                 gameId,
@@ -355,7 +356,7 @@ export class GamesController {
 
             if (!bigGames[gameId]) {
                 const bigGameFromDb = await this.bigGameRepository.findById(gameId);
-                await this.restoreBigGameIfNeeded(gameId, bigGameFromDb.status);
+                await this.restoreBigGameIfNeeded(gameId, bigGameFromDb?.status);
             } else if (allAdminRoles.has(role)) {
                 this.bigGameRepository.updateBigGameState(bigGames[gameId])
                     .catch(e => console.log(`Ошибка при сохранении состояния игры ${bigGame.id} -- ${bigGame.name} -- ${e}`));
@@ -369,6 +370,7 @@ export class GamesController {
             }
 
             const game = bigGame.isFullGame() ? bigGame.chGKGame : bigGame.currentGame;
+            if (!game) return;
 
             for (let i = 1; i <= game.getRoundsCount(); i++) {
                 headersList.push('Тур ' + i);
@@ -379,7 +381,7 @@ export class GamesController {
 
             const teamRows = [];
             const totalScoreForAllTeams = game.getTotalScoreForAllTeams();
-            const matrixSums = bigGame.isFullGame() ? bigGame.matrixGame.getTotalScoreForAllTeams() : undefined;
+            const matrixSums = bigGame.isFullGame() ? bigGame.matrixGame?.getTotalScoreForAllTeams() : undefined;
 
             const scoreTable = userRoles.has(role) && teamId && bigGames[gameId].intrigueEnabled
                 ? game.getScoreTableForTeam(teamId)
@@ -388,7 +390,7 @@ export class GamesController {
             let roundsResultList = [];
             for (const team in scoreTable) {
                 let roundSum = 0;
-                for (let i = 0; i < game.getRoundsCount(); i++) {
+                for (let i = 0; i < game?.getRoundsCount() ?? 0; i++) {
                     for (let j = 0; j < game.rounds[i].questionsCount; j++) {
                         roundSum += scoreTable[team][i][j];
                     }
@@ -448,11 +450,11 @@ export class GamesController {
             }
 
             const bigGame = await this.bigGameRepository.findAccessLevelAndStatusById(gameId);
-            if (bigGame.status != GameStatus.NOT_STARTED) {
+            if (bigGame?.status != GameStatus.NOT_STARTED) {
                 return res.status(400).json({ message: 'Нельзя редактировать начатые игры' });
             }
 
-            if (bigGame.accessLevel != AccessLevel.PUBLIC) {
+            if (bigGame?.accessLevel != AccessLevel.PUBLIC) {
                 return res.status(403).json({ message: 'Нельзя присоединиться к непубличной игре' });
             }
 
@@ -477,7 +479,7 @@ export class GamesController {
             }
 
             const bigGame = await this.bigGameRepository.findAccessLevelAndStatusById(gameId);
-            if (bigGame.status != GameStatus.NOT_STARTED) {
+            if (bigGame?.status != GameStatus.NOT_STARTED) {
                 return res.status(400).json({ message: 'Нельзя редактировать начатые игры' });
             }
 
@@ -496,7 +498,7 @@ export class GamesController {
             const { gameId } = req.params;
             const game = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
             const table = [];
-            for (let team of game.teams) {
+            for (let team of game?.teams ?? []) {
                 table.push(team.name);
                 if (team.captain) {
                     table.push(['Капитан', 'Почта'].join(';'));
@@ -528,7 +530,7 @@ export class GamesController {
         }
     }
 
-    private async restoreBigGameIfNeeded(gameId: string, status: string): Promise<BigGameLogic> {
+    private async restoreBigGameIfNeeded(gameId: string, status: string | undefined): Promise<BigGameLogic | undefined> {
         if (bigGames[gameId]) return;
 
         if (status == GameStatus.STARTED || status == GameStatus.FINISHED) {
@@ -544,6 +546,8 @@ export class GamesController {
 
             return bigGames[gameId];
         }
+
+        return;
     }
 
     private async checkAccess(req: Request, gameId: string, withAdditionalAdmins = false): Promise<CheckAccessResult> {
@@ -552,8 +556,8 @@ export class GamesController {
         if (superAdminRoles.has(role)) return defaultAnswer;
 
         const game = await this.bigGameRepository.findWithAdminRelationsByBigGameId(gameId);
-        const additionalAdmins = game.additionalAdmins?.map(a => a.id) ?? [];
-        if (game.admin.id !== id && withAdditionalAdmins && additionalAdmins.indexOf(id) == -1) {
+        const additionalAdmins = game?.additionalAdmins?.map(a => a.id) ?? [];
+        if (game?.admin.id !== id && withAdditionalAdmins && additionalAdmins.indexOf(id) == -1) {
             return {
                 type: AccessType.FORBIDDEN,
                 message: 'Админ/Демо-админ может изменять только свои игры',

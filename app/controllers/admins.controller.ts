@@ -35,7 +35,7 @@ export class AdminsController {
             return res.status(200).json({
                 admins: admins?.map(admin => new AdminDto(admin))
             });
-        } catch (error) {
+        } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
                 error: JSON.stringify(error?.stack),
@@ -61,7 +61,7 @@ export class AdminsController {
             } else {
                 return res.status(403).json({ message: 'Not your password' });
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
                 error: JSON.stringify(error?.stack),
@@ -96,6 +96,10 @@ export class AdminsController {
             let admin = await this.adminRepository.findByEmail(email);
             if (!admin) {
                 const user = await this.userRepository.findByEmail(email);
+                if (!user) {
+                    return res.status(400).json({ 'message': 'Юзера нет' });
+                }
+
                 admin = await this.adminRepository
                     .insertByEmailAndPassword(user.email, user.password, user.name, AdminRoles.DEMOADMIN);
             }
@@ -158,17 +162,15 @@ export class AdminsController {
         try {
             const { newName } = req.body;
 
-            const payload = getTokenFromRequest(req);
-            if (payload.id) {
-                const admin = await this.adminRepository.findById(payload.id);
-                if (admin) {
-                    await this.adminRepository.updateName(admin, newName);
-                    const newToken = generateAccessToken(payload.id, payload.email, payload.role, payload.teamId, newName);
-                    setTokenInResponse(res, newToken);
-                    return res.status(200).json({});
-                } else {
-                    return res.status(404).json({ message: 'admin not found' });
-                }
+            const { id, email, role } = getTokenFromRequest(req);
+            const admin = await this.adminRepository.findById(id);
+            if (admin) {
+                await this.adminRepository.updateName(admin, newName);
+                const newToken = generateAccessToken(id, email, role, null, newName);
+                setTokenInResponse(res, newToken);
+                return res.status(200).json({});
+            } else {
+                return res.status(404).json({ message: 'admin not found' });
             }
         } catch (error: any) {
             return res.status(500).json({
@@ -226,7 +228,7 @@ export class AdminsController {
         }
     }
 
-    public async logout(req: Request, res: Response) {
+    public async logout(_req: Request, res: Response) {
         try {
             res.clearCookie('authorization');
 

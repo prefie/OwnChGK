@@ -5,6 +5,7 @@ import { allAdminRoles, superAdminRoles } from '../utils/roles';
 import { body } from 'express-validator';
 import { validationMiddleware } from '../middleware/validation.middleware';
 import { authMiddleware } from '../middleware/auth.middleware';
+import asyncHandler from 'express-async-handler';
 
 export const adminsRouter = () => {
     const router = Router();
@@ -38,7 +39,7 @@ export const adminsRouter = () => {
 
     router.post(
         '/demo',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         adminsController.insertDemo.bind(adminsController)
     );
 

@@ -5,6 +5,7 @@ import { roleMiddleware } from '../middleware/role.middleware';
 import { allAdminRoles } from '../utils/roles';
 import { body, param, query } from 'express-validator';
 import { validationMiddleware } from '../middleware/validation.middleware';
+import asyncHandler from 'express-async-handler';
 
 export const teamsRouter = () => {
     const router = Router();
@@ -13,7 +14,7 @@ export const teamsRouter = () => {
 
     router.get(
         '/',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         query('withoutUser').optional().isBoolean(),
         validationMiddleware,
         teamsController.getAll.bind(teamsController)
@@ -21,7 +22,7 @@ export const teamsRouter = () => {
 
     router.get(
         '/:teamId',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         param('teamId').isUUID(),
         validationMiddleware,
         teamsController.getTeam.bind(teamsController)
@@ -29,7 +30,7 @@ export const teamsRouter = () => {
 
     router.get(
         '/:teamId/participants',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         param('teamId').isUUID(),
         validationMiddleware,
         teamsController.getParticipants.bind(teamsController)
@@ -37,7 +38,7 @@ export const teamsRouter = () => {
 
     router.patch(
         '/:teamId/change',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         param('teamId').isUUID(),
         body('newTeamName').isString().notEmpty(),
         body('captain').optional({ nullable: true }).isEmail(),
@@ -50,7 +51,7 @@ export const teamsRouter = () => {
 
     router.patch(
         '/:teamId/changeCaptain',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         param('teamId').isUUID(),
         validationMiddleware,
         teamsController.editTeamCaptainByCurrentUser.bind(teamsController)
@@ -66,7 +67,7 @@ export const teamsRouter = () => {
 
     router.post(
         '/',
-        authMiddleware,
+        asyncHandler(authMiddleware),
         body('teamName').isString().notEmpty(),
         body('captain').optional({ nullable: true }).isEmail(),
         body('participants').optional({ nullable: true }).isArray(),

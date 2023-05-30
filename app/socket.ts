@@ -14,8 +14,10 @@ export const seconds70PerQuestion = 70000;
 export const seconds20PerQuestion = 20000;
 export const extra10Seconds = 10000;
 
-function GiveAddedTime(gameId: number, gamePart: GameTypeLogic) {
+function GiveAddedTime(gameId: string, gamePart: GameTypeLogic) {
     const game = gamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    if (!game) return;
+
     if (game.timeIsOnPause) {
         game.leftTime += extra10Seconds;
         game.maxTime += extra10Seconds;
@@ -64,24 +66,27 @@ function GiveAddedTime(gameId: number, gamePart: GameTypeLogic) {
     }
 }
 
-function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber: number, activeGamePart: GameTypeLogic) {
-    bigGames[gameId].currentGame = activeGamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
-    bigGames[gameId].currentGame.currentQuestion = [tourNumber, questionNumber];
+function ChangeQuestionNumber(gameId: string, questionNumber: number, tourNumber: number, activeGamePart: GameTypeLogic) {
+    const currentGame = activeGamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    bigGames[gameId].currentGame = currentGame
+    if (currentGame) {
+        currentGame.currentQuestion = [tourNumber, questionNumber];
 
-    for (let user of gameUsers[gameId]) {
-        user.send(JSON.stringify({
-            'action': 'changeQuestionNumber',
-            'matrixActive': { round: tourNumber, question: questionNumber },
-            'number': bigGames[gameId].currentGame.rounds[0].questionsCount * (tourNumber - 1) + questionNumber,
-            'text': bigGames[gameId].currentGame.rounds[tourNumber - 1].questions[questionNumber - 1]?.text,
-            'activeGamePart': activeGamePart
-        }));
+        for (let user of gameUsers[gameId]) {
+            user.send(JSON.stringify({
+                'action': 'changeQuestionNumber',
+                'matrixActive': { round: tourNumber, question: questionNumber },
+                'number': currentGame.rounds[0].questionsCount * (tourNumber - 1) + questionNumber,
+                'text': currentGame.rounds[tourNumber - 1].questions[questionNumber - 1]?.text,
+                'activeGamePart': activeGamePart
+            }));
+        }
     }
 }
 
-function StartTimer(gameId: number, gamePart: GameTypeLogic) {
+function StartTimer(gameId: string, gamePart: GameTypeLogic) {
     const game = gamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
-    if (!game.timeIsOnPause) {
+    if (game && !game.timeIsOnPause) {
         game.timerStarted = true;
         game.timer = setTimeout(() => {
             game.timerStarted = false;
@@ -95,7 +100,7 @@ function StartTimer(gameId: number, gamePart: GameTypeLogic) {
                 'time': game.leftTime
             }));
         }
-    } else {
+    } else if (game) {
         game.timerStarted = true;
         game.timeIsOnPause = false;
         game.timer = setTimeout(() => {
@@ -112,8 +117,10 @@ function StartTimer(gameId: number, gamePart: GameTypeLogic) {
     }
 }
 
-function StopTimer(gameId: number, gamePart: GameTypeLogic) {
+function StopTimer(gameId: string, gamePart: GameTypeLogic) {
     const game = gamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    if (!game) return;
+
     game.timerStarted = false;
     clearTimeout(game.timer);
     game.timeIsOnPause = false;
@@ -131,9 +138,9 @@ function StopTimer(gameId: number, gamePart: GameTypeLogic) {
     }
 }
 
-function PauseTimer(gameId: number, gamePart: GameTypeLogic) {
+function PauseTimer(gameId: string, gamePart: GameTypeLogic) {
     const game = gamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
-    if (game.timerStarted) {
+    if (game && game.timerStarted) {
         game.timerStarted = false;
         game.timeIsOnPause = true;
         game.leftTime -= Math.floor(process.uptime() * 1000 - game.timer._idleStart);
@@ -147,62 +154,79 @@ function PauseTimer(gameId: number, gamePart: GameTypeLogic) {
     }
 }
 
-function GiveAnswer(answer: string, teamId: string, gameId: number, ws) {
-    const roundNumber = bigGames[gameId].currentGame.currentQuestion[0] - 1;
-    const questionNumber = bigGames[gameId].currentGame.currentQuestion[1] - 1;
-    bigGames[gameId].currentGame.rounds[roundNumber].questions[questionNumber].giveAnswer(bigGames[gameId].currentGame.teams[teamId], answer);
-    ws.send(JSON.stringify({
-        'action': 'statusAnswer',
-        'isAccepted': true,
-        'answer': answer,
-        'activeGamePart': GameTypeLogic.ChGK
-    }));
+function GiveAnswer(answer: string, teamId: string, gameId: string, ws: WebSocket) {
+    const roundNumber = bigGames[gameId].currentGame?.currentQuestion?.[0] ?? 0 - 1;
+    const questionNumber = bigGames[gameId].currentGame?.currentQuestion?.[1] ?? 0 - 1;
+    const currentGame = bigGames[gameId].currentGame;
+    if (currentGame) {
+        currentGame.rounds[roundNumber].questions[questionNumber]
+            .giveAnswer(currentGame.teams[teamId], answer);
+
+        ws.send(JSON.stringify({
+            'action': 'statusAnswer',
+            'isAccepted': true,
+            'answer': answer,
+            'activeGamePart': GameTypeLogic.ChGK
+        }));
+    }
 }
 
-function GiveAppeal(appeal: string, teamId: string, gameId: number, number: number, answer: string, gamePart: GameTypeLogic) {
+function GiveAppeal(appeal: string, teamId: string, gameId: string, number: number, answer: string, gamePart: GameTypeLogic) {
     const game = gamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    if (!game) return;
+
     const roundNumber = Math.ceil(number / game.rounds[0].questionsCount);
     let questionNumber = number - (roundNumber - 1) * game.rounds[0].questionsCount;
     game.rounds[roundNumber - 1].questions[questionNumber - 1].giveAppeal(teamId, appeal, answer);
 }
 
-function AcceptAnswer(gameId: number, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, answers: string[]) {
+function AcceptAnswer(gameId: string, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, answers: string[]) {
     const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    if (!game) return;
+
     for (const answer of answers) {
         game.rounds[roundNumber - 1].questions[questionNumber - 1].acceptAnswers(answer);
     }
 }
 
-function ChangeAnswer(gameId: number, gameType: GameTypeLogic, teamId: string, number: number) {
+function ChangeAnswer(gameId: string, gameType: GameTypeLogic, teamId: string, number: number) {
     const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    if (!game) return;
     const roundNumber = Math.ceil(number / game.rounds[0].questionsCount);
     let questionNumber = number - (roundNumber - 1) * game.rounds[0].questionsCount;
-    game.rounds[roundNumber - 1].questions[questionNumber - 1].changeAnswer(game.teams[teamId], roundNumber, questionNumber, gameType == GameTypeLogic.Matrix);
+    game.rounds[roundNumber - 1].questions[questionNumber - 1]
+        .changeAnswer(game.teams[teamId], gameType == GameTypeLogic.Matrix);
 }
 
-function AcceptAppeal(gameId: number, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, answers: string[]) {
+function AcceptAppeal(gameId: string, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, answers: string[]) {
     const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
     for (const answer of answers) {
-        game.rounds[roundNumber - 1].questions[questionNumber - 1].acceptAppeal(answer, '');
+        game?.rounds[roundNumber - 1].questions[questionNumber - 1].acceptAppeal(answer, '');
     }
 }
 
-function RejectAppeal(gameId: number, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, answers: string[]) {
+function RejectAppeal(gameId: string, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, answers: string[]) {
     const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    if (!game) return;
+
     for (const answer of answers) {
         game.rounds[roundNumber - 1].questions[questionNumber - 1].rejectAppeal(answer, '');
     }
 }
 
-function RejectAnswer(gameId: number, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, answers: string[], isMatrixType = false) {
+function RejectAnswer(gameId: string, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, answers: string[], isMatrixType = false) {
     const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    if (!game) return;
+
     for (const answer of answers) {
         game.rounds[roundNumber - 1].questions[questionNumber - 1].rejectAnswers(answer, isMatrixType);
     }
 }
 
-function GetAllTeamsAnswers(gameId: number, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, ws) {
+function GetAllTeamsAnswers(gameId: string, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, ws: WebSocket) {
     const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    if (!game) return;
+
     const answers = game.rounds[roundNumber - 1].questions[questionNumber - 1].answers.filter(ans => ans.text.length > 0);
     const acceptedAnswers = answers
         .filter(ans => ans.status == AnswerStatus.RIGHT)
@@ -221,8 +245,10 @@ function GetAllTeamsAnswers(gameId: number, gameType: GameTypeLogic, roundNumber
     }));
 }
 
-function GetAppealsByNumber(gameId: number, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, ws) {
+function GetAppealsByNumber(gameId: string, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, ws: WebSocket) {
     const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    if (!game) return;
+
     const appeals = game.rounds[roundNumber - 1].questions[questionNumber - 1].appeals
         .filter(appeal => appeal.status == AppealStatus.UNCHECKED)
         .map(appeal => {
@@ -239,13 +265,16 @@ function GetAppealsByNumber(gameId: number, gameType: GameTypeLogic, roundNumber
     }));
 }
 
-function GetAllAppeals(gameId: number, ws) { // Тут вроде CurrentGame законно: метод нужен для индикации апелляций в текущей игре
+function GetAllAppeals(gameId: string, ws: WebSocket) { // Тут вроде CurrentGame законно: метод нужен для индикации апелляций в текущей игре
     const res = [];
-    for (let roundNumber = 0; roundNumber < bigGames[gameId].currentGame.getRoundsCount(); roundNumber++) {
-        for (let questionNumber = 0; questionNumber < bigGames[gameId].currentGame.rounds[roundNumber].questions.length; questionNumber++) {
-            if (bigGames[gameId].currentGame.rounds[roundNumber].questions[questionNumber].appeals
+    const currentGame = bigGames[gameId].currentGame;
+    if (!currentGame) return;
+
+    for (let roundNumber = 0; roundNumber < currentGame.getRoundsCount(); roundNumber++) {
+        for (let questionNumber = 0; questionNumber < currentGame.rounds[roundNumber].questions.length; questionNumber++) {
+            if (currentGame.rounds[roundNumber].questions[questionNumber].appeals
                 .filter(a => a.status == AppealStatus.UNCHECKED).length > 0)
-                res.push(roundNumber * bigGames[gameId].currentGame.rounds[roundNumber].questions.length + (questionNumber + 1));
+                res.push(roundNumber * currentGame.rounds[roundNumber].questions.length + (questionNumber + 1));
         }
     }
     ws.send(JSON.stringify({
@@ -254,8 +283,12 @@ function GetAllAppeals(gameId: number, ws) { // Тут вроде CurrentGame з
     }));
 }
 
-function GiveAnswerMatrix(answer: string, roundNumber: number, questionNumber: number, roundName: string, teamId: string, gameId: string, ws) {
-    bigGames[gameId].matrixGame.rounds[roundNumber - 1].questions[questionNumber - 1].giveAnswer(bigGames[gameId].matrixGame.teams[teamId], answer);
+function GiveAnswerMatrix(answer: string, roundNumber: number, questionNumber: number, roundName: string, teamId: string, gameId: string, ws: WebSocket) {
+    const matrix = bigGames[gameId].matrixGame;
+    if (!matrix) return;
+
+    matrix.rounds[roundNumber - 1].questions[questionNumber - 1]
+        .giveAnswer(matrix.teams[teamId], answer);
     ws.send(JSON.stringify({
         'action': 'statusAnswer',
         'isAccepted': true,
@@ -267,7 +300,7 @@ function GiveAnswerMatrix(answer: string, roundNumber: number, questionNumber: n
     }));
 }
 
-function StartBreakTime(gameId, time) {
+function StartBreakTime(gameId: string, time: number) {
     bigGames[gameId].startBreak(time);
     for (const adminWs of gameAdmins[gameId]) {
         adminWs.send(JSON.stringify({
@@ -285,7 +318,7 @@ function StartBreakTime(gameId, time) {
     }
 }
 
-function StopBreakTime(gameId) {
+function StopBreakTime(gameId: string) {
     bigGames[gameId].stopBreak();
     for (const userWs of gameUsers[gameId]) {
         userWs.send(JSON.stringify({
@@ -296,31 +329,33 @@ function StopBreakTime(gameId) {
     }
 }
 
-function GetQuestionNumber(gameId, ws) {
-    if (!bigGames[gameId].currentGame.currentQuestion) {
+function GetQuestionNumber(gameId: string, ws: WebSocket) {
+    if (!bigGames[gameId].currentGame?.currentQuestion) {
         ws.send(JSON.stringify({
             'action': 'questionNumberIsUndefined',
-            'activeGamePart': bigGames[gameId].currentGame.type,
+            'activeGamePart': bigGames[gameId].currentGame?.type,
         }));
         return;
     }
 
     ws.send(JSON.stringify({
         'action': 'changeQuestionNumber',
-        'round': bigGames[gameId].currentGame.currentQuestion[0],
-        'question': bigGames[gameId].currentGame.currentQuestion[1],
-        'activeGamePart': bigGames[gameId].currentGame.type,
+        'round': bigGames[gameId].currentGame?.currentQuestion?.[0],
+        'question': bigGames[gameId].currentGame?.currentQuestion?.[1],
+        'activeGamePart': bigGames[gameId].currentGame?.type,
     }));
 }
 
-function GetTeamAnswers(gameId, teamId, ws) {
+function GetTeamAnswers(gameId: string, teamId: string, ws: WebSocket) {
     let answer: { [key: string]: { number: number, answer: string, status: AnswerStatus }[] };
     answer = {};
-    if (bigGames[gameId].chGKGame) {
-        const chgk = bigGames[gameId].chGKGame.teams[teamId].getAnswers();
+    const chgkGame = bigGames[gameId].chGKGame;
+    const matrixGame = bigGames[gameId].matrixGame;
+    if (chgkGame) {
+        const chgk = chgkGame.teams[teamId].getAnswers();
         answer['chgk'] = chgk.map((ans) => {
             return {
-                number: (ans.roundNumber - 1) * bigGames[gameId].chGKGame.rounds[0].questionsCount + ans.questionNumber,
+                number: (ans.roundNumber - 1) * chgkGame.rounds[0].questionsCount + ans.questionNumber,
                 roundNumber: ans.roundNumber,
                 questionNumber: ans.questionNumber,
                 answer: ans.text,
@@ -328,12 +363,12 @@ function GetTeamAnswers(gameId, teamId, ws) {
             };
         });
     }
-    if (bigGames[gameId].matrixGame) {
-        const matrix = bigGames[gameId].matrixGame.teams[teamId].getAnswers();
+    if (matrixGame) {
+        const matrix = matrixGame.teams[teamId].getAnswers();
 
         answer['matrix'] = matrix.map((ans) => {
             return {
-                number: (ans.roundNumber - 1) * bigGames[gameId].matrixGame.rounds[0].questionsCount + ans.questionNumber,
+                number: (ans.roundNumber - 1) * matrixGame.rounds[0].questionsCount + ans.questionNumber,
                 roundNumber: ans.roundNumber,
                 questionNumber: ans.questionNumber,
                 answer: ans.text,
@@ -350,14 +385,16 @@ function GetTeamAnswers(gameId, teamId, ws) {
     }));
 }
 
-function GetTeamAnswersForAdmin(gameId, teamId, ws) {
+function GetTeamAnswersForAdmin(gameId: string, teamId: string, ws: WebSocket) {
     let answer: { [key: string]: { number: number, answer: string, status: AnswerStatus }[] };
     answer = {};
-    if (bigGames[gameId].chGKGame) {
-        const chgk = bigGames[gameId].chGKGame.teams[teamId].getAnswers();
+    const chgkGame = bigGames[gameId].chGKGame;
+    const matrixGame = bigGames[gameId].matrixGame;
+    if (chgkGame) {
+        const chgk = chgkGame.teams[teamId].getAnswers();
         answer['chgk'] = chgk.map((ans) => {
             return {
-                number: (ans.roundNumber - 1) * bigGames[gameId].chGKGame.rounds[0].questionsCount + ans.questionNumber,
+                number: (ans.roundNumber - 1) * chgkGame.rounds[0].questionsCount + ans.questionNumber,
                 roundNumber: ans.roundNumber,
                 questionNumber: ans.questionNumber,
                 answer: ans.text,
@@ -365,11 +402,11 @@ function GetTeamAnswersForAdmin(gameId, teamId, ws) {
             };
         });
     }
-    if (bigGames[gameId].matrixGame) {
-        const matrix = bigGames[gameId].matrixGame.teams[teamId].getAnswers();
-        answer['matrix'] = matrix.map((ans) => {
+    if (matrixGame) {
+        const matrix = matrixGame.teams[teamId].getAnswers();
+        answer['matrix'] = matrix?.map((ans) => {
             return {
-                number: (ans.roundNumber - 1) * bigGames[gameId].matrixGame.rounds[0].questionsCount + ans.questionNumber,
+                number: (ans.roundNumber - 1) * matrixGame.rounds[0].questionsCount + ans.questionNumber,
                 roundNumber: ans.roundNumber,
                 questionNumber: ans.questionNumber,
                 answer: ans.text,
@@ -379,20 +416,22 @@ function GetTeamAnswersForAdmin(gameId, teamId, ws) {
 
     }
 
+    const chgk = bigGames[gameId].chGKGame;
+    const matrix = bigGames[gameId].matrixGame;
     ws.send(JSON.stringify({
         'action': 'teamAnswersForAdmin',
         'chgkAnswers': answer['chgk'],
         'matrixAnswers': answer['matrix'],
-        'chgkQuestionsCount': bigGames[gameId].chGKGame
-            ? bigGames[gameId].chGKGame.getRoundsCount() * bigGames[gameId].chGKGame.rounds[0].questionsCount
+        'chgkQuestionsCount': chgk
+            ? chgk.getRoundsCount() * chgk.rounds[0].questionsCount
             : 0,
-        'matrixQuestionsCount': bigGames[gameId].matrixGame
-            ? bigGames[gameId].matrixGame.getRoundsCount() * bigGames[gameId].matrixGame.rounds[0].questionsCount
+        'matrixQuestionsCount': matrix
+            ? matrix.getRoundsCount() * matrix.rounds[0].questionsCount
             : 0,
     }));
 }
 
-function NotifyAdminsAboutAppeal(gameId, number) {
+function NotifyAdminsAboutAppeal(gameId: string, number: number) {
     for (let ws of gameAdmins[gameId])
         ws.send(JSON.stringify({
             action: 'appeal',
@@ -400,7 +439,7 @@ function NotifyAdminsAboutAppeal(gameId, number) {
         }));
 }
 
-function AdminsAction(gameId, ws, jsonMessage, gameType) {
+function AdminsAction(gameId: string, ws: WebSocket, jsonMessage: any, gameType: string) {
     if (!gameAdmins[gameId].has(ws)) {
         gameAdmins[gameId].add(ws);
         ws.on('close', function () {
@@ -463,7 +502,7 @@ function AdminsAction(gameId, ws, jsonMessage, gameType) {
     }
 }
 
-function UsersAction(gameId, ws, jsonMessage, gameType, teamId) {
+function UsersAction(gameId: string, ws: WebSocket, jsonMessage: any, gameType: string, teamId: string) {
     if (!bigGames[gameId].currentGame) {
         ws.send(JSON.stringify({
             'action': 'error',
@@ -479,7 +518,7 @@ function UsersAction(gameId, ws, jsonMessage, gameType, teamId) {
     }
     switch (jsonMessage.action) {
         case 'Answer':
-            if (gameType == GameTypeLogic.ChGK && bigGames[gameId].currentGame.timerStarted) {
+            if (gameType == GameTypeLogic.ChGK && bigGames[gameId].currentGame?.timerStarted) {
                 GiveAnswer(jsonMessage.answer, teamId, gameId, ws);
             } else if (gameType == GameTypeLogic.Matrix) {
                 GiveAnswerMatrix(jsonMessage.answer, jsonMessage.roundNumber, jsonMessage.questionNumber, jsonMessage.roundName, teamId, gameId, ws);
@@ -495,40 +534,40 @@ function UsersAction(gameId, ws, jsonMessage, gameType, teamId) {
     }
 }
 
-function GetPreliminaryTime(gameId) {
-    if (bigGames[gameId].currentGame.timer) {
-        const pastDelay = Math.floor(process.uptime() * 1000 - bigGames[gameId].currentGame.timer._idleStart);
-        const initialDelay = bigGames[gameId].currentGame.timer._idleTimeout;
-        if (bigGames[gameId].currentGame.timerStarted) {
+function GetPreliminaryTime(gameId: string) {
+    if (bigGames[gameId].currentGame?.timer) {
+        const pastDelay = Math.floor(process.uptime() * 1000 - bigGames[gameId].currentGame?.timer._idleStart);
+        const initialDelay = bigGames[gameId].currentGame?.timer._idleTimeout;
+        if (bigGames[gameId].currentGame?.timerStarted) {
             return initialDelay - pastDelay;
         } else {
-            return bigGames[gameId].currentGame.leftTime;
+            return bigGames[gameId].currentGame?.leftTime;
         }
     }
 
-    return bigGames[gameId].currentGame.leftTime;
+    return bigGames[gameId].currentGame?.leftTime;
 }
 
-function GetTime(gameId, ws) {
+function GetTime(gameId: string, ws: WebSocket) {
     ws.send(JSON.stringify({
         'action': 'time',
-        'isStarted': bigGames[gameId].currentGame.timerStarted,
-        'maxTime': bigGames[gameId].currentGame.maxTime,
+        'isStarted': bigGames[gameId].currentGame?.timerStarted,
+        'maxTime': bigGames[gameId].currentGame?.maxTime,
         'time': GetPreliminaryTime(gameId),
-        'gamePart': bigGames[gameId].currentGame.type
+        'gamePart': bigGames[gameId].currentGame?.type
     }));
 }
 
-function CheckTime(gameId, ws) {
+function CheckTime(gameId: string, ws: WebSocket) {
     ws.send(JSON.stringify({
         'action': 'checkTime',
-        'maxTime': bigGames[gameId].currentGame.maxTime,
+        'maxTime': bigGames[gameId].currentGame?.maxTime,
         'time': GetPreliminaryTime(gameId),
-        'gamePart': bigGames[gameId].currentGame.type
+        'gamePart': bigGames[gameId].currentGame?.type
     }));
 }
 
-function CheckBreakTime(gameId, ws, time) {
+function CheckBreakTime(gameId: string, ws: WebSocket, time: number) {
     ws.send(JSON.stringify({
         'action': 'checkBreakTime',
         'currentTime': time,
@@ -536,7 +575,7 @@ function CheckBreakTime(gameId, ws, time) {
     }));
 }
 
-function IsOnBreak(gameId, ws) {
+function IsOnBreak(gameId: string, ws: WebSocket) {
     ws.send(JSON.stringify({
         action: 'isOnBreak',
         status: bigGames[gameId].status == GameStatus.IsOnBreak,
@@ -544,19 +583,19 @@ function IsOnBreak(gameId, ws) {
     }));
 }
 
-function GetGameStatus(gameId, ws) {
+function GetGameStatus(gameId: string, ws: WebSocket) {
     const currentGame = bigGames[gameId]?.currentGame;
 
     if (currentGame) {
-        const currentRound = currentGame.currentQuestion ? currentGame.currentQuestion[0] : null;
-        const currentQuestion = currentGame.currentQuestion ? currentGame.currentQuestion[1] : null;
+        const currentRound = currentGame.currentQuestion ? currentGame.currentQuestion[0] : 0;
+        const currentQuestion = currentGame.currentQuestion ? currentGame.currentQuestion[1] : 0;
         const currentQuestionNumber = currentGame.currentQuestion
             ? currentGame.rounds[0].questionsCount * (currentRound - 1) + currentQuestion
             : undefined;
 
         ws.send(JSON.stringify({
             'action': 'gameStatus',
-            'isStarted': !!bigGames[gameId] && bigGames[gameId].currentGame.currentQuestion,
+            'isStarted': !!bigGames[gameId] && bigGames[gameId].currentGame?.currentQuestion,
             'activeGamePart': currentGame.type,
             'isOnBreak': bigGames[gameId].status == GameStatus.IsOnBreak,
             'breakTime': bigGames[gameId].breakTime,
@@ -572,7 +611,7 @@ function GetGameStatus(gameId, ws) {
     }
 }
 
-function GetNotAuthorizeMessage(ws) {
+function GetNotAuthorizeMessage(ws: WebSocket) {
     ws.send(JSON.stringify({ 'action': 'notAuthorized' }));
 }
 
@@ -590,12 +629,16 @@ export function HandlerWebsocket(ws: WebSocket, message: string) {
         const { role: userRole, teamId: teamId } = getTokenFromString(jsonMessage.cookie);
         const gameId = jsonMessage.gameId;
 
-        if (!bigGames[gameId] || (userRoles.has(userRole) && !bigGames[gameId].currentGame.teams[teamId])) {
+        if (!bigGames[gameId] || (userRoles.has(userRole) && (!teamId || !bigGames[gameId].currentGame?.teams[teamId]))) {
             ws.send(JSON.stringify({ 'action': 'gameNotStarted' }));
             return;
         }
 
-        const gameType = bigGames[gameId].currentGame.type;
+        if (!teamId) {
+            ws.send(JSON.stringify({'action': 'ERROR', 'message': 'teamId is empty'}))
+        }
+
+        const gameType = bigGames[gameId].currentGame?.type || 'chgk';
 
         switch (jsonMessage.action) {
             case 'time':
@@ -618,7 +661,7 @@ export function HandlerWebsocket(ws: WebSocket, message: string) {
         if (allAdminRoles.has(userRole)) {
             AdminsAction(gameId, ws, jsonMessage, gameType);
         } else {
-            UsersAction(gameId, ws, jsonMessage, gameType, teamId);
+            UsersAction(gameId, ws, jsonMessage, gameType, teamId as string);
         }
     }
 }

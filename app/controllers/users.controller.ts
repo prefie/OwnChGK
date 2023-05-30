@@ -28,7 +28,7 @@ export class UsersController { // TODO: дописать смену имени �
             let users: User[];
             if (demoAdminRoles.has(role)) {
                 const user = await this.userRepository.findByEmail(email);
-                users = withoutTeam && user.team ? [] : [user];
+                users = !withoutTeam && user ? [user] : [];
             } else {
                 users = withoutTeam
                     ? await this.userRepository.findUsersWithoutTeam()
@@ -38,7 +38,7 @@ export class UsersController { // TODO: дописать смену имени �
             return res.status(200).json({
                 users: users?.map(user => new UserDto(user))
             });
-        } catch (error) {
+        } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
                 error: JSON.stringify(error?.stack),
@@ -63,7 +63,7 @@ export class UsersController { // TODO: дописать смену имени �
             } else {
                 return res.status(400).json({ message: 'Not your password' });
             }
-        } catch (error) {
+        } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
                 error: JSON.stringify(error?.stack),
@@ -119,18 +119,16 @@ export class UsersController { // TODO: дописать смену имени �
         try {
             const { newName } = req.body;
 
-            const payload = getTokenFromRequest(req);
-            if (payload.id) {
-                const user = await this.userRepository.findById(payload.id);
-                if (user) {
-                    user.name = newName;
-                    await user.save();
-                    const newToken = generateAccessToken(payload.id, payload.email, payload.role, payload.teamId, newName);
-                    setTokenInResponse(res, newToken);
-                    return res.status(200).json({});
-                } else {
-                    return res.status(404).json({});
-                }
+            const { id, email, role, teamId } = getTokenFromRequest(req);
+            const user = await this.userRepository.findById(id);
+            if (user) {
+                user.name = newName;
+                await user.save();
+                const newToken = generateAccessToken(id, email, role, teamId, newName);
+                setTokenInResponse(res, newToken);
+                return res.status(200).json({});
+            } else {
+                return res.status(404).json({});
             }
         } catch (error: any) {
             return res.status(500).json({
@@ -239,7 +237,7 @@ export class UsersController { // TODO: дописать смену имени �
             const { id: userId } = getTokenFromRequest(req);
             const user = await this.userRepository.findById(userId);
 
-            if (user.team !== null) {
+            if (user?.team) {
                 return res.status(200).json(new TeamDto(user.team));
             } else {
                 return res.status(200).json({});
@@ -262,10 +260,10 @@ export class UsersController { // TODO: дописать смену имени �
             if (id !== undefined) {
                 if (userRoles.has(role)) {
                     const user = await this.userRepository.findById(id);
-                    return res.status(200).json(new UserDto(user));
+                    return res.status(200).json(user ? new UserDto(user) : null);
                 } else if (allAdminRoles.has(role)) {
                     const admin = await this.adminRepository.findById(id);
-                    return res.status(200).json(new AdminDto(admin));
+                    return res.status(200).json(admin ? new AdminDto(admin) : null);
                 } else {
                     return res.status(400).json({});
                 }
@@ -284,7 +282,7 @@ export class UsersController { // TODO: дописать смену имени �
         }
     }
 
-    public async logout(req: Request, res: Response) {
+    public async logout(_req: Request, res: Response) {
         try {
             res.clearCookie('authorization');
 

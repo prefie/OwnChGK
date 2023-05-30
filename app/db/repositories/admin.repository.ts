@@ -14,7 +14,7 @@ export class AdminRepository extends BaseRepository<Admin> {
     insertByEmailAndPassword(
         email: string,
         password: string,
-        name: string = null,
+        name: string | null = null,
         role: AdminRoles = AdminRoles.ADMIN
     ) {
         const admin = new Admin();
@@ -28,6 +28,7 @@ export class AdminRepository extends BaseRepository<Admin> {
 
     async updateByEmailAndPassword(email: string, password: string) {
         const admin = await this.innerRepository.findOneBy({ email: email.toLowerCase() });
+        if (!admin) throw new Error('Админа нет');
         admin.password = password;
 
         return this.innerRepository.save(admin);

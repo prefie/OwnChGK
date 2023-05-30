@@ -35,7 +35,7 @@ export class Round {
                     this.number,
                     i,
                     this.questionTime,
-                    null
+                    undefined
                 )
             );
         }

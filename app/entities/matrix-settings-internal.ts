@@ -9,7 +9,7 @@ export class MatrixSettingsInternal extends ChgkSettingsInternal {
         this.roundNames = this.roundsCount !== 0
             ? game.rounds
                 .sort((a, b) => a.number > b.number ? 1 : -1)
-                .map(round => round.name)
+                .map(round => round.name || '')
             : [];
     }
 }

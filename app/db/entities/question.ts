@@ -14,7 +14,7 @@ export class Question extends BaseCreature {
     @Column({
         nullable: true
     })
-    text: string;
+    text: string | null;
 
     @Column()
     cost: number;

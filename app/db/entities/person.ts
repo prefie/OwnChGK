@@ -14,10 +14,10 @@ export abstract class Person extends BaseCreature {
     @Column({
         nullable: true
     })
-    name: string;
+    name: string | null;
 
     @Column({
         nullable: true
     })
-    temporary_code: string;
+    temporary_code: string | null;
 }

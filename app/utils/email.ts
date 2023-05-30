@@ -1,12 +1,13 @@
-import nodemailer from 'nodemailer';
+import nodemailer, { Transporter } from 'nodemailer';
 import { AppConfig } from './app-config';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 
 export const transporter = CreateTransporter(AppConfig.emailLogin, AppConfig.emailPassword);
 const changePasswordMessage = 'Ваш код подтверждения для смены пароля:';
 const adminPasswordMessage = 'Вас назначили администратором проекта Своя ЧГК. Ваш временный пароль:';
 const ignoreMessage = 'Если вы не запрашивали код, то проигнорируйте это сообщение';
 
-export function CreateTransporter(user: string, pass: string) {
+export function CreateTransporter(user: string, pass: string): Transporter<SMTPTransport.SentMessageInfo> {
     return nodemailer.createTransport({
         host: 'smtp.yandex.ru',
         port: 465,
@@ -18,7 +19,7 @@ export function CreateTransporter(user: string, pass: string) {
     });
 }
 
-export function makeTemporaryPassword(length) {
+export function makeTemporaryPassword(length: number) {
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     for (let i = 0; i < length; i++) {
@@ -27,7 +28,11 @@ export function makeTemporaryPassword(length) {
     return result;
 }
 
-export async function SendMailWithTemporaryPassword(transporter, email: string, code: string) {
+export async function SendMailWithTemporaryPassword(
+    transporter: Transporter<SMTPTransport.SentMessageInfo>,
+    email: string,
+    code: string
+) {
     await transporter.sendMail({
         from: `"Своя ЧГК" <${AppConfig.emailLogin}>`,
         to: email,
@@ -36,7 +41,11 @@ export async function SendMailWithTemporaryPassword(transporter, email: string, 
     });
 }
 
-export async function SendMailWithTemporaryPasswordToAdmin(transporter, email: string, code: string) {
+export async function SendMailWithTemporaryPasswordToAdmin(
+    transporter: Transporter<SMTPTransport.SentMessageInfo>,
+    email: string,
+    code: string
+) {
     await transporter.sendMail({
         from: `"Своя ЧГК" <${AppConfig.emailLogin}>`,
         to: email,

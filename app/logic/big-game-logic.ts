@@ -5,21 +5,21 @@ import { GameStatus } from './enums/game-status.enum';
 export class BigGameLogic {
     public readonly id: string;
     public readonly name: String;
-    public readonly chGKGame: Game;
-    public readonly matrixGame: Game;
+    public readonly chGKGame: Game | undefined;
+    public readonly matrixGame: Game | undefined;
 
-    public currentGame: Game;
+    public currentGame: Game | undefined;
     public intrigueEnabled: boolean;
 
     private _status: GameStatus;
     private _breakTime: number;
-    private _intervalForBreak: number;
+    private _intervalForBreak: NodeJS.Timer | undefined;
 
     constructor(
         id: string,
         name: String,
-        ChGK: Game = null,
-        Matrix: Game = null,
+        ChGK: Game | undefined = undefined,
+        Matrix: Game | undefined = undefined,
         intrigueEnabled: boolean = false
     ) {
         this.id = id;
@@ -48,13 +48,14 @@ export class BigGameLogic {
     startBreak(time: number): void {
         this._status = GameStatus.IsOnBreak;
         this._breakTime = time;
+        let self = this;
         this._intervalForBreak = setInterval(() => {
-            if (this._breakTime == 0) {
-                this.stopBreak();
+            if (self._breakTime == 0) {
+                self.stopBreak();
             } else {
-                this._breakTime -= 1;
+                self._breakTime -= 1;
             }
-        }, 1000, this);
+        }, 1000);
     }
 
     stopBreak(): void {

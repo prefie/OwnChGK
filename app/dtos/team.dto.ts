@@ -3,9 +3,9 @@ import { Participant, Team } from '../db/entities/team';
 export class TeamDto {
     public readonly name: string;
     public readonly id: string;
-    public readonly captainEmail: string;
-    public readonly captainId: string;
-    public readonly participants: Participant[];
+    public readonly captainEmail: string | undefined;
+    public readonly captainId: string | undefined;
+    public readonly participants: Participant[] | null;
     public readonly participantsCount: number;
 
     constructor(team: Team) {

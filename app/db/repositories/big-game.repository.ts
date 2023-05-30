@@ -14,9 +14,9 @@ import { GameTypeLogic } from '../../logic/enums/game-type-logic.enum';
 import { Game as GameLogic } from '../../logic/game';
 import { Question as QuestionLogic } from '../../logic/question';
 import { Round as RoundLogic } from '../../logic/round';
-import { Team as TeamLogic } from '../../logic/team';
 import { Answer as AnswerLogic } from '../../logic/answer';
 import { Appeal as AppealLogic } from '../../logic/appeal';
+import { Team as TeamLogic } from '../../logic/team';
 
 
 export interface ChgkSettings {
@@ -112,6 +112,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             relations: { bigGames: true }
         });
         const bigGame = await this.findWithAllRelationsByBigGameId(bigGameId);
+        if (!team || !bigGame)
+            throw new Error('Команды или игры нет');
 
         if (bigGame.teams.map(t => t.id).indexOf(teamId) == -1) {
             team.bigGames.push(bigGame);
@@ -128,6 +130,9 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             relations: { bigGames: true }
         });
         const bigGame = await this.findWithAllRelationsByBigGameId(bigGameId);
+        if (team == null || bigGame == null)
+            throw new Error('Команды или игры нет');
+
         team.bigGames = team.bigGames.filter(g => g.id != bigGameId);
         bigGame.teams = bigGame.teams.filter(t => t.id != teamId);
 
@@ -189,6 +194,9 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     ) {
         const admin = await this.innerRepository.manager
             .findOneBy<Admin>(Admin, { email: adminEmail.toLowerCase() });
+        if (!admin)
+            throw new Error('Админа нет');
+
         const teamsFromDb = await this.innerRepository.manager
             .findBy<Team>(Team, { name: In(teams) });
         const bigGame = new BigGame();
@@ -213,8 +221,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                     chgk,
                     chgkSettings?.questionTime ?? 60,
                     chgkSettings?.questionCost ?? 1,
-                    null,
-                    chgkSettings?.questions ?? null
+                    undefined,
+                    chgkSettings?.questions ?? undefined
                 );
             }
 
@@ -232,8 +240,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                     matrix,
                     matrixSettings?.questionTime ?? 20,
                     matrixSettings?.questionCost ?? 10,
-                    matrixSettings?.roundNames ?? null,
-                    matrixSettings?.questions ?? null
+                    matrixSettings?.roundNames ?? undefined,
+                    matrixSettings?.questions ?? undefined
                 );
             }
 
@@ -254,6 +262,9 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             where: { id: bigGameId },
             relations: { games: true }
         });
+        if (!bigGame)
+            throw new Error('Игры нет');
+
         bigGame.teams = teamsFromDb;
         bigGame.name = newName;
         bigGame.accessLevel = accessLevel ?? AccessLevel.PRIVATE;
@@ -282,8 +293,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                     game,
                     chgkSettings?.questionTime ?? 60,
                     chgkSettings?.questionCost ?? 1,
-                    null,
-                    chgkSettings?.questions ?? null
+                    undefined,
+                    chgkSettings?.questions ?? undefined
                 );
             }
 
@@ -300,8 +311,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                     game,
                     matrixSettings?.questionTime ?? 20,
                     matrixSettings?.questionCost ?? 10,
-                    matrixSettings?.roundNames ?? null,
-                    matrixSettings?.questions ?? null
+                    matrixSettings?.roundNames ?? undefined,
+                    matrixSettings?.questions ?? undefined
                 );
             }
 
@@ -311,6 +322,9 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
     async updateNameById(bigGameId: string, newName: string) {
         const bigGame = await this.innerRepository.findOneBy({ id: bigGameId });
+        if (!bigGame)
+            throw new Error('Игры нет');
+
         bigGame.name = newName;
 
         return this.innerRepository.save(bigGame);
@@ -320,6 +334,9 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         const admin = await this.innerRepository.manager
             .findOneBy<Admin>(Admin, { email: newAdminEmail.toLowerCase() });
         const bigGame = await this.innerRepository.findOneBy({ id: bigGameId });
+        if (!admin || !bigGame)
+            throw new Error('Нет игры или админа');
+
         bigGame.admin = admin;
 
         return this.innerRepository.save(bigGame);
@@ -327,6 +344,9 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
     async updateByGameIdAndStatus(bigGameId: string, newStatus: GameStatus) {
         const bigGame = await this.innerRepository.findOneBy({ id: bigGameId });
+        if (!bigGame)
+            throw new Error('Нет игры');
+
         bigGame.status = newStatus;
 
         return this.innerRepository.save(bigGame);
@@ -334,6 +354,9 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
     async updateBigGameState(bigGame: BigGameLogic) {
         const bigGameFromDb = await this.findWithAllRelationsByBigGameId(bigGame.id);
+        if (!bigGameFromDb)
+            throw new Error('Нет игры');
+
         const teams: Record<string, Team> = {};
         for (let team of bigGameFromDb.teams) {
             teams[team.id] = team;
@@ -351,7 +374,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
         const questionsFromCurrentGame = [bigGame.chGKGame, bigGame.matrixGame]
             .filter(g => g)
-            .map(g => g.roundValues)
+            .map(g => g!.roundValues)
             .reduce((arr, e) => arr.concat(e), [])
             .map(r => r.questions)
             .reduce((arr, e) => arr.concat(e), []);
@@ -397,14 +420,22 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 teams: { captain: true },
             }
         });
+        if (!bigGame)
+            throw new Error('Нет игры');
 
         return this.createBigGameLogic(bigGame);
     }
 
     private static async createRoundsWithQuestions(
-        manager: EntityManager, roundsCount: number, questionsCount: number, game: Game,
-        questionTime: number, questionCost: number, roundNames?: string[],
-        questionsText?: Record<number, string[]>) {
+        manager: EntityManager,
+        roundsCount: number,
+        questionsCount: number,
+        game: Game,
+        questionTime: number,
+        questionCost: number,
+        roundNames: string[] | undefined = undefined,
+        questionsText: Record<number, string[]> | undefined = undefined
+    ) {
         if (roundNames && roundsCount !== roundNames.length) {
             throw new Error('roundNames.length !== roundsCount');
         }
@@ -414,7 +445,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             round.number = i;
             round.game = game;
             round.questionTime = questionTime;
-            round.name = roundNames ? roundNames[i - 1] : null;
+            round.name = roundNames ? roundNames[i - 1] : '';
             await manager.save(round);
 
             const questions = [];
@@ -423,7 +454,9 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 question.number = j;
                 question.cost = game.type == GameType.MATRIX ? j * questionCost : questionCost;
                 question.round = round;
-                question.text = Object.keys(questionsText).length !== 0 ? questionsText[i][j - 1] : null;
+                question.text = questionsText && Object.keys(questionsText).length !== 0
+                    ? questionsText[i][j - 1]
+                    : '';
 
                 questions.push(question);
             }
@@ -436,8 +469,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         const chgkFromDB = bigGame.games.find(game => game.type == GameType.CHGK);
         const matrixFromDB = bigGame.games.find(game => game.type == GameType.MATRIX);
 
-        let chgk: GameLogic;
-        let matrix: GameLogic;
+        let chgk: GameLogic | undefined;
+        let matrix: GameLogic | undefined;
 
         if (chgkFromDB) {
             chgk = new GameLogic(chgkFromDB.id, bigGame.name, GameTypeLogic.ChGK);
@@ -445,7 +478,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 chgk.addTeam(new TeamLogic(team.name, team.id));
             }
 
-            const rounds = this.getRoundsLogicFromDb(chgkFromDB.rounds);
+            const rounds = this.getRoundsLogicFromDb(chgkFromDB.rounds, chgk.teams);
             chgk.addRounds(rounds);
         }
 
@@ -455,29 +488,34 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 matrix.addTeam(new TeamLogic(team.name, team.id));
             }
 
-            const rounds = this.getRoundsLogicFromDb(matrixFromDB.rounds);
+            const rounds = this.getRoundsLogicFromDb(matrixFromDB.rounds, matrix.teams);
             matrix.addRounds(rounds);
         }
 
         return new BigGameLogic(
             bigGame.id,
             bigGame.name,
-            chgkFromDB ? chgk : null,
-            matrixFromDB ? matrix : null
+            chgk,
+            matrix
         );
     }
 
-    private getRoundsLogicFromDb(rounds: Round[]): RoundLogic[] {
+    private getRoundsLogicFromDb(rounds: Round[], teams: Record<string, TeamLogic>): RoundLogic[] {
         return rounds.map(r => {
             const questions = r.questions.map(q => {
-                const answers = q.answers?.map(a => new AnswerLogic(
-                    a.team.id,
-                    r.number,
-                    q.number,
-                    a.text,
-                    a.status as AnswerStatus,
-                    a.score
-                ));
+                const answers = q.answers?.map(a => {
+                    const answer = new AnswerLogic(
+                        a.team.id,
+                        r.number,
+                        q.number,
+                        a.text,
+                        a.status as AnswerStatus,
+                        a.score
+                    );
+
+                    teams[a.team.id].addAnswer(answer);
+                    return answer;
+                });
 
                 const appeals = q.answers
                     ?.filter(a => a.appeal)

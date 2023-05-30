@@ -1,20 +1,36 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "declaration": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "importHelpers": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
-    "target": "es6",
-    "moduleResolution": "node",
-    "sourceMap": true,
-    "emitDecoratorMetadata": true,
+    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "outDir": "build/app"
+    "sourceMap": true,
+    "outDir": "build/app",
+    "emitDecoratorMetadata": true,
+    "types": [
+      "node",
+    ],
+    "lib": [
+      "ESNext"
+    ]
   },
-  "lib": [
-    "es2017"
-  ],
   "exclude": [
     "node_modules",
-    "frontend"
+    "frontend",
   ],
   "include": [
     "app"

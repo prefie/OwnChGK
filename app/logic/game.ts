@@ -11,7 +11,7 @@ export class Game {
     public readonly teams: Record<string, Team>;
     public readonly type: GameTypeLogic;
 
-    public currentQuestion: [number, number];
+    public currentQuestion: [number, number] | undefined;
     public timerStarted: boolean;
     public timer: any;
     public leftTime: number;
@@ -63,14 +63,14 @@ export class Game {
         return Object.keys(this.rounds).length;
     }
 
-    getTeamDictionary(teamId: string): { [name: string]: string } {
-        let result = {};
+    getTeamDictionary(teamId: string): Record<string, string> {
+        const result: Record<string, string> = {};
         result[this.teams[teamId].name] = teamId;
         return result;
     }
 
-    getAllTeamsDictionary(): { [name: string]: string } {
-        let result = {};
+    getAllTeamsDictionary(): Record<string, string> {
+        const result: Record<string, string> = {};
         for (let teamId of Object.keys(this.teams)) {
             result[this.teams[teamId].name] = teamId;
         }
@@ -79,7 +79,7 @@ export class Game {
     }
 
     getScoreTable(): Record<string, number[][]> {
-        let table = {};
+        const table: Record<string, number[][]> = {};
         const roundsCount = this.getRoundsCount();
         const questionsCount = this.rounds[0].questions.length;
 
@@ -97,7 +97,7 @@ export class Game {
     }
 
     getScoreTableForTeam(teamId: string): Record<string, number[][]> {
-        let table = {};
+        const table: Record<string, number[][]> = {};
         const roundsCount = this.getRoundsCount();
         const questionsCount = this.rounds[0].questions.length;
 
@@ -113,7 +113,7 @@ export class Game {
     }
 
     getTotalScoreForAllTeams(): Record<string, number> {
-        const table = {};
+        const table: Record<string, number> = {};
         for (let teamId in this.teams) {
             table[this.teams[teamId].name] = this.teams[teamId].getTotalScore();
         }

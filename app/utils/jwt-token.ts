@@ -5,14 +5,20 @@ import { Request, Response } from 'express';
 const secret = AppConfig.jwtSecretKey ?? 'SECRET_KEY';
 
 export interface TokenPayload extends JwtPayload {
-    id?: string | undefined;
-    email?: string | undefined;
-    role?: string | undefined;
-    teamId?: string | undefined;
-    name?: string | undefined;
+    id: string;
+    email: string;
+    role: string;
+    teamId: string | undefined | null;
+    name: string | undefined | null;
 }
 
-export const generateAccessToken = (id: string, email: string, role: string, teamId: string, name?: string) => {
+export const generateAccessToken = (
+    id: string,
+    email: string,
+    role: string,
+    teamId: string | undefined | null,
+    name: string | undefined | null = undefined
+) => {
     const payload: TokenPayload = {
         id,
         email: email.toLowerCase(),
