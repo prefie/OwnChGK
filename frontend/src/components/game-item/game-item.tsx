@@ -7,11 +7,8 @@ import React, {Dispatch, SetStateAction, useCallback, useEffect, useState} from 
 import {Redirect} from "react-router-dom";
 import {Link} from 'react-router-dom';
 import SignUpToGameItem from "../sign-up-to-game-item/sign-up-to-game-item";
-import {
-    addCurrentTeamInGame,
-    deleteCurrentTeamFromGame,
-    getAmIParticipateAndPublicGames, getGame
-} from "../../server-api/server-api";
+import { addCurrentTeamInGame, deleteCurrentTeamFromGame, getGame } from "../../server-api/server-api";
+import GameStatus from "../game-status/game-status";
 
 export enum Roles {
     user,
@@ -85,6 +82,24 @@ function GameItem(props: GameItemProps) {
         handleOpenModal(event);
     };
 
+    const renderGameTitle = () => {
+        if (props.role === Roles.admin) {
+            return(
+                <Link to={linkToGame} className={classes.gameTitle} id={gameId}>{props.name}</Link>
+            );
+        } else if (props.role === Roles.user) {
+            return(
+                props.amIParticipate
+                    ? <Link to={linkToGame} className={classes.gameTitle} id={gameId}>{props.name}</Link>
+                    : <div className={classes.gameTitle}>{props.name}</div>
+            );
+        } else {
+            return(
+                <div className={classes.gameTitle}>{props.name}</div>
+            );
+        }
+    }
+
     const setItemName = useCallback(e => {
         if (props.setItemForDeleteName) {
             props.setItemForDeleteName(props.name);
@@ -108,7 +123,7 @@ function GameItem(props: GameItemProps) {
         ? <Redirect to={{pathname: '/admin/game-creation/edit', state: {id: props.id, name: props.name}}}/>
         : (
             <div className={classes.gameContent}>
-                <Link to={linkToGame} className={classes.gameTitle} id={gameId}>{props.name}</Link>
+                { renderGameTitle() }
                 <GameTypeList types={props.games}/>
                 <div className={classes.gameFooter}>
                     <div className={classes.gameTeams}>
@@ -116,7 +131,9 @@ function GameItem(props: GameItemProps) {
                         <div className={classes.gameTeamsCount}>{teamsCount}</div>
                     </div>
                     {
-                        props.role === Roles.user && props.accessLevel === AccessLevel.PUBLIC
+                        props.role === Roles.user &&
+                        props.accessLevel === AccessLevel.PUBLIC &&
+                        props.status !== 'started'
                             ?
                             <SignUpToGameItem
                                 isAddToGame={amIParticipate}
@@ -126,23 +143,28 @@ function GameItem(props: GameItemProps) {
                             : null
                     }
                 </div>
+                <GameStatus status={props.status}/>
 
                 {
                     props.role === Roles.admin
                         ?
                         <div className={classes.gameActions}>
-                            <IconButton
-                                onClick={handleEditClick}
-                                edge={'end'}
-                                sx={{
-                                    '& .MuiSvgIcon-root': {
-                                        color: 'var(--color-text-icon-link-enabled)',
-                                        fontSize: 'var(--font-size-24)'
-                                    }
-                                }}
-                            >
-                                <EditRounded/>
-                            </IconButton>
+                            {props.status === 'not_started'
+                                ?
+                                <IconButton
+                                    onClick={handleEditClick}
+                                    edge={'end'}
+                                    sx={{
+                                        '& .MuiSvgIcon-root': {
+                                            color: 'var(--color-text-icon-link-enabled)',
+                                            fontSize: 'var(--font-size-24)'
+                                        },
+                                    }}
+                                >
+                                    <EditRounded/>
+                                </IconButton>
+                                : null
+                            }
                             <IconButton
                                 onClick={handleDeleteClick}
                                 edge={'end'}

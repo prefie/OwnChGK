@@ -1,36 +1,36 @@
-import React, {FC} from 'react';
+import {Checkbox} from "@mui/material";
+import React from "react";
+import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import classes from './custom-checkbox.module.scss';
-import {Checkbox} from '@mui/material';
-import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
-import {CustomCheckboxProps} from '../../entities/custom-checkbox/custom-checkbox.interfaces';
 
-const CustomCheckbox: FC<CustomCheckboxProps> = props => {
+interface CustomCheckboxProps {
+    label: string;
+    checked: boolean;
+    onChange: (event: React.SyntheticEvent) => void;
+}
+
+function CustomCheckbox(props: CustomCheckboxProps) {
     return (
-        <div className={classes.CustomCheckbox} style={props.style}>
-            <div className={classes.labelWrapper}>
-                {props.name}
-            </div>
-
+        <div className={classes.checkboxWrapper}>
             <Checkbox
-                name={props.name}
                 onChange={props.onChange}
+                checked={props.checked}
+                size={'medium'}
                 sx={{
-                    color: '#3282B8',
-                    fontSize: '1vw',
+                    color: 'var(--color-fill-accent-enabled)',
+                    fontSize: 32,
+                    padding: 0,
                     '&.Mui-checked': {
-                        color: '#3282B8',
+                        color: 'var(--color-fill-accent-enabled)',
                     },
-                    '&.MuiCheckbox-root': {
-                        padding: '0.7vh'
-                    },
-                    '& .MuiSvgIcon-root': {
-                        fontSize: '1.5vw'
-                    }
                 }}
                 checkedIcon={<CheckBoxOutlinedIcon/>}
-                defaultChecked={props.checked}/>
+            />
+            <p className={classes.checkboxLabel}>
+                {props.label}
+            </p>
         </div>
     );
-};
+}
 
 export default CustomCheckbox;

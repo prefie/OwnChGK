@@ -1,25 +1,23 @@
 .pageWrapper {
-    width: 55%;
+    width: 70%;
     height: 90%;
     flex-direction: column;
     justify-content: center;
-    align-self: center;
     position: relative;
+    padding: 0 80px;
 }
 
 .gameCreationForm {
     width: 100%;
     height: 90%;
-    align-self: center;
 }
 
 .pageTitle,
 .gameSettingsPageTitle {
-    font-size: 4vmin;
-    color: white;
-    text-align: center;
-    font-weight: 300;
-    margin-top: 5vh;
+    font-size: var(--font-size-48);
+    color: var(--color-text-icon-primary);
+    font-weight: var(--font-weight-bold);
+    margin-top: 2rem;
 }
 
 .gameSettingsPageTitle {
@@ -33,8 +31,7 @@
     align-items: center;
     flex-wrap: wrap;
     box-sizing: border-box;
-    justify-content: space-evenly;
-    padding-bottom: 5%;
+    padding-bottom: 2rem;
 }
 
 .gameParametersWrapper,
@@ -45,15 +42,14 @@
     width: 47%;
     height: 90%;
     align-self: center;
+    padding-right: 1rem;
+
 }
 
 .teamsWrapper {
-    border: 2px solid var(--color-fill-accent-enabled);
-    border-radius: 8px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    background-color: var(--color-bg-plates);
+    border-radius: .5rem;
+    padding: 1rem;
 }
 
 .teamsDiv {
@@ -62,29 +58,30 @@
     align-self: center;
     width: 100%;
     height: 100%;
-    padding-left: 1vw;
-    padding-right: 0.8vw;
     overflow: hidden;
 }
 
 .toursCountInput,
 .questionsCountInput {
-    border: 2px solid var(--color-fill-accent-enabled);
-    height: 6.5vh;
-    border-radius: 8px;
-    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.5);
-    font-size: 1.5vw;
+    background-color: var(--color-bg-plates);
+    color: var(--color-text-icon-primary);
+    height: 4rem;
+    width: 4rem;
+    border-radius: .5rem;
+    font-size: var(--font-size-24);
     box-sizing: border-box;
     font-weight: var(--font-weight-regular);
-    width: 4.5vw;
     margin: 0;
     text-align: center;
     min-height: 26px;
+
+    ::placeholder {
+        color: var(--color-text-icon-secondary);
+    }
 }
 
 .gameParamsWrapper {
-    margin-top: 10vh;
-    margin-bottom: 3vh;
+    margin-top: 2rem;
 }
 
 .questionsCountWrapper,
@@ -92,12 +89,11 @@
     width: 45%;
     display: flex;
     justify-content: space-between;
-    margin: 3vh auto;
+    margin-bottom: 1rem;
 }
 
 .addButtonWrapper {
     width: 45%;
-    margin: 5vh auto;
 }
 
 .addQuestionsButton {
@@ -131,29 +127,23 @@
 
 .toursCountLabel,
 .questionsCountLabel {
-    color: #F6F7FF;
-    padding: 1.5vh 0;
-    font-size: 1.5vw;
+    color: var(--color-text-icon-primary);
+    align-self: center;
+    font-size: var(--font-size-24);
     box-sizing: border-box;
     user-select: none;
 }
 
 .teamsLabel {
-    background-color: var(--color-bg-main);
-    color: white;
-    position: absolute;
-    top: -1vw;
-    left: 1vw;
-    width: 35%;
-    font-weight: 700;
-    font-size: 1.4vw;
-    text-align: center;
+    color: var(--color-text-icon-primary);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-24);
     user-select: none;
 }
 
 .scrollbarView {
     overflow-x: hidden !important;
-    padding: 1vh 0.5vw 1vh 0;
+    padding-top: .5rem;
 }
 
 .link {
@@ -161,32 +151,24 @@
 }
 
 .chgkWrapper,
-.matrixWrapper {
+.matrixWrapper, .gameTypeWrapper {
     width: 100%;
-    height: 6vh;
+    height: 3.5rem;
     display: flex;
     align-items: center;
-    border-radius: 8px;
+    border-radius: .5rem;
     min-height: 26px;
-    border: 2px solid var(--color-fill-accent-enabled);
-    filter: drop-shadow(0px 4px 2px rgba(255, 255, 255, 0.25));
-    background-color: white;
-    margin-bottom: 3vh;
-    padding: 1vh 0.5vw;
+    background-color: var(--color-bg-plates);
+    color: var(--color-text-icon-primary);
+    margin-bottom: 1rem;
+    padding: .5rem 1rem;
     box-sizing: border-box;
     overflow: hidden;
 }
 
-.chgkIcon,
-.svoyakIcon {
-    height: 115%;
-    width: 10%;
-    margin-right: 0.8vw;
-}
-
 .modeName {
-    font-size: 1.5vw;
-    width: 60%;
+    font-size: var(--font-size-24);
+    width: 100%;
 }
 
 .addModeButton {
@@ -206,22 +188,20 @@
 }
 
 .searchWrapper {
-    margin-top: 7%;
+    margin-top: 1rem;
     width: 100%;
-    padding-left: 2.3vw;
-    padding-right: 2.3vw;
     box-sizing: border-box;
 }
 
 .searchInput {
     width: 100%;
-    font-size: 1.1vw !important;
-    height: 5vh;
-    background-color: white;
+    font-size: var(--font-size-20) !important;
+    height: 2.5rem;
+    background-color: var(--color-bg-overlay-default);
+    color: var(--color-text-icon-secondary) !important;
     font-family: Roboto, sans-serif;
-    margin-bottom: 1vh;
-    border-radius: 10px !important;
-    filter: drop-shadow(0px 2px 2px rgba(255, 255, 255, 0.25));
+    margin-bottom: .5rem;
+    border-radius: .5rem !important;
     min-height: 26px;
     align-self: center;
 }
@@ -229,69 +209,78 @@
 .buttonsWrapper,
 .gameParamsButtonsWrapper {
     display: flex;
-    justify-content: center;
+    gap: 1rem;
 }
 
 .gameParamsButtonsWrapper {
     position: absolute;
-    bottom: 7.6vh;
+    bottom: 4rem;
     margin: auto;
-    transform: translate(50%, 0);
-    width: 50%;
 }
 
-.createButton,
-.undoButton {
-    height: 7vh;
-    font-size: 1.2vw;
-    padding: 1vh 3vw;
-    border-radius: 10px;
-    font-family: Roboto, sans-serif;
-    font-weight: 500;
-    cursor: pointer;
+.button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: var(--font-size-24);
+    border-radius: .5rem;
+    padding: .75rem 1.5rem;
+    overflow: hidden;
+    user-select: none;
+    min-height: 26px;
+}
+
+.primaryButton {
+    background-color: var(--color-fill-accent-enabled);
+    color: var(--color-text-icon-primary);
+
+    &:disabled {
+        background-color: var(--color-fill-default-disabled);
+        color: var(--color-text-icon-disabled);
+    }
 
     &:not(:disabled):hover {
-        box-shadow: 0 0 2vh 2px var(--color-fill-accent-enabled);
+        cursor: pointer;
+        background-color: var(--color-fill-accent-hover);
     }
 
     &:not(:disabled):active {
-        box-shadow: inset 3px 3px 5px rgba(0, 0, 0, .50);
+        background-color: var(--color-fill-accent-pressed);
     }
 }
 
-.createButton {
-    margin-right: 1vw;
-    background-color: var(--color-fill-accent-enabled);
-    color: white;
-    border: 2px solid white;
+.defaultButton {
+    background-color: var(--color-fill-default-enabled);
+    color: var(--color-text-icon-primary);
 
     &:disabled {
-        cursor: default;
-        background-color: #F6F7FF;
-        border-color: rgba(27, 38, 44, 0.5);
-        color: rgba(27, 38, 44, 0.5);
+        background-color: var(--color-fill-default-disabled);
+        color: var(--color-text-icon-disabled);
     }
-}
 
-.undoButton {
-    background-color: white;
-    border: 2px solid var(--color-fill-accent-enabled);
+    &:not(:disabled):hover {
+        cursor: pointer;
+        background-color: var(--color-fill-default-hover);
+    }
+
+    &:not(:disabled):active {
+        background-color: var(--color-fill-default-pressed);
+    }
 }
 
 .tourNamesWrapper {
     width: 60%;
     height: 55%;
-    margin: 3vh auto 0;
-    border: 2px solid var(--color-fill-accent-enabled);
-    border-radius: 10px;
-    padding: 3vh 0.5vw 0 1.5vw;
+    margin: 2rem 0 1rem;
+    background-color: var(--color-bg-plates);
+    border-radius: 1rem;
+    padding: 1rem;
     box-sizing: border-box;
     position: relative;
 }
 
 .matrixQuestionsWrapper {
     width: 60%;
-    margin: 4vh auto 0;
 }
 
 .tourNameWrapper {
@@ -316,8 +305,8 @@
     height: 90%;
     flex-direction: column;
     justify-content: center;
-    align-self: center;
     position: relative;
+    padding: 0 80px;
 
     .gameSettingsPageTitle {
         margin-bottom: 30px;

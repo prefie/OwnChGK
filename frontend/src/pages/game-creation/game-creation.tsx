@@ -1,7 +1,7 @@
 import React, {FC, useEffect, useState} from 'react';
 import classes from './game-creation.module.scss';
 import Header from '../../components/header/header';
-import CustomCheckbox from '../../components/custom-checkbox/custom-checkbox';
+import CheckboxBlock from '../../components/checkbox-block/checkbox-block';
 import {Scrollbars} from 'rc-scrollbars';
 import {GameCreatorProps} from '../../entities/game-creator/game-creator.interfaces';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
@@ -11,8 +11,6 @@ import {Redirect, useLocation} from 'react-router-dom';
 import NavBar from '../../components/nav-bar/nav-bar';
 import {Team} from '../admin-start-screen/admin-start-screen';
 import {
-    Checkbox,
-    FormControlLabel,
     IconButton,
     InputAdornment,
     OutlinedInput,
@@ -27,6 +25,9 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import Modal from '../../components/modal/modal';
 import Scrollbar from '../../components/scrollbar/scrollbar';
 import {AccessLevel} from "../../components/game-item/game-item";
+import CustomCheckbox from "../../components/custom-checkbox/custom-checkbox";
+import {Input} from "../../components/input/input";
+import {ClearRounded, EditRounded, AddRounded, SearchRounded} from "@mui/icons-material";
 
 const GameCreator: FC<GameCreatorProps> = props => {
     const [teamsFromDB, setTeamsFromDB] = useState<Team[]>();
@@ -123,20 +124,11 @@ const GameCreator: FC<GameCreatorProps> = props => {
 
     const renderAccessLevelGameCheckbox = () => {
         return(
-            <FormControlLabel sx={{color: 'var(--color-text-icon-primary)', fontSize: 'var(--font-size-24)'}}
-                control={
-                    <Checkbox
-                        onChange={handleCheckboxAccessLevelChange}
-                        checked={gameAccessLevel === AccessLevel.PUBLIC}
-                    />
-                }
+            <CustomCheckbox
                 label={'Публичная регистрация команд'}
+                onChange={handleCheckboxAccessLevelChange}
+                checked={gameAccessLevel === AccessLevel.PUBLIC}
             />
-            // <CustomCheckbox
-            //     name={'Публичная регистрация команд'}
-            //     onChange={handleCheckboxAccessLevelChange}
-            //     checked={gameAccessLevel === AccessLevel.PUBLIC}
-            // />
         );
     }
 
@@ -151,9 +143,9 @@ const GameCreator: FC<GameCreatorProps> = props => {
             .filter(team => searchQuery.length < 1 || team.name.toLowerCase().includes(searchQuery.toLowerCase()))
             .map((team, index) => {
                 return chosenTeams?.includes(team.name)
-                    ? <CustomCheckbox name={team.name} key={`${team.id}_${index}_chosen`} checked={true}
-                                      onChange={handleCheckboxChange}/>
-                    : <CustomCheckbox name={team.name} key={`${team.id}_${index}`} onChange={handleCheckboxChange}/>;
+                    ? <CheckboxBlock name={team.name} key={`${team.id}_${index}_chosen`} checked={true}
+                                     onChange={handleCheckboxChange}/>
+                    : <CheckboxBlock name={team.name} key={`${team.id}_${index}`} onChange={handleCheckboxChange}/>;
             });
     };
 
@@ -256,7 +248,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
     };
 
     const handleToursCountChange = (event: React.ChangeEvent<HTMLInputElement>, mode: 'chgk' | 'matrix') => {
-        if (+event.target.value <= 99) {
+        if (+event.target.value <= 30) {
             if (mode === 'chgk') {
                 setTempChgkRoundsCount(+event.target.value);
                 const questions: Record<number, string[]> = {};
@@ -284,7 +276,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
     };
 
     const handleQuestionsCountChange = (event: React.ChangeEvent<HTMLInputElement>, mode: 'chgk' | 'matrix') => {
-        if (+event.target.value <= 99) {
+        if (+event.target.value <= 30) {
             if (mode === 'chgk') {
                 setTempChgkQuestionsCount(+event.target.value);
                 const questions: Record<number, string[]> = {};
@@ -344,20 +336,20 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                         (props.mode !== 'edit' || (props.mode === 'edit' && chosenTeams)) && teamsFromDB
                                             ? (
                                                 <>
-                                                    <CustomInput type='text' id='gameName'
-                                                                 name='gameName'
-                                                                 placeholder='Название игры'
-                                                                 value={gameName}
-                                                                 style={{marginBottom: '10vh'}}
-                                                                 isInvalid={isGameNameInvalid}
-                                                                 errorHelperText='Игра с таким названием уже существует'
-                                                                 onChange={handleGameNameChange}
-                                                                 onFocus={() => setIsGameNameInvalid(false)}/>
-
+                                                    <Input
+                                                        type='text'
+                                                        id='gameName'
+                                                        name='gameName'
+                                                        placeholder='Название игры'
+                                                        value={gameName}
+                                                        style={{marginBottom: '3rem'}}
+                                                        isInvalid={isGameNameInvalid}
+                                                        errorHelperText='Придумайте другое название, такое уже занято'
+                                                        onChange={handleGameNameChange}
+                                                        onFocus={() => setIsGameNameInvalid(false)}
+                                                    />
 
                                                     <div className={classes.chgkWrapper}>
-                                                        <img className={classes.chgkIcon}
-                                                             src={require('../../images/IconChGK.svg').default} alt='logo'/>
                                                         <div className={classes.modeName}>ЧГК</div>
                                                         {
                                                             !chgkSettings
@@ -365,7 +357,12 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                                                 <div className={classes.addModeButton} onClick={() => {
                                                                     setSubmitted(false);
                                                                     setPage('chgk-settings');
-                                                                }}>+</div>
+                                                                }}>
+                                                                    <AddRounded sx={{
+                                                                        color: 'var(--color-text-icon-primary)',
+                                                                        fontSize: 32
+                                                                    }}/>
+                                                                </div>
                                                                 :
                                                                 <div className={classes.iconsWrapper}>
                                                                     <IconButton
@@ -378,33 +375,30 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                                                         edge="end"
                                                                         sx={{
                                                                             '& .MuiSvgIcon-root': {
-                                                                                color: 'var(--background-color)',
-                                                                                fontSize: '3.5vmin'
+                                                                                color: 'var(--color-control-accent-enabled)',
+                                                                                fontSize: '32'
                                                                             }
                                                                         }}
                                                                     >
-                                                                        <EditOutlinedIcon/>
+                                                                        <EditRounded/>
                                                                     </IconButton>
                                                                     <IconButton
                                                                         onClick={() => setIsDeleteChgkModalVisible(true)}
                                                                         edge="end"
                                                                         sx={{
                                                                             '& .MuiSvgIcon-root': {
-                                                                                color: 'darkred',
-                                                                                fontSize: '3.5vmin'
+                                                                                color: 'var(--color-control-error-enabled)',
+                                                                                fontSize: 32
                                                                             }
                                                                         }}
                                                                     >
-                                                                        <HighlightOffOutlinedIcon/>
+                                                                        <ClearRounded/>
                                                                     </IconButton>
                                                                 </div>
                                                         }
                                                     </div>
 
                                                     <div className={classes.matrixWrapper}>
-                                                        <img className={classes.svoyakIcon}
-                                                             src={require('../../images/IconSvoyak.svg').default}
-                                                             alt='logo'/>
                                                         <div className={classes.modeName}>Матрица</div>
                                                         {
                                                             !matrixSettings
@@ -412,7 +406,12 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                                                 <div className={classes.addModeButton} onClick={() => {
                                                                     setSubmitted(false);
                                                                     setPage('matrix-settings');
-                                                                }}>+</div>
+                                                                }}>
+                                                                    <AddRounded sx={{
+                                                                        color: 'var(--color-text-icon-primary)',
+                                                                        fontSize: 32
+                                                                    }}/>
+                                                                </div>
                                                                 :
                                                                 <div className={classes.iconsWrapper}>
                                                                     <IconButton
@@ -426,24 +425,24 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                                                         edge="end"
                                                                         sx={{
                                                                             '& .MuiSvgIcon-root': {
-                                                                                color: 'var(--background-color)',
-                                                                                fontSize: '3.5vmin'
+                                                                                color: 'var(--color-control-accent-enabled)',
+                                                                                fontSize: '32'
                                                                             }
                                                                         }}
                                                                     >
-                                                                        <EditOutlinedIcon/>
+                                                                        <EditRounded/>
                                                                     </IconButton>
                                                                     <IconButton
                                                                         onClick={() => setIsDeleteMatrixModalVisible(true)}
                                                                         edge="end"
                                                                         sx={{
                                                                             '& .MuiSvgIcon-root': {
-                                                                                color: 'darkred',
-                                                                                fontSize: '3.5vmin'
+                                                                                color: 'var(--color-control-error-enabled)',
+                                                                                fontSize: 32
                                                                             }
                                                                         }}
                                                                     >
-                                                                        <HighlightOffOutlinedIcon/>
+                                                                        <ClearRounded/>
                                                                     </IconButton>
                                                                 </div>
                                                         }
@@ -451,8 +450,8 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                                     {
                                                         submitted && !matrixSettings && !chgkSettings
                                                             ? <small style={{
-                                                                color: '#FF0000',
-                                                                fontSize: '1vmax',
+                                                                color: 'var(--color-text-icon-error)',
+                                                                fontSize: 'var(--font-size-16)',
                                                                 marginTop: '-1.5vh'
                                                             }}>Добавьте хотя бы один режим в игру</small>
                                                             : null
@@ -479,18 +478,19 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                     </div>
                                     <div className={classes.searchWrapper}>
                                         <OutlinedInput className={classes.searchInput} value={searchQuery}
-                                                       placeholder='Поиск'
+                                                       placeholder='Найдите команду'
                                                        onChange={(searchQuery: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(searchQuery.target.value)}
                                                        startAdornment={
                                                            <InputAdornment position='start'>
-                                                               <SearchIcon sx={{
-                                                                   fontSize: '3.5vmin'
+                                                               <SearchRounded sx={{
+                                                                   fontSize: 24,
+                                                                   color: 'var(--color-text-icon-secondary)'
                                                                }}/>
                                                            </InputAdornment>
                                                        } sx={{
                                             '& .MuiOutlinedInput-notchedOutline': {
                                                 border: '2px solid var(--foreground-color) !important',
-                                                borderRadius: '9px',
+                                                borderRadius: '.5rem',
                                                 minHeight: '26px',
                                             }
                                         }}/>
@@ -513,11 +513,11 @@ const GameCreator: FC<GameCreatorProps> = props => {
                             </div>
 
                             <div className={classes.buttonsWrapper}>
-                                <button type='submit' className={classes.createButton}>
+                                <button type='submit' className={`${classes.button} ${classes.primaryButton}`}>
                                     {props.mode === 'edit' ? 'Сохранить' : 'Создать'}
                                 </button>
 
-                                <button type='button' className={classes.undoButton}
+                                <button type='button' className={`${classes.button} ${classes.defaultButton}`}
                                         onClick={() => setIsCancelled(true)}>
                                     Отменить
                                 </button>
@@ -539,7 +539,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                        id="toursCount"
                                        name="toursCount"
                                        value={tempChgkRoundsCount || ''}
-                                       placeholder='99'
+                                       placeholder='30'
                                        required={true}
                                        onChange={(event) => handleToursCountChange(event, 'chgk')}/>
                             </div>
@@ -552,13 +552,13 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                        id="questionsCount"
                                        name="questionsCount"
                                        value={tempChgkQuestionsCount || ''}
-                                       placeholder='99'
+                                       placeholder='30'
                                        required={true}
                                        onChange={(event) => handleQuestionsCountChange(event, 'chgk')}/>
                             </div>
                         </div>
                         <div className={classes.addButtonWrapper}>
-                            <button className={classes.addQuestionsButton}
+                            <button className={`${classes.button} ${classes.defaultButton}`}
                                     disabled={!tempChgkQuestionsCount || !tempChgkRoundsCount}
                                     onClick={() => {
                                         if (!tempChgkQuestions || !Object.values(tempChgkQuestions).length) {
@@ -575,7 +575,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                         </div>
 
                         <div className={classes.gameParamsButtonsWrapper}>
-                            <button type='submit' className={classes.createButton}
+                            <button type='submit' className={`${classes.button} ${classes.primaryButton}`}
                                     disabled={(!tempChgkQuestionsCount || !tempChgkRoundsCount)}
                                     onClick={() => {
                                         setChgkSettings(prevValue => {
@@ -593,7 +593,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                 {props.mode === 'edit' ? 'Сохранить' : 'Создать'}
                             </button>
 
-                            <button type='button' className={classes.undoButton} onClick={() => {
+                            <button type='button' className={`${classes.button} ${classes.defaultButton}`} onClick={() => {
                                 setTempChgkRoundsCount(undefined);
                                 setTempChgkQuestionsCount(undefined);
                                 setTempChgkQuestions(undefined);
@@ -616,14 +616,14 @@ const GameCreator: FC<GameCreatorProps> = props => {
                         </div>
 
                         <div className={classes.buttonsWrapper}>
-                            <button type='submit' className={classes.createButton} onClick={() => {
+                            <button type='submit' className={`${classes.button} ${classes.primaryButton}`} onClick={() => {
                                 setIsSaveChgkQuestions(true);
                                 setPage('chgk-settings');
                             }}>
                                 Сохранить
                             </button>
 
-                            <button type='button' className={classes.undoButton} onClick={() => {
+                            <button type='button' className={`${classes.button} ${classes.defaultButton}`} onClick={() => {
                                 if (!isSaveChgkQuestions) {
                                     setTempChgkQuestions(undefined);
                                 }
@@ -649,7 +649,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                        id="toursCount"
                                        name="toursCount"
                                        value={tempMatrixRoundsCount || ''}
-                                       placeholder='99'
+                                       placeholder='30'
                                        required={true}
                                        onChange={(event) => handleToursCountChange(event, 'matrix')}/>
                             </div>
@@ -662,14 +662,14 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                        id="questionsCount"
                                        name="questionsCount"
                                        value={tempMatrixQuestionsCount || ''}
-                                       placeholder='99'
+                                       placeholder='30'
                                        required={true}
                                        onChange={(event) => handleQuestionsCountChange(event, 'matrix')}/>
                             </div>
                         </div>
 
                         <div className={classes.gameParamsButtonsWrapper}>
-                            <button className={classes.createButton}
+                            <button className={`${classes.button} ${classes.primaryButton}`}
                                     disabled={!tempMatrixQuestionsCount || !tempMatrixRoundsCount}
                                     onClick={() => {
                                         setTempMatrixRoundNames(prevValue => {
@@ -680,7 +680,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                 Далее
                             </button>
 
-                            <button type='button' className={classes.undoButton} onClick={() => {
+                            <button type='button' className={`${classes.button} ${classes.defaultButton}`} onClick={() => {
                                 setTempMatrixQuestionsCount(undefined);
                                 setTempMatrixRoundsCount(undefined);
                                 setTempMatrixRoundNames(undefined);
@@ -715,7 +715,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                             }
                         </div>
                         <div className={classes.matrixQuestionsWrapper}>
-                            <button className={classes.addQuestionsButton}
+                            <button className={`${classes.button} ${classes.defaultButton}`}
                                     disabled={!!(tempMatrixRoundNames?.filter(n => n === '').length)}
                                     onClick={() => {
                                         if (!tempMatrixQuestions || !Object.values(tempMatrixQuestions).length) {
@@ -732,7 +732,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                         </div>
 
                         <div className={classes.gameParamsButtonsWrapper}>
-                            <button className={classes.createButton} onClick={() => {
+                            <button className={`${classes.button} ${classes.primaryButton}`} onClick={() => {
                                 if (!tempMatrixRoundNames?.filter(n => n === '').length) {
                                     setMatrixSettings(prevValue => {
                                         return {
@@ -756,7 +756,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                 {props.mode === 'edit' ? 'Сохранить' : 'Создать'}
                             </button>
 
-                            <button type='button' className={classes.undoButton} onClick={() => {
+                            <button type='button' className={`${classes.button} ${classes.defaultButton}`} onClick={() => {
                                 if (!isSaveMatrixTours) {
                                     setTempMatrixRoundNames(undefined);
                                     setTempMatrixQuestions(undefined);
@@ -781,14 +781,14 @@ const GameCreator: FC<GameCreatorProps> = props => {
                         </div>
 
                         <div className={classes.buttonsWrapper}>
-                            <button type='submit' className={classes.createButton} onClick={() => {
+                            <button type='submit' className={`${classes.button} ${classes.primaryButton}`} onClick={() => {
                                 setPage('matrix-tours');
                                 setIsSaveMatrixQuestions(true);
                             }}>
                                 Сохранить
                             </button>
 
-                            <button type='button' className={classes.undoButton} onClick={() => {
+                            <button type='button' className={`${classes.button} ${classes.defaultButton}`} onClick={() => {
                                 if (!isSaveMatrixQuestions) {
                                     setTempMatrixQuestions(undefined);
                                 }

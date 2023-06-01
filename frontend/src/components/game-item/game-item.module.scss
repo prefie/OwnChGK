@@ -9,7 +9,7 @@
   position: relative;
   text-decoration: none;
   color: var(--color-text-icon-primary);
-  width: calc(20% - 48px);
+  width: calc(25% - 48px);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -82,6 +82,8 @@
 .gameFooter {
   display: flex;
   justify-content: space-between;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-fill-default-disabled);
 }
 
 .gameActions {
