@@ -22,7 +22,7 @@ import {addUserTeam} from '../../redux/actions/app-actions/app-actions';
 import {connect} from 'react-redux';
 import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
 import Loader from '../../components/loader/loader';
-import GameItem, {AccessLevel, Roles} from "../../components/game-item/game-item";
+import GameItem, {Roles, Status} from "../../components/game-item/game-item";
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
 import {AddRounded} from "@mui/icons-material";
 import TeamItem from "../../components/team-item/team-item";
@@ -36,7 +36,9 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
         captainId: "",
         participantsCount: 0,
         participants: [],
-        name: '', id: ''});
+        name: '',
+        id: ''
+    });
     const [gameId, setGameId] = useState<string>('');
     const [isTeamNotFree, setIsTeamNotFree] = useState<boolean>(false);
     const [numberLoading, setNumberLoading] = useState<number>(0);
@@ -152,7 +154,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
             return Array.from(Array(5).keys()).map(i => <Skeleton key={`game_skeleton_${i}`} variant='rectangular' width='100%' height={mediaMatch.matches ? '5vh' : '7vh'} sx={{marginBottom: '2.5vh'}} />);
         }
 
-        const games = gamesFromDB.filter(game => game.amIParticipate || !game.amIParticipate && game.status === 'not_started')
+        const games = gamesFromDB.filter(game => game.amIParticipate || game.status === Status.NotStarted)
         return games.map((game, index) =>
                 <GameItem
                     key={index}

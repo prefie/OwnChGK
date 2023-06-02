@@ -1,35 +1,33 @@
+.statusWrapper {
+  padding: .25rem .5rem;
+  border-radius: 1rem;
+  width: fit-content;
+}
+
 .statusWrapperNotStarted {
   background-color: var(--color-bg-overlay-default);
-  padding: .25rem .5rem;
-  border-radius: .25rem;
-  width: fit-content;
 }
 
 .statusWrapperStarted {
   background-color: var(--color-bg-overlay-success);
-  padding: .25rem .5rem;
-  border-radius: .25rem;
-  width: fit-content;
 }
 
 .statusWrapperFinished {
   background-color: var(--color-bg-overlay-default);
-  padding: .25rem .5rem;
-  border-radius: .25rem;
-  width: fit-content;
 }
 
-.statusStateNotStarted {
-  font-size: var(--font-size-20);
+.statusCaption {
+  font-size: var(--font-size-16);
+}
+
+.statusCaptionNotStarted {
   color: var(--color-text-icon-primary);
 }
 
-.statusStateStarted {
-  font-size: var(--font-size-20);
+.statusCaptionStarted {
   color: var(--color-text-icon-success);
 }
 
-.statusStateFinished {
-  font-size: var(--font-size-20);
+.statusCaptionFinished {
   color: var(--color-text-icon-disabled);
 }

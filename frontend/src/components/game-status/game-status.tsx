@@ -1,28 +1,34 @@
 import classes from "./game-status.module.scss";
+import {Status} from "../game-item/game-item";
 
 interface GameStatusProps {
-    status: string;
+    status: Status;
 }
 
 
 function GameStatus(props: GameStatusProps) {
-    let statusCaption = '';
-    if (props.status === 'not_started') {
+    if (props.status === Status.NotStarted) {
         return (
-            <div className={classes.statusWrapperNotStarted}>
-                <p className={classes.statusStateNotStarted}>Ещё не началась</p>
+            <div className={`${classes.statusWrapper} ${classes.statusWrapperNotStarted}`}>
+                <p className={`${classes.statusCaption} ${classes.statusCaptionNotStarted}`}>
+                    Ещё не начали
+                </p>
             </div>
         );
-    } else if (props.status === 'started') {
+    } else if (props.status === Status.Started) {
         return (
-            <div className={classes.statusWrapperStarted}>
-                <p className={classes.statusStateStarted}>Сейчас идёт</p>
+            <div className={`${classes.statusWrapper} ${classes.statusWrapperStarted}`}>
+                <p className={`${classes.statusCaption} ${classes.statusCaptionStarted}`}>
+                    Сейчас идёт
+                </p>
             </div>
         );
-    } else if (props.status == 'finished') {
+    } else if (props.status == Status.Finished) {
         return (
-            <div className={classes.statusWrapperFinished}>
-                <p className={classes.statusStateFinished}>Закончилась</p>
+            <div className={`${classes.statusWrapper} ${classes.statusWrapperFinished}`}>
+                <p className={`${classes.statusCaption} ${classes.statusCaptionFinished}`}>
+                    Завершена
+                </p>
             </div>
         );
     }

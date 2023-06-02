@@ -7,7 +7,7 @@ import React, {Dispatch, SetStateAction, useCallback, useEffect, useState} from 
 import {Redirect} from "react-router-dom";
 import {Link} from 'react-router-dom';
 import SignUpToGameItem from "../sign-up-to-game-item/sign-up-to-game-item";
-import { addCurrentTeamInGame, deleteCurrentTeamFromGame, getGame } from "../../server-api/server-api";
+import {addCurrentTeamInGame, deleteCurrentTeamFromGame, getGame} from "../../server-api/server-api";
 import GameStatus from "../game-status/game-status";
 
 export enum Roles {
@@ -21,11 +21,17 @@ export enum AccessLevel {
     PRIVATE = 'private'
 }
 
+export enum Status {
+    NotStarted = 'not_started',
+    Started = 'started',
+    Finished = 'finished'
+}
+
 interface GameItemProps {
     id: string;
     name: string;
     teamsCount: number;
-    status: string,
+    status: Status,
     games: GameTypeItemProps[];
     accessLevel: AccessLevel;
     amIParticipate: boolean;
@@ -45,21 +51,13 @@ function GameItem(props: GameItemProps) {
         ? `/game/${props.id}`
         : `/admin/start-game/${props.id}`
 
-    useEffect(() => {
-        getGame(gameId).then(res => {
-            if (res.status === 200) {
-                res.json().then(({teams}) => {
-                    setTeamsCount(teams.length);
-                })
-            }
-        })
-    }, [])
-
     function handleAddToGame() {
         addCurrentTeamInGame(gameId).then(res => {
             if (res.status === 200) {
                 setAmIParticipate(true);
-                setTeamsCount((teamsCount) => teamsCount + 1);
+                res.json().then(({teamsCount}) => {
+                    setTeamsCount(teamsCount);
+                });
             } else if (res.status === 403) {
                 // добавить обработку
             }
@@ -70,7 +68,9 @@ function GameItem(props: GameItemProps) {
         deleteCurrentTeamFromGame(gameId).then(res => {
             if (res.status === 200) {
                 setAmIParticipate(false);
-                setTeamsCount((teamsCount) => teamsCount - 1);
+                res.json().then(({teamsCount}) => {
+                    setTeamsCount(teamsCount);
+                });
             } else if (res.status === 403) {
                 // добавить обработку
             }
@@ -133,7 +133,7 @@ function GameItem(props: GameItemProps) {
                     {
                         props.role === Roles.user &&
                         props.accessLevel === AccessLevel.PUBLIC &&
-                        props.status !== 'started'
+                        props.status !== Status.Started
                             ?
                             <SignUpToGameItem
                                 isAddToGame={amIParticipate}
@@ -149,7 +149,7 @@ function GameItem(props: GameItemProps) {
                     props.role === Roles.admin
                         ?
                         <div className={classes.gameActions}>
-                            {props.status === 'not_started'
+                            {props.status === Status.NotStarted
                                 ?
                                 <IconButton
                                     onClick={handleEditClick}

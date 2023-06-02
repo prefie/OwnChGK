@@ -16,7 +16,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Scrollbar from '../../components/scrollbar/scrollbar';
 import Loader from "../../components/loader/loader";
 import {AddRounded, PlusOneRounded} from "@mui/icons-material";
-import GameItem, {AccessLevel, Roles} from "../../components/game-item/game-item";
+import GameItem, {AccessLevel, Roles, Status} from "../../components/game-item/game-item";
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
 import {GameTypeItemProps} from "../../components/game-type-item/game-type-item";
 import {divide} from "lodash-es";
@@ -85,7 +85,7 @@ export interface Game {
     id: string;
     name: string;
     teamsCount: number;
-    status: string;
+    status: Status;
     accessLevel: AccessLevel;
     amIParticipate: boolean;
     games: GameTypeItemProps[];
