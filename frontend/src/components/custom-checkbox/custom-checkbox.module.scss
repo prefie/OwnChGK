@@ -1,28 +1,10 @@
-.CustomCheckbox {
-  border: 2px solid var(--color-fill-accent-enabled);
-  width: 90%;
-  margin-bottom: 1.3vh;
-  margin-left: 1.3vw;
-  padding: 1vh 0.4vw 1vh 1vw;
-  box-sizing: border-box;
+.checkboxWrapper {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 8px;
-  background-color: #F6F7FF;
-  filter: drop-shadow(0 3px 3px rgba(255, 255, 255, 0.2));
+  gap: .5rem;
+  align-items: flex-start;
 }
 
-.labelWrapper {
-  width: 90%;
-  max-width: 90%;
-  font-size: 1vw;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  word-break: break-all;
-  text-overflow: ellipsis;
-  -webkit-box-orient: vertical;
-  cursor: default;
+.checkboxLabel {
+  font-size: var(--font-size-24);
+  color: var(--color-text-icon-primary);
 }

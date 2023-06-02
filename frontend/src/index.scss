@@ -28,6 +28,8 @@
   // Background
   --color-bg-main: #00131D;
   --color-bg-plates: #00283D;
+  --color-bg-overlay-default: rgba(255, 255, 255, .06);
+  --color-bg-overlay-success: rgba(36, 255, 36, .06);
 
   // Fills
   --color-fill-accent-enabled: #0077B8;
@@ -40,6 +42,10 @@
   --color-fill-default-pressed: rgba(255,255,255, .06);
   --color-fill-default-disabled: rgba(255,255,255, .06);
 
+  --color-control-accent-enabled: #0AA9FF;
+  --color-control-error-enabled: #FF2424;
+  --color-control-disabled: rgba(235, 248, 255, 0.32);
+
   --color-fill-progressBar-green: #2AB027;
   --color-fill-progressBar-yellow: #D9BB1F;
   --color-fill-progressBar-red: #E42E2E;
@@ -47,10 +53,11 @@
   --color-fill-notify: #FF00E5;
 
   // Text&Icon
-  --color-text-icon-primary: rgba(235, 248, 255, 1);
+  --color-text-icon-primary: rgb(235, 248, 255);
   --color-text-icon-secondary: rgba(235, 248, 255, 0.48);
   --color-text-icon-disabled: rgba(235, 248, 255, 0.32);
   --color-text-icon-error: #ff2424;
+  --color-text-icon-success: #24ff24;
 
   --color-text-icon-link-enabled: #0AA9FF;
 }
