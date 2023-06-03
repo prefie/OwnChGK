@@ -477,7 +477,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                     a.text,
                     a.status as AnswerStatus,
                     a.score
-                ));
+                )) ?? [];
 
                 for (let ans of answers) {
                     teams[ans.teamId].addAnswer(ans);
@@ -493,7 +493,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                         a.text,
                         a.appeal.status as AppealStatus,
                         a.appeal.comment
-                    ));
+                    )) ?? [];
                 return new QuestionLogic(
                     q.id,
                     q.cost,
