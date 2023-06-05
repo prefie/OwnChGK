@@ -3,7 +3,7 @@ import classes from './admin-answers.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import Header from '../../components/header/header';
 import {Link, useParams} from 'react-router-dom';
-import CustomCheckbox from '../../components/custom-checkbox/custom-checkbox';
+import CheckboxBlock from '../../components/checkbox-block/checkbox-block';
 import {Scrollbars} from 'rc-scrollbars';
 import _ from 'lodash';
 import {AnswerType, Opposition, Page} from '../../entities/admin-answers-page/admin-answers-page.interfaces';
@@ -213,8 +213,8 @@ const AdminAnswersPage: FC = () => {
         return answersForRender.map(([answer, count]: [string, number]) => {
             return (
                 <div className={classes.answerWrapper} key={`${answersType}_${answer}`}>
-                    <CustomCheckbox name={answer} checked={checked} onChange={handleCheckboxChange}
-                                    style={{marginLeft: 0, marginBottom: 0}}/>
+                    <CheckboxBlock name={answer} checked={checked} onChange={handleCheckboxChange}
+                                   style={{marginLeft: 0, marginBottom: 0}}/>
                     <div className={classes.answerCountWrapper}>{count}</div>
                 </div>
             );
@@ -265,8 +265,8 @@ const AdminAnswersPage: FC = () => {
             return (
                 <div className={classes.oppositionWrapper} key={op.teamName}>
                     <p className={classes.teamName}>{op.teamName}</p>
-                    <CustomCheckbox name={op.answer} style={{marginLeft: 0, marginBottom: 0, width: '100%'}}
-                                    onChange={handleAppealCheckboxChange}/>
+                    <CheckboxBlock name={op.answer} style={{marginLeft: 0, marginBottom: 0, width: '100%'}}
+                                   onChange={handleAppealCheckboxChange}/>
                     <div className={classes.explanation}>
                         <Scrollbars autoHide autoHideTimeout={500}
                                     autoHideDuration={200}

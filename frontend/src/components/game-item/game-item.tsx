@@ -6,6 +6,9 @@ import {IconButton} from "@mui/material";
 import React, {Dispatch, SetStateAction, useCallback, useEffect, useState} from "react";
 import {Redirect} from "react-router-dom";
 import {Link} from 'react-router-dom';
+import SignUpToGameItem from "../sign-up-to-game-item/sign-up-to-game-item";
+import {addCurrentTeamInGame, deleteCurrentTeamFromGame, getGame} from "../../server-api/server-api";
+import GameStatus from "../game-status/game-status";
 
 export enum Roles {
     user,
@@ -13,12 +16,25 @@ export enum Roles {
     superAdmin
 }
 
+export enum AccessLevel {
+    PUBLIC = 'public',
+    PRIVATE = 'private'
+}
+
+export enum Status {
+    NotStarted = 'not_started',
+    Started = 'started',
+    Finished = 'finished'
+}
+
 interface GameItemProps {
     id: string;
     name: string;
     teamsCount: number;
-    status: string,
+    status: Status,
     games: GameTypeItemProps[];
+    accessLevel: AccessLevel;
+    amIParticipate: boolean;
     openModal?: Dispatch<SetStateAction<boolean>>;
     setItemForDeleteName?: Dispatch<SetStateAction<string>>;
     setItemForDeleteId?: Dispatch<SetStateAction<string>>;
@@ -28,31 +44,61 @@ interface GameItemProps {
 
 function GameItem(props: GameItemProps) {
     const [isRedirectedToEdit, setIsRedirectedToEdit] = useState(false);
-    const [isClicked, setIsClicked] = useState(false);
+    const [amIParticipate, setAmIParticipate] = useState(props.amIParticipate);
+    const [teamsCount, setTeamsCount] = useState(props.teamsCount);
     const gameId = props.id;
     const linkToGame = props.role === Roles.user
         ? `/game/${props.id}`
         : `/admin/start-game/${props.id}`
 
-    // useEffect(() => {
-    //     function goToGame(event: MouseEvent) {
-    //         const clickedElement = event.target as HTMLElement;
-    //         if (clickedElement.id === props.id) {
-    //             setIsClicked(true);
-    //         }
-    //     }
-    //
-    //     window.addEventListener('click', goToGame, true);
-    //
-    //     return () => {
-    //         window.removeEventListener('click', goToGame, true);
-    //     };
-    // });
+    function handleAddToGame() {
+        addCurrentTeamInGame(gameId).then(res => {
+            if (res.status === 200) {
+                setAmIParticipate(true);
+                res.json().then(({teamsCount}) => {
+                    setTeamsCount(teamsCount);
+                });
+            } else if (res.status === 403) {
+                // добавить обработку
+            }
+        });
+    }
+
+    function handleOutOfGame() {
+        deleteCurrentTeamFromGame(gameId).then(res => {
+            if (res.status === 200) {
+                setAmIParticipate(false);
+                res.json().then(({teamsCount}) => {
+                    setTeamsCount(teamsCount);
+                });
+            } else if (res.status === 403) {
+                // добавить обработку
+            }
+        })
+    }
 
     const handleDeleteClick = (event: React.SyntheticEvent) => {
         setItemName(event);
         handleOpenModal(event);
     };
+
+    const renderGameTitle = () => {
+        if (props.role === Roles.admin) {
+            return(
+                <Link to={linkToGame} className={classes.gameTitle} id={gameId}>{props.name}</Link>
+            );
+        } else if (props.role === Roles.user) {
+            return(
+                props.amIParticipate
+                    ? <Link to={linkToGame} className={classes.gameTitle} id={gameId}>{props.name}</Link>
+                    : <div className={classes.gameTitle}>{props.name}</div>
+            );
+        } else {
+            return(
+                <div className={classes.gameTitle}>{props.name}</div>
+            );
+        }
+    }
 
     const setItemName = useCallback(e => {
         if (props.setItemForDeleteName) {
@@ -76,31 +122,49 @@ function GameItem(props: GameItemProps) {
     return isRedirectedToEdit
         ? <Redirect to={{pathname: '/admin/game-creation/edit', state: {id: props.id, name: props.name}}}/>
         : (
-            <div className={classes.gameContent} onClick={props.onClick}>
-                <Link to={linkToGame} className={classes.gameTitle} id={gameId}>{props.name}</Link>
+            <div className={classes.gameContent}>
+                { renderGameTitle() }
                 <GameTypeList types={props.games}/>
-                <div className={classes.gameFooter} id={gameId}>
+                <div className={classes.gameFooter}>
                     <div className={classes.gameTeams}>
                         <PeopleAltRounded fontSize={"medium"}/>
-                        <div className={classes.gameTeamsCount}>{props.teamsCount}</div>
+                        <div className={classes.gameTeamsCount}>{teamsCount}</div>
                     </div>
+                    {
+                        props.role === Roles.user &&
+                        props.accessLevel === AccessLevel.PUBLIC &&
+                        props.status !== Status.Started
+                            ?
+                            <SignUpToGameItem
+                                isAddToGame={amIParticipate}
+                                handleAdd={handleAddToGame}
+                                handleOut={handleOutOfGame}
+                            />
+                            : null
+                    }
                 </div>
+                <GameStatus status={props.status}/>
+
                 {
                     props.role === Roles.admin
                         ?
                         <div className={classes.gameActions}>
-                            <IconButton
-                                onClick={handleEditClick}
-                                edge={'end'}
-                                sx={{
-                                    '& .MuiSvgIcon-root': {
-                                        color: 'var(--color-text-icon-link-enabled)',
-                                        fontSize: 'var(--font-size-24)'
-                                    }
-                                }}
-                            >
-                                <EditRounded/>
-                            </IconButton>
+                            {props.status === Status.NotStarted
+                                ?
+                                <IconButton
+                                    onClick={handleEditClick}
+                                    edge={'end'}
+                                    sx={{
+                                        '& .MuiSvgIcon-root': {
+                                            color: 'var(--color-text-icon-link-enabled)',
+                                            fontSize: 'var(--font-size-24)'
+                                        },
+                                    }}
+                                >
+                                    <EditRounded/>
+                                </IconButton>
+                                : null
+                            }
                             <IconButton
                                 onClick={handleDeleteClick}
                                 edge={'end'}

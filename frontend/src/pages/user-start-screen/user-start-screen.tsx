@@ -7,29 +7,25 @@ import {
     UserStartScreenDispatchProps,
     UserStartScreenProps
 } from '../../entities/user-start-screen/user-start-screen.interfaces';
-import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import {Link, Redirect, useLocation} from 'react-router-dom';
-import {Alert, IconButton, Skeleton, Snackbar} from '@mui/material';
-import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import {Alert, Skeleton, Snackbar} from '@mui/material';
 import {
     editTeamCaptainByCurrentUser,
-    getAmIParticipateGames,
+    getAmIParticipateAndPublicGames,
     getTeamByCurrentUser,
     getTeamsWithoutUser
 } from '../../server-api/server-api';
 import {Game, Team} from '../admin-start-screen/admin-start-screen';
-import Scrollbar from '../../components/scrollbar/scrollbar';
 import {Dispatch} from 'redux';
 import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces';
 import {addUserTeam} from '../../redux/actions/app-actions/app-actions';
 import {connect} from 'react-redux';
 import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
 import Loader from '../../components/loader/loader';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import GameItem, {Roles} from "../../components/game-item/game-item";
+import GameItem, {Roles, Status} from "../../components/game-item/game-item";
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
 import {AddRounded} from "@mui/icons-material";
-import TeamItem, {Participant} from "../../components/team-item/team-item";
+import TeamItem from "../../components/team-item/team-item";
 
 const UserStartScreen: FC<UserStartScreenProps> = props => {
     const [page, setPage] = useState<string>('teams');
@@ -40,7 +36,9 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
         captainId: "",
         participantsCount: 0,
         participants: [],
-        name: '', id: ''});
+        name: '',
+        id: ''
+    });
     const [gameId, setGameId] = useState<string>('');
     const [isTeamNotFree, setIsTeamNotFree] = useState<boolean>(false);
     const [numberLoading, setNumberLoading] = useState<number>(0);
@@ -90,7 +88,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
             }
         });
 
-        getAmIParticipateGames().then(res => {
+        getAmIParticipateAndPublicGames().then(res => {
             if (res.status === 200) {
                 res.json().then(({games}) => {
                     setGamesFromDB(games.sort((game1: Game, game2: Game) => game1.name.toLowerCase() > game2.name.toLowerCase() ? 1 : -1));
@@ -119,7 +117,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                             setIsTeamNotFree(false);
                             props.onAddUserTeam(name);
                         });
-                        getAmIParticipateGames().then(res => {
+                        getAmIParticipateAndPublicGames().then(res => {
                             if (res.status === 200) {
                                 res.json().then(({games}) => {
                                     setGamesFromDB(games.sort((game1: Game, game2: Game) => game1.name.toLowerCase() > game2.name.toLowerCase() ? 1 : -1));
@@ -155,7 +153,9 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
         if (!gamesFromDB) {
             return Array.from(Array(5).keys()).map(i => <Skeleton key={`game_skeleton_${i}`} variant='rectangular' width='100%' height={mediaMatch.matches ? '5vh' : '7vh'} sx={{marginBottom: '2.5vh'}} />);
         }
-        return gamesFromDB.map((game, index) =>
+
+        const games = gamesFromDB.filter(game => game.amIParticipate || game.status === Status.NotStarted)
+        return games.map((game, index) =>
                 <GameItem
                     key={index}
                     id={game.id}
@@ -164,6 +164,8 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                     status={game.status}
                     games={game.games}
                     role={Roles.user}
+                    accessLevel={game.accessLevel}
+                    amIParticipate={game.amIParticipate}
                     onClick={() => handleClickOnGame(game.id)}
                 />);
 

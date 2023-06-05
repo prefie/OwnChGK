@@ -445,7 +445,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 chgk.addTeam(new TeamLogic(team.name, team.id));
             }
 
-            const rounds = this.getRoundsLogicFromDb(chgkFromDB.rounds);
+            const rounds = this.getRoundsLogicFromDb(chgkFromDB.rounds, chgk.teams);
             chgk.addRounds(rounds);
         }
 
@@ -455,7 +455,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 matrix.addTeam(new TeamLogic(team.name, team.id));
             }
 
-            const rounds = this.getRoundsLogicFromDb(matrixFromDB.rounds);
+            const rounds = this.getRoundsLogicFromDb(matrixFromDB.rounds, matrix.teams);
             matrix.addRounds(rounds);
         }
 
@@ -467,7 +467,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         );
     }
 
-    private getRoundsLogicFromDb(rounds: Round[]): RoundLogic[] {
+    private getRoundsLogicFromDb(rounds: Round[], teams: Record<string, TeamLogic>): RoundLogic[] {
         return rounds.map(r => {
             const questions = r.questions.map(q => {
                 const answers = q.answers?.map(a => new AnswerLogic(
@@ -477,7 +477,11 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                     a.text,
                     a.status as AnswerStatus,
                     a.score
-                ));
+                )) ?? [];
+
+                for (let ans of answers) {
+                    teams[ans.teamId].addAnswer(ans);
+                }
 
                 const appeals = q.answers
                     ?.filter(a => a.appeal)
@@ -489,7 +493,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                         a.text,
                         a.appeal.status as AppealStatus,
                         a.appeal.comment
-                    ));
+                    )) ?? [];
                 return new QuestionLogic(
                     q.id,
                     q.cost,

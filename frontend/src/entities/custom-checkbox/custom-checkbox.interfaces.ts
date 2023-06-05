@@ -1,6 +1,6 @@
 import React from 'react';
 
-export interface CustomCheckboxProps {
+export interface CheckboxBlockProps {
     name: string;
     checked?: boolean;
     onChange?: (event: React.SyntheticEvent) => void;

@@ -150,6 +150,7 @@ export class GamesController {
                 name: bigGame.name,
                 isStarted: !!bigGames[gameId],
                 id: bigGame.id,
+                accessLevel: bigGame.accessLevel,
                 teams: bigGame.teams.map(value => value.name),
                 chgkSettings: chgk ? new GameDto(chgk, allAdminRoles.has(role)) : null,
                 matrixSettings: matrix ? new MatrixGameDto(matrix, allAdminRoles.has(role)) : null,

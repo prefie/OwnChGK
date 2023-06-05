@@ -46,7 +46,7 @@ export const createGame = async (
     teams: string[],
     chgkSettings?: GamePartSettings,
     matrixSettings?: GamePartSettings,
-    accessLevel?: 'public' | 'private' = 'private',
+    accessLevel: 'public' | 'private' = 'private',
 ) => {
     return await fetch('/api/games/', {
         method: 'POST',
@@ -116,7 +116,7 @@ export const editGame = async (
     teams: string[],
     chgkSettings?: GamePartSettings,
     matrixSettings?: GamePartSettings,
-    accessLevel?: 'public' | 'private' = 'private',
+    accessLevel: 'public' | 'private' = 'private',
 ) => {
     return await fetch(`/api/games/${gameId}/change`, {
         method: 'PATCH',

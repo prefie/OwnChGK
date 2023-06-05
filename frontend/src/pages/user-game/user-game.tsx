@@ -327,12 +327,11 @@ const UserGame: FC<UserGameProps> = props => {
                     isSnackbarOpen: true
                 });
             }
-            setTimeout(() => setFlags(flags => {
-                return {
+            setTimeout(() => setFlags(flags => ({
                     isSnackbarOpen: false,
                     isAnswerAccepted: flags.isAnswerAccepted
                 }
-            }), 5000);
+            )), 5000);
         },
 
         handleIsOnBreakMessage: (status: boolean, time: number) => {
@@ -538,10 +537,11 @@ const UserGame: FC<UserGameProps> = props => {
             return;
         }
 
-        setFlags({
-            isSnackbarOpen: false,
-            isAnswerAccepted: false
-        });
+        setFlags(flags => ({
+                isSnackbarOpen: false,
+                isAnswerAccepted: flags.isAnswerAccepted
+            }
+        ));
     };
 
     const handleAnswer = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -553,24 +553,21 @@ const UserGame: FC<UserGameProps> = props => {
 
         setTimeout(() => {
             setFlags(flags => {
-                const res = {
-                    isSnackbarOpen: true,
-                    isAnswerAccepted: false
-                };
+               if (!flags.isSnackbarOpen) {
+                   return {
+                       isSnackbarOpen: true,
+                       isAnswerAccepted: false
+                   };
+               }
 
-                if (!flags.isSnackbarOpen) {
-                    setTimeout(() => setFlags(flags => {
-                        return {
-                            isSnackbarOpen: false,
-                            isAnswerAccepted: flags.isAnswerAccepted
-                        }
-                    }), 5000);
-                    return res;
-                }
-
-                return flags;
+               return flags;
             });
-        }, 1000);
+
+            setTimeout(() => setFlags(flags => ({
+                isSnackbarOpen: false,
+                isAnswerAccepted: flags.isAnswerAccepted
+            })), 5000);
+        }, 1500);
     };
 
     const handleMatrixAnswer = (event: ChangeEvent<HTMLInputElement>, index: number, roundNumber: number) => {
@@ -586,24 +583,21 @@ const UserGame: FC<UserGameProps> = props => {
 
         setTimeout(() => {
             setFlags(flags => {
-                const res = {
-                    isSnackbarOpen: true,
-                    isAnswerAccepted: false
-                };
-
                 if (!flags.isSnackbarOpen) {
-                    setTimeout(() => setFlags(flags => {
-                        return {
-                            isSnackbarOpen: false,
-                            isAnswerAccepted: flags.isAnswerAccepted
-                        }
-                    }), 5000);
-                    return res;
+                    return {
+                        isSnackbarOpen: true,
+                        isAnswerAccepted: false
+                    };
                 }
 
                 return flags;
             });
-        }, 1000);
+
+            setTimeout(() => setFlags(flags => ({
+                isSnackbarOpen: false,
+                isAnswerAccepted: flags.isAnswerAccepted
+            })), 5000);
+        }, 1500);
     };
 
     const getShortenedAnswer = (answer: string) => {
@@ -626,7 +620,7 @@ const UserGame: FC<UserGameProps> = props => {
                     {
                         flags.isAnswerAccepted
                             ? 'Ответ успешно отправлен'
-                            : 'Не удалось отправить. Давайте еще раз'
+                            : 'Не удалось отправить. Попробуйте еще раз'
                     }
                 </Alert>
             </Snackbar>
