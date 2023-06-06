@@ -401,10 +401,10 @@ function NotifyAdminsAboutAppeal(gameId, number) {
 }
 
 function AdminsAction(gameId, ws, jsonMessage, gameType) {
-    if (!gameAdmins[gameId].has(ws)) {
+    if (gameAdmins[gameId] && !gameAdmins[gameId].has(ws)) {
         gameAdmins[gameId].add(ws);
         ws.on('close', function () {
-            gameAdmins[gameId].delete(ws);
+            gameAdmins[gameId]?.delete(ws);
         });
     }
 
@@ -471,10 +471,10 @@ function UsersAction(gameId, ws, jsonMessage, gameType, teamId) {
         }));
         return;
     }
-    if (!gameUsers[gameId].has(ws)) {
+    if (gameUsers[gameId] && !gameUsers[gameId].has(ws)) {
         gameUsers[gameId].add(ws);
         ws.on('close', function () {
-            gameUsers[gameId].delete(ws);
+            gameUsers[gameId]?.delete(ws);
         });
     }
     switch (jsonMessage.action) {
