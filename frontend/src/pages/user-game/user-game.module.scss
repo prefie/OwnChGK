@@ -77,14 +77,14 @@
     display: flex;
     flex-direction: column;
     font-size: 250px;
-    font-family: var(--font-family-secondary);
+    font-family: var(--font-family-primary);
     line-height: var(--line-height-small);
     text-align: center;
     color: var(--color-text-icon-primary);
   }
 
   .breakTimeText {
-    font-family: var(--font-family-secondary);
+    font-family: var(--font-family-primary);
     font-size: var(--font-size-48);
     line-height: var(--line-height-small);
     text-align: center;
@@ -151,7 +151,7 @@
   }
 
   .pageText {
-    font-family: var(--font-family-secondary);
+    font-family: var(--font-family-primary);
     font-size: var(--font-size-48);
     line-height: var(--line-height-small);
     font-weight: var(--font-weight-medium);
