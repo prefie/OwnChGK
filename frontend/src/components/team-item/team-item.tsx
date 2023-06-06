@@ -108,7 +108,7 @@ function TeamItem(props: TeamItemProps) {
                     <div className={classes.teamsParticipants}>
                         <PeopleAltRounded fontSize={"medium"}/>
                         <div className={classes.participantsCount}>
-                            {getCorrectDeclensionConnoisseur(props.participantsCount)}
+                            {getCorrectDeclensionConnoisseur(props.participantsCount + 1)}
                         </div>
                     </div>
                 </div>
