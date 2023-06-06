@@ -556,7 +556,7 @@ function GetGameStatus(gameId, ws) {
 
         ws.send(JSON.stringify({
             'action': 'gameStatus',
-            'isStarted': !!bigGames[gameId] && bigGames[gameId].currentGame.currentQuestion,
+            'isStarted': !!bigGames[gameId] && !!bigGames[gameId].currentGame.currentQuestion,
             'activeGamePart': currentGame.type,
             'isOnBreak': bigGames[gameId].status == GameStatus.IsOnBreak,
             'breakTime': bigGames[gameId].breakTime,

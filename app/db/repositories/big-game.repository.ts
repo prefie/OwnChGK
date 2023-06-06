@@ -106,33 +106,46 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         });
     }
 
-    async addTeamInBigGame(bigGameId: string, teamId: string) {
-        const team = await this.innerRepository.manager.findOne<Team>(Team, {
-            where: { id: teamId },
-            relations: { bigGames: true }
+    addTeamInBigGame(bigGameId: string, teamId: string) {
+        return this.innerRepository.manager.transaction("SERIALIZABLE", async (entityManager: EntityManager) => {
+            const team = await entityManager.findOne<Team>(Team, {
+                where: { id: teamId },
+                relations: { bigGames: true }
+            });
+
+            const bigGame = await entityManager.findOne<BigGame>(BigGame, {
+                where: { id: bigGameId },
+                relations: { teams: true }
+            });
+
+            if (team.bigGames.map(g => g.id).indexOf(bigGameId) == -1) {
+                team.bigGames.push(bigGame);
+                bigGame.teams.push(team);
+            }
+
+            await entityManager.save(Team, team);
+            return bigGame;
         });
-        const bigGame = await this.findWithAllRelationsByBigGameId(bigGameId);
-
-        if (bigGame.teams.map(t => t.id).indexOf(teamId) == -1) {
-            team.bigGames.push(bigGame);
-            bigGame.teams.push(team);
-        }
-
-        await this.innerRepository.manager.save(Team, team);
-        return bigGame;
     }
 
-    async deleteTeamFromBigGame(bigGameId: string, teamId: string) {
-        const team = await this.innerRepository.manager.findOne<Team>(Team, {
-            where: { id: teamId },
-            relations: { bigGames: true }
-        });
-        const bigGame = await this.findWithAllRelationsByBigGameId(bigGameId);
-        team.bigGames = team.bigGames.filter(g => g.id != bigGameId);
-        bigGame.teams = bigGame.teams.filter(t => t.id != teamId);
+    deleteTeamFromBigGame(bigGameId: string, teamId: string) {
+        return this.innerRepository.manager.transaction("SERIALIZABLE", async (entityManager: EntityManager) => {
+            const team = await entityManager.findOne<Team>(Team, {
+                where: { id: teamId },
+                relations: { bigGames: true }
+            });
 
-        await this.innerRepository.manager.save(Team, team);
-        return bigGame;
+            const bigGame = await entityManager.findOne<BigGame>(BigGame, {
+                where: { id: bigGameId },
+                relations: { teams: true }
+            });
+
+            team.bigGames = team.bigGames.filter(g => g.id != bigGameId);
+            bigGame.teams = bigGame.teams.filter(t => t.id != teamId);
+
+            await entityManager.save(Team, team);
+            return bigGame;
+        });
     }
 
     findByCaptainId(userId: string) {
@@ -190,7 +203,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         const admin = await this.innerRepository.manager
             .findOneBy<Admin>(Admin, { email: adminEmail.toLowerCase() });
         const teamsFromDb = await this.innerRepository.manager
-            .findBy<Team>(Team, { name: In(teams) });
+            .findBy<Team>(Team, { id: In(teams) });
         const bigGame = new BigGame();
         bigGame.name = name;
         bigGame.admin = admin;
@@ -244,17 +257,14 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     async updateByParams(
         bigGameId: string,
         newName: string,
-        teams: string[],
         accessLevel: AccessLevel | undefined,
         chgkSettings: ChgkSettings,
         matrixSettings: MatrixSettings
     ) {
-        const teamsFromDb = await this.innerRepository.manager.findBy<Team>(Team, { name: In(teams) });
         const bigGame = await this.innerRepository.manager.findOne<BigGame>(BigGame, {
             where: { id: bigGameId },
             relations: { games: true }
         });
-        bigGame.teams = teamsFromDb;
         bigGame.name = newName;
         bigGame.accessLevel = accessLevel ?? AccessLevel.PRIVATE;
 

@@ -216,9 +216,9 @@ export class GamesController {
     public async changeGame(req: Request, res: Response) {
         try {
             const { gameId } = req.params;
-            const { newGameName, teams, accessLevel, chgkSettings, matrixSettings } = req.body;
+            const { newGameName, accessLevel, chgkSettings, matrixSettings } = req.body;
 
-            const currentGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
+            const currentGame = await this.bigGameRepository.findById(gameId);
             if (!currentGame) {
                 return res.status(404).json({ message: 'game not found' });
             }
@@ -239,7 +239,7 @@ export class GamesController {
                 return res.status(403).json({ message: checkAccessResult.message });
             }
 
-            await this.bigGameRepository.updateByParams(gameId, newGameName, teams, accessLevel, chgkSettings, matrixSettings);
+            await this.bigGameRepository.updateByParams(gameId, newGameName, accessLevel, chgkSettings, matrixSettings);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
@@ -441,11 +441,12 @@ export class GamesController {
     public async addTeamInBigGame(req: Request, res: Response) {
         try {
             const { gameId } = req.params;
+            const { teamId } = req.body;
 
-            const { role, teamId } = getTokenFromRequest(req);
+            const { role, teamId: userTeamId } = getTokenFromRequest(req);
 
-            if (!userRoles.has(role) || !teamId) {
-                return res.status(400).json({ message: 'Неподходящая роль или нет команды у текущего юзера' });
+            if (userRoles.has(role) && !userTeamId || allAdminRoles.has(role) && !teamId) {
+                return res.status(400).json({ message: 'Нет параметра id команды' });
             }
 
             const bigGame = await this.bigGameRepository.findAccessLevelAndStatusById(gameId);
@@ -453,12 +454,18 @@ export class GamesController {
                 return res.status(400).json({ message: 'Нельзя редактировать начатые игры' });
             }
 
-            if (bigGame.accessLevel != AccessLevel.PUBLIC) {
-                return res.status(403).json({ message: 'Нельзя присоединиться к непубличной игре' });
+            if (userRoles.has(role) && bigGame.accessLevel != AccessLevel.PUBLIC) {
+                return res.status(403).json({ message: 'Нельзя юзеру присоединиться к непубличной игре' });
             }
 
-            const updatedBigGame = await this.bigGameRepository.addTeamInBigGame(gameId, teamId);
-            return res.status(200).json(new BigGameDto(updatedBigGame, teamId));
+            const checkAccessResult = await this.checkAccess(req, gameId, true);
+            if (allAdminRoles.has(role) && checkAccessResult.type == AccessType.FORBIDDEN) {
+                return res.status(403).json({ message: checkAccessResult.message });
+            }
+
+            const id = userRoles.has(role) ? userTeamId : teamId;
+            const updatedBigGame = await this.bigGameRepository.addTeamInBigGame(gameId, id);
+            return res.status(200).json(new BigGameDto(updatedBigGame, id));
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
@@ -470,11 +477,12 @@ export class GamesController {
     public async deleteTeamFromBigGame(req: Request, res: Response) {
         try {
             const { gameId } = req.params;
+            const { teamId } = req.body;
 
-            const { role, teamId } = getTokenFromRequest(req);
+            const { role, teamId: userTeamId } = getTokenFromRequest(req);
 
-            if (!userRoles.has(role) || !teamId) {
-                return res.status(400).json({ message: 'Неподходящая роль или нет команды у текущего юзера' });
+            if (userRoles.has(role) && !userTeamId || allAdminRoles.has(role) && !teamId) {
+                return res.status(400).json({ message: 'Нет параметра id команды' });
             }
 
             const bigGame = await this.bigGameRepository.findAccessLevelAndStatusById(gameId);
@@ -482,8 +490,14 @@ export class GamesController {
                 return res.status(400).json({ message: 'Нельзя редактировать начатые игры' });
             }
 
-            const updatedBigGame = await this.bigGameRepository.deleteTeamFromBigGame(gameId, teamId);
-            return res.status(200).json(new BigGameDto(updatedBigGame, teamId));
+            const checkAccessResult = await this.checkAccess(req, gameId, true);
+            if (allAdminRoles.has(role) && checkAccessResult.type == AccessType.FORBIDDEN) {
+                return res.status(403).json({ message: checkAccessResult.message });
+            }
+
+            const id = userRoles.has(role) ? userTeamId : teamId;
+            const updatedBigGame = await this.bigGameRepository.deleteTeamFromBigGame(gameId, id);
+            return res.status(200).json(new BigGameDto(updatedBigGame, id));
         } catch (error: any) {
             return res.status(500).json({
                 message: error.message,
