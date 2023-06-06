@@ -48,6 +48,7 @@ export const gamesRouter = () => {
         '/:gameId/team',
         authMiddleware,
         param('gameId').isUUID(),
+        body('teamId').optional().isUUID(),
         validationMiddleware,
         gamesController.addTeamInBigGame.bind(gamesController)
     );
@@ -56,6 +57,7 @@ export const gamesRouter = () => {
         '/:gameId/team',
         authMiddleware,
         param('gameId').isUUID(),
+        body('teamId').optional().isUUID(),
         validationMiddleware,
         gamesController.deleteTeamFromBigGame.bind(gamesController)
     );

@@ -6,7 +6,15 @@ import {Scrollbars} from 'rc-scrollbars';
 import {GameCreatorProps} from '../../entities/game-creator/game-creator.interfaces';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import {CustomInput} from '../../components/custom-input/custom-input';
-import {createGame, editGame, GamePartSettings, getAll, getGame} from '../../server-api/server-api';
+import {
+    addTeamInGame,
+    createGame,
+    deleteTeamFromGame,
+    editGame,
+    GamePartSettings,
+    getAll,
+    getGame
+} from '../../server-api/server-api';
 import {Redirect, useLocation} from 'react-router-dom';
 import NavBar from '../../components/nav-bar/nav-bar';
 import {Team} from '../admin-start-screen/admin-start-screen';
@@ -19,9 +27,6 @@ import {
 } from '@mui/material';
 import PageBackdrop from '../../components/backdrop/backdrop';
 import Loader from '../../components/loader/loader';
-import SearchIcon from '@mui/icons-material/Search';
-import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import Modal from '../../components/modal/modal';
 import Scrollbar from '../../components/scrollbar/scrollbar';
 import {AccessLevel} from "../../components/game-item/game-item";
@@ -92,24 +97,52 @@ const GameCreator: FC<GameCreatorProps> = props => {
         }
     }, []);
 
-    const handleCheckboxChange = (event: React.SyntheticEvent) => {
+    const handleCheckboxChange = async (event: React.SyntheticEvent) => {
+        const addTeamInChosenTeams = (team: string) => setChosenTeams(teams => {
+            if (teams) {
+                teams.push(team);
+            } else {
+                teams = [team];
+            }
+            return teams;
+        });
+
+        const deleteTeamFromChosenTeams = (team: string) => setChosenTeams(teams => {
+            if (teams) {
+                teams.splice(teams.indexOf(team), 1);
+            }
+            return teams;
+        });
+
         const element = event.target as HTMLInputElement;
         if (element.checked) {
-            setChosenTeams(teams => {
-                if (teams) {
-                    teams.push(element.name);
-                } else {
-                    teams = [element.name];
-                }
-                return teams;
-            });
+            const team = teamsFromDB?.find(t => t.name == element.name);
+            if (!team) return;
+
+            props.mode === 'creation'
+                ? addTeamInChosenTeams(element.name)
+                : await addTeamInGame(oldGameId, team.id)
+                    .then(res => {
+                        if (res.status === 200) {
+                            addTeamInChosenTeams(element.name);
+                        } else {
+                            // TODO
+                        }
+                    });
         } else if (chosenTeams?.includes(element.name)) {
-            setChosenTeams(teams => {
-                if (teams) {
-                    teams.splice(teams.indexOf(element.name), 1);
-                }
-                return teams;
-            });
+            const team = teamsFromDB?.find(t => t.name == element.name);
+            if (!team) return;
+
+            props.mode === 'creation'
+                ? deleteTeamFromChosenTeams(element.name)
+                : await deleteTeamFromGame(oldGameId, team.id)
+                    .then(res => {
+                        if (res.status === 200) {
+                            deleteTeamFromChosenTeams(element.name);
+                        } else {
+                            // TODO
+                        }
+                    });
         }
     };
 
@@ -221,7 +254,12 @@ const GameCreator: FC<GameCreatorProps> = props => {
         }
         setIsLoading(true);
         if (props.mode === 'creation') {
-            await createGame(gameName, chosenTeams ?? [], chgkSettings, matrixSettings, gameAccessLevel)
+            const teams = new Set(chosenTeams ?? []);
+            const teamIds = teamsFromDB
+                ?.filter(t => teams.has(t.name))
+                .map(t => t.id);
+
+            await createGame(gameName, teamIds ?? [], chgkSettings, matrixSettings, gameAccessLevel)
                 .then(res => {
                     if (res.status === 200) {
                         setIsCreatedSuccessfully(true);
@@ -231,7 +269,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                     }
                 });
         } else {
-            await editGame(oldGameId, gameName, chosenTeams ?? [], chgkSettings, matrixSettings, gameAccessLevel)
+            await editGame(oldGameId, gameName, chgkSettings, matrixSettings, gameAccessLevel)
                 .then(res => {
                     if (res.status === 200) {
                         setIsCreatedSuccessfully(true);

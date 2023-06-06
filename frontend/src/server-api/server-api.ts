@@ -113,7 +113,6 @@ export const startGame = async (gameId: string) => {
 export const editGame = async (
     gameId: string,
     newGameName: string,
-    teams: string[],
     chgkSettings?: GamePartSettings,
     matrixSettings?: GamePartSettings,
     accessLevel: 'public' | 'private' = 'private',
@@ -127,7 +126,6 @@ export const editGame = async (
         credentials: 'include',
         body: JSON.stringify({
             newGameName,
-            teams,
             chgkSettings,
             matrixSettings,
             accessLevel
@@ -144,13 +142,41 @@ export const addCurrentTeamInGame = async (gameId: string) => {
         },
         credentials: 'include',
     });
-}
+};
+
+export const addTeamInGame = async (gameId: string, teamId: string) => {
+    return await fetch(`/api/games/${gameId}/team`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Accept': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+            teamId
+        })
+    });
+};
 
 export const deleteCurrentTeamFromGame = async (gameId: string) => {
     return await fetch(`/api/games/${gameId}/team`, {
         method: 'DELETE'
     });
-}
+};
+
+export const deleteTeamFromGame = async (gameId: string, teamId: string) => {
+    return await fetch(`/api/games/${gameId}/team`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Accept': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+            teamId
+        })
+    });
+};
 
 export const deleteGame = async (gameId: string) => {
     return await fetch(`/api/games/${gameId}`, {
