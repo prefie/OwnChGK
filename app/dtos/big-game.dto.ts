@@ -1,5 +1,6 @@
 import { BigGame } from '../db/entities/big-game';
 import { Game, GameStatus, GameType } from '../db/entities/game';
+import { RoundType } from "../db/entities/round.js";
 
 export class GameDto {
     public readonly type: GameType;
@@ -34,6 +35,18 @@ export class MatrixGameDto extends GameDto {
                 .sort((a, b) => a.number > b.number ? 1 : -1)
                 .map(round => round.name)
             : [];
+    }
+}
+
+export class QuizGameDto extends MatrixGameDto {
+    public readonly roundTypes: RoundType[];
+
+    constructor(game: Game, withQuestions: boolean = false) {
+        super(game, withQuestions);
+
+        this.roundTypes = game.rounds
+            ?.sort((a, b) => a.number > b.number ? 1 : -1)
+            .map(round => round.type) ?? [];
     }
 }
 

@@ -4,7 +4,7 @@ import { authMiddleware } from '../middleware/auth.middleware';
 import { GamesController } from '../controllers/games.controller';
 import { allAdminRoles } from '../utils/roles';
 import { body, param, query } from 'express-validator';
-import { validateAccessLevel, validateGameStatus } from '../utils/validators';
+import { validateAccessLevel, validateGameStatus, validateRoundTypes } from '../utils/validators';
 import { validationMiddleware } from '../middleware/validation.middleware';
 
 export const gamesRouter = () => {
@@ -68,11 +68,47 @@ export const gamesRouter = () => {
         param('gameId').isUUID(),
         body('newGameName').isString().notEmpty(),
         body('accessLevel').optional().custom(validateAccessLevel),
-        body('chgkSettings.roundsCount').optional().isInt({ min: 0, max: 30 }),
-        body('chgkSettings.questionsCount').optional().isInt({ min: 0, max: 30 }),
-        body('matrixSettings.roundsCount').optional().isInt({ min: 0, max: 30 }),
-        body('matrixSettings.questionsCount').optional().isInt({ min: 0, max: 30 }),
-        body('matrixSettings.roundNames').optional().isArray(),
+
+        body('chgkSettings.roundsCount')
+            .if(body('chgkSettings').exists({ checkNull: true }))
+            .isInt({ min: 0, max: 30 }),
+        body('chgkSettings.questionsCount')
+            .if(body('chgkSettings').exists({ checkNull: true }))
+            .isInt({ min: 0, max: 30 }),
+        body('chgkSettings.questions')
+            .optional({ nullable: true })
+            .isObject(),
+
+        body('matrixSettings.roundsCount')
+            .if(body('matrixSettings').exists({ checkNull: true }))
+            .isInt({ min: 0, max: 30 }),
+        body('matrixSettings.questionsCount')
+            .if(body('matrixSettings').exists({ checkNull: true }))
+            .isInt({ min: 0, max: 30 }),
+        body('matrixSettings.roundNames')
+            .if(body('matrixSettings').exists({ checkNull: true }))
+            .isArray({ min: 0, max: 30 }),
+        body('matrixSettings.questions')
+            .optional({ nullable: true })
+            .isObject(),
+
+        body('quizSettings.roundsCount')
+            .if(body('quizSettings').exists({ checkNull: true }))
+            .isInt({ min: 0, max: 30 }),
+        body('quizSettings.questionsCount')
+            .if(body('quizSettings').exists({ checkNull: true }))
+            .isInt({ min: 0, max: 30 }),
+        body('quizSettings.roundNames')
+            .if(body('quizSettings').exists({ checkNull: true }))
+            .isArray({ min: 0, max: 30 }),
+        body('quizSettings.roundTypes')
+            .if(body('quizSettings').exists({ checkNull: true }))
+            .isArray({ min: 0, max: 30 })
+            .custom(validateRoundTypes),
+        body('quizSettings.questions')
+            .optional({ nullable: true })
+            .isObject(),
+
         validationMiddleware,
         gamesController.changeGame.bind(gamesController)
     );
@@ -151,11 +187,47 @@ export const gamesRouter = () => {
         body('gameName').isString().notEmpty(),
         body('teams').isArray(),
         body('accessLevel').optional().custom(validateAccessLevel),
-        body('chgkSettings.roundsCount').optional().isInt({ min: 0, max: 30 }),
-        body('chgkSettings.questionsCount').optional().isInt({ min: 0, max: 30 }),
-        body('matrixSettings.roundsCount').optional().isInt({ min: 0, max: 30 }),
-        body('matrixSettings.questionsCount').optional().isInt({ min: 0, max: 30 }),
-        body('matrixSettings.roundNames').optional().isArray(),
+
+        body('chgkSettings.roundsCount')
+            .if(body('chgkSettings').exists({ checkNull: true }))
+            .isInt({ min: 0, max: 30 }),
+        body('chgkSettings.questionsCount')
+            .if(body('chgkSettings').exists({ checkNull: true }))
+            .isInt({ min: 0, max: 30 }),
+        body('chgkSettings.questions')
+            .optional({ nullable: true })
+            .isObject(),
+
+        body('matrixSettings.roundsCount')
+            .if(body('matrixSettings').exists({ checkNull: true }))
+            .isInt({ min: 0, max: 30 }),
+        body('matrixSettings.questionsCount')
+            .if(body('matrixSettings').exists({ checkNull: true }))
+            .isInt({ min: 0, max: 30 }),
+        body('matrixSettings.roundNames')
+            .if(body('matrixSettings').exists({ checkNull: true }))
+            .isArray({ min: 0, max: 30 }),
+        body('matrixSettings.questions')
+            .optional({ nullable: true })
+            .isObject(),
+
+        body('quizSettings.roundsCount')
+            .if(body('quizSettings').exists({ checkNull: true }))
+            .isInt({ min: 0, max: 30 }),
+        body('quizSettings.questionsCount')
+            .if(body('quizSettings').exists({ checkNull: true }))
+            .isInt({ min: 0, max: 30 }),
+        body('quizSettings.roundNames')
+            .if(body('quizSettings').exists({ checkNull: true }))
+            .isArray({ min: 0, max: 30 }),
+        body('quizSettings.roundTypes')
+            .if(body('quizSettings').exists({ checkNull: true }))
+            .isArray({ min: 0, max: 30 })
+            .custom(validateRoundTypes),
+        body('quizSettings.questions')
+            .optional({ nullable: true })
+            .isObject(),
+
         validationMiddleware,
         gamesController.insertGame.bind(gamesController)
     );

@@ -30,8 +30,8 @@ export const adminsRouter = () => {
         '/insert',
         roleMiddleware(superAdminRoles),
         body('email').isEmail(),
-        body('name').optional().isString(),
-        body('password').optional().isString(),
+        body('name').optional({ nullable: true }).isString(),
+        body('password').optional({ nullable: true }).isString(),
         validationMiddleware,
         adminsController.insert.bind(adminsController)
     );

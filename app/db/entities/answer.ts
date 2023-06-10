@@ -30,7 +30,7 @@ export class Answer extends BaseCreature {
         enum: AnswerStatus,
         default: AnswerStatus.UNCHECKED
     })
-    status: string;
+    status: AnswerStatus;
 
     @ManyToOne(
         () => Team,
@@ -63,6 +63,9 @@ export class Answer extends BaseCreature {
     @OneToOne(
         () => Appeal,
         appeal => appeal.answer,
+        {
+            cascade: true,
+        }
     )
     appeal: Appeal;
 }

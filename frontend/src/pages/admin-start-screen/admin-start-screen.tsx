@@ -202,9 +202,9 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                                                   width="100%" height="7vh"
                                                                   sx={{marginBottom: '2.5vh'}}/>);
         }
-        return games.map((game, index) =>
+        return games.map((game, _) =>
             <GameItem
-                key={index}
+                key={game.id}
                 id={game.id}
                 name={game.name}
                 teamsCount={game.teamsCount}

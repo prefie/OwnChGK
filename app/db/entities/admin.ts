@@ -24,7 +24,7 @@ export class Admin extends Person {
         enum: AdminRoles,
         default: AdminRoles.ADMIN
     })
-    role: string;
+    role: AdminRoles;
 
     @OneToMany(
         () => BigGame,
