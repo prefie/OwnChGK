@@ -73,6 +73,32 @@ function TeamItem(props: TeamItemProps) {
         }
     }
 
+    function ParticipantsBlock() {
+        const participantsCount = props.captainId
+            ? props.participantsCount + 1
+            : props.participantsCount;
+
+        if (participantsCount === 0) {
+            return(
+                <div className={`${classes.teamsParticipants} ${classes.teamsParticipantsEmpty}`}>
+                    <PeopleAltRounded fontSize={"medium"}/>
+                    <div className={classes.participantsCount}>
+                        Нет знатоков
+                    </div>
+                </div>
+            );
+        } else {
+            return(
+                <div className={classes.teamsParticipants}>
+                    <PeopleAltRounded fontSize={"medium"}/>
+                    <div className={classes.participantsCount}>
+                        {getCorrectDeclensionConnoisseur(participantsCount)}
+                    </div>
+                </div>
+            );
+        }
+    }
+
     const setItemName = useCallback(e => {
         if (props.setItemForDeleteName) {
             props.setItemForDeleteName(props.name);
@@ -100,17 +126,14 @@ function TeamItem(props: TeamItemProps) {
     if (isRedirectedToEdit) {
         return <Redirect to={{pathname: linkToTeam, state: {id: props.id, name: props.name}}}/>
     } else {
+
+
         return (
             <div className={classes.teamContent}>
                 <div className={classes.teamTitle}>{props.name}</div>
                 <CaptainBlock/>
                 <div className={classes.teamFooter}>
-                    <div className={classes.teamsParticipants}>
-                        <PeopleAltRounded fontSize={"medium"}/>
-                        <div className={classes.participantsCount}>
-                            {getCorrectDeclensionConnoisseur(props.participantsCount + 1)}
-                        </div>
-                    </div>
+                    <ParticipantsBlock/>
                 </div>
                 <div className={classes.teamActions}>
                     {

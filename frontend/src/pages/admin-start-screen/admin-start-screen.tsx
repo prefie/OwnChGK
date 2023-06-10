@@ -150,7 +150,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                     setTeams(teams.sort((team1: Team, team2: Team) => team1.name.toLowerCase() > team2.name.toLowerCase() ? 1 : -1));
                 });
             } else {
-                // TODO: код не 200, мейби всплывашку, что что-то не так?
+                // TODO: обработать ошибку
             }
         });
 
@@ -160,7 +160,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                     setGames(games.sort((game1: Game, game2: Game) => game1.name.toLowerCase() > game2.name.toLowerCase() ? 1 : -1));
                 });
             } else {
-                // TODO: код не 200, мейби всплывашку, что что-то не так?
+                // TODO: обработать ошибку
             }
         });
 
@@ -170,7 +170,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                     setAdmins(admins.sort((admin1: Admin, admin2: Admin) => admin1.email.toLowerCase() > admin2.email.toLowerCase() ? 1 : -1));
                 });
             } else {
-                // TODO: код не 200, мейби всплывашку, что что-то не так?
+                // TODO: обработать ошибку
             }
         });
     }, []);
@@ -323,9 +323,11 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                     <h3 className={classes.emptyTitle}>Пока нет ни одной игры</h3>
                                 </div>
                                 :
-                                <div className={classes.sectionList}>
-                                    {renderGames()}
-                                </div>
+                                <Scrollbar>
+                                    <div className={classes.sectionList}>
+                                        {renderGames()}
+                                    </div>
+                                </Scrollbar>
                         }
                     </div>
                 );
@@ -358,9 +360,11 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                     <h3 className={classes.emptyTitle}>Пока нет ни одной команды</h3>
                                 </div>
                                 :
-                                <div className={classes.sectionList}>
-                                    {renderTeams()}
-                                </div>
+                                <Scrollbar>
+                                    <div className={classes.sectionList}>
+                                        {renderTeams()}
+                                    </div>
+                                </Scrollbar>
                         }
                     </div>
                 );
