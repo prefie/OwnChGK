@@ -109,7 +109,7 @@ const Rating: FC<RatingProps> = props => {
         });
 
         return teams.map((teamResult, i) => {
-            return <TeamTableRow key={teamResult.teamName} place={isIntrigue && !props.isAdmin ? '-' : i + 1}
+            return <TeamTableRow key={teamResult.teamId} place={isIntrigue && !props.isAdmin ? '-' : i + 1}
                                  teamName={teamResult.teamName}
                                  teamId={teamResult.teamId}
                                  matrixSum={teamResult.matrixSum}
