@@ -24,7 +24,7 @@ export class Appeal extends BaseCreature {
         enum: AppealStatus,
         default: AppealStatus.UNCHECKED
     })
-    status: string;
+    status: AppealStatus;
 
     @OneToOne(
         () => Answer,

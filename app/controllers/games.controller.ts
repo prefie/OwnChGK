@@ -45,7 +45,14 @@ export class GamesController {
 
     public async insertGame(req: Request, res: Response) {
         try {
-            const { gameName, teams, accessLevel, chgkSettings, matrixSettings } = req.body;
+            const {
+                gameName,
+                teams,
+                accessLevel,
+                chgkSettings,
+                matrixSettings,
+                quizSettings,
+            } = req.body;
 
             const { email, id, role } = getTokenFromRequest(req);
             const game = await this.bigGameRepository.findByName(gameName);
@@ -58,7 +65,7 @@ export class GamesController {
                 return res.status(403).json({ message: 'Больше 1 игры демо-админ создать не может' });
             }
 
-            await this.bigGameRepository.insertByParams(gameName, email, teams, accessLevel, chgkSettings, matrixSettings);
+            await this.bigGameRepository.insertByParams(gameName, email, teams, accessLevel, chgkSettings, matrixSettings, quizSettings);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
@@ -216,7 +223,13 @@ export class GamesController {
     public async changeGame(req: Request, res: Response) {
         try {
             const { gameId } = req.params;
-            const { newGameName, accessLevel, chgkSettings, matrixSettings } = req.body;
+            const {
+                newGameName,
+                accessLevel,
+                chgkSettings,
+                matrixSettings,
+                quizSettings,
+            } = req.body;
 
             const currentGame = await this.bigGameRepository.findById(gameId);
             if (!currentGame) {
@@ -239,7 +252,7 @@ export class GamesController {
                 return res.status(403).json({ message: checkAccessResult.message });
             }
 
-            await this.bigGameRepository.updateByParams(gameId, newGameName, accessLevel, chgkSettings, matrixSettings);
+            await this.bigGameRepository.updateByParams(gameId, newGameName, accessLevel, chgkSettings, matrixSettings, quizSettings);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({

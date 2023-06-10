@@ -3,6 +3,11 @@ import { Game } from './game';
 import { Question } from './question';
 import { BaseCreature } from './base-creature';
 
+export enum RoundType {
+    NORMAL = 'normal',
+    BLITZ = 'blitz'
+}
+
 @Entity('rounds')
 export class Round extends BaseCreature {
     @PrimaryGeneratedColumn('uuid', { name: 'round_id' })
@@ -21,9 +26,19 @@ export class Round extends BaseCreature {
     })
     questionTime: number;
 
+    @Column({
+        type: 'enum',
+        enum: RoundType,
+        default: RoundType.NORMAL
+    })
+    type: RoundType;
+
     @OneToMany(
         () => Question,
-        question => question.round
+        question => question.round,
+        {
+            cascade: true,
+        }
     )
     questions: Question[];
 
