@@ -26,6 +26,7 @@ import GameItem, {Roles, Status} from "../../components/game-item/game-item";
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
 import {AddRounded} from "@mui/icons-material";
 import TeamItem from "../../components/team-item/team-item";
+import Scrollbar from "../../components/scrollbar/scrollbar";
 
 const UserStartScreen: FC<UserStartScreenProps> = props => {
     const [page, setPage] = useState<string>('teams');
@@ -80,7 +81,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                                     setNumberLoading(prev => Math.min(prev + 1, 2));
                                 });
                             } else {
-                                // TODO: код не 200, мейби всплывашку, что что-то не так?
+                                // TODO: обработать ошибку
                             }
                         });
                     }
@@ -95,7 +96,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                     setNumberLoading(prev => Math.min(prev + 1, 2));
                 });
             } else {
-                // TODO: код не 200, мейби всплывашку, что что-то не так?
+                // TODO: обработать ошибку
             }
         });
     }, []);
@@ -124,7 +125,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                                     setNumberLoading(prev => Math.min(prev + 1, 2));
                                 });
                             } else {
-                                // TODO: код не 200, мейби всплывашку, что что-то не так?
+                                // TODO: обработать ошибку
                             }
                         });
                     } else {
@@ -151,7 +152,16 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
 
     const renderGames = () => {
         if (!gamesFromDB) {
-            return Array.from(Array(5).keys()).map(i => <Skeleton key={`game_skeleton_${i}`} variant='rectangular' width='100%' height={mediaMatch.matches ? '5vh' : '7vh'} sx={{marginBottom: '2.5vh'}} />);
+            return Array.from(Array(5).keys())
+                .map(i =>
+                    <Skeleton
+                        key={`game_skeleton_${i}`}
+                        variant='rectangular'
+                        width='100%'
+                        height={mediaMatch.matches ? '5vh' : '7vh'}
+                        sx={{marginBottom: '2.5vh'}}
+                    />
+                );
         }
 
         const games = gamesFromDB.filter(game => game.amIParticipate || game.status === Status.NotStarted)
@@ -166,6 +176,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                     role={Roles.user}
                     accessLevel={game.accessLevel}
                     amIParticipate={game.amIParticipate}
+                    userTeam={userTeam}
                     onClick={() => handleClickOnGame(game.id)}
                 />);
 
@@ -173,7 +184,16 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
 
     const renderTeams = () => {
         if (!teamsFromDB) {
-            return Array.from(Array(5).keys()).map(i => <Skeleton key={`team_skeleton_${i}`} variant='rectangular' width='100%' height={mediaMatch.matches ? '5vh' : '7vh'} sx={{marginBottom: '2.5vh'}} />);
+            return Array.from(Array(5).keys())
+                .map(i =>
+                    <Skeleton
+                        key={`team_skeleton_${i}`}
+                        variant='rectangular'
+                        width='100%'
+                        height={mediaMatch.matches ? '5vh' : '7vh'}
+                        sx={{marginBottom: '2.5vh'}}
+                    />
+                );
         }
 
         return userTeam.name !== ''
@@ -217,9 +237,11 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                                     <h3 className={classes.emptyTitle}>Пока нет ни одной игры</h3>
                                 </div>
                             :
+                            <Scrollbar>
                                 <div className={classes.sectionList}>
                                     {renderGames()}
                                 </div>
+                            </Scrollbar>
                         }
                     </div>
                 );
@@ -253,13 +275,15 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                                     <h3 className={classes.emptyTitle}>Создайте свою команду</h3>
                                 </div>
                                 :
-                                <div className={classes.sectionList}>
-                                    {renderTeams()}
-                                </div>
+                                <Scrollbar>
+                                    <div className={classes.sectionList}>
+                                        {renderTeams()}
+                                    </div>
+                                </Scrollbar>
                         }
                         <Snackbar sx={{marginTop: '8vh'}} open={isTeamNotFree} anchorOrigin={{vertical: 'top', horizontal: 'right'}} autoHideDuration={5000}>
                             <Alert severity='error' sx={{width: '100%'}}>
-                                Эта команда уже кем-то занята :(
+                                Эта команда уже занята. Выберите другую
                             </Alert>
                         </Snackbar>
                     </div>
