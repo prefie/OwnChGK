@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
-import { getTokenFromRequest } from '../utils/jwt-token';
-import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: избавиться
-import { BigGameDto, GameDto, MatrixGameDto } from '../dtos/big-game.dto';
-import { BigGameRepository } from '../db/repositories/big-game.repository';
-import { GameStatus, GameType } from '../db/entities/game';
 import { AccessLevel, BigGame } from '../db/entities/big-game';
-import { allAdminRoles, demoAdminRoles, smallAdminRoles, superAdminRoles, userRoles } from '../utils/roles';
-import { AccessType, CheckAccessResult } from '../utils/check-access-result';
+import { GameStatus, GameType } from '../db/entities/game';
+import { BigGameRepository } from '../db/repositories/big-game.repository';
+import { BigGameDto, GameDto, MatrixGameDto, QuizGameDto } from '../dtos/big-game.dto';
 import { BigGameLogic } from '../logic/big-game-logic';
+import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: избавиться
+import { AccessType, CheckAccessResult } from '../utils/check-access-result';
+import { getTokenFromRequest } from '../utils/jwt-token';
+import { allAdminRoles, demoAdminRoles, smallAdminRoles, superAdminRoles, userRoles } from '../utils/roles';
 
 export class GamesController {
     private readonly bigGameRepository: BigGameRepository;
@@ -148,6 +148,7 @@ export class GamesController {
 
             const chgk = bigGame.games.find(game => game.type == GameType.CHGK);
             const matrix = bigGame.games.find(game => game.type == GameType.MATRIX);
+            const quiz = bigGame.games.find(game => game.type == GameType.QUIZ);
 
             const { role } = getTokenFromRequest(req);
 
@@ -161,6 +162,7 @@ export class GamesController {
                 teams: bigGame.teams.map(value => value.name),
                 chgkSettings: chgk ? new GameDto(chgk, allAdminRoles.has(role)) : null,
                 matrixSettings: matrix ? new MatrixGameDto(matrix, allAdminRoles.has(role)) : null,
+                quizSettings: quiz ? new QuizGameDto(quiz, allAdminRoles.has(role)) : null,
             };
 
             return res.status(200).json(answer);
