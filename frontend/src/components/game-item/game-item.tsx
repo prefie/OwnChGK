@@ -9,6 +9,7 @@ import {Link} from 'react-router-dom';
 import SignUpToGameItem from "../sign-up-to-game-item/sign-up-to-game-item";
 import {addCurrentTeamInGame, deleteCurrentTeamFromGame, getGame} from "../../server-api/server-api";
 import GameStatus from "../game-status/game-status";
+import {Team} from "../../pages/admin-start-screen/admin-start-screen";
 
 export enum Roles {
     user,
@@ -35,6 +36,7 @@ interface GameItemProps {
     games: GameTypeItemProps[];
     accessLevel: AccessLevel;
     amIParticipate: boolean;
+    userTeam?: Team;
     openModal?: Dispatch<SetStateAction<boolean>>;
     setItemForDeleteName?: Dispatch<SetStateAction<string>>;
     setItemForDeleteId?: Dispatch<SetStateAction<string>>;
@@ -123,7 +125,9 @@ function GameItem(props: GameItemProps) {
         ? <Redirect to={{pathname: '/admin/game-creation/edit', state: {id: props.id, name: props.name}}}/>
         : (
             <div className={classes.gameContent}>
-                { renderGameTitle() }
+                {
+                    renderGameTitle()
+                }
                 <GameTypeList types={props.games}/>
                 <div className={classes.gameFooter}>
                     <div className={classes.gameTeams}>
@@ -137,6 +141,7 @@ function GameItem(props: GameItemProps) {
                             ?
                             <SignUpToGameItem
                                 isAddToGame={amIParticipate}
+                                userTeam={props.userTeam}
                                 handleAdd={handleAddToGame}
                                 handleOut={handleOutOfGame}
                             />

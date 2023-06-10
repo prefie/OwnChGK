@@ -68,6 +68,10 @@
     gap: 4px;
 }
 
+.teamsParticipantsEmpty {
+    color: var(--color-text-icon-secondary);
+}
+
 .teamFooter {
     display: flex;
     justify-content: space-between;

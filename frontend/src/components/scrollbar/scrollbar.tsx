@@ -4,13 +4,25 @@ import {Scrollbars} from 'rc-scrollbars';
 
 const Scrollbar: FC = props => {
     return (
-        <Scrollbars autoHide autoHideTimeout={500}
-                    autoHideDuration={200}
-                    renderThumbVertical={() =>
-                        <div style={{backgroundColor: 'white', borderRadius: '4px', cursor: 'pointer'}}/>
-                    }
-                    renderTrackHorizontal={props => <div {...props} style={{display: 'none'}}/>}
-                    classes={{view: classes.scrollbarView, trackVertical: classes.verticalTrack}}>
+        <Scrollbars
+            autoHide
+            autoHideTimeout={500}
+            autoHideDuration={200}
+            renderThumbVertical={() =>
+                <div style={{
+                    backgroundColor: 'var(--color-text-icon-secondary)',
+                    borderRadius: '.25rem',
+                    cursor: 'pointer'
+                }}/>
+            }
+            renderTrackHorizontal={props =>
+                <div {...props} style={{display: 'none'}}/>
+            }
+            classes={{
+                view: classes.scrollbarView,
+                trackVertical: classes.verticalTrack
+            }}
+        >
             {props.children}
         </Scrollbars>
     );

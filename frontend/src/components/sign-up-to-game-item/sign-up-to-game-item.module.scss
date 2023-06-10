@@ -5,6 +5,10 @@
   color: var(--color-text-icon-link-enabled);
 }
 
+.signUpLinkDisabled {
+  color: var(--color-text-icon-disabled);
+}
+
 .signUpLinkSuccess {
   display: flex;
   gap: .5rem;
