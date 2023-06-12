@@ -1,17 +1,17 @@
-import React, { FC, Suspense, useEffect, useState } from 'react';
+import React, {FC, Suspense, useEffect, useState} from 'react';
 import Wrapper from './wrapper';
 import Authorization from './pages/authorization/authorization';
 import Registration from './pages/registration/registration';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import {Redirect, Route, Switch} from 'react-router-dom';
 import RestoringPassword from './pages/restoring-password/restoring-password';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import ProtectedRoute from './components/private-route/private-route';
-import { AppDispatchProps, AppProps, AppState, AppStateProps } from './entities/app/app.interfaces';
-import { checkToken } from './server-api/server-api';
-import { Dispatch } from 'redux';
-import { AppAction } from './redux/reducers/app-reducer/app-reducer.interfaces';
-import { authorizeUserWithRole, checkToken as testToken } from './redux/actions/app-actions/app-actions';
-import { allAdminRoles, superAdminRoles, userRoles } from './entities/common/common.constants';
+import {AppDispatchProps, AppProps, AppState, AppStateProps} from './entities/app/app.interfaces';
+import {checkToken} from './server-api/server-api';
+import {Dispatch} from 'redux';
+import {AppAction} from './redux/reducers/app-reducer/app-reducer.interfaces';
+import {authorizeUserWithRole, checkToken as testToken} from './redux/actions/app-actions/app-actions';
+import {allAdminRoles, superAdminRoles, userRoles} from './entities/common/common.constants';
 import Loader from './components/loader/loader';
 import MobileMenu from './pages/mobile-menu/mobile-menu';
 import AdminGame from './pages/admin-game/admin-game';
@@ -26,6 +26,7 @@ import UserAnswersPage from "./pages/user-answers/user-answers";
 import AdminStartScreen from "./pages/admin-start-screen/admin-start-screen";
 import GameCreator from "./pages/game-creation/game-creation";
 import UserAnswersPageForAdmin from "./pages/user-answers-for-admin/user-answers-for-admin";
+import {GameCreatorMode} from "./entities/game-creator/game-creator.interfaces";
 
 const App: FC<AppProps> = props => {
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
@@ -91,14 +92,14 @@ const App: FC<AppProps> = props => {
                                     currentUserRole={props.user.role}
                                     neededRole={allAdminRoles}
                                     redirectPath="/admin">
-                        <GameCreator mode="creation" isAdmin={true}/>
+                        <GameCreator mode={GameCreatorMode.creation} isAdmin={true}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/game-creation/edit" exact
                                     currentUserRole={props.user.role}
                                     neededRole={allAdminRoles}
                                     redirectPath="/admin">
-                        <GameCreator mode="edit" isAdmin={true}/>
+                        <GameCreator mode={GameCreatorMode.edit} isAdmin={true}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/team-creation" exact

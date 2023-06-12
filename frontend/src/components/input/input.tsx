@@ -58,7 +58,7 @@ export const Input: FC<InputProps> = props => {
     };
 
     return (
-        <FormControl variant='outlined' sx={{marginBottom: mediaMatch.matches ? '5%' : '3%'}} fullWidth={true}
+        <FormControl variant='outlined' sx={{marginBottom: mediaMatch.matches ? '5%' : ''}} fullWidth={true}
                      style={props.style}>
             <StyledInput
                 fullWidth={true}

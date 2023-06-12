@@ -1,3 +1,5 @@
+import {RoundType} from "../pages/game-creation/game-creation";
+
 export const getAll = async (path: string) => {
     return await fetch('/api' + path);
 };
@@ -39,6 +41,7 @@ export interface GamePartSettings {
     questionsCount: number;
     questions?: Record<number, string[]> | undefined;
     roundNames?: string[];
+    roundTypes?: RoundType[];
 }
 
 export const createGame = async (
@@ -46,6 +49,7 @@ export const createGame = async (
     teams: string[],
     chgkSettings?: GamePartSettings,
     matrixSettings?: GamePartSettings,
+    quizSettings?: GamePartSettings,
     accessLevel: 'public' | 'private' = 'private',
 ) => {
     return await fetch('/api/games/', {
@@ -60,6 +64,7 @@ export const createGame = async (
             teams,
             chgkSettings,
             matrixSettings,
+            quizSettings,
             accessLevel
         })
     });
@@ -115,6 +120,7 @@ export const editGame = async (
     newGameName: string,
     chgkSettings?: GamePartSettings,
     matrixSettings?: GamePartSettings,
+    quizSettings?: GamePartSettings,
     accessLevel: 'public' | 'private' = 'private',
 ) => {
     return await fetch(`/api/games/${gameId}/change`, {
@@ -128,6 +134,7 @@ export const editGame = async (
             newGameName,
             chgkSettings,
             matrixSettings,
+            quizSettings,
             accessLevel
         })
     });
