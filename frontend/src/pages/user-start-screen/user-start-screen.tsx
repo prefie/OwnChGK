@@ -256,6 +256,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                                 style={{pointerEvents: isDisabledTeamButton ? 'none' : 'auto'}}
                             >
                                 <CustomButton
+                                    id={"addTeamButton"}
                                     disabled={isDisabledTeamButton}
                                     type={"button"}
                                     text={"Создать команду"}

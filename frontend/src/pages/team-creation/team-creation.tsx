@@ -355,7 +355,7 @@ const TeamCreator: FC<TeamCreatorProps> = props => {
                         </div>
                     </div>
 
-                    <FormButton text={props.mode === 'creation' ? 'Создать' : 'Сохранить'} disabled={props.isAdmin && !usersFromDB}
+                    <FormButton id={"saveTeam"} text={props.mode === 'creation' ? 'Создать' : 'Сохранить'} disabled={props.isAdmin && !usersFromDB}
                                 style={{
                                     padding: mediaMatch.matches ? '0 13vw' : '0 2vw',
                                     fontSize: mediaMatch.matches ? '5.5vw' : '1.5vw',
