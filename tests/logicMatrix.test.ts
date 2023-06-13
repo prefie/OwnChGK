@@ -1,7 +1,9 @@
+import { AnswerStatus } from "../app/db/entities/answer";
+import { GameTypeLogic } from "../app/logic/enums/game-type-logic.enum";
+import { Round } from "../app/logic/round";
 import {Team} from "../app/logic/team";
 import {Question} from "../app/logic/question";
-import {AnswerStatus} from "../app/logic/answer"
-import {Game, GameTypeLogic, Round} from "../app/logic/game";
+import {Game} from "../app/logic/game";
 
 let game;
 let team;
@@ -9,10 +11,10 @@ let question;
 let round;
 
 beforeEach(() => {
-    game = new Game("newGame", GameTypeLogic.Matrix);
+    game = new Game("1", "newGame", GameTypeLogic.Matrix);
     team = new Team("cool", "1");
     game.addTeam(team);
-    game.addRound(new Round(1, 5, 20, GameTypeLogic.Matrix));
+    game.addRound(new Round("1", 1, 5, 20, GameTypeLogic.Matrix));
     round = game.rounds[0];
     question = round.questions[0];
 });
@@ -24,7 +26,7 @@ test('Should_set_right_answer', () => {
     const teamAnswer = team.getAnswer(1, 1);
     expect(teamAnswer).not.toBeUndefined();
     if (teamAnswer !== undefined) {
-        expect(teamAnswer.status).toBe(AnswerStatus.Right);
+        expect(teamAnswer.status).toBe(AnswerStatus.RIGHT);
         expect(teamAnswer.score).toBe(question.cost);
     }
 });
@@ -36,14 +38,14 @@ test('Should_not_set_wrong_answer', () => {
 
     expect(teamAnswer).not.toBeUndefined();
     if (teamAnswer !== undefined) {
-        expect(teamAnswer.status).toBe(AnswerStatus.UnChecked);
+        expect(teamAnswer.status).toBe(AnswerStatus.UNCHECKED);
         expect(teamAnswer.score).toBe(0);
     }
 });
 
 test('Should_get_total_score_when_all_answers_right', () => {
     const totalRoundMatrixRightCost = 150;
-    const round = new Round(1, 5, 50, GameTypeLogic.Matrix);
+    const round = new Round("1", 1, 5, 50, GameTypeLogic.Matrix);
 
     for (let i = 0; i < 5; i++) {
         round.questions[i].giveAnswer(team, "rightAnswer");
@@ -54,7 +56,7 @@ test('Should_get_total_score_when_all_answers_right', () => {
 });
 
 test('Should_get_0_in_total_score_when_no_answers', () => {
-    const round = new Round(1, 5, 50, GameTypeLogic.Matrix);
+    const round = new Round("1", 1, 5, 50, GameTypeLogic.Matrix);
 
     for (let i = 0; i < 5; i++) {
         round.questions[i].acceptAnswers("rightAnswer");
@@ -65,7 +67,7 @@ test('Should_get_0_in_total_score_when_no_answers', () => {
 
 test('Should_get_negative_total_score_when_all_answers_wrong', () => {
     const totalRoundMatrixWrongCost = -150;
-    const round = new Round(1, 5, 50, GameTypeLogic.Matrix);
+    const round = new Round("1", 1, 5, 50, GameTypeLogic.Matrix);
 
     for (let i = 0; i < 5; i++) {
         round.questions[i].giveAnswer(team, "wrongAnswer");
@@ -77,7 +79,7 @@ test('Should_get_negative_total_score_when_all_answers_wrong', () => {
 
 test('Should_return_total_score_when_one_answer_wrong_and_one_right', () => {
     const expectedTotalScore = 10;
-    const round = new Round(1, 5, 50, GameTypeLogic.Matrix);
+    const round = new Round("1", 1, 5, 50, GameTypeLogic.Matrix);
 
     round.questions[0].giveAnswer(team, "wrongAnswer");
     round.questions[1].giveAnswer(team, "rightAnswer");
@@ -92,7 +94,7 @@ test('Should_return_total_score_when_one_answer_wrong_and_one_right', () => {
 
 test('Should_get_team_answer_when_it_exist', () => {
     const round1 = game.rounds[0];
-    const round2 = new Round(2, 5, 50, GameTypeLogic.Matrix);
+    const round2 = new Round("1", 2, 5, 50, GameTypeLogic.Matrix);
 
     round1.questions[0].giveAnswer(team, "right1");
     round1.questions[0].acceptAnswers("right1");
@@ -108,12 +110,12 @@ test('Should_get_team_answer_when_it_exist', () => {
     if (answer !== undefined) {
         expect(answer.text).toBe("right2");
         expect(answer.score).toBe(round1.questions[1].cost);
-        expect(answer.status).toBe(AnswerStatus.Right);
+        expect(answer.status).toBe(AnswerStatus.RIGHT);
     }
 })
 
 test('Should_get_team_answer_when_it_not_exist', () => {
-    const question = new Question(1, 1, 1, 50);
+    const question = new Question("1", 1, 1, 1, 50);
 
     question.acceptAnswers("right");
 
@@ -121,13 +123,13 @@ test('Should_get_team_answer_when_it_not_exist', () => {
 })
 
 test('Should_create_questions_as_in_setting', () => {
-    const round = new Round(1, 5, 50, GameTypeLogic.Matrix);
+    const round = new Round("1", 1, 5, 50, GameTypeLogic.Matrix);
 
     expect(round.questions.length).toBe(round.questionsCount);
 });
 
 test('Should_give_questions_different_numbers', () => {
-    const round = new Round(1, 5, 50, GameTypeLogic.Matrix);
+    const round = new Round("1", 1, 5, 50, GameTypeLogic.Matrix);
 
     expect(round.questions[0].number).toBe(1);
     expect(round.questions[1].number).toBe(2);
@@ -143,7 +145,7 @@ test('Should_not_change_score_when_answer_already_accept', () => {
     expect(team.getTotalScore()).toBe(question.cost);
     const answer = team.getAnswer(1, 1);
     expect(answer.score).toBe(question.cost);
-    expect(answer.status).toBe(AnswerStatus.Right);
+    expect(answer.status).toBe(AnswerStatus.RIGHT);
 });
 
 test('Should_change_score_when_accept_answer_reject', () => {
@@ -155,7 +157,7 @@ test('Should_change_score_when_accept_answer_reject', () => {
 
     expect(team.getTotalScore()).toBe(-question.cost);
     expect(answer.score).toBe(-question.cost);
-    expect(answer.status).toBe(AnswerStatus.Wrong);
+    expect(answer.status).toBe(AnswerStatus.WRONG);
 });
 
 test('Should_change_score_when_answer_reject', () => {
@@ -167,7 +169,7 @@ test('Should_change_score_when_answer_reject', () => {
 
     expect(team.getTotalScore()).toBe(-question.cost);
     expect(answer.score).toBe(-question.cost);
-    expect(answer.status).toBe(AnswerStatus.Wrong);
+    expect(answer.status).toBe(AnswerStatus.WRONG);
 });
 
 test('Should_change_score_when_rejected_answer_accept', () => {
@@ -179,5 +181,5 @@ test('Should_change_score_when_rejected_answer_accept', () => {
     const answer = team.getAnswer(1, 1);
     expect(team.getTotalScore()).toBe(question.cost);
     expect(answer.score).toBe(question.cost);
-    expect(answer.status).toBe(AnswerStatus.Right);
+    expect(answer.status).toBe(AnswerStatus.RIGHT);
 });
