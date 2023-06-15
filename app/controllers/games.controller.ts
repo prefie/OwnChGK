@@ -511,11 +511,12 @@ export class GamesController {
             const { gameId } = req.params;
             const game = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
             const table = [];
-            for (let team of game.teams) {
-                table.push(team.name);
+            const sortedTeams = game.teams.sort((a, b) => a.createdDate > b.createdDate ? 1 : -1);
+            for (let team of sortedTeams) {
+                table.push([team.name, team.createdDate].join(';'));
                 if (team.captain) {
                     table.push(['Капитан', 'Почта'].join(';'));
-                    table.push(team.captain.name + ';' + team.captain.email + ';');
+                    table.push(team.captain.name + ';' + team.captain.email);
                 }
                 if (team.participants) {
                     table.push(['Имя', 'Почта'].join(';'));
