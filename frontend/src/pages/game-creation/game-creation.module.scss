@@ -151,7 +151,8 @@
 }
 
 .chgkWrapper,
-.matrixWrapper, .gameTypeWrapper {
+.matrixWrapper,
+.quizWrapper, .gameTypeWrapper {
     width: 100%;
     height: 3.5rem;
     display: flex;
@@ -269,7 +270,7 @@
 }
 
 .tourNamesWrapper {
-    width: 60%;
+    width: 70%;
     height: 55%;
     margin: 2rem 0 1rem;
     background-color: var(--color-bg-plates);
@@ -279,25 +280,31 @@
     position: relative;
 }
 
-.matrixQuestionsWrapper {
+.matrixQuestionsWrapper, .questionsWrapper {
     width: 60%;
 }
 
 .tourNameWrapper {
-    width: 100%;
+    width: 99%;
     display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: var(--color-bg-overlay-default);
+    border-radius: .5rem;
 }
 
 .tourNumber {
     text-decoration: none;
-    color: white;
+    color: var(--color-text-icon-primary);
     display: flex;
     flex-direction: column;
-    font-weight: 400;
+    font-weight: var(--font-weight-bold);
     justify-content: center;
-    font-size: 4vmin;
-    width: 10%;
-    height: 7vh;
+    text-align: center;
+    font-size: 2rem;
+    width: 3rem;
 }
 
 .questionsWrapper {
