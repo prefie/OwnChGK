@@ -38,6 +38,7 @@ export enum ButtonType {
 }
 
 interface CustomButtonProps {
+    id?: string;
     text: string;
     type: "button" | "submit" | "reset" | undefined;
     buttonType: ButtonType;
@@ -51,6 +52,7 @@ function CustomButton(props: CustomButtonProps) {
     if (!props.isMobile) {
         return (
             <PrimaryButton
+                id={props.id}
                 startIcon={props.startIcon}
                 type={props.type}
                 variant={"contained"}
@@ -62,6 +64,7 @@ function CustomButton(props: CustomButtonProps) {
     } else {
         return (
             <MobilePrimaryButton
+                id={props.id}
                 startIcon={props.startIcon}
                 type={props.type}
                 variant={"contained"}

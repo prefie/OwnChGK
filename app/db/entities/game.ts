@@ -18,7 +18,8 @@ export enum GameStatus {
 
 export enum GameType {
     CHGK = 'chgk',
-    MATRIX = 'matrix'
+    MATRIX = 'matrix',
+    QUIZ = 'quiz',
 }
 
 @Entity('games')
@@ -31,11 +32,14 @@ export class Game extends BaseCreature {
         enum: GameType,
         default: GameType.CHGK
     })
-    type: string;
+    type: GameType;
 
     @OneToMany(
         () => Round,
-        round => round.game
+        round => round.game,
+        {
+            cascade: true,
+        }
     )
     rounds: Round[];
 

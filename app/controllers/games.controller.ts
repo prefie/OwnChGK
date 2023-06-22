@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import { TeamRepository } from "../db/repositories/team.repository";
-import { getTokenFromRequest } from '../utils/jwt-token';
-import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: избавиться
-import { BigGameDto, GameDto, MatrixGameDto } from '../dtos/big-game.dto';
-import { BigGameRepository } from '../db/repositories/big-game.repository';
-import { GameStatus, GameType } from '../db/entities/game';
 import { AccessLevel, BigGame } from '../db/entities/big-game';
-import { allAdminRoles, demoAdminRoles, smallAdminRoles, superAdminRoles, userRoles } from '../utils/roles';
-import { AccessType, CheckAccessResult } from '../utils/check-access-result';
+import { GameStatus, GameType } from '../db/entities/game';
+import { BigGameRepository } from '../db/repositories/big-game.repository';
+import { BigGameDto, GameDto, MatrixGameDto, QuizGameDto } from '../dtos/big-game.dto';
 import { BigGameLogic } from '../logic/big-game-logic';
+import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: избавиться
+import { AccessType, CheckAccessResult } from '../utils/check-access-result';
+import { getTokenFromRequest } from '../utils/jwt-token';
+import { allAdminRoles, demoAdminRoles, smallAdminRoles, superAdminRoles, userRoles } from '../utils/roles';
 
 export class GamesController {
     private readonly bigGameRepository: BigGameRepository;
@@ -48,7 +48,14 @@ export class GamesController {
 
     public async insertGame(req: Request, res: Response) {
         try {
-            const { gameName, teams, accessLevel, chgkSettings, matrixSettings } = req.body;
+            const {
+                gameName,
+                teams,
+                accessLevel,
+                chgkSettings,
+                matrixSettings,
+                quizSettings,
+            } = req.body;
 
             const { email, id, role } = getTokenFromRequest(req);
             const game = await this.bigGameRepository.findByName(gameName);
@@ -65,7 +72,7 @@ export class GamesController {
                 return res.status(403).json({ message: 'Демо-админ может создавать только приватные игры' });
             }
 
-            await this.bigGameRepository.insertByParams(gameName, email, teams, accessLevel, chgkSettings, matrixSettings);
+            await this.bigGameRepository.insertByParams(gameName, email, teams, accessLevel, chgkSettings, matrixSettings, quizSettings);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({
@@ -148,6 +155,7 @@ export class GamesController {
 
             const chgk = bigGame.games.find(game => game.type == GameType.CHGK);
             const matrix = bigGame.games.find(game => game.type == GameType.MATRIX);
+            const quiz = bigGame.games.find(game => game.type == GameType.QUIZ);
 
             const { role } = getTokenFromRequest(req);
 
@@ -161,6 +169,7 @@ export class GamesController {
                 teams: bigGame.teams.map(value => value.name),
                 chgkSettings: chgk ? new GameDto(chgk, allAdminRoles.has(role)) : null,
                 matrixSettings: matrix ? new MatrixGameDto(matrix, allAdminRoles.has(role)) : null,
+                quizSettings: quiz ? new QuizGameDto(quiz, allAdminRoles.has(role)) : null,
             };
 
             return res.status(200).json(answer);
@@ -223,7 +232,13 @@ export class GamesController {
     public async changeGame(req: Request, res: Response) {
         try {
             const { gameId } = req.params;
-            const { newGameName, accessLevel, chgkSettings, matrixSettings } = req.body;
+            const {
+                newGameName,
+                accessLevel,
+                chgkSettings,
+                matrixSettings,
+                quizSettings,
+            } = req.body;
 
             const currentGame = await this.bigGameRepository.findById(gameId);
             if (!currentGame) {
@@ -251,7 +266,7 @@ export class GamesController {
                 return res.status(403).json({ message: 'Демо-админ может создавать только приватные игры' });
             }
 
-            await this.bigGameRepository.updateByParams(gameId, newGameName, accessLevel, chgkSettings, matrixSettings);
+            await this.bigGameRepository.updateByParams(gameId, newGameName, accessLevel, chgkSettings, matrixSettings, quizSettings);
             return res.status(200).json({});
         } catch (error: any) {
             return res.status(500).json({

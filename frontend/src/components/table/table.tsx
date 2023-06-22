@@ -153,7 +153,7 @@ export const TeamTableRow: FC<TeamTableRowProps> = props => {
             return (
                 <TourCell tourResults={props.toursWithResults[i]}
                           isExpanded={props.isExpanded[i]}
-                          key={`${props.teamName}_${tour.toString()}`} />
+                          key={`${props.teamId}_${tour.toString()}`} />
             );
         });
     };

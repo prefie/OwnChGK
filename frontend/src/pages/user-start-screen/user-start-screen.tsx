@@ -165,9 +165,9 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
         }
 
         const games = gamesFromDB.filter(game => game.amIParticipate || game.status === Status.NotStarted)
-        return games.map((game, index) =>
+        return games.map((game, _) =>
                 <GameItem
-                    key={index}
+                    key={game.id}
                     id={game.id}
                     name={game.name}
                     teamsCount={game.teamsCount}
@@ -256,6 +256,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                                 style={{pointerEvents: isDisabledTeamButton ? 'none' : 'auto'}}
                             >
                                 <CustomButton
+                                    id={"addTeamButton"}
                                     disabled={isDisabledTeamButton}
                                     type={"button"}
                                     text={"Создать команду"}

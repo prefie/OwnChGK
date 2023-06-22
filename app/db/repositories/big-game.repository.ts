@@ -1,25 +1,25 @@
 import { EntityManager, In } from 'typeorm';
-import { AccessLevel, BigGame } from '../entities/big-game';
-import { Admin } from '../entities/admin';
-import { Team } from '../entities/team';
-import { Game, GameStatus, GameType } from '../entities/game';
-import { Round } from '../entities/round';
-import { AppDataSource } from '../../utils/data-source';
-import { Question } from '../entities/question';
-import { BaseRepository } from './base.repository';
+import { Answer as AnswerLogic } from '../../logic/answer';
+import { Appeal as AppealLogic } from '../../logic/appeal';
 import { BigGameLogic } from '../../logic/big-game-logic';
-import { Answer, AnswerStatus } from '../entities/answer';
-import { Appeal, AppealStatus } from '../entities/appeal';
 import { GameTypeLogic } from '../../logic/enums/game-type-logic.enum';
 import { Game as GameLogic } from '../../logic/game';
 import { Question as QuestionLogic } from '../../logic/question';
 import { Round as RoundLogic } from '../../logic/round';
 import { Team as TeamLogic } from '../../logic/team';
-import { Answer as AnswerLogic } from '../../logic/answer';
-import { Appeal as AppealLogic } from '../../logic/appeal';
+import { AppDataSource } from '../../utils/data-source';
+import { Admin } from '../entities/admin';
+import { Answer, AnswerStatus } from '../entities/answer';
+import { Appeal, AppealStatus } from '../entities/appeal';
+import { AccessLevel, BigGame } from '../entities/big-game';
+import { Game, GameStatus, GameType } from '../entities/game';
+import { Question } from '../entities/question';
+import { Round, RoundType } from '../entities/round';
+import { Team } from '../entities/team';
+import { BaseRepository } from './base.repository';
 
 
-export interface ChgkSettings {
+export interface DefaultGameSettings {
     roundsCount: number,
     questionsCount: number,
     questionCost: number,
@@ -27,8 +27,12 @@ export interface ChgkSettings {
     questions: Record<number, string[]>
 }
 
-export interface MatrixSettings extends ChgkSettings {
+export interface MatrixSettings extends DefaultGameSettings {
     roundNames: string[];
+}
+
+export interface QuizSettings extends MatrixSettings {
+    roundTypes: RoundType[];
 }
 
 export class BigGameRepository extends BaseRepository<BigGame> {
@@ -197,8 +201,9 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         adminEmail: string,
         teams: string[],
         accessLevel: AccessLevel | undefined,
-        chgkSettings: ChgkSettings,
-        matrixSettings: MatrixSettings
+        chgkSettings: DefaultGameSettings,
+        matrixSettings: MatrixSettings,
+        quizSettings: QuizSettings,
     ) {
         const admin = await this.innerRepository.manager
             .findOneBy<Admin>(Admin, { email: adminEmail.toLowerCase() });
@@ -210,56 +215,19 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         bigGame.teams = teamsFromDb;
         bigGame.accessLevel = accessLevel ?? AccessLevel.PRIVATE;
 
-        return this.innerRepository.manager.transaction(async (manager: EntityManager) => {
-            await manager.save(bigGame);
-            if (chgkSettings) {
-                const chgk = new Game();
-                chgk.type = GameType.CHGK;
-                chgk.bigGame = bigGame;
+        const resultBigGame = this.createGames(bigGame, chgkSettings, matrixSettings, quizSettings);
 
-                await manager.save(chgk);
-
-                await BigGameRepository.createRoundsWithQuestions(
-                    manager,
-                    chgkSettings?.roundsCount ?? 0,
-                    chgkSettings?.questionsCount ?? 0,
-                    chgk,
-                    chgkSettings?.questionTime ?? 60,
-                    chgkSettings?.questionCost ?? 1,
-                    null,
-                    chgkSettings?.questions ?? null
-                );
-            }
-
-            if (matrixSettings) {
-                const matrix = new Game();
-                matrix.type = GameType.MATRIX;
-                matrix.bigGame = bigGame;
-
-                await manager.save(matrix);
-
-                await BigGameRepository.createRoundsWithQuestions(
-                    manager,
-                    matrixSettings?.roundsCount ?? 0,
-                    matrixSettings?.questionsCount ?? 0,
-                    matrix,
-                    matrixSettings?.questionTime ?? 20,
-                    matrixSettings?.questionCost ?? 10,
-                    matrixSettings?.roundNames ?? null,
-                    matrixSettings?.questions ?? null
-                );
-            }
-
-            return bigGame;
-        });
+        await this.innerRepository.save(resultBigGame);
+        return resultBigGame;
     }
 
     async updateByParams(
         bigGameId: string,
         newName: string,
         accessLevel: AccessLevel | undefined,
-        chgkSettings: ChgkSettings,
-        matrixSettings: MatrixSettings
+        chgkSettings: DefaultGameSettings,
+        matrixSettings: MatrixSettings,
+        quizSettings: QuizSettings,
     ) {
         const bigGame = await this.innerRepository.manager.findOne<BigGame>(BigGame, {
             where: { id: bigGameId },
@@ -270,53 +238,85 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
         const chgk = bigGame.games.find(game => game.type == GameType.CHGK);
         const matrix = bigGame.games.find(game => game.type == GameType.MATRIX);
+        const quiz = bigGame.games.find(game => game.type == GameType.QUIZ);
         return this.innerRepository.manager.transaction(async (manager: EntityManager) => {
-            await manager.save(bigGame);
-            if (chgk) {
-                await manager.delete(Game, { id: chgk.id });
-            }
-            if (matrix) {
-                await manager.delete(Game, { id: matrix.id });
-            }
-            if (chgkSettings) {
-                const game = new Game();
-                game.type = GameType.CHGK;
-                game.bigGame = bigGame;
+            const gamesForDelete = [chgk, matrix, quiz].filter(Boolean).map(g => g.id);
+            await manager.delete(Game, { id: In(gamesForDelete) });
 
-                await manager.save(game);
+            const resultBigGame = this.createGames(bigGame, chgkSettings, matrixSettings, quizSettings);
 
-                await BigGameRepository.createRoundsWithQuestions(
-                    manager,
-                    chgkSettings?.roundsCount ?? 0,
-                    chgkSettings?.questionsCount ?? 0,
-                    game,
-                    chgkSettings?.questionTime ?? 60,
-                    chgkSettings?.questionCost ?? 1,
-                    null,
-                    chgkSettings?.questions ?? null
-                );
-            }
-
-            if (matrixSettings) {
-                const game = new Game();
-                game.type = GameType.MATRIX;
-                game.bigGame = bigGame;
-                await manager.save(game);
-
-                await BigGameRepository.createRoundsWithQuestions(
-                    manager,
-                    matrixSettings?.roundsCount ?? 0,
-                    matrixSettings?.questionsCount ?? 0,
-                    game,
-                    matrixSettings?.questionTime ?? 20,
-                    matrixSettings?.questionCost ?? 10,
-                    matrixSettings?.roundNames ?? null,
-                    matrixSettings?.questions ?? null
-                );
-            }
-
-            return bigGame;
+            await manager.save(resultBigGame);
+            return resultBigGame;
         });
+    }
+
+    private createGames(
+        bigGame: BigGame,
+        chgkSettings: DefaultGameSettings,
+        matrixSettings: MatrixSettings,
+        quizSettings: QuizSettings
+    ) {
+        const games = [];
+        if (chgkSettings) {
+            const chgk = new Game();
+            chgk.type = GameType.CHGK;
+            chgk.bigGame = bigGame;
+
+            chgk.rounds = BigGameRepository.createRoundsWithQuestions(
+                chgkSettings.roundsCount ?? 0,
+                chgkSettings.questionsCount ?? 0,
+                chgk,
+                chgkSettings.questionTime ?? 60,
+                chgkSettings.questionCost ?? 1,
+                null,
+                chgkSettings.questions ?? null,
+                null
+            );
+
+            games.push(chgk);
+        }
+
+        if (matrixSettings) {
+            const matrix = new Game();
+            matrix.type = GameType.MATRIX;
+            matrix.bigGame = bigGame;
+
+            matrix.rounds = BigGameRepository.createRoundsWithQuestions(
+                matrixSettings.roundsCount ?? 0,
+                matrixSettings.questionsCount ?? 0,
+                matrix,
+                matrixSettings.questionTime ?? 20,
+                matrixSettings.questionCost ?? 10,
+                matrixSettings.roundNames ?? null,
+                matrixSettings.questions ?? null,
+                null
+            );
+
+            games.push(matrix);
+        }
+
+        if (quizSettings) {
+            const quiz = new Game();
+            quiz.type = GameType.QUIZ;
+            quiz.bigGame = bigGame;
+
+            quiz.rounds = BigGameRepository.createRoundsWithQuestions(
+                quizSettings.roundsCount ?? 0,
+                quizSettings.questionsCount ?? 0,
+                quiz,
+                quizSettings.questionTime ?? 20,
+                quizSettings.questionCost ?? 1,
+                quizSettings.roundNames ?? null,
+                quizSettings.questions ?? null,
+                quizSettings.roundTypes ?? null
+            );
+
+            games.push(quiz);
+        }
+
+        bigGame.games = games;
+
+        return bigGame;
     }
 
     async updateNameById(bigGameId: string, newName: string) {
@@ -367,7 +367,6 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             .reduce((arr, e) => arr.concat(e), []);
 
         const answers: Answer[] = [];
-        const appeals: Appeal[] = [];
 
         for (let question of questionsFromCurrentGame) {
             for (let answerFromCurrentGame of question.answers) {
@@ -378,8 +377,6 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 answer.score = answerFromCurrentGame.score;
                 answer.team = teams[answerFromCurrentGame.teamId];
 
-                answers.push(answer);
-
                 if (answerFromCurrentGame.appeal) {
                     const appeal = new Appeal();
                     appeal.text = answerFromCurrentGame.appeal.text;
@@ -387,15 +384,16 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                     appeal.status = answerFromCurrentGame.appeal.status;
                     appeal.answer = answer;
 
-                    appeals.push(appeal);
+                    answer.appeal = appeal;
                 }
+
+                answers.push(answer);
             }
         }
 
         return this.innerRepository.manager.transaction(async (manager: EntityManager) => {
             await manager.delete(Answer, { question: { id: In(questionsFromCurrentGame.map(q => q.id)) } });
             await manager.save(answers);
-            await manager.save(appeals);
         });
     }
 
@@ -411,34 +409,53 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         return this.createBigGameLogic(bigGame);
     }
 
-    private static async createRoundsWithQuestions(
-        manager: EntityManager, roundsCount: number, questionsCount: number, game: Game,
-        questionTime: number, questionCost: number, roundNames?: string[],
-        questionsText?: Record<number, string[]>) {
+    private static createRoundsWithQuestions(
+        roundsCount: number,
+        questionsCount: number,
+        game: Game,
+        questionTime: number,
+        questionCost: number,
+        roundNames?: string[],
+        questionsText?: Record<number, string[]>,
+        roundTypes?: RoundType[],
+    ) : Round[] {
         if (roundNames && roundsCount !== roundNames.length) {
             throw new Error('roundNames.length !== roundsCount');
         }
 
+        const rounds = [];
         for (let i = 1; i <= roundsCount; i++) {
             const round = new Round();
             round.number = i;
             round.game = game;
             round.questionTime = questionTime;
             round.name = roundNames ? roundNames[i - 1] : null;
-            await manager.save(round);
+            round.type = roundTypes ? roundTypes[i - 1] : RoundType.NORMAL;
 
             const questions = [];
             for (let j = 1; j <= questionsCount; j++) {
                 const question = new Question();
                 question.number = j;
-                question.cost = game.type == GameType.MATRIX ? j * questionCost : questionCost;
+                question.cost = BigGameRepository.chooseQuestionCost(game.type, questionCost, j);
                 question.round = round;
                 question.text = Object.keys(questionsText).length !== 0 ? questionsText[i][j - 1] : null;
 
                 questions.push(question);
             }
 
-            await manager.save(questions);
+            round.questions = questions;
+            rounds.push(round);
+        }
+
+        return rounds;
+    }
+
+    private static chooseQuestionCost(gameType: GameType, questionCost: number, questionNumber: number) {
+        switch (gameType) {
+            case GameType.MATRIX:
+                return questionNumber * questionCost;
+            default:
+                return questionCost;
         }
     }
 

@@ -32,7 +32,7 @@ export class BigGame extends BaseCreature {
         enum: GameStatus,
         default: GameStatus.NOT_STARTED
     })
-    status: string;
+    status: GameStatus;
 
     @Column({
         name: 'access_level',
@@ -44,7 +44,10 @@ export class BigGame extends BaseCreature {
 
     @OneToMany(
         () => Game,
-        game => game.bigGame
+        game => game.bigGame,
+        {
+            cascade: true,
+        }
     )
     games: Game[];
 
