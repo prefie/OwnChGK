@@ -15,6 +15,13 @@ export class TeamRepository extends BaseRepository<Team> {
         });
     }
 
+    findWithCaptainRelationsById(teamId: string) {
+        return this.innerRepository.findOne({
+            where: { id: teamId },
+            relations: { captain: true }
+        });
+    }
+
     findByCaptainEmail(email: string) {
         return this.innerRepository.findOne({
             where: { captain: { email: email.toLowerCase() } },
