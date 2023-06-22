@@ -19,10 +19,12 @@ import {Redirect, useLocation} from 'react-router-dom';
 import NavBar from '../../components/nav-bar/nav-bar';
 import {Team} from '../admin-start-screen/admin-start-screen';
 import {
+    Alert,
     IconButton,
     InputAdornment,
     OutlinedInput,
     Skeleton,
+    Snackbar,
     TextareaAutosize
 } from '@mui/material';
 import PageBackdrop from '../../components/backdrop/backdrop';
@@ -62,6 +64,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
     const [isSaveChgkQuestions, setIsSaveChgkQuestions] = useState<boolean>(false);
     const [isSaveMatrixTours, setIsSaveMatrixTours] = useState<boolean>(false);
     const [isSaveMatrixQuestions, setIsSaveMatrixQuestions] = useState<boolean>(false);
+    const [isRestrictionError, setIsRestrictionError] = useState<boolean>(false);
     const oldGameId = props.mode === 'edit' ? location.state.id : '';
 
     if (teamsFromDB && (props.mode != 'edit' || chosenTeams) && isPageLoading) {
@@ -263,8 +266,11 @@ const GameCreator: FC<GameCreatorProps> = props => {
                 .then(res => {
                     if (res.status === 200) {
                         setIsCreatedSuccessfully(true);
-                    } else {
+                    } else if (res.status === 409) {
                         setIsGameNameInvalid(true);
+                        setIsLoading(false);
+                    } else {
+                        setIsRestrictionError(true);
                         setIsLoading(false);
                     }
                 });
@@ -273,8 +279,11 @@ const GameCreator: FC<GameCreatorProps> = props => {
                 .then(res => {
                     if (res.status === 200) {
                         setIsCreatedSuccessfully(true);
-                    } else {
+                    } else if (res.status === 409) {
                         setIsGameNameInvalid(true);
+                        setIsLoading(false);
+                    } else {
+                        setIsRestrictionError(true);
                         setIsLoading(false);
                     }
                 });
@@ -494,7 +503,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                                             }}>Добавьте хотя бы один режим в игру</small>
                                                             : null
                                                     }
-                                                    { renderAccessLevelGameCheckbox() }
+                                                    { props.role !== 'demoadmin' ? renderAccessLevelGameCheckbox() : null }
                                                 </>
                                             )
                                             : (
@@ -848,6 +857,14 @@ const GameCreator: FC<GameCreatorProps> = props => {
         return <Redirect to={{pathname: '/admin/start-screen', state: {page: 'games'}}}/>
     }
 
+    const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setIsRestrictionError(false);
+    };
+
     return isCreatedSuccessfully
         ? <Redirect to={{pathname: props.isAdmin ? '/admin/start-screen' : '/start-screen', state: {page: 'games'}}}/>
         :
@@ -880,6 +897,12 @@ const GameCreator: FC<GameCreatorProps> = props => {
                         />
                         : null
                 }
+                <Snackbar sx={{marginTop: '8vh'}} open={isRestrictionError} onClose={handleCloseSnackbar}
+                          anchorOrigin={{vertical: 'top', horizontal: 'right'}} autoHideDuration={5000}>
+                    <Alert severity="error" sx={{width: '100%'}} onClose={handleCloseSnackbar}>
+                        Ваш уровень администратора не позволяет создать игру с такими параметрами.
+                    </Alert>
+                </Snackbar>
             </PageWrapper>
         );
 };

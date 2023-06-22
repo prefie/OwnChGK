@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { TeamRepository } from "../db/repositories/team.repository";
 import { AccessLevel, BigGame } from '../db/entities/big-game';
 import { GameStatus, GameType } from '../db/entities/game';
 import { BigGameRepository } from '../db/repositories/big-game.repository';
@@ -11,9 +12,11 @@ import { allAdminRoles, demoAdminRoles, smallAdminRoles, superAdminRoles, userRo
 
 export class GamesController {
     private readonly bigGameRepository: BigGameRepository;
+    private readonly teamRepository: TeamRepository;
 
     constructor() {
         this.bigGameRepository = new BigGameRepository();
+        this.teamRepository = new TeamRepository();
     }
 
     public async getAll(req: Request, res: Response) {
@@ -63,6 +66,10 @@ export class GamesController {
             const gamesCount = await this.bigGameRepository.getQuantityByAdminId(id);
             if (demoAdminRoles.has(role) && gamesCount >= 1) {
                 return res.status(403).json({ message: 'Больше 1 игры демо-админ создать не может' });
+            }
+
+            if (demoAdminRoles.has(role) && accessLevel != AccessLevel.PRIVATE) {
+                return res.status(403).json({ message: 'Демо-админ может создавать только приватные игры' });
             }
 
             await this.bigGameRepository.insertByParams(gameName, email, teams, accessLevel, chgkSettings, matrixSettings, quizSettings);
@@ -238,6 +245,11 @@ export class GamesController {
                 return res.status(404).json({ message: 'game not found' });
             }
 
+            const checkAccessResult = await this.checkAccess(req, gameId);
+            if (checkAccessResult.type == AccessType.FORBIDDEN) {
+                return res.status(403).json({ message: checkAccessResult.message });
+            }
+
             if (currentGame.status != GameStatus.NOT_STARTED) {
                 return res.status(400).json({ message: 'Нельзя редактировать начатые игры' });
             }
@@ -249,9 +261,9 @@ export class GamesController {
                 }
             }
 
-            const checkAccessResult = await this.checkAccess(req, gameId);
-            if (checkAccessResult.type == AccessType.FORBIDDEN) {
-                return res.status(403).json({ message: checkAccessResult.message });
+            const { role } = getTokenFromRequest(req);
+            if (demoAdminRoles.has(role) && accessLevel != AccessLevel.PRIVATE) {
+                return res.status(403).json({ message: 'Демо-админ может создавать только приватные игры' });
             }
 
             await this.bigGameRepository.updateByParams(gameId, newGameName, accessLevel, chgkSettings, matrixSettings, quizSettings);
@@ -458,7 +470,7 @@ export class GamesController {
             const { gameId } = req.params;
             const { teamId } = req.body;
 
-            const { role, teamId: userTeamId } = getTokenFromRequest(req);
+            const { role, teamId: userTeamId, email } = getTokenFromRequest(req);
 
             if (userRoles.has(role) && !userTeamId || allAdminRoles.has(role) && !teamId) {
                 return res.status(400).json({ message: 'Нет параметра id команды' });
@@ -476,6 +488,13 @@ export class GamesController {
             const checkAccessResult = await this.checkAccess(req, gameId, true);
             if (allAdminRoles.has(role) && checkAccessResult.type == AccessType.FORBIDDEN) {
                 return res.status(403).json({ message: checkAccessResult.message });
+            }
+
+            if (demoAdminRoles.has(role)) {
+                const team = await this.teamRepository.findWithCaptainRelationsById(teamId);
+                if (team?.captain?.email != email) {
+                    return res.status(403).json({ message: 'Демо-админ может добавить в игру только команду своего юзера' });
+                }
             }
 
             const id = userRoles.has(role) ? userTeamId : teamId;
@@ -526,11 +545,12 @@ export class GamesController {
             const { gameId } = req.params;
             const game = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
             const table = [];
-            for (let team of game.teams) {
-                table.push(team.name);
+            const sortedTeams = game.teams.sort((a, b) => a.createdDate > b.createdDate ? 1 : -1);
+            for (let team of sortedTeams) {
+                table.push([team.name, team.createdDate].join(';'));
                 if (team.captain) {
                     table.push(['Капитан', 'Почта'].join(';'));
-                    table.push(team.captain.name + ';' + team.captain.email + ';');
+                    table.push(team.captain.name + ';' + team.captain.email);
                 }
                 if (team.participants) {
                     table.push(['Имя', 'Почта'].join(';'));
