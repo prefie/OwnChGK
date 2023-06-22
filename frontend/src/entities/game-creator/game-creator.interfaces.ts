@@ -1,4 +1,5 @@
 export interface GameCreatorProps {
     mode: 'creation' | 'edit';
-    isAdmin: boolean
+    isAdmin: boolean,
+    role: string,
 }

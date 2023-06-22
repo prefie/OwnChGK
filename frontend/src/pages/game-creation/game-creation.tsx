@@ -503,7 +503,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                                             }}>Добавьте хотя бы один режим в игру</small>
                                                             : null
                                                     }
-                                                    { renderAccessLevelGameCheckbox() }
+                                                    { props.role !== 'demoadmin' ? renderAccessLevelGameCheckbox() : null }
                                                 </>
                                             )
                                             : (
