@@ -202,6 +202,7 @@ export class GamesController {
                 bigGames[bigGame.id] = await this.bigGameRepository.createBigGameLogic(bigGame);
 
                 setTimeout(async () => {
+                    await this.bigGameRepository.updateBigGameState(bigGames[gameId]);
                     delete bigGames[gameId];
                     delete gameUsers[gameId];
                     delete gameAdmins[gameId];
@@ -381,15 +382,15 @@ export class GamesController {
                 return res.status(400).json({ message: 'user without team' });
             }
 
-            if (!bigGames[gameId]) {
+            const bigGame = bigGames[gameId];
+
+            if (!bigGame) {
                 const bigGameFromDb = await this.bigGameRepository.findById(gameId);
                 await this.restoreBigGameIfNeeded(gameId, bigGameFromDb.status);
             } else if (allAdminRoles.has(role)) {
-                this.bigGameRepository.updateBigGameState(bigGames[gameId])
+                this.bigGameRepository.updateBigGameState(bigGame)
                     .catch(e => console.log(`Ошибка при сохранении состояния игры ${bigGame.id} -- ${bigGame.name} -- ${e}`));
             }
-
-            let bigGame = bigGames[gameId];
 
             const headersList = ['Название команды', 'Сумма']; // TODO: DTO
             if (bigGame.isFullGame()) {
@@ -587,6 +588,7 @@ export class GamesController {
             gameUsers[gameId] = new Set();
 
             setTimeout(async () => {
+                await this.bigGameRepository.updateBigGameState(bigGames[gameId]);
                 delete bigGames[gameId];
                 delete gameUsers[gameId];
                 delete gameAdmins[gameId];
