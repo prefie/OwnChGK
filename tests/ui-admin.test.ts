@@ -1,20 +1,19 @@
-import { Builder, By, Key, until } from 'selenium-webdriver';
+import { ADMIN_URL } from "./test-helper";
+
+const webdriver = require('selenium-webdriver')
+const { By, Key, until } = require('selenium-webdriver');
 let driver;
 
 const loginSecret = "test@test.test";
 const passwordSecret = "test";
-
-
-const port = parseInt(process.env.PORT || '3000');
-const url = 'http://localhost:' + port + '/admin'
 
 beforeEach(async function () {
     try {
         jest.useFakeTimers({ legacyFakeTimers: true })
         jest.useRealTimers()
         jest.setTimeout(60000);
-        driver = new Builder().forBrowser('firefox').build();
-        driver.get(url);
+        driver = new webdriver.Builder().forBrowser('firefox').build();
+        driver.get(ADMIN_URL);
         await driver.wait(until.elementLocated(By.id('restore')), 10000);
     } catch (ex) {
         // @ts-ignore
@@ -24,7 +23,7 @@ beforeEach(async function () {
 
 test('Should_open_admin_page', async () => {
     let currentUrl = await driver.getCurrentUrl();
-    expect(currentUrl).toContain(url);
+    expect(currentUrl).toContain(ADMIN_URL);
 }, 60000);
 
 test('Should_click_reset_for_admin', async () => {
@@ -105,7 +104,7 @@ test('Should_admin_logout', async () => {
     logout.click();
 
     let currentUrl = await driver.getCurrentUrl();
-    expect(currentUrl).toContain(url);
+    expect(currentUrl).toContain(ADMIN_URL);
     try {
         cookie = await driver.manage().getCookie("authorization");
         expect(cookie).toBe(null);

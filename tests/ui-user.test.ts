@@ -1,8 +1,9 @@
-import { Builder, By, Key, until } from 'selenium-webdriver';
+import { URL } from "./test-helper";
+
+const webdriver = require('selenium-webdriver')
+const { By, Key, until } = require('selenium-webdriver');
 let driver;
 
-const port = parseInt(process.env.PORT || '3000');
-const url = 'http://localhost:' + port;
 const loginUserSecret = "test@test.test";
 const passwordUserSecret = "test";
 
@@ -14,6 +15,8 @@ beforeEach(async function () {
         jest.setTimeout(60000);
         driver = new Builder().forBrowser('firefox').build();
         driver.get(url);
+        driver = new webdriver.Builder().forBrowser('firefox').build();
+        driver.get(URL);
         await driver.wait(until.elementLocated(By.id('restore')), 10000);
     } catch (ex) {
         // @ts-ignore
@@ -82,7 +85,7 @@ test('Should_user_logout', async () => {
     logout.click();
 
     let currentUrl = await driver.getCurrentUrl();
-    expect(currentUrl).toContain(url);
+    expect(currentUrl).toContain(URL);
     try {
         cookie = await driver.manage().getCookie("authorization");
         expect(cookie).toBe(null);
