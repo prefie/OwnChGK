@@ -1,11 +1,11 @@
 import { ADMIN_URL, LOGIN_USER_SECRET, PASSWORD_USER_SECRET, URL } from "../test-helper";
 
-const { chromium } = require('playwright');
+const { firefox } = require('playwright');
 
 let page;
 
 beforeEach(async () => {
-    const browser = await chromium.launch();
+    const browser = await firefox.launch();
     const context = await browser.newContext();
     page = await context.newPage();
     await page.goto(ADMIN_URL);

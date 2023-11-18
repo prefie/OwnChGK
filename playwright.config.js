@@ -1,5 +1,5 @@
 module.exports = {
-    browserName: 'chromium',
+    browserName: 'firefox',
     launchOptions: {
       headless: true, 
     },
