@@ -1,5 +1,10 @@
+export enum GameCreatorMode {
+    creation = 'creation',
+    edit = 'edit'
+}
+
 export interface GameCreatorProps {
-    mode: 'creation' | 'edit';
+    mode: GameCreatorMode;
     isAdmin: boolean,
     role: string,
 }
