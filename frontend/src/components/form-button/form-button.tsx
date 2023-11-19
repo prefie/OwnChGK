@@ -11,7 +11,7 @@ export const FormButton: FC<ButtonProps> = props => {
 
     return (
         <div className={classes.buttonWrapper}>
-            <button type="submit" className={cls.join(' ')} style={props.style} disabled={props.disabled}>
+            <button id={props.id} type="submit" className={cls.join(' ')} style={props.style} disabled={props.disabled}>
                 {props.text}
             </button>
         </div>

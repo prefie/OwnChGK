@@ -17,7 +17,15 @@ import {
 import {Redirect, useLocation} from 'react-router-dom';
 import NavBar from '../../components/nav-bar/nav-bar';
 import {Team} from '../admin-start-screen/admin-start-screen';
-import {IconButton, InputAdornment, OutlinedInput, Skeleton, TextareaAutosize} from '@mui/material';
+import {
+    Alert,
+    IconButton,
+    InputAdornment,
+    OutlinedInput,
+    Skeleton,
+    Snackbar,
+    TextareaAutosize
+} from '@mui/material';
 import PageBackdrop from '../../components/backdrop/backdrop';
 import Loader from '../../components/loader/loader';
 import Modal from '../../components/modal/modal';
@@ -92,6 +100,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
     const [isSaveMatrixQuestions, setIsSaveMatrixQuestions] = useState<boolean>(false);
     const [isSaveQuizTours, setIsSaveQuizTours] = useState<boolean>(false);
     const [isSaveQuizQuestions, setIsSaveQuizQuestions] = useState<boolean>(false);
+    const [isRestrictionError, setIsRestrictionError] = useState<boolean>(false);
 
     const oldGameId = props.mode === GameCreatorMode.edit ? location.state.id : '';
 
@@ -366,8 +375,11 @@ const GameCreator: FC<GameCreatorProps> = props => {
                 .then(res => {
                     if (res.status === 200) {
                         setIsCreatedSuccessfully(true);
-                    } else {
+                    } else if (res.status === 409) {
                         setIsGameNameInvalid(true);
+                        setIsLoading(false);
+                    } else {
+                        setIsRestrictionError(true);
                         setIsLoading(false);
                     }
                 });
@@ -376,8 +388,11 @@ const GameCreator: FC<GameCreatorProps> = props => {
                 .then(res => {
                     if (res.status === 200) {
                         setIsCreatedSuccessfully(true);
-                    } else {
+                    } else if (res.status === 409) {
                         setIsGameNameInvalid(true);
+                        setIsLoading(false);
+                    } else {
+                        setIsRestrictionError(true);
                         setIsLoading(false);
                     }
                 });
@@ -666,9 +681,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                                             }}>Добавьте хотя бы один режим в игру</small>
                                                             : null
                                                     }
-                                                    {
-                                                        renderAccessLevelGameCheckbox()
-                                                    }
+                                                    { props.role !== 'demoadmin' ? renderAccessLevelGameCheckbox() : null }
                                                 </>
                                             )
                                             : (
@@ -1208,6 +1221,14 @@ const GameCreator: FC<GameCreatorProps> = props => {
         return <Redirect to={{pathname: '/admin/start-screen', state: {page: 'games'}}}/>
     }
 
+    const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setIsRestrictionError(false);
+    };
+
     return isCreatedSuccessfully
         ? <Redirect to={{pathname: props.isAdmin ? '/admin/start-screen' : '/start-screen', state: {page: 'games'}}}/>
         :
@@ -1250,6 +1271,12 @@ const GameCreator: FC<GameCreatorProps> = props => {
                         />
                         : null
                 }
+                <Snackbar sx={{marginTop: '8vh'}} open={isRestrictionError} onClose={handleCloseSnackbar}
+                          anchorOrigin={{vertical: 'top', horizontal: 'right'}} autoHideDuration={5000}>
+                    <Alert severity="error" sx={{width: '100%'}} onClose={handleCloseSnackbar}>
+                        Ваш уровень администратора не позволяет создать игру с такими параметрами.
+                    </Alert>
+                </Snackbar>
             </PageWrapper>
         );
 };

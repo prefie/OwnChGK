@@ -92,14 +92,14 @@ const App: FC<AppProps> = props => {
                                     currentUserRole={props.user.role}
                                     neededRole={allAdminRoles}
                                     redirectPath="/admin">
-                        <GameCreator mode={GameCreatorMode.creation} isAdmin={true}/>
+                        <GameCreator mode={GameCreatorMode.creation} isAdmin={true} role={props.user.role}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/game-creation/edit" exact
                                     currentUserRole={props.user.role}
                                     neededRole={allAdminRoles}
                                     redirectPath="/admin">
-                        <GameCreator mode={GameCreatorMode.edit} isAdmin={true}/>
+                        <GameCreator mode={GameCreatorMode.edit} isAdmin={true} role={props.user.role}/>
                     </ProtectedRoute>
 
                     <ProtectedRoute path="/admin/team-creation" exact

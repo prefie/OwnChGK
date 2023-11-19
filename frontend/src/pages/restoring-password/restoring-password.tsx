@@ -137,7 +137,7 @@ const RestoringPassword: FC<RestoringPasswordProps> = props => {
                                          errorHelperText='Эта почта ещё не зарегистрирована'
                                          onFocus={() => setIsEmailInvalid(false)}
                             />
-                            <button className={classes.sendButton} type="submit">Отправить
+                            <button id={"restoreSend"} className={classes.sendButton} type="submit">Отправить
                             </button>
                         </div>
 

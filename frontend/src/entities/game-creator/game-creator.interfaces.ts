@@ -5,5 +5,6 @@ export enum GameCreatorMode {
 
 export interface GameCreatorProps {
     mode: GameCreatorMode;
-    isAdmin: boolean
+    isAdmin: boolean,
+    role: string,
 }

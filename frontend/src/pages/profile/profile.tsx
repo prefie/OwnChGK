@@ -3,7 +3,6 @@ import classes from './profile.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import {ProfileDispatchProps, ProfileProps, ProfileStateProps} from '../../entities/profile/profile.interfaces';
 import Header from '../../components/header/header';
-import {CustomInput} from '../../components/custom-input/custom-input';
 import {Alert, Snackbar} from '@mui/material';
 import {changeName, changePassword} from '../../server-api/server-api';
 import PageBackdrop from '../../components/backdrop/backdrop';
@@ -189,7 +188,7 @@ const Profile: FC<ProfileProps> = props => {
                                          errorHelperText='Пароли не совпадают'
                                          onFocus={() => setIsRepeatedPasswordInvalid(false)}/>
                             <div className={classes.buttonWrapper}>
-                                <CustomButton type={"submit"} text={"Сохранить"} buttonType={ButtonType.primary}/>
+                                <CustomButton id={"saveProfile"} type={"submit"} text={"Сохранить"} buttonType={ButtonType.primary}/>
                             </div>
                         </div>
                     </div>

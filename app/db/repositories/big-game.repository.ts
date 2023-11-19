@@ -531,7 +531,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                     answers,
                     appeals
                 );
-            });
+            }).sort((a, b) => a.number > b.number ? 1 : -1);
 
             return new RoundLogic(
                 r.id,
@@ -541,6 +541,6 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 GameTypeLogic.ChGK,
                 questions
             );
-        });
+        }).sort((a, b) => a.number > b.number ? 1 : -1);
     }
 }
