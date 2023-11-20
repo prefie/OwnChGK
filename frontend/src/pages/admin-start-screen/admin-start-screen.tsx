@@ -8,7 +8,7 @@ import { Button, IconButton, OutlinedInput, Skeleton } from '@mui/material';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import { Scrollbars } from 'rc-scrollbars';
 import { Link, useLocation } from 'react-router-dom';
-import { addAdmin, deleteAdmin, getAll } from '../../server-api/server-api';
+import { ServerApi } from '../../server-api/server-api';
 import Modal, { OperationName } from '../../components/modal/modal';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
@@ -52,7 +52,7 @@ interface AdminProps {
 
 const AdminComponent: FC<AdminProps> = props => {
     const handleDelete = useCallback(() => {
-        deleteAdmin(props.email).then(res => {
+        ServerApi.deleteAdmin(props.email).then(res => {
             if (res.status === 200) {
                 props.deleteAdmin?.(admins => admins?.filter(a => a.email !== props.email));
             } else {
@@ -152,7 +152,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
     }, [location]);
 
     useEffect(() => {
-        getAll('/teams/').then(res => {
+        ServerApi.getAll('/teams/').then(res => {
             if (res.status === 200) {
                 res.json().then(({ teams }) => {
                     setTeams(
@@ -166,7 +166,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
             }
         });
 
-        getAll('/games/').then(res => {
+        ServerApi.getAll('/games/').then(res => {
             if (res.status === 200) {
                 res.json().then(({ games }) => {
                     setGames(
@@ -180,7 +180,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
             }
         });
 
-        getAll('/admins/').then(res => {
+        ServerApi.getAll('/admins/').then(res => {
             if (res.status === 200) {
                 res.json().then(({ admins }) => {
                     setAdmins(
@@ -312,7 +312,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
         let newAdminName = document.querySelector('#new-admin-name') as HTMLInputElement;
         let newAdminEmail = document.querySelector('#new-admin-email') as HTMLInputElement;
         if (newAdminEmail.value !== '') {
-            addAdmin(newAdminEmail.value, newAdminName.value).then(res => {
+            ServerApi.addAdmin(newAdminEmail.value, newAdminName.value).then(res => {
                 if (res.status === 200) {
                     setAdmins(admins => [
                         ...(admins ? admins : []),

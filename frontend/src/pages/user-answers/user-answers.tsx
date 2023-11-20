@@ -6,12 +6,13 @@ import Header from '../../components/header/header';
 import {Answer, UserAnswersPageProps} from '../../entities/user-answers/user-answers.interfaces';
 import UserAnswer from '../../components/user-answer/user-answer';
 import Scrollbar from '../../components/scrollbar/scrollbar';
-import { AnswerStatus, getGame } from '../../server-api/server-api';
 import {getCookie, getUrlForSocket} from '../../commonFunctions';
 import Loader from '../../components/loader/loader';
 import {AppState} from '../../entities/app/app.interfaces';
 import {connect} from 'react-redux';
 import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
+import {ServerApi} from "../../server-api/server-api";
+import {AnswerStatus} from "../../server-api/type";
 
 let conn: WebSocket;
 let ping: any;
@@ -98,7 +99,7 @@ const UserAnswersPage: FC<UserAnswersPageProps> = props => {
     }, []);
 
     useEffect(() => {
-        getGame(gameId).then((res) => {
+        ServerApi.getGame(gameId).then((res) => {
             if (res.status === 200) {
                 res.json().then(({
                                      name,

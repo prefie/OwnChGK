@@ -7,7 +7,7 @@ import RestoringPassword from './pages/restoring-password/restoring-password';
 import { connect } from 'react-redux';
 import ProtectedRoute from './components/private-route/private-route';
 import { AppDispatchProps, AppProps, AppState, AppStateProps } from './entities/app/app.interfaces';
-import { checkToken } from './server-api/server-api';
+import { ServerApi } from './server-api/server-api';
 import { Dispatch } from 'redux';
 import { AppAction } from './redux/reducers/app-reducer/app-reducer.interfaces';
 import { authorizeUserWithRole, checkToken as testToken } from './redux/actions/app-actions/app-actions';
@@ -43,7 +43,7 @@ const App: FC<AppProps> = props => {
     }, []);
 
     useEffect(() => {
-        checkToken().then((res) => {
+        ServerApi.checkToken().then((res) => {
             if (res.status === 200) {
                 res.json().then(({role, team, email, name}) => {
                     props.onAuthorizeUserWithRole(role, team, email, name);

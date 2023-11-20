@@ -1,4 +1,4 @@
-import {insertDemoAdmin, insertDemoUser} from "../../server-api/server-api";
+import {ServerApi} from "../../server-api/server-api";
 import {useState} from "react";
 import {Redirect, Link} from "react-router-dom";
 import classes from "./demoversion-frame.module.scss";
@@ -13,13 +13,13 @@ function DemoVersionFrame(props: DemoVersionFrameProps) {
 
     const handleDemoLinkOnClick = () => {
         if (!props.isAdmin) {
-            insertDemoAdmin().then(res => {
+            ServerApi.insertDemoAdmin().then(res => {
                 if (res.status === 200) {
                     setIsRedirect(true);
                 }
             })
         } else {
-            insertDemoUser().then(res => {
+            ServerApi.insertDemoUser().then(res => {
                 if (res.status === 200) {
                     setIsRedirect(true);
                 }

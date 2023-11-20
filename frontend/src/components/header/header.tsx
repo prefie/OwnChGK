@@ -7,9 +7,9 @@ import { AppState } from '../../entities/app/app.interfaces';
 import { Dispatch } from 'redux';
 import { AppAction } from '../../redux/reducers/app-reducer/app-reducer.interfaces';
 import { logOut } from '../../redux/actions/app-actions/app-actions';
-import { logout } from '../../server-api/server-api';
 import logoImage from '../../images/Logo.svg';
 import { LogoutRounded, PersonRounded, MenuRounded } from '@mui/icons-material';
+import { ServerApi } from '../../server-api/server-api';
 
 const Header: FC<HeaderProps> = props => {
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
@@ -27,7 +27,7 @@ const Header: FC<HeaderProps> = props => {
     }, []);
 
     const handleLogout = async () => {
-        logout().then(() => {});
+        ServerApi.logout().then(() => {});
         props.onLogOut();
     };
 

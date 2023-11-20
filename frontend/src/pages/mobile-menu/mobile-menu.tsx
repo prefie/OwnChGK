@@ -1,7 +1,6 @@
 import React, {FC, useEffect, useState} from 'react';
 import classes from './mobile-menu.module.scss';
 import {Link, useLocation} from 'react-router-dom';
-import {logout} from '../../server-api/server-api';
 import {connect} from 'react-redux';
 import {AppState} from '../../entities/app/app.interfaces';
 import {HeaderDispatchProps, HeaderStateProps} from '../../entities/header/header.interfaces';
@@ -9,6 +8,7 @@ import {Dispatch} from 'redux';
 import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces';
 import {logOut} from '../../redux/actions/app-actions/app-actions';
 import arrowBackImage from '../../images/ArrowBack.svg';
+import {ServerApi} from "../../server-api/server-api";
 
 interface MobileMenuOwnProps {
 }
@@ -27,7 +27,7 @@ const MobileMenu: FC<MobileMenuProps> = props => {
     }, []);
 
     const handleLogout = async () => {
-        logout().then(() => {});
+        ServerApi.logout().then(() => {});
         props.onLogOut();
     };
 

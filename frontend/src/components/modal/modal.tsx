@@ -4,7 +4,7 @@ import React, { FC, useCallback, useState } from 'react';
 import classes from './modal.module.scss';
 import classesButton from '../button/button.module.scss';
 import { ModalProps } from '../../entities/modal/modal.interfaces';
-import { deleteGame, deleteTeam, finishedGame } from '../../server-api/server-api';
+import { ServerApi } from '../../server-api/server-api';
 import { getCookie, getUrlForSocket } from '../../commonFunctions';
 import { createPortal } from 'react-dom';
 import Button from '../button/button.tsx';
@@ -40,17 +40,17 @@ const Modal: FC<ModalProps> = props => {
         } else {
             if (props.type === 'game') {
                 props.deleteGame?.(arr => arr?.filter(el => el.name !== props.itemName));
-                deleteGame(props.itemId as string);
+				ServerApi.deleteGame(props.itemId as string);
             } else {
                 props.deleteTeam?.(arr => arr?.filter(el => el.name !== props.itemName));
-                deleteTeam(props.itemId as string);
+				ServerApi.deleteTeam(props.itemId as string);
             }
         }
     }, [props]);
 
     const handleFinished = useCallback(() => {
         try {
-            finishedGame(props.itemId as string)
+			ServerApi.endGame(props.itemId as string)
                 .then(
                     () =>
                         props.deleteGame?.(

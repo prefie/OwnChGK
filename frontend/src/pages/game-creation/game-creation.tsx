@@ -6,15 +6,7 @@ import { Scrollbars } from 'rc-scrollbars';
 import { GameCreatorProps } from '../../entities/game-creator/game-creator.interfaces';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import { CustomInput } from '../../components/custom-input/custom-input';
-import {
-    addTeamInGame,
-    createGame,
-    deleteTeamFromGame,
-    editGame,
-    GamePartSettings,
-    getAll,
-    getGame,
-} from '../../server-api/server-api';
+import { GamePartSettings, ServerApi } from '../../server-api/server-api';
 import { Redirect, useLocation } from 'react-router-dom';
 import NavBar from '../../components/nav-bar/nav-bar';
 import { Team } from '../admin-start-screen/admin-start-screen';
@@ -73,7 +65,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
     }
 
     useEffect(() => {
-        getAll('/teams/').then(res => {
+        ServerApi.getAll('/teams/').then(res => {
             if (res.status === 200) {
                 res.json().then(({ teams }) => {
                     setTeamsFromDB(teams);
@@ -84,7 +76,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
         });
 
         if (props.mode === 'edit') {
-            getGame(oldGameId).then(res => {
+            ServerApi.getGame(oldGameId).then(res => {
                 if (res.status === 200) {
                     res.json().then(({ teams, chgkSettings, matrixSettings, accessLevel }) => {
                         setChgkSettings(chgkSettings);
@@ -123,7 +115,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
 
             props.mode === 'creation'
                 ? addTeamInChosenTeams(element.name)
-                : await addTeamInGame(oldGameId, team.id).then(res => {
+                : await ServerApi.addTeamInGame(oldGameId, team.id).then(res => {
                       if (res.status === 200) {
                           addTeamInChosenTeams(element.name);
                       } else {
@@ -136,7 +128,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
 
             props.mode === 'creation'
                 ? deleteTeamFromChosenTeams(element.name)
-                : await deleteTeamFromGame(oldGameId, team.id).then(res => {
+                : await ServerApi.deleteTeamFromGame(oldGameId, team.id).then(res => {
                       if (res.status === 200) {
                           deleteTeamFromChosenTeams(element.name);
                       } else {
@@ -281,7 +273,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
             const teams = new Set(chosenTeams ?? []);
             const teamIds = teamsFromDB?.filter(t => teams.has(t.name)).map(t => t.id);
 
-            await createGame(gameName, teamIds ?? [], chgkSettings, matrixSettings, gameAccessLevel).then(res => {
+            await ServerApi.createGame(gameName, teamIds ?? [], chgkSettings, matrixSettings, gameAccessLevel).then(res => {
                 if (res.status === 200) {
                     setIsCreatedSuccessfully(true);
                 } else if (res.status === 409) {
@@ -293,7 +285,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                 }
             });
         } else {
-            await editGame(oldGameId, gameName, chgkSettings, matrixSettings, gameAccessLevel).then(res => {
+            await ServerApi.editGame(oldGameId, gameName, chgkSettings, matrixSettings, gameAccessLevel).then(res => {
                 if (res.status === 200) {
                     setIsCreatedSuccessfully(true);
                 } else if (res.status === 409) {

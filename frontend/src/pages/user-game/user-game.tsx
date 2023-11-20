@@ -6,7 +6,6 @@ import Header from '../../components/header/header';
 import {Link, useParams} from 'react-router-dom';
 import {Alert, Snackbar} from '@mui/material';
 import {UserGameProps} from '../../entities/user-game/user-game.interfaces';
-import {GamePartSettings, getGame} from '../../server-api/server-api';
 import {getCookie, getUrlForSocket} from '../../commonFunctions';
 import Loader from '../../components/loader/loader';
 import {AppState} from '../../entities/app/app.interfaces';
@@ -16,6 +15,8 @@ import Scrollbar from '../../components/scrollbar/scrollbar';
 import {Input} from "../../components/input/input";
 import readyOwlImage from '../../images/owl-images/ready-owl.svg';
 import breakOwlImage from '../../images/owl-images/break_owl.svg';
+import {GamePartSettings} from "../../server-api/type";
+import {ServerApi} from "../../server-api/server-api";
 
 let progressBarInterval: any;
 let interval: any;
@@ -459,7 +460,7 @@ const UserGame: FC<UserGameProps> = props => {
             }
         };
 
-        getGame(gameId).then((res) => {
+        ServerApi.getGame(gameId).then((res) => {
             if (res.status === 200) {
                 res.json().then(({
                                      name,

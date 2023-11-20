@@ -6,7 +6,7 @@ import React, { Dispatch, SetStateAction, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import SignUpToGameItem from '../sign-up-to-game-item/sign-up-to-game-item';
-import { addCurrentTeamInGame, deleteCurrentTeamFromGame } from '../../server-api/server-api';
+import { ServerApi } from "../../server-api/server-api";
 import { Team } from '../../pages/admin-start-screen/admin-start-screen';
 import { OperationName } from '../modal/modal.tsx';
 import GameItemFooter from '../game-footer/footer.tsx';
@@ -55,7 +55,7 @@ function GameItem(props: GameItemProps) {
     const linkToGame = props.role === Roles.user ? `/game/${props.id}` : `/admin/start-game/${props.id}`;
 
     function handleAddToGame() {
-        addCurrentTeamInGame(gameId).then(res => {
+        ServerApi.addCurrentTeamInGame(gameId).then(res => {
             if (res.status === 200) {
                 setAmIParticipate(true);
                 res.json().then(({ teamsCount }) => {
@@ -68,7 +68,7 @@ function GameItem(props: GameItemProps) {
     }
 
     function handleOutOfGame() {
-        deleteCurrentTeamFromGame(gameId).then(res => {
+        ServerApi.deleteCurrentTeamFromGame(gameId).then(res => {
             if (res.status === 200) {
                 setAmIParticipate(false);
                 res.json().then(({ teamsCount }) => {

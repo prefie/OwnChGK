@@ -7,9 +7,10 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import { AdminGameProps, TourProps } from '../../entities/admin-game/admin-game.interfaces';
 import PauseIcon from '@mui/icons-material/Pause';
-import { GamePartSettings, getGame } from '../../server-api/server-api';
+import { GamePartSettings, ServerApi } from '../../server-api/server-api';
 import { getCookie, getUrlForSocket } from '../../commonFunctions';
 import Modal, { OperationName } from '../../components/modal/modal';
+import Loader from '../../components/loader/loader';
 import { Alert, Divider, Snackbar } from '@mui/material';
 import { Scrollbars } from 'rc-scrollbars';
 import TimeWidget from '../../components/timeWidget/timeWidget';
@@ -225,7 +226,7 @@ const AdminGame: FC<AdminGameProps> = () => {
     };
 
     useEffect(() => {
-        getGame(gameId).then(res => {
+        ServerApi.getGame(gameId).then((res) => {
             if (res.status === 200) {
                 res.json().then(({ name, chgkSettings, matrixSettings }) => {
                     setGameName(name);
