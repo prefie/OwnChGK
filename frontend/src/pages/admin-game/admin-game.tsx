@@ -7,7 +7,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import {AdminGameProps, TourProps} from '../../entities/admin-game/admin-game.interfaces';
 import PauseIcon from '@mui/icons-material/Pause';
-import {GamePartSettings, getGame} from '../../server-api/server-api';
+import {GamePartSettings} from '../../server-api/type';
 import {getCookie, getUrlForSocket} from '../../commonFunctions';
 import Modal from '../../components/modal/modal';
 import Loader from '../../components/loader/loader';
@@ -18,6 +18,7 @@ import {
     BarChartRounded,
     CircleRounded,
 } from "@mui/icons-material";
+import { ServerApi } from '../../server-api/server-api';
 
 let interval: any;
 let breakInterval: any;
@@ -206,7 +207,7 @@ const AdminGame: FC<AdminGameProps> = props => {
     };
 
     useEffect(() => {
-        getGame(gameId).then((res) => {
+        ServerApi.getGame(gameId).then((res) => {
             if (res.status === 200) {
                 res.json().then(({
                                      name,

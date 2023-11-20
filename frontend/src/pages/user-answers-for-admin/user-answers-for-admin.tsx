@@ -6,10 +6,11 @@ import Header from '../../components/header/header';
 import {Answer} from '../../entities/user-answers/user-answers.interfaces';
 import UserAnswer from '../../components/user-answer/user-answer';
 import Scrollbar from '../../components/scrollbar/scrollbar';
-import { AnswerStatus, getGame, getTeam } from '../../server-api/server-api';
 import {getCookie, getUrlForSocket} from '../../commonFunctions';
 import Loader from '../../components/loader/loader';
 import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
+import {AnswerStatus} from "../../server-api/type";
+import {ServerApi} from "../../server-api/server-api";
 
 let conn: WebSocket;
 let ping: any;
@@ -39,7 +40,7 @@ const UserAnswersPageForAdmin = () => {
             }));
 
             ping = setInterval(() => {
-                conn.send(JSON.stringify({ 'action': 'ping' }));
+                conn.send(JSON.stringify({'action': 'ping'}));
             }, 30000);
         }
     };
@@ -62,7 +63,7 @@ const UserAnswersPageForAdmin = () => {
                 let numbers = dictionary['matrix'].map(ans => ans.number);
                 for (let i = 1; i <= matrixQuestionsCount; i++) {
                     if (!numbers.includes(i)) {
-                        dictionary['matrix'].push({ status: 'no-answer', number: i, answer: '' });
+                        dictionary['matrix'].push({status: 'no-answer', number: i, answer: ''});
                     }
                 }
             }
@@ -79,7 +80,7 @@ const UserAnswersPageForAdmin = () => {
                 let numbers = dictionary['chgk'].map(ans => ans.number);
                 for (let i = 1; i <= chgkQuestionsCount; i++) {
                     if (!numbers.includes(i)) {
-                        dictionary['chgk'].push({ status: 'no-answer', number: i, answer: '' });
+                        dictionary['chgk'].push({status: 'no-answer', number: i, answer: ''});
                     }
                 }
             }
@@ -107,7 +108,7 @@ const UserAnswersPageForAdmin = () => {
     }, []);
 
     useEffect(() => {
-        getGame(gameId).then((res) => {
+        ServerApi.getGame(gameId).then((res) => {
             if (res.status === 200) {
                 res.json().then(({
                                      name,
@@ -115,7 +116,7 @@ const UserAnswersPageForAdmin = () => {
                                      matrixSettings
                                  }) => {
                     setGameName(name);
-                    setGamePart(matrixSettings ? "matrix": "chgk");
+                    setGamePart(matrixSettings ? "matrix" : "chgk");
                     setIsBothPartsInGame(() => {
                         if (chgkSettings && matrixSettings) {
                             activateIndicator();
@@ -126,12 +127,12 @@ const UserAnswersPageForAdmin = () => {
             }
         });
 
-        getTeam(teamId).then((res) => {
-           if (res.status === 200) {
-               res.json().then(({ name }) => {
-                   setTeamName(name);
-               })
-           }
+        ServerApi.getTeam(teamId).then((res) => {
+            if (res.status === 200) {
+                res.json().then(({name}) => {
+                    setTeamName(name);
+                })
+            }
         });
 
         conn = new WebSocket(getUrlForSocket());

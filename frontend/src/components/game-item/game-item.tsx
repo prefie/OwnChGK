@@ -7,7 +7,7 @@ import React, {Dispatch, SetStateAction, useCallback, useEffect, useState} from 
 import {Redirect} from "react-router-dom";
 import {Link} from 'react-router-dom';
 import SignUpToGameItem from "../sign-up-to-game-item/sign-up-to-game-item";
-import {addCurrentTeamInGame, deleteCurrentTeamFromGame, getGame} from "../../server-api/server-api";
+import {ServerApi} from "../../server-api/server-api";
 import GameStatus from "../game-status/game-status";
 import {Team} from "../../pages/admin-start-screen/admin-start-screen";
 
@@ -54,7 +54,7 @@ function GameItem(props: GameItemProps) {
         : `/admin/start-game/${props.id}`
 
     function handleAddToGame() {
-        addCurrentTeamInGame(gameId).then(res => {
+        ServerApi.addCurrentTeamInGame(gameId).then(res => {
             if (res.status === 200) {
                 setAmIParticipate(true);
                 res.json().then(({teamsCount}) => {
@@ -67,7 +67,7 @@ function GameItem(props: GameItemProps) {
     }
 
     function handleOutOfGame() {
-        deleteCurrentTeamFromGame(gameId).then(res => {
+        ServerApi.deleteCurrentTeamFromGame(gameId).then(res => {
             if (res.status === 200) {
                 setAmIParticipate(false);
                 res.json().then(({teamsCount}) => {

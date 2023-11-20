@@ -4,7 +4,6 @@ import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import {ProfileDispatchProps, ProfileProps, ProfileStateProps} from '../../entities/profile/profile.interfaces';
 import Header from '../../components/header/header';
 import {Alert, Snackbar} from '@mui/material';
-import {changeName, changePassword} from '../../server-api/server-api';
 import PageBackdrop from '../../components/backdrop/backdrop';
 import {AppState} from '../../entities/app/app.interfaces';
 import {connect} from 'react-redux';
@@ -14,6 +13,7 @@ import {addUserName} from '../../redux/actions/app-actions/app-actions';
 import {Input} from "../../components/input/input";
 import DemoVersionFrame from "../../components/demoversion-frame/demoversion-frame";
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
+import {ServerApi} from "../../server-api/server-api";
 
 const Profile: FC<ProfileProps> = props => {
     const [userName, setUserName] = useState<string>(props.userName);
@@ -57,7 +57,7 @@ const Profile: FC<ProfileProps> = props => {
 
         setFlags({isSuccess: true, isSnackbarOpen: false, isLoading: true});
         if (userPassword === '') {
-            changeName(userName, props.isAdmin)
+            ServerApi.changeName(userName, props.isAdmin)
                 .then(res => {
                     if (res.status === 200) {
                         setFlags({isSuccess: true, isSnackbarOpen: true, isLoading: false});
@@ -74,7 +74,7 @@ const Profile: FC<ProfileProps> = props => {
             return false;
         } else {
             if (checkRepeatedPassword()) {
-                changePassword(userEmail, userPassword, userOldPassword, props.isAdmin)
+                ServerApi.changePassword(userEmail, userPassword, userOldPassword, props.isAdmin)
                     .then(res => {
                         if (res.status === 200) {
                             setFlags({isSuccess: true, isSnackbarOpen: false, isLoading: true});
@@ -90,7 +90,7 @@ const Profile: FC<ProfileProps> = props => {
                         if (res === 'old password invalid') {
                             setFlags({isSuccess: false, isSnackbarOpen: false, isLoading: false});
                         } else if (res === 'success') {
-                            changeName(userName, props.isAdmin)
+                            ServerApi.changeName(userName, props.isAdmin)
                                 .then(res => {
                                     if (res.status === 200) {
                                         props.onAddUserName(userName);

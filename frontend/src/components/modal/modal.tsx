@@ -3,9 +3,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import React, { FC, useCallback, useState } from 'react';
 import classes from './modal.module.scss';
 import { ModalProps } from '../../entities/modal/modal.interfaces';
-import { deleteGame, deleteTeam } from '../../server-api/server-api';
 import { getCookie, getUrlForSocket } from '../../commonFunctions';
 import { createPortal } from 'react-dom';
+import {ServerApi} from "../../server-api/server-api";
 
 let conn: WebSocket;
 
@@ -32,10 +32,10 @@ const Modal: FC<ModalProps> = props => {
         } else {
             if (props.type === 'game') {
                 props.deleteGame?.(arr => arr?.filter(el => el.name !== props.itemForDeleteName));
-                deleteGame(props.itemForDeleteId as string);
+                ServerApi.deleteGame(props.itemForDeleteId as string);
             } else {
                 props.deleteTeam?.(arr => arr?.filter(el => el.name !== props.itemForDeleteName));
-                deleteTeam(props.itemForDeleteId as string);
+                ServerApi.deleteTeam(props.itemForDeleteId as string);
             }
         }
     }, [props]);

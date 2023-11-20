@@ -12,6 +12,7 @@ import logoImage from '../../images/Logo.svg';
 import menuImage from '../../images/Menu.svg';
 import profileImage from '../../images/Profile.svg';
 import logOutImage from '../../images/LogOut.svg';
+import {ServerApi} from '../../server-api/server-api';
 
 const Header: FC<HeaderProps> = props => {
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
@@ -29,7 +30,7 @@ const Header: FC<HeaderProps> = props => {
     }, []);
 
     const handleLogout = async () => {
-        logout().then(() => {});
+        ServerApi.logout().then(() => {});
         props.onLogOut();
     };
 

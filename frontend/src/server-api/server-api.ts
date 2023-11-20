@@ -1,397 +1,420 @@
-export const getAll = async (path: string) => {
-    return await fetch('/api' + path);
-};
+import {GamePartSettings} from "./type";
 
-export const getAmIParticipateGames = async () => {
-    return await fetch('/api/games/?amIParticipate=true');
-};
+export class ServerApi {
+    private static pathServer = 'http://localhost:3001/'
 
-export const getAmIParticipateAndPublicGames = async () => {
-    return await fetch('/api/games/?amIParticipate=true&publicEnabled=true');
-};
+    private static Method = {
+        POST: 'POST',
+        PATCH: 'PATCH',
+        DELETE: 'DELETE'
+    }
 
-export const getTeamsParticipants = async (gameId: string) => {
-    return await fetch(`/api/games/${gameId}/teamsParticipants`);
-};
-
-export const getResultTable = async (gameId: string) => {
-    return await fetch(`/api/games/${gameId}/resultTable`);
-};
-
-export const getResultTableFormat = async (gameId: string) => {
-    return await fetch(`/api/games/${gameId}/resultTable/format`);
-};
-
-export const getTeamsParticipantTable = async (gameId: string) => {
-    return await fetch(`/api/games/${gameId}/participants`);
-};
-
-export const getUsersWithoutTeam = async () => {
-    return await fetch(`/api/users/?withoutTeam=true`);
-};
-
-export const getGame = async (gameId: string) => {
-    return await fetch(`/api/games/${gameId}`);
-};
-
-export interface GamePartSettings {
-    roundsCount: number;
-    questionsCount: number;
-    questions?: Record<number, string[]> | undefined;
-    roundNames?: string[];
-}
-
-export const createGame = async (
-    gameName: string,
-    teams: string[],
-    chgkSettings?: GamePartSettings,
-    matrixSettings?: GamePartSettings,
-    accessLevel: 'public' | 'private' = 'private',
-) => {
-    return await fetch('/api/games/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            gameName,
-            teams,
-            chgkSettings,
-            matrixSettings,
-            accessLevel
-        })
-    });
-};
-
-export const createUser = async (email: string, password: string) => {
-    return await fetch('/api/users/insert', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            email,
-            password
-        })
-    });
-};
-
-export const login = async (email: string, password: string, isAdmin: boolean) => {
-    return await fetch(isAdmin ? '/api/admins/login' : '/api/users/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            email,
-            password
-        })
-    });
-};
-
-export const logout = async () => {
-    return await fetch('/api/users/logout', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+    private static async sendRequest({
+                                         method, path, body, methodOnly = false, sendOnly = false
+                                     }: {
+        method?: string, path: string, body?: BodyInit, methodOnly?: boolean, sendOnly?: boolean
+    }) {
+        const fullPath = this.pathServer + path
+        if (sendOnly) {
+            return await fetch(fullPath,);
         }
-    });
-};
-
-export const startGame = async (gameId: string) => {
-    return fetch(`/api/games/${gameId}/start`);
-};
-
-export const editGame = async (
-    gameId: string,
-    newGameName: string,
-    chgkSettings?: GamePartSettings,
-    matrixSettings?: GamePartSettings,
-    accessLevel: 'public' | 'private' = 'private',
-) => {
-    return await fetch(`/api/games/${gameId}/change`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            newGameName,
-            chgkSettings,
-            matrixSettings,
-            accessLevel
-        })
-    });
-};
-
-export const addCurrentTeamInGame = async (gameId: string) => {
-    return await fetch(`/api/games/${gameId}/team`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-    });
-};
-
-export const addTeamInGame = async (gameId: string, teamId: string) => {
-    return await fetch(`/api/games/${gameId}/team`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            teamId
-        })
-    });
-};
-
-export const deleteCurrentTeamFromGame = async (gameId: string) => {
-    return await fetch(`/api/games/${gameId}/team`, {
-        method: 'DELETE'
-    });
-};
-
-export const deleteTeamFromGame = async (gameId: string, teamId: string) => {
-    return await fetch(`/api/games/${gameId}/team`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            teamId
-        })
-    });
-};
-
-export const deleteGame = async (gameId: string) => {
-    return await fetch(`/api/games/${gameId}`, {
-        method: 'DELETE'
-    });
-};
-
-export const deleteTeam = async (teamId: string) => {
-    return await fetch(`/api/teams/${teamId}`, {
-        method: 'DELETE'
-    });
-};
-
-export const getTeam = async (teamId: string) => {
-    return await fetch(`/api/teams/${teamId}`);
-};
-
-export const createTeam = async (teamName: string, captain?: string, participants?: { name: string, email: string }[]) => {
-    return await fetch('/api/teams/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            teamName,
-            captain,
-            participants,
-        })
-    });
-};
-
-export const editTeam = async (teamId: string, newTeamName: string, captain?: string, participants?: { name: string, email: string }[]) => {
-    return await fetch(`/api/teams/${teamId}/change`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            newTeamName,
-            captain,
-            participants,
-        })
-    });
-};
-
-export const editTeamCaptainByCurrentUser = async (teamId: string) => {
-    return await fetch(`/api/teams/${teamId}/changeCaptain`, {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+        if (methodOnly) {
+            return await fetch(fullPath, {
+                method: method,
+            });
         }
-    });
-};
+        if (body) {
+            return await fetch(fullPath, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Accept': 'application/json'
+                },
+                credentials: 'include',
+                body: body
+            });
+        }
+        return await fetch(fullPath, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'Accept': 'application/json'
+            },
+            credentials: 'include'
+        });
+    }
 
-export const getTeamByCurrentUser = async () => {
-    return await fetch('/api/users/getTeam');
-};
-
-export const getTeamsWithoutUser = async () => {
-    return await fetch(`/api/teams/?withoutUser=true`);
-};
-
-export const checkToken = async () => {
-    return await fetch('/api/users/current');
-};
-
-export const sendTemporaryPassword = async (email: string, isAdmin: boolean) => {
-    return await fetch(`/api/${isAdmin ? 'admins' : 'users'}/sendMail`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            email
+    public static async createGame(
+        gameName: string,
+        teams: string[],
+        chgkSettings?: GamePartSettings,
+        matrixSettings?: GamePartSettings,
+        accessLevel: 'public' | 'private' = 'private',
+    ) {
+        return this.sendRequest({
+            method: this.Method.POST,
+            path: '/api/games/',
+            body: JSON.stringify({
+                gameName,
+                teams,
+                chgkSettings,
+                matrixSettings,
+                accessLevel
+            })
         })
-    });
-};
 
-export const checkTemporaryPassword = async (email: string, code: string, isAdmin: boolean) => {
-    return await fetch(`/api/${isAdmin ? 'admins' : 'users'}/checkTemporaryPassword`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            email,
-            code
+    }
+
+    public static async createUser(email: string,
+                                   password: string) {
+        return this.sendRequest({
+            method: this.Method.POST,
+            path: '/api/users/insert',
+            body: JSON.stringify({
+                email,
+                password
+            })
         })
-    });
-};
+    }
 
-export const changePassword = async (email: string, password: string, oldPassword: string, isAdmin = false) => {
-    return await fetch(`/api/${isAdmin ? 'admins' : 'users'}/changePassword`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            email,
-            password,
-            oldPassword
+    public static async login(email: string,
+                              password: string,
+                              isAdmin: boolean) {
+        return this.sendRequest({
+            method: this.Method.POST,
+            path: `/api/${isAdmin ? 'admins' : 'users'}/login`,
+            body: JSON.stringify({
+                email,
+                password
+            })
         })
-    });
-};
+    }
 
-export const changePasswordByCode = async (email: string, password: string, code: string, isAdmin: boolean) => {
-    return await fetch(`/api/${isAdmin ? 'admins' : 'users'}/changePasswordByCode`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            email,
-            password,
-            code
+    public static async logout() {
+        return this.sendRequest({
+            method: this.Method.POST,
+            path: '/api/users/logout'
         })
-    });
-};
+    }
 
-export const changeName = async (newName: string, isAdmin: boolean) => {
-    return await fetch(`/api/${isAdmin ? 'admins' : 'users'}/changeName`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            newName
+    public static async addCurrentTeamInGame(gameId: string) {
+        return this.sendRequest({
+            method: this.Method.POST,
+            path: `/api/games/${gameId}/team`
         })
-    });
-};
+    }
 
-export const changeIntrigueGameStatus = async (gameId: string, isIntrigue: boolean) => {
-    return await fetch(`/api/games/${gameId}/changeIntrigueStatus`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            isIntrigue
+    public static async addTeamInGame(gameId: string,
+                                      teamId: string) {
+        return this.sendRequest({
+            method: this.Method.POST,
+            path: `/api/games/${gameId}/team`,
+            body: JSON.stringify({
+                teamId
+            })
         })
-    });
-};
+    }
 
-export const deleteAdmin = async (adminEmail: string) => {
-    return await fetch(`/api/admins/delete`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            email: adminEmail
+    public static async createTeam(teamName: string,
+                                   captain ?: string,
+                                   participants ?: {
+                                       name: string,
+                                       email: string
+                                   }[]
+    ) {
+        return this.sendRequest({
+            method: this.Method.POST,
+            path: '/api/teams/',
+            body: JSON.stringify({
+                teamName,
+                captain,
+                participants,
+            })
         })
-    });
-};
+    }
 
-export const addAdmin = async (adminEmail: string, adminName = '') => {
-    return await fetch(`/api/admins/insert`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-            email: adminEmail,
-            name: adminName
+    public static async sendTemporaryPassword(email: string,
+                                              isAdmin: boolean) {
+        return this.sendRequest({
+            method: this.Method.POST,
+            path: `/api/${isAdmin ? 'admins' : 'users'}/sendMail`,
+            body: JSON.stringify({
+                email
+            })
         })
-    });
-};
+    }
 
-export const insertDemoAdmin = async () => {
-    return await fetch(`/api/admins/demo`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-    });
-};
+    public static async checkTemporaryPassword(email: string,
+                                               code: string,
+                                               isAdmin: boolean) {
+        return this.sendRequest({
+            method: this.Method.POST,
+            path: `/api/${isAdmin ? 'admins' : 'users'}/checkTemporaryPassword`,
+            body: JSON.stringify({
+                email,
+                code
+            })
+        })
+    }
 
-export const insertDemoUser = async () => {
-    return await fetch(`/api/users/demo`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        },
-        credentials: 'include',
-    });
-};
+    public static async deleteAdmin(adminEmail: string) {
+        return this.sendRequest({
+            method: this.Method.POST,
+            path: '/api/admins/delete',
+            body: JSON.stringify({
+                email: adminEmail
+            })
+        })
+    }
 
-export enum AnswerStatus {
-    RIGHT = 'right',
-    WRONG = 'wrong',
-    UNCHECKED = 'unchecked',
-    ON_APPEAL = 'on_appeal'
+    public static async addAdmin(adminEmail: string,
+                                 adminName = '') {
+        return this.sendRequest({
+            method: this.Method.POST,
+            path: '/api/admins/insert',
+            body: JSON.stringify({
+                email: adminEmail,
+                name: adminName
+            })
+        })
+    }
+
+    public static async insertDemoAdmin() {
+        return this.sendRequest({
+            method: this.Method.POST,
+            path: '/api/admins/demo'
+        })
+    }
+
+    public static async insertDemoUser() {
+        return this.sendRequest({
+            method: this.Method.POST,
+            path: '/api/users/demo'
+        })
+    }
+
+    public static async editGame(gameId: string,
+                                 newGameName: string,
+                                 chgkSettings ?: GamePartSettings,
+                                 matrixSettings ?: GamePartSettings,
+                                 accessLevel: 'public' | 'private' = 'private',) {
+        return this.sendRequest({
+            method: this.Method.PATCH,
+            path: `/api/games/${gameId}/change`,
+            body: JSON.stringify({
+                newGameName,
+                chgkSettings,
+                matrixSettings,
+                accessLevel
+            })
+        })
+    }
+
+    public static async editTeam(teamId: string,
+                                 newTeamName: string,
+                                 captain ?: string,
+                                 participants ?: { name: string, email: string }[]) {
+        return this.sendRequest({
+            method: this.Method.PATCH,
+            path: `/api/teams/${teamId}/change`,
+            body: JSON.stringify({
+                newTeamName,
+                captain,
+                participants,
+            })
+        })
+    }
+
+    public static async editTeamCaptainByCurrentUser(teamId: string) {
+        return this.sendRequest({
+            method: this.Method.PATCH,
+            path: `/api/teams/${teamId}/changeCaptain`
+        })
+    }
+
+    public static async changePassword(email: string,
+                                       password: string,
+                                       oldPassword: string,
+                                       isAdmin = false) {
+        return this.sendRequest({
+            method: this.Method.PATCH,
+            path: `/api/${isAdmin ? 'admins' : 'users'}/changePassword`,
+            body: JSON.stringify({
+                email,
+                password,
+                oldPassword
+            })
+        })
+    }
+
+    public static async changePasswordByCode(email: string,
+                                             password: string,
+                                             code: string,
+                                             isAdmin: boolean) {
+        return this.sendRequest({
+            method: this.Method.PATCH,
+            path: `/api/${isAdmin ? 'admins' : 'users'}/changePasswordByCode`,
+            body: JSON.stringify({
+                email,
+                password,
+                code
+            })
+        })
+    }
+
+    public static async changeName(newName: string,
+                                   isAdmin: boolean) {
+        return this.sendRequest({
+            method: this.Method.PATCH,
+            path: `/api/${isAdmin ? 'admins' : 'users'}/changeName`,
+            body: JSON.stringify({
+                newName
+            })
+        })
+    }
+
+    public static async changeIntrigueGameStatus(gameId: string,
+                                                 isIntrigue: boolean) {
+        return this.sendRequest({
+            method: this.Method.PATCH,
+            path: `/api/games/${gameId}/changeIntrigueStatus`,
+            body: JSON.stringify({
+                isIntrigue
+            })
+        })
+    }
+
+    public static async deleteCurrentTeamFromGame(gameId: string) {
+        return this.sendRequest({
+            method: this.Method.DELETE,
+            path: `/api/games/${gameId}/team`,
+            methodOnly: true
+        })
+    }
+
+    public static async deleteTeamFromGame(gameId: string,
+                                           teamId: string) {
+        return this.sendRequest(
+            {
+                method: this.Method.DELETE,
+                path: `/api/games/${gameId}/team`,
+                body: JSON.stringify({
+                    teamId
+                })
+            })
+    }
+
+    public static async deleteGame(gameId: string) {
+        return this.sendRequest(
+            {
+                method: this.Method.DELETE,
+                path: `/api/games/${gameId}`,
+                methodOnly: true
+            })
+    }
+
+    public static async deleteTeam(teamId: string) {
+        return this.sendRequest({
+            method: this.Method.DELETE,
+            path: `/api/teams/${teamId}`,
+            methodOnly: true
+        })
+    }
+
+    public static async getAll(path: string) {
+        return this.sendRequest({
+            path: `/api/${path}`,
+            sendOnly: true
+        })
+    }
+
+    public static async getAmIParticipateGames() {
+        return this.sendRequest({
+            path: '/api/games/?amIParticipate=true',
+            sendOnly: true
+        })
+    }
+
+    public static async getAmIParticipateAndPublicGames() {
+        return this.sendRequest({
+            path: '/api/games/?amIParticipate=true&publicEnabled=true',
+            sendOnly: true
+        })
+    }
+
+    public static async getTeamsParticipants(gameId: string) {
+        return this.sendRequest({
+            path: `/api/games/${gameId}/teamsParticipants`,
+            sendOnly: true
+        })
+    }
+
+    public static async getResultTable(gameId: string) {
+        return this.sendRequest({
+            path: `/api/games/${gameId}/resultTable`,
+            sendOnly: true
+        })
+    }
+
+    public static async getResultTableFormat(gameId: string) {
+        return this.sendRequest({
+            path: `/api/games/${gameId}/resultTable/format`,
+            sendOnly: true
+        })
+    }
+
+    public static async getTeamsParticipantTable(gameId: string) {
+        return this.sendRequest({
+            path: `/api/games/${gameId}/participants`,
+            sendOnly: true
+        })
+    }
+
+    public static async getUsersWithoutTeam() {
+        return this.sendRequest({
+            path: '/api/users/?withoutTeam=true',
+            sendOnly: true
+        })
+    }
+
+    public static async getGame(gameId: string) {
+        return this.sendRequest({
+            path: `/api/games/${gameId}`,
+            sendOnly: true
+        })
+    }
+
+    public static async startGame(gameId: string) {
+        return this.sendRequest({
+            path: `/api/games/${gameId}/start`,
+            sendOnly: true
+        })
+    }
+
+    public static async getTeam(teamId: string) {
+        return this.sendRequest({
+            path: `/api/teams/${teamId}`,
+            sendOnly: true
+        })
+    }
+    public static async getTeamByCurrentUser() {
+        return this.sendRequest({
+            path: '/api/users/getTeam',
+            sendOnly: true
+        })
+    }
+
+    public static async getTeamsWithoutUser() {
+        return this.sendRequest({
+            path: '/api/teams/?withoutUser=true',
+            sendOnly: true
+        })
+    }
+
+    public static async checkToken() {
+        return this.sendRequest({
+            path: '/api/users/current',
+            sendOnly: true
+        })
+    }
 }

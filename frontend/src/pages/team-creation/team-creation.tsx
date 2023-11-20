@@ -10,7 +10,6 @@ import {
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import {Alert, Autocomplete, Button, OutlinedInput, Skeleton, Snackbar, TextField} from '@mui/material';
 import {CustomInput} from '../../components/custom-input/custom-input';
-import {createTeam, editTeam, getTeam, getUsersWithoutTeam} from '../../server-api/server-api';
 import {Redirect, useLocation} from 'react-router-dom';
 import NavBar from '../../components/nav-bar/nav-bar';
 import PageBackdrop from '../../components/backdrop/backdrop';
@@ -24,6 +23,7 @@ import Loader from '../../components/loader/loader';
 import CloseIcon from '@mui/icons-material/Close';
 import {Scrollbars} from 'rc-scrollbars';
 import {User} from '../admin-start-screen/admin-start-screen';
+import {ServerApi} from "../../server-api/server-api";
 
 export interface TeamMember {
     name: string;
@@ -64,7 +64,7 @@ const TeamCreator: FC<TeamCreatorProps> = props => {
             setOldCaptain(props.userEmail);
             setUsersFromDB([props.userEmail]);
             if (props.mode === 'edit') {
-                getTeam(location.state.id).then(res => {
+                ServerApi.getTeam(location.state.id).then(res => {
                     if (res.status === 200) {
                         res.json().then(team => {
                             setMembers(team.participants ?? []);
@@ -76,13 +76,13 @@ const TeamCreator: FC<TeamCreatorProps> = props => {
                 setIsPageLoading(false);
             }
         } else {
-            getUsersWithoutTeam().then(res => {
+            ServerApi.getUsersWithoutTeam().then(res => {
                 if (res.status === 200) {
                     res.json().then(({users}) => {
                         const userObjects = users as User[]
                         setUsersFromDB([...userObjects.map(user => user.email)]);
                         if (props.mode === 'edit') {
-                            getTeam(location.state.id).then(res => {
+                            ServerApi.getTeam(location.state.id).then(res => {
                                 if (res.status === 200) {
                                     res.json().then(team => {
                                         setCaptain(team.captainEmail);
@@ -124,7 +124,7 @@ const TeamCreator: FC<TeamCreatorProps> = props => {
         }*/
         setIsLoading(true);
         if (props.mode === 'creation') {
-            createTeam(teamName, captain, members.filter(member => member.name !== "" || member.email !== "")).then(res => {
+            ServerApi.createTeam(teamName, captain, members.filter(member => member.name !== "" || member.email !== "")).then(res => {
                 if (res.status === 200) {
                     setIsCreatedSuccessfully(true);
                     if (!props.isAdmin) {
@@ -139,7 +139,7 @@ const TeamCreator: FC<TeamCreatorProps> = props => {
                 }
             });
         } else {
-            editTeam(location.state.id, teamName, captain, members.filter(member => member.name !== "" || member.email !== "")).then(res => {
+            ServerApi.editTeam(location.state.id, teamName, captain, members.filter(member => member.name !== "" || member.email !== "")).then(res => {
                 if (res.status === 200) {
                     if (!props.isAdmin) {
                         props.onAddUserTeam(teamName);

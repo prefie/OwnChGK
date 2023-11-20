@@ -6,15 +6,7 @@ import {Scrollbars} from 'rc-scrollbars';
 import {GameCreatorProps} from '../../entities/game-creator/game-creator.interfaces';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import {CustomInput} from '../../components/custom-input/custom-input';
-import {
-    addTeamInGame,
-    createGame,
-    deleteTeamFromGame,
-    editGame,
-    GamePartSettings,
-    getAll,
-    getGame
-} from '../../server-api/server-api';
+import {ServerApi} from '../../server-api/server-api';
 import {Redirect, useLocation} from 'react-router-dom';
 import NavBar from '../../components/nav-bar/nav-bar';
 import {Team} from '../admin-start-screen/admin-start-screen';
@@ -35,6 +27,7 @@ import {AccessLevel} from "../../components/game-item/game-item";
 import CustomCheckbox from "../../components/custom-checkbox/custom-checkbox";
 import {Input} from "../../components/input/input";
 import {ClearRounded, EditRounded, AddRounded, SearchRounded} from "@mui/icons-material";
+import {GamePartSettings} from "../../server-api/type";
 
 const GameCreator: FC<GameCreatorProps> = props => {
     const [teamsFromDB, setTeamsFromDB] = useState<Team[]>();
@@ -76,7 +69,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
     }
 
     useEffect(() => {
-        getAll('/teams/').then(res => {
+        ServerApi.getAll('/teams/').then(res => {
             if (res.status === 200) {
                 res.json().then(({teams}) => {
                     setTeamsFromDB(teams);
@@ -87,7 +80,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
         });
 
         if (props.mode === 'edit') {
-            getGame(oldGameId).then(res => {
+            ServerApi.getGame(oldGameId).then(res => {
                 if (res.status === 200) {
                     res.json().then(({teams, chgkSettings, matrixSettings, accessLevel}) => {
                         setChgkSettings(chgkSettings);
@@ -124,7 +117,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
 
             props.mode === 'creation'
                 ? addTeamInChosenTeams(element.name)
-                : await addTeamInGame(oldGameId, team.id)
+                : await ServerApi.addTeamInGame(oldGameId, team.id)
                     .then(res => {
                         if (res.status === 200) {
                             addTeamInChosenTeams(element.name);
@@ -138,7 +131,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
 
             props.mode === 'creation'
                 ? deleteTeamFromChosenTeams(element.name)
-                : await deleteTeamFromGame(oldGameId, team.id)
+                : await ServerApi.deleteTeamFromGame(oldGameId, team.id)
                     .then(res => {
                         if (res.status === 200) {
                             deleteTeamFromChosenTeams(element.name);
@@ -159,7 +152,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
     };
 
     const renderAccessLevelGameCheckbox = () => {
-        return(
+        return (
             <CustomCheckbox
                 label={'Публичная регистрация команд'}
                 onChange={handleCheckboxAccessLevelChange}
@@ -262,7 +255,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                 ?.filter(t => teams.has(t.name))
                 .map(t => t.id);
 
-            await createGame(gameName, teamIds ?? [], chgkSettings, matrixSettings, gameAccessLevel)
+            await ServerApi.createGame(gameName, teamIds ?? [], chgkSettings, matrixSettings, gameAccessLevel)
                 .then(res => {
                     if (res.status === 200) {
                         setIsCreatedSuccessfully(true);
@@ -275,7 +268,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                     }
                 });
         } else {
-            await editGame(oldGameId, gameName, chgkSettings, matrixSettings, gameAccessLevel)
+            await ServerApi.editGame(oldGameId, gameName, chgkSettings, matrixSettings, gameAccessLevel)
                 .then(res => {
                     if (res.status === 200) {
                         setIsCreatedSuccessfully(true);
@@ -503,7 +496,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                                             }}>Добавьте хотя бы один режим в игру</small>
                                                             : null
                                                     }
-                                                    { props.role !== 'demoadmin' ? renderAccessLevelGameCheckbox() : null }
+                                                    {props.role !== 'demoadmin' ? renderAccessLevelGameCheckbox() : null}
                                                 </>
                                             )
                                             : (
@@ -640,12 +633,13 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                 {props.mode === 'edit' ? 'Сохранить' : 'Создать'}
                             </button>
 
-                            <button type='button' className={`${classes.button} ${classes.defaultButton}`} onClick={() => {
-                                setTempChgkRoundsCount(undefined);
-                                setTempChgkQuestionsCount(undefined);
-                                setTempChgkQuestions(undefined);
-                                setPage('main');
-                            }}>
+                            <button type='button' className={`${classes.button} ${classes.defaultButton}`}
+                                    onClick={() => {
+                                        setTempChgkRoundsCount(undefined);
+                                        setTempChgkQuestionsCount(undefined);
+                                        setTempChgkQuestions(undefined);
+                                        setPage('main');
+                                    }}>
                                 Отменить
                             </button>
                         </div>
@@ -663,20 +657,22 @@ const GameCreator: FC<GameCreatorProps> = props => {
                         </div>
 
                         <div className={classes.buttonsWrapper}>
-                            <button type='submit' className={`${classes.button} ${classes.primaryButton}`} onClick={() => {
-                                setIsSaveChgkQuestions(true);
-                                setPage('chgk-settings');
-                            }}>
+                            <button type='submit' className={`${classes.button} ${classes.primaryButton}`}
+                                    onClick={() => {
+                                        setIsSaveChgkQuestions(true);
+                                        setPage('chgk-settings');
+                                    }}>
                                 Сохранить
                             </button>
 
-                            <button type='button' className={`${classes.button} ${classes.defaultButton}`} onClick={() => {
-                                if (!isSaveChgkQuestions) {
-                                    setTempChgkQuestions(undefined);
-                                }
+                            <button type='button' className={`${classes.button} ${classes.defaultButton}`}
+                                    onClick={() => {
+                                        if (!isSaveChgkQuestions) {
+                                            setTempChgkQuestions(undefined);
+                                        }
 
-                                setPage('chgk-settings');
-                            }}>
+                                        setPage('chgk-settings');
+                                    }}>
                                 Отменить
                             </button>
                         </div>
@@ -727,13 +723,14 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                 Далее
                             </button>
 
-                            <button type='button' className={`${classes.button} ${classes.defaultButton}`} onClick={() => {
-                                setTempMatrixQuestionsCount(undefined);
-                                setTempMatrixRoundsCount(undefined);
-                                setTempMatrixRoundNames(undefined);
-                                setTempMatrixQuestions(undefined);
-                                setPage('main');
-                            }}>
+                            <button type='button' className={`${classes.button} ${classes.defaultButton}`}
+                                    onClick={() => {
+                                        setTempMatrixQuestionsCount(undefined);
+                                        setTempMatrixRoundsCount(undefined);
+                                        setTempMatrixRoundNames(undefined);
+                                        setTempMatrixQuestions(undefined);
+                                        setPage('main');
+                                    }}>
                                 Отменить
                             </button>
                         </div>
@@ -803,14 +800,15 @@ const GameCreator: FC<GameCreatorProps> = props => {
                                 {props.mode === 'edit' ? 'Сохранить' : 'Создать'}
                             </button>
 
-                            <button type='button' className={`${classes.button} ${classes.defaultButton}`} onClick={() => {
-                                if (!isSaveMatrixTours) {
-                                    setTempMatrixRoundNames(undefined);
-                                    setTempMatrixQuestions(undefined);
-                                }
+                            <button type='button' className={`${classes.button} ${classes.defaultButton}`}
+                                    onClick={() => {
+                                        if (!isSaveMatrixTours) {
+                                            setTempMatrixRoundNames(undefined);
+                                            setTempMatrixQuestions(undefined);
+                                        }
 
-                                setPage('matrix-settings');
-                            }}>
+                                        setPage('matrix-settings');
+                                    }}>
                                 Назад
                             </button>
                         </div>
@@ -828,19 +826,21 @@ const GameCreator: FC<GameCreatorProps> = props => {
                         </div>
 
                         <div className={classes.buttonsWrapper}>
-                            <button type='submit' className={`${classes.button} ${classes.primaryButton}`} onClick={() => {
-                                setPage('matrix-tours');
-                                setIsSaveMatrixQuestions(true);
-                            }}>
+                            <button type='submit' className={`${classes.button} ${classes.primaryButton}`}
+                                    onClick={() => {
+                                        setPage('matrix-tours');
+                                        setIsSaveMatrixQuestions(true);
+                                    }}>
                                 Сохранить
                             </button>
 
-                            <button type='button' className={`${classes.button} ${classes.defaultButton}`} onClick={() => {
-                                if (!isSaveMatrixQuestions) {
-                                    setTempMatrixQuestions(undefined);
-                                }
-                                setPage('matrix-tours');
-                            }}>
+                            <button type='button' className={`${classes.button} ${classes.defaultButton}`}
+                                    onClick={() => {
+                                        if (!isSaveMatrixQuestions) {
+                                            setTempMatrixQuestions(undefined);
+                                        }
+                                        setPage('matrix-tours');
+                                    }}>
                                 Отменить
                             </button>
                         </div>
