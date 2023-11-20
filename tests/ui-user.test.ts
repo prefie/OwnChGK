@@ -1,5 +1,4 @@
-const webdriver = require('selenium-webdriver')
-const { By, Key, until } = require('selenium-webdriver');
+import { Builder, By, Key, until } from 'selenium-webdriver';
 let driver;
 
 const port = parseInt(process.env.PORT || '3000');
@@ -13,7 +12,7 @@ beforeEach(async function () {
         jest.useFakeTimers({ legacyFakeTimers: true })
         jest.useRealTimers()
         jest.setTimeout(60000);
-        driver = new webdriver.Builder().forBrowser('firefox').build();
+        driver = new Builder().forBrowser('firefox').build();
         driver.get(url);
         await driver.wait(until.elementLocated(By.id('restore')), 10000);
     } catch (ex) {
@@ -96,7 +95,7 @@ afterEach(async function () {
     await driver.quit();
 })
 
-async function login(email: String, password: String, elementId: String) {
+async function login(email: string, password: string, elementId: string) {
     await driver.findElement(By.id('password')).sendKeys(password, Key.ENTER);
     await driver.findElement(By.id('email')).sendKeys(email, Key.ENTER);
     await driver.wait(until.elementLocated(By.id(elementId)), 10000);

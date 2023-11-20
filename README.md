@@ -21,7 +21,7 @@
 
 1) Склонировать репозиторий
 ```bash
-    git clone https://github.com/prefie/OwnChGK_.git
+    git clone https://github.com/prefie/OwnChGK.git
 ```   
 
 2) Перейти на продакшен ветку (`master`)
