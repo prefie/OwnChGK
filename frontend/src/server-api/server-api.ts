@@ -1,7 +1,9 @@
-import { GamePartSettings } from './type';
-
+import {GamePartSettings} from "./type";
 export class ServerApi {
-    private static pathServer = 'http://localhost:3001/';
+    // Для локального, поменять на
+    // private static serverPath = `http://localhost:${PORT}/api`
+
+    private static serverPath = `/api`
 
     private static Method = {
         POST: 'POST',
@@ -22,7 +24,7 @@ export class ServerApi {
         methodOnly?: boolean;
         sendOnly?: boolean;
     }) {
-        const fullPath = this.pathServer + path;
+        const fullPath = this.serverPath + path
         if (sendOnly) {
             return await fetch(fullPath);
         }
@@ -61,7 +63,7 @@ export class ServerApi {
     ) {
         return this.sendRequest({
             method: this.Method.POST,
-            path: '/api/games/',
+            path: '/games/',
             body: JSON.stringify({
                 gameName,
                 teams,
@@ -75,7 +77,7 @@ export class ServerApi {
     public static async createUser(email: string, password: string) {
         return this.sendRequest({
             method: this.Method.POST,
-            path: '/api/users/insert',
+            path: '/users/insert',
             body: JSON.stringify({
                 email,
                 password,
@@ -86,7 +88,7 @@ export class ServerApi {
     public static async login(email: string, password: string, isAdmin: boolean) {
         return this.sendRequest({
             method: this.Method.POST,
-            path: `/api/${isAdmin ? 'admins' : 'users'}/login`,
+            path: `/${isAdmin ? 'admins' : 'users'}/login`,
             body: JSON.stringify({
                 email,
                 password,
@@ -97,21 +99,21 @@ export class ServerApi {
     public static async logout() {
         return this.sendRequest({
             method: this.Method.POST,
-            path: '/api/users/logout',
-        });
+            path: '/users/logout'
+        })
     }
 
     public static async addCurrentTeamInGame(gameId: string) {
         return this.sendRequest({
             method: this.Method.POST,
-            path: `/api/games/${gameId}/team`,
-        });
+            path: `/games/${gameId}/team`
+        })
     }
 
     public static async addTeamInGame(gameId: string, teamId: string) {
         return this.sendRequest({
             method: this.Method.POST,
-            path: `/api/games/${gameId}/team`,
+            path: `/games/${gameId}/team`,
             body: JSON.stringify({
                 teamId,
             }),
@@ -128,7 +130,7 @@ export class ServerApi {
     ) {
         return this.sendRequest({
             method: this.Method.POST,
-            path: '/api/teams/',
+            path: '/teams/',
             body: JSON.stringify({
                 teamName,
                 captain,
@@ -140,7 +142,7 @@ export class ServerApi {
     public static async sendTemporaryPassword(email: string, isAdmin: boolean) {
         return this.sendRequest({
             method: this.Method.POST,
-            path: `/api/${isAdmin ? 'admins' : 'users'}/sendMail`,
+            path: `/${isAdmin ? 'admins' : 'users'}/sendMail`,
             body: JSON.stringify({
                 email,
             }),
@@ -150,7 +152,7 @@ export class ServerApi {
     public static async checkTemporaryPassword(email: string, code: string, isAdmin: boolean) {
         return this.sendRequest({
             method: this.Method.POST,
-            path: `/api/${isAdmin ? 'admins' : 'users'}/checkTemporaryPassword`,
+            path: `/${isAdmin ? 'admins' : 'users'}/checkTemporaryPassword`,
             body: JSON.stringify({
                 email,
                 code,
@@ -161,7 +163,7 @@ export class ServerApi {
     public static async deleteAdmin(adminEmail: string) {
         return this.sendRequest({
             method: this.Method.POST,
-            path: '/api/admins/delete',
+            path: '/admins/delete',
             body: JSON.stringify({
                 email: adminEmail,
             }),
@@ -171,7 +173,7 @@ export class ServerApi {
     public static async addAdmin(adminEmail: string, adminName = '') {
         return this.sendRequest({
             method: this.Method.POST,
-            path: '/api/admins/insert',
+            path: '/admins/insert',
             body: JSON.stringify({
                 email: adminEmail,
                 name: adminName,
@@ -182,15 +184,15 @@ export class ServerApi {
     public static async insertDemoAdmin() {
         return this.sendRequest({
             method: this.Method.POST,
-            path: '/api/admins/demo',
-        });
+            path: '/admins/demo'
+        })
     }
 
     public static async insertDemoUser() {
         return this.sendRequest({
             method: this.Method.POST,
-            path: '/api/users/demo',
-        });
+            path: '/users/demo'
+        })
     }
 
     public static async editGame(
@@ -202,7 +204,7 @@ export class ServerApi {
     ) {
         return this.sendRequest({
             method: this.Method.PATCH,
-            path: `/api/games/${gameId}/change`,
+            path: `/games/${gameId}/change`,
             body: JSON.stringify({
                 newGameName,
                 chgkSettings,
@@ -220,7 +222,7 @@ export class ServerApi {
     ) {
         return this.sendRequest({
             method: this.Method.PATCH,
-            path: `/api/teams/${teamId}/change`,
+            path: `/teams/${teamId}/change`,
             body: JSON.stringify({
                 newTeamName,
                 captain,
@@ -232,14 +234,14 @@ export class ServerApi {
     public static async editTeamCaptainByCurrentUser(teamId: string) {
         return this.sendRequest({
             method: this.Method.PATCH,
-            path: `/api/teams/${teamId}/changeCaptain`,
-        });
+            path: `/teams/${teamId}/changeCaptain`
+        })
     }
 
     public static async changePassword(email: string, password: string, oldPassword: string, isAdmin = false) {
         return this.sendRequest({
             method: this.Method.PATCH,
-            path: `/api/${isAdmin ? 'admins' : 'users'}/changePassword`,
+            path: `/${isAdmin ? 'admins' : 'users'}/changePassword`,
             body: JSON.stringify({
                 email,
                 password,
@@ -251,7 +253,7 @@ export class ServerApi {
     public static async changePasswordByCode(email: string, password: string, code: string, isAdmin: boolean) {
         return this.sendRequest({
             method: this.Method.PATCH,
-            path: `/api/${isAdmin ? 'admins' : 'users'}/changePasswordByCode`,
+            path: `/${isAdmin ? 'admins' : 'users'}/changePasswordByCode`,
             body: JSON.stringify({
                 email,
                 password,
@@ -263,7 +265,7 @@ export class ServerApi {
     public static async changeName(newName: string, isAdmin: boolean) {
         return this.sendRequest({
             method: this.Method.PATCH,
-            path: `/api/${isAdmin ? 'admins' : 'users'}/changeName`,
+            path: `/${isAdmin ? 'admins' : 'users'}/changeName`,
             body: JSON.stringify({
                 newName,
             }),
@@ -273,7 +275,7 @@ export class ServerApi {
     public static async changeIntrigueGameStatus(gameId: string, isIntrigue: boolean) {
         return this.sendRequest({
             method: this.Method.PATCH,
-            path: `/api/games/${gameId}/changeIntrigueStatus`,
+            path: `/games/${gameId}/changeIntrigueStatus`,
             body: JSON.stringify({
                 isIntrigue,
             }),
@@ -283,139 +285,135 @@ export class ServerApi {
     public static async deleteCurrentTeamFromGame(gameId: string) {
         return this.sendRequest({
             method: this.Method.DELETE,
-            path: `/api/games/${gameId}/team`,
-            methodOnly: true,
-        });
+            path: `/games/${gameId}/team`,
+            methodOnly: true
+        })
     }
 
-    public static async deleteTeamFromGame(gameId: string, teamId: string) {
-        return this.sendRequest({
-            method: this.Method.DELETE,
-            path: `/api/games/${gameId}/team`,
-            body: JSON.stringify({
-                teamId,
-            }),
-        });
+    public static async deleteTeamFromGame(gameId: string,
+                                           teamId: string) {
+        return this.sendRequest(
+            {
+                method: this.Method.DELETE,
+                path: `/games/${gameId}/team`,
+                body: JSON.stringify({
+                    teamId
+                })
+            })
     }
 
     public static async deleteGame(gameId: string) {
-        return this.sendRequest({
-            method: this.Method.DELETE,
-            path: `/api/games/${gameId}`,
-            methodOnly: true,
-        });
+        return this.sendRequest(
+            {
+                method: this.Method.DELETE,
+                path: `/games/${gameId}`,
+                methodOnly: true
+            })
     }
 
     public static async deleteTeam(teamId: string) {
         return this.sendRequest({
             method: this.Method.DELETE,
-            path: `/api/teams/${teamId}`,
-            methodOnly: true,
-        });
+            path: `/teams/${teamId}`,
+            methodOnly: true
+        })
     }
 
     public static async getAll(path: string) {
         return this.sendRequest({
-            path: `/api/${path}`,
-            sendOnly: true,
-        });
+            path: `/${path}`,
+            sendOnly: true
+        })
     }
 
     public static async getAmIParticipateGames() {
         return this.sendRequest({
-            path: '/api/games/?amIParticipate=true',
-            sendOnly: true,
-        });
+            path: '/games/?amIParticipate=true',
+            sendOnly: true
+        })
     }
 
     public static async getAmIParticipateAndPublicGames() {
         return this.sendRequest({
-            path: '/api/games/?amIParticipate=true&publicEnabled=true',
-            sendOnly: true,
-        });
+            path: '/games/?amIParticipate=true&publicEnabled=true',
+            sendOnly: true
+        })
     }
 
     public static async getTeamsParticipants(gameId: string) {
         return this.sendRequest({
-            path: `/api/games/${gameId}/teamsParticipants`,
-            sendOnly: true,
-        });
+            path: `/games/${gameId}/teamsParticipants`,
+            sendOnly: true
+        })
     }
 
     public static async getResultTable(gameId: string) {
         return this.sendRequest({
-            path: `/api/games/${gameId}/resultTable`,
-            sendOnly: true,
-        });
+            path: `/games/${gameId}/resultTable`,
+            sendOnly: true
+        })
     }
 
     public static async getResultTableFormat(gameId: string) {
         return this.sendRequest({
-            path: `/api/games/${gameId}/resultTable/format`,
-            sendOnly: true,
-        });
+            path: `/games/${gameId}/resultTable/format`,
+            sendOnly: true
+        })
     }
 
     public static async getTeamsParticipantTable(gameId: string) {
         return this.sendRequest({
-            path: `/api/games/${gameId}/participants`,
-            sendOnly: true,
-        });
+            path: `/games/${gameId}/participants`,
+            sendOnly: true
+        })
     }
 
     public static async getUsersWithoutTeam() {
         return this.sendRequest({
-            path: '/api/users/?withoutTeam=true',
-            sendOnly: true,
-        });
+            path: '/users/?withoutTeam=true',
+            sendOnly: true
+        })
     }
 
     public static async getGame(gameId: string) {
         return this.sendRequest({
-            path: `/api/games/${gameId}`,
-            sendOnly: true,
-        });
+            path: `/games/${gameId}`,
+            sendOnly: true
+        })
     }
 
     public static async startGame(gameId: string) {
         return this.sendRequest({
-            path: `/api/games/${gameId}/start`,
-            sendOnly: true,
-        });
-    }
-
-    public static async endGame(gameId: string) {
-        return this.sendRequest({
-            path: `/api/games/${gameId}/end`,
-            sendOnly: true,
-        });
+            path: `/games/${gameId}/start`,
+            sendOnly: true
+        })
     }
 
     public static async getTeam(teamId: string) {
         return this.sendRequest({
-            path: `/api/teams/${teamId}`,
-            sendOnly: true,
-        });
+            path: `/teams/${teamId}`,
+            sendOnly: true
+        })
     }
 
     public static async getTeamByCurrentUser() {
         return this.sendRequest({
-            path: '/api/users/getTeam',
-            sendOnly: true,
-        });
+            path: '/users/getTeam',
+            sendOnly: true
+        })
     }
 
     public static async getTeamsWithoutUser() {
         return this.sendRequest({
-            path: '/api/teams/?withoutUser=true',
-            sendOnly: true,
-        });
+            path: '/teams/?withoutUser=true',
+            sendOnly: true
+        })
     }
 
     public static async checkToken() {
         return this.sendRequest({
-            path: '/api/users/current',
-            sendOnly: true,
-        });
+            path: '/users/current',
+            sendOnly: true
+        })
     }
 }
