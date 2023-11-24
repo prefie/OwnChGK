@@ -5,7 +5,6 @@ import { allAdminRoles, superAdminRoles } from '../utils/roles';
 import { body } from 'express-validator';
 import { validationMiddleware } from '../middleware/validation.middleware';
 import { authMiddleware } from '../middleware/auth.middleware';
-import {wrap} from '../utils/wrap';
 
 export const adminsRouter = () => {
     const router = Router();
@@ -21,10 +20,10 @@ export const adminsRouter = () => {
 
     router.post(
         '/login',
-        wrap(body('email').isEmail(),
-            body('password').isString().notEmpty(),
-            validationMiddleware,
-            adminsController.login.bind(adminsController))
+        body('email').isEmail(),
+        body('password').isString().notEmpty(),
+        validationMiddleware,
+        adminsController.login.bind(adminsController)
     );
 
     router.post(
