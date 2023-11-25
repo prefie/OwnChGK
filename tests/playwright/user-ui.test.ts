@@ -19,7 +19,6 @@ test('Should_open_page', async () => {
 
 test('Should_successful_login', async () => {
   await login(page);
-  await page.waitForSelector('#teams');
 
   const currentUrl = page.url();
   expect(currentUrl).toContain('/start-screen');
@@ -30,7 +29,6 @@ test('Should_go_to_change_password', async () => {
   await restoreLink?.click();
   await page.waitForURL('**/restore-password');
 
-  await page.waitForSelector("#restoreSend");
   const button = page.locator('#restoreSend');
   const input = page.locator('#email');
   const rememberPasswordLink = page.locator('#remember');
@@ -43,13 +41,10 @@ test('Should_go_to_change_password', async () => {
 
 test('Should_go_to_team_creation', async () => {
   await login(page);
-  await page.waitForSelector('#teams');
 
-  await page.waitForSelector("#addTeamButton");
   const button = page.locator('#addTeamButton');
   await button?.click();
 
-  await page.waitForSelector("#teamName");
   const teamNameInput = page.locator('#teamName');
   const captainInput = page.locator('#captain');
   const saveTeamButton = page.locator('#saveTeam');
@@ -63,12 +58,10 @@ test('Should_go_to_team_creation', async () => {
 
 test('Should_user_logout', async () => {
   await login(page);
-  await page.waitForSelector('#games');
 
   const cookie = await page.context().cookies();;
   expect(cookie.find(c => c.name === "authorization")).toBeDefined();
 
-  await page.waitForSelector('img[alt="LogOut"]');
   const logout = page.locator('img[alt="LogOut"]');
   await logout?.click();
 

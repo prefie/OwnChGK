@@ -19,7 +19,6 @@ test('Should_open_admin_page', async () => {
 
 test('Should_successful_login', async () => {
     await login(page);
-    await page.waitForSelector('#teams');
 
     const currentUrl = page.url();
     expect(currentUrl).toContain('/start-screen');
@@ -30,7 +29,6 @@ test('Should_go_to_change_password', async () => {
     await restoreLink?.click();
     await page.waitForURL('**/restore-password');
 
-    await page.waitForSelector("#restoreSend");
     const button = page.locator('#restoreSend');
     const input = page.locator('#email');
     const rememberPasswordLink = page.locator('#remember');
@@ -44,13 +42,10 @@ test('Should_go_to_change_password', async () => {
 test('Should_go_to_team_creation_by_admin', async () => {
     await login(page);
 
-    await page.waitForSelector("#teams");
     const teamsTab = page.locator('#teams');
     await teamsTab?.click();
-    await page.waitForSelector("#addTeamButton");
     const button = page.locator('#addTeamButton');
     await button?.click();
-    await page.waitForSelector("#teamName");
 
     const teamNameInput = page.locator('#teamName');
     const captainInput = page.locator('#captain');
@@ -66,12 +61,10 @@ test('Should_go_to_team_creation_by_admin', async () => {
 test('Should_go_to_admin_profile', async () => {
     await login(page);
 
-    await page.waitForSelector("#profile");
     const profile = page.locator('#profile');
     await profile?.click();
-    await page.waitForSelector("#email");
-
     const email = page.locator('#email');
+
     const oldPassword = page.locator('#old-password');
     const newPassword = page.locator('#new-password');
     const newPasswordRepeat = page.locator('#repeat-new-password');
@@ -86,12 +79,10 @@ test('Should_go_to_admin_profile', async () => {
 
 test('Should_admin_logout', async () => {
     await login(page);
-    await page.waitForSelector('#games');
 
     const cookie = await page.context().cookies();
     expect(cookie.find(c => c.name === "authorization")).toBeDefined();
 
-    await page.waitForSelector('img[alt="LogOut"]');
     const logout = page.locator('img[alt="LogOut"]');
     await logout?.click();
 
