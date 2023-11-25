@@ -1,8 +1,8 @@
-import { ADMIN_URL, LOGIN_USER_SECRET, PASSWORD_USER_SECRET, URL } from "../test-helper";
+import { ADMIN_URL, LOGIN_USER_SECRET, login } from "../test-helper";
 
-const { firefox } = require('playwright');
+import { Page, firefox } from 'playwright';
 
-let page;
+let page: Page;
 
 beforeEach(async () => {
     const browser = await firefox.launch();
@@ -17,96 +17,88 @@ test('Should_open_admin_page', async () => {
     expect(currentUrl).toContain(ADMIN_URL);
 }, 60000);
 
-test('Should_click_reset_for_admin', async () => {
-    const restoreLink = await page.$('#restore');
-    await restoreLink.click();
-    await page.waitForNavigation();
-    const currentUrl = page.url();
-    expect(currentUrl).toContain('/restore-password');
-}, 60000);
-
 test('Should_successful_login', async () => {
-    await login(LOGIN_USER_SECRET, PASSWORD_USER_SECRET, "teams");
+    await login(page);
+    await page.waitForSelector('#teams');
 
     const currentUrl = page.url();
     expect(currentUrl).toContain('/start-screen');
 }, 60000);
 
 test('Should_go_to_change_password', async () => {
-    const restoreLink = await page.$('#restore');
-    await restoreLink.click();
-    await page.waitForNavigation();
+    const restoreLink = page.locator('#restore');
+    await restoreLink?.click();
+    await page.waitForURL('**/restore-password');
 
     await page.waitForSelector("#restoreSend");
-    const button = await page.$('#restoreSend');
-    const input = await page.$('#email');
-    const rememberPasswordLink = await page.$('#remember');
+    const button = page.locator('#restoreSend');
+    const input = page.locator('#email');
+    const rememberPasswordLink = page.locator('#remember');
 
-    const currentUrl = page.url();
-    expect(currentUrl).toContain('/restore-password');
-    expect(await input.getAttribute("placeholder")).toBe("Почта");
-    expect(await button.textContent()).toBe('Отправить');
-    expect(await rememberPasswordLink.getAttribute("href")).toContain("/admin");
-    expect(await rememberPasswordLink.textContent()).toBe("Вспомнил пароль");
+    expect(await input?.getAttribute("placeholder")).toBe("Почта");
+    await expect(button).toHaveText('Отправить');
+    expect(await rememberPasswordLink?.getAttribute("href")).toContain("/admin");
+    await expect(rememberPasswordLink).toHaveText("Вспомнил пароль");
 }, 60000);
 
 test('Should_go_to_team_creation_by_admin', async () => {
-    await login(LOGIN_USER_SECRET, PASSWORD_USER_SECRET, "games");
+    await login(page);
 
     await page.waitForSelector("#teams");
-    const teamsTab = await page.$('#teams');
-    await teamsTab.click();
+    const teamsTab = page.locator('#teams');
+    await teamsTab?.click();
     await page.waitForSelector("#addTeamButton");
-    const button = await page.$('#addTeamButton');
-    await button.click();
+    const button = page.locator('#addTeamButton');
+    await button?.click();
     await page.waitForSelector("#teamName");
 
-    const teamNameInput = await page.$('#teamName');
-    const captainInput = await page.$('#captain');
-    const saveTeamButton = await page.$('#saveTeam');
+    const teamNameInput = page.locator('#teamName');
+    const captainInput = page.locator('#captain');
+    const saveTeamButton = page.locator('#saveTeam');
 
     const currentUrl = page.url();
     expect(currentUrl).toContain('/team-creation');
-    expect(await teamNameInput.getAttribute("placeholder")).toBe("Название команды");
-    expect(await saveTeamButton.textContent()).toBe("Создать");
-    expect(await captainInput.getAttribute("value")).toBe(LOGIN_USER_SECRET);
+    expect(await teamNameInput?.getAttribute("placeholder")).toBe("Название команды");
+    await expect(saveTeamButton).toHaveText("Создать");
+    expect(await captainInput?.getAttribute("value")).toBe(LOGIN_USER_SECRET);
 }, 60000);
 
 test('Should_go_to_admin_profile', async () => {
-    await login(LOGIN_USER_SECRET, PASSWORD_USER_SECRET, "games");
+    await login(page);
 
     await page.waitForSelector("#profile");
-    const profile = await page.$('#profile');
-    await profile.click();
+    const profile = page.locator('#profile');
+    await profile?.click();
     await page.waitForSelector("#email");
 
-    const email = await page.$('#email');
-    const oldPassword = await page.$('#old-password');
-    const newPassword = await page.$('#new-password');
-    const newPasswordRepeat = await page.$('#repeat-new-password');
-    const saveButton = await page.$('#saveProfile');
+    const email = page.locator('#email');
+    const oldPassword = page.locator('#old-password');
+    const newPassword = page.locator('#new-password');
+    const newPasswordRepeat = page.locator('#repeat-new-password');
+    const saveButton = page.locator('#saveProfile');
 
-    expect(await email.textContent()).toBe(LOGIN_USER_SECRET);
-    expect(await oldPassword.getAttribute("value")).toBe("");
-    expect(await newPassword.getAttribute("value")).toBe("");
-    expect(await newPasswordRepeat.getAttribute("value")).toBe("");
-    expect(await saveButton.textContent()).toBe("Сохранить");
+    await expect(email).toHaveText(LOGIN_USER_SECRET);
+    expect(await oldPassword?.getAttribute("value")).toBe("");
+    expect(await newPassword?.getAttribute("value")).toBe("");
+    expect(await newPasswordRepeat?.getAttribute("value")).toBe("");
+    await expect(saveButton).toHaveText("Сохранить");
 }, 60000);
 
 test('Should_admin_logout', async () => {
-    await login(LOGIN_USER_SECRET, PASSWORD_USER_SECRET, "games");
+    await login(page);
+    await page.waitForSelector('#games');
 
-    const cookie = await page.cookies();
+    const cookie = await page.context().cookies();
     expect(cookie.find(c => c.name === "authorization")).toBeDefined();
 
     await page.waitForSelector('img[alt="LogOut"]');
-    const logout = await page.$('img[alt="LogOut"]');
-    await logout.click();
+    const logout = page.locator('img[alt="LogOut"]');
+    await logout?.click();
 
     const currentUrl = page.url();
     expect(currentUrl).toContain(ADMIN_URL);
     try {
-        const cookieAfterLogout = await page.cookies();
+        const cookieAfterLogout = await page.context().cookies();
         expect(cookieAfterLogout.find(c => c.name === "authorization")).toBeUndefined();
     } catch {
 
@@ -116,11 +108,3 @@ test('Should_admin_logout', async () => {
 afterEach(async () => {
     await page.close();
 });
-
-async function login(email, password, elementId) {
-    await page.fill('#password', password);
-    await page.press('#password', 'Enter');
-    await page.fill('#email', email);
-    await page.press('#email', 'Enter');
-    await page.waitForSelector(`#${elementId}`);
-}
