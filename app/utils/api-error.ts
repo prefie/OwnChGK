@@ -1,16 +1,11 @@
 export class APIError extends Error {
     public constructor(
         public message: string,
-        public description?: number | string,
         public status?: number,
     ) {
         super(message);
-        if (typeof description === 'number') {
-            this.status = description;
-        } else {
-            this.description = description;
-            this.status = status || 500;
-        }
+        this.status = status || 500;
+
         Error.captureStackTrace(this, APIError);
     }
 }
@@ -19,9 +14,9 @@ export const errorHandler = (err, req, res, next) => {
     console.error(err?.stack);
 
     if (err instanceof APIError) {
-        return res.json({ message: err.message }).status(err.status || 500)
+        return res.status(err.status || 500).json({ message: err.message })
     } else {
-        return res.send(err.message).status(500)
+        return res.status(500).json({ message: err.message })
     }
 };
 
