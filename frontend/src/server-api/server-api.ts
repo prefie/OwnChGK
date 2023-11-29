@@ -1,56 +1,32 @@
-import {GamePartSettings} from "./type";
+import { GamePartSettings } from './type';
+
+type Request = RequestInit & { path: string };
+
 export class ServerApi {
     // Для локального, поменять на
     // private static serverPath = `http://localhost:${PORT}/api`
 
-    private static serverPath = `/api`
+    private static serverPath = `/api`;
 
     private static Method = {
         POST: 'POST',
         PATCH: 'PATCH',
         DELETE: 'DELETE',
+        GET: 'GET',
     };
 
-    private static async sendRequest({
-        method,
-        path,
-        body,
-        methodOnly = false,
-        sendOnly = false,
-    }: {
-        method?: string;
-        path: string;
-        body?: BodyInit;
-        methodOnly?: boolean;
-        sendOnly?: boolean;
-    }) {
-        const fullPath = this.serverPath + path
-        if (sendOnly) {
-            return await fetch(fullPath);
-        }
-        if (methodOnly) {
-            return await fetch(fullPath, {
-                method: method,
-            });
-        }
-        if (body) {
-            return await fetch(fullPath, {
-                method: method,
-                headers: {
+    private static async sendRequest(request: Request) {
+        const fullPath = this.serverPath + request.path;
+        return await fetch(fullPath, {
+            method: request.method ?? this.Method.GET,
+            headers:
+                (request.body && {
                     'Content-Type': 'application/json;charset=utf-8',
                     Accept: 'application/json',
-                },
-                credentials: 'include',
-                body: body,
-            });
-        }
-        return await fetch(fullPath, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                Accept: 'application/json',
-            },
+                }) ||
+                undefined,
             credentials: 'include',
+            body: request.body,
         });
     }
 
@@ -99,15 +75,15 @@ export class ServerApi {
     public static async logout() {
         return this.sendRequest({
             method: this.Method.POST,
-            path: '/users/logout'
-        })
+            path: '/users/logout',
+        });
     }
 
     public static async addCurrentTeamInGame(gameId: string) {
         return this.sendRequest({
             method: this.Method.POST,
-            path: `/games/${gameId}/team`
-        })
+            path: `/games/${gameId}/team`,
+        });
     }
 
     public static async addTeamInGame(gameId: string, teamId: string) {
@@ -184,15 +160,15 @@ export class ServerApi {
     public static async insertDemoAdmin() {
         return this.sendRequest({
             method: this.Method.POST,
-            path: '/admins/demo'
-        })
+            path: '/admins/demo',
+        });
     }
 
     public static async insertDemoUser() {
         return this.sendRequest({
             method: this.Method.POST,
-            path: '/users/demo'
-        })
+            path: '/users/demo',
+        });
     }
 
     public static async editGame(
@@ -234,8 +210,8 @@ export class ServerApi {
     public static async editTeamCaptainByCurrentUser(teamId: string) {
         return this.sendRequest({
             method: this.Method.PATCH,
-            path: `/teams/${teamId}/changeCaptain`
-        })
+            path: `/teams/${teamId}/changeCaptain`,
+        });
     }
 
     public static async changePassword(email: string, password: string, oldPassword: string, isAdmin = false) {
@@ -286,134 +262,114 @@ export class ServerApi {
         return this.sendRequest({
             method: this.Method.DELETE,
             path: `/games/${gameId}/team`,
-            methodOnly: true
-        })
+        });
     }
 
-    public static async deleteTeamFromGame(gameId: string,
-                                           teamId: string) {
-        return this.sendRequest(
-            {
-                method: this.Method.DELETE,
-                path: `/games/${gameId}/team`,
-                body: JSON.stringify({
-                    teamId
-                })
-            })
+    public static async deleteTeamFromGame(gameId: string, teamId: string) {
+        return this.sendRequest({
+            method: this.Method.DELETE,
+            path: `/games/${gameId}/team`,
+            body: JSON.stringify({
+                teamId,
+            }),
+        });
     }
 
     public static async deleteGame(gameId: string) {
-        return this.sendRequest(
-            {
-                method: this.Method.DELETE,
-                path: `/games/${gameId}`,
-                methodOnly: true
-            })
+        return this.sendRequest({
+            method: this.Method.DELETE,
+            path: `/games/${gameId}`,
+        });
     }
 
     public static async deleteTeam(teamId: string) {
         return this.sendRequest({
             method: this.Method.DELETE,
             path: `/teams/${teamId}`,
-            methodOnly: true
-        })
+        });
     }
 
     public static async getAll(path: string) {
         return this.sendRequest({
             path: `/${path}`,
-            sendOnly: true
-        })
+        });
     }
 
     public static async getAmIParticipateGames() {
         return this.sendRequest({
             path: '/games/?amIParticipate=true',
-            sendOnly: true
-        })
+        });
     }
 
     public static async getAmIParticipateAndPublicGames() {
         return this.sendRequest({
             path: '/games/?amIParticipate=true&publicEnabled=true',
-            sendOnly: true
-        })
+        });
     }
 
     public static async getTeamsParticipants(gameId: string) {
         return this.sendRequest({
             path: `/games/${gameId}/teamsParticipants`,
-            sendOnly: true
-        })
+        });
     }
 
     public static async getResultTable(gameId: string) {
         return this.sendRequest({
             path: `/games/${gameId}/resultTable`,
-            sendOnly: true
-        })
+        });
     }
 
     public static async getResultTableFormat(gameId: string) {
         return this.sendRequest({
             path: `/games/${gameId}/resultTable/format`,
-            sendOnly: true
-        })
+        });
     }
 
     public static async getTeamsParticipantTable(gameId: string) {
         return this.sendRequest({
             path: `/games/${gameId}/participants`,
-            sendOnly: true
-        })
+        });
     }
 
     public static async getUsersWithoutTeam() {
         return this.sendRequest({
             path: '/users/?withoutTeam=true',
-            sendOnly: true
-        })
+        });
     }
 
     public static async getGame(gameId: string) {
         return this.sendRequest({
             path: `/games/${gameId}`,
-            sendOnly: true
-        })
+        });
     }
 
     public static async startGame(gameId: string) {
         return this.sendRequest({
             path: `/games/${gameId}/start`,
-            sendOnly: true
-        })
+        });
     }
 
     public static async getTeam(teamId: string) {
         return this.sendRequest({
             path: `/teams/${teamId}`,
-            sendOnly: true
-        })
+        });
     }
 
     public static async getTeamByCurrentUser() {
         return this.sendRequest({
             path: '/users/getTeam',
-            sendOnly: true
-        })
+        });
     }
 
     public static async getTeamsWithoutUser() {
         return this.sendRequest({
             path: '/teams/?withoutUser=true',
-            sendOnly: true
-        })
+        });
     }
 
     public static async checkToken() {
         return this.sendRequest({
             path: '/users/current',
-            sendOnly: true
-        })
+        });
     }
 }
