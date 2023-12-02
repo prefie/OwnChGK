@@ -17,7 +17,6 @@ import { errorHandler } from './utils/api-error';
 export class Server {
     private app;
 
-
     constructor() {
         this.app = express();
         this.config();
