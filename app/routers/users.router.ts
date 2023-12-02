@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { UsersController } from '../controllers/users.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
 import { body, query } from 'express-validator';
+import asyncHandler = require('express-async-handler');
 
 export const usersRouter = () => {
     const router = Router();
@@ -12,56 +13,56 @@ export const usersRouter = () => {
         '/',
         authMiddleware,
         query('withoutTeam').optional().isBoolean(),
-        usersController.getAll.bind(usersController)
+        asyncHandler(usersController.getAll.bind(usersController))
     );
 
     router.get(
         '/current',
-        usersController.get.bind(usersController)
+        asyncHandler(usersController.get.bind(usersController))
     );
 
     router.post(
         '/login',
         body('email').isEmail(),
         body('password').isString().notEmpty(),
-        usersController.login.bind(usersController)
+        asyncHandler(usersController.login.bind(usersController))
     );
 
     router.post(
         '/insert',
         body('email').isEmail(),
         body('password').isString().notEmpty(),
-        usersController.insert.bind(usersController)
+        asyncHandler(usersController.insert.bind(usersController))
     );
 
     router.post(
         '/demo',
         authMiddleware,
-        usersController.insertDemo.bind(usersController)
+        asyncHandler(usersController.insertDemo.bind(usersController))
     );
 
     router.post(
         '/logout',
-        usersController.logout.bind(usersController)
+        asyncHandler(usersController.logout.bind(usersController))
     );
 
     router.post(
         '/sendMail',
         body('email').isEmail(),
-        usersController.sendPasswordWithTemporaryPassword.bind(usersController)
+        asyncHandler(usersController.sendPasswordWithTemporaryPassword.bind(usersController))
     );
 
     router.post(
         '/checkTemporaryPassword',
         body('email').isEmail(),
         body('code').isString().notEmpty(),
-        usersController.confirmTemporaryPassword.bind(usersController)
+        asyncHandler(usersController.confirmTemporaryPassword.bind(usersController))
     );
 
     router.get(
         '/getTeam',
         authMiddleware,
-        usersController.getTeam.bind(usersController)
+        asyncHandler(usersController.getTeam.bind(usersController))
     );
 
     router.patch(
@@ -69,14 +70,14 @@ export const usersRouter = () => {
         body('email').isEmail(),
         body('password').isString().notEmpty(),
         body('code').isString().notEmpty(),
-        usersController.changePasswordByCode.bind(usersController)
+        asyncHandler(usersController.changePasswordByCode.bind(usersController))
     );
 
     router.patch(
         '/changeName',
         authMiddleware,
         body('newName').isString(),
-        usersController.changeName.bind(usersController)
+        asyncHandler(usersController.changeName.bind(usersController))
     );
 
     router.patch(
@@ -85,7 +86,7 @@ export const usersRouter = () => {
         body('email').isEmail(),
         body('password').isString().notEmpty(),
         body('oldPassword').isString().notEmpty(),
-        usersController.changePasswordByOldPassword.bind(usersController)
+        asyncHandler(usersController.changePasswordByOldPassword.bind(usersController))
     );
 
     return router;
