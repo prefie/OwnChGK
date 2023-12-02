@@ -8,6 +8,7 @@ import {HeaderDispatchProps, HeaderStateProps} from '../../entities/header/heade
 import {Dispatch} from 'redux';
 import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces';
 import {logOut} from '../../redux/actions/app-actions/app-actions';
+import arrowBackImage from '../../images/ArrowBack.svg';
 
 interface MobileMenuOwnProps {
 }
@@ -33,7 +34,7 @@ const MobileMenu: FC<MobileMenuProps> = props => {
     return (
         <div className={classes.menuWrapper}>
             <Link className={classes.backArrow} to={location.state.prevPath || '/auth'}>
-                <img className={classes.backArrow} src={require('../../images/ArrowBack.svg').default} alt='Back'/>
+                <img className={classes.backArrow} src={arrowBackImage} alt='Back'/>
             </Link>
 
             <div className={classes.linksWrapper}>

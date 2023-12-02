@@ -7,6 +7,8 @@ import Header from '../../components/header/header';
 import NavBar from '../../components/nav-bar/nav-bar';
 import Loader from '../../components/loader/loader';
 import {createFileLink} from '../../fileWorker';
+import downloadIcon from '../../images/DownloadIcon.svg';
+import logoImage from '../../images/Logo.svg';
 
 const StartGame: FC = () => {
     const [gameName, setGameName] = useState<string>();
@@ -64,14 +66,14 @@ const StartGame: FC = () => {
             </Header>
 
             <div className={classes.contentWrapper}>
-                <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
+                <img className={classes.logo} src={logoImage} alt="logo"/>
 
                 <div className={classes.gameName}>{getGameName()}</div>
 
                 <button className={classes.button} onClick={handleStart}>Запустить игру</button>
 
                 <a className={classes.downloadTeams} onClick={downloadResults}>
-                    <img className={classes.downloadIcon} src={require('../../images/DownloadIcon.svg').default} alt='download'/>
+                    <img className={classes.downloadIcon} src={downloadIcon} alt='download'/>
                     {'  Скачать список команд'}
                 </a>
             </div>

@@ -14,6 +14,8 @@ import {connect} from 'react-redux';
 import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
 import Scrollbar from '../../components/scrollbar/scrollbar';
 import {Input} from "../../components/input/input";
+import readyOwlImage from '../../images/owl-images/ready-owl.svg';
+import breakOwlImage from '../../images/owl-images/break_owl.svg';
 
 let progressBarInterval: any;
 let interval: any;
@@ -840,7 +842,7 @@ const UserGame: FC<UserGameProps> = props => {
                             : null
                     }
                     <div className={classes.gameStartContentWrapper}>
-                        <img className={classes.image} src={require('../../images/owl-images/ready-owl.svg').default} alt="logo"/>
+                        <img className={classes.image} src={readyOwlImage} alt="logo"/>
 
                         <div className={classes.pageText}>Приготовьтесь!</div>
                         <div className={classes.pageText}>Вот-вот, и мы начнём</div>
@@ -876,7 +878,7 @@ const UserGame: FC<UserGameProps> = props => {
                             : null
                     }
                     <div className={classes.breakContentWrapper}>
-                        <img className={classes.image} src={require('../../images/owl-images/break_owl.svg').default} alt="logo"/>
+                        <img className={classes.image} src={breakOwlImage} alt="logo"/>
                         <div className={classes.breakTime}>
                             {parseTimer()}
                             <p className={classes.breakTimeText}>Отдохни, да выпей чаю</p>
