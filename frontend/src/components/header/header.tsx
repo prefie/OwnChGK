@@ -8,6 +8,10 @@ import {Dispatch} from 'redux';
 import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces';
 import {logOut} from '../../redux/actions/app-actions/app-actions';
 import {logout} from '../../server-api/server-api';
+import logoImage from '../../images/Logo.svg';
+import menuImage from '../../images/Menu.svg';
+import profileImage from '../../images/Profile.svg';
+import logOutImage from '../../images/LogOut.svg';
 
 const Header: FC<HeaderProps> = props => {
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
@@ -32,7 +36,7 @@ const Header: FC<HeaderProps> = props => {
     return (
         <header className={classes.Header}>
             <Link to={props.isAdmin ? '/admin/start-screen' : '/start-screen'} className={classes.logoLink}>
-                <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
+                <img className={classes.logo} src={logoImage} alt="logo"/>
             </Link>
 
             <div className={classes.childrenWrapper}>
@@ -46,17 +50,17 @@ const Header: FC<HeaderProps> = props => {
                         mediaMatch.matches
                             ?
                             <Link className={classes.MenuLink} to={{pathname: '/menu', state: { prevPath: window.location.pathname }}}>
-                                <img className={classes.Menu} src={require('../../images/Menu.svg').default} alt='Menu'/>
+                                <img className={classes.Menu} src={menuImage} alt='Menu'/>
                             </Link>
                             :
                             <div className={classes.userActionsWrapper}>
                                 <Link className={classes.Profile} to={props.isAdmin ? '/admin/profile' : '/profile'}>
-                                    <img className={classes.Profile} src={require('../../images/Profile.svg').default}
+                                    <img className={classes.Profile} src={profileImage}
                                          alt="Profile" id="profile"/>
                                 </Link>
                                 <Link className={classes.LogOut}
                                       to={props.isLoggedIn ? '#' : (props.isAdmin ? '/admin' : '/auth')} onClick={handleLogout}>
-                                    <img className={classes.LogOut} src={require('../../images/LogOut.svg').default}
+                                    <img className={classes.LogOut} src={logOutImage}
                                          alt="LogOut" id="logout"/>
                                 </Link>
                             </div>

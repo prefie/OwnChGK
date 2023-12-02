@@ -21,6 +21,7 @@ import CustomButton, {ButtonType} from "../../components/custom-button/custom-bu
 import {GameTypeItemProps} from "../../components/game-type-item/game-type-item";
 import {divide} from "lodash-es";
 import TeamItem, {Participant} from "../../components/team-item/team-item";
+import emptyOwlImage from '../../images/owl-images/empty_owl.svg';
 
 const inputStyles = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -318,7 +319,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                 ?
                                 <div className={classes.sectionListEmpty}>
                                     <img className={classes.emptyImage}
-                                         src={require('../../images/owl-images/empty_owl.svg').default}
+                                         src={emptyOwlImage}
                                          alt="empty-owl"/>
                                     <h3 className={classes.emptyTitle}>Пока нет ни одной игры</h3>
                                 </div>
@@ -356,7 +357,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                 ?
                                 <div className={classes.sectionListEmpty}>
                                     <img className={classes.emptyImage}
-                                         src={require('../../images/owl-images/empty_owl.svg').default}
+                                         src={emptyOwlImage}
                                          alt="empty-owl"/>
                                     <h3 className={classes.emptyTitle}>Пока нет ни одной команды</h3>
                                 </div>
