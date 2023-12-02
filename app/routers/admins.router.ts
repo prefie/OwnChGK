@@ -5,10 +5,10 @@ import { allAdminRoles, superAdminRoles } from '../utils/roles';
 import { body } from 'express-validator';
 import { validationMiddleware } from '../middleware/validation.middleware';
 import { authMiddleware } from '../middleware/auth.middleware';
+import asyncHandler = require('express-async-handler');
 
 export const adminsRouter = () => {
     const router = Router();
-    const asyncHandler = require('express-async-handler')
 
     const adminsController = new AdminsController();
 
