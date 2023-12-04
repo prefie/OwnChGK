@@ -1,10 +1,11 @@
 import { ADMIN_URL, LOGIN_USER_SECRET, login } from "../test-helper";
 
 import { Page, firefox } from 'playwright';
+import { test, expect } from '@playwright/test'
 
 let page: Page;
 
-beforeEach(async () => {
+test.beforeEach(async () => {
     const browser = await firefox.launch();
     const context = await browser.newContext();
     page = await context.newPage();
@@ -15,14 +16,14 @@ beforeEach(async () => {
 test('Should_open_admin_page', async () => {
     const currentUrl = page.url();
     await expect.soft(currentUrl).toContain(ADMIN_URL);
-}, 60000);
+});
 
 test('Should_successful_login', async () => {
     await login(page);
 
     const currentUrl = page.url();
-    await expect.soft(currentUrl).toContain('/start-screen');
-}, 60000);
+    expect.soft(currentUrl).toContain('/start-screen');
+});
 
 test('Should_go_to_change_password', async () => {
     const restoreLink = page.locator('#restore');
@@ -33,11 +34,11 @@ test('Should_go_to_change_password', async () => {
     const input = page.locator('#email');
     const rememberPasswordLink = page.locator('#remember');
 
-    await expect.soft(await input?.getAttribute("placeholder")).toBe("Почта");
+    expect.soft(await input?.getAttribute("placeholder")).toBe("Почта");
     await expect.soft(button).toHaveText('Отправить');
-    await expect.soft(await rememberPasswordLink?.getAttribute("href")).toContain("/admin");
+    expect.soft(await rememberPasswordLink?.getAttribute("href")).toContain("/admin");
     await expect.soft(rememberPasswordLink).toHaveText("Вспомнил пароль");
-}, 60000);
+});
 
 test('Should_go_to_team_creation_by_admin', async () => {
     await login(page);
@@ -52,11 +53,11 @@ test('Should_go_to_team_creation_by_admin', async () => {
     const saveTeamButton = page.locator('#saveTeam');
 
     const currentUrl = page.url();
-    await expect.soft(currentUrl).toContain('/team-creation');
-    await expect.soft(await teamNameInput?.getAttribute("placeholder")).toBe("Название команды");
+    expect.soft(currentUrl).toContain('/team-creation');
+    expect.soft(await teamNameInput?.getAttribute("placeholder")).toBe("Название команды");
     await expect.soft(saveTeamButton).toHaveText("Создать");
-    await expect.soft(await captainInput?.getAttribute("value")).toBe(LOGIN_USER_SECRET);
-}, 60000);
+    expect.soft(await captainInput?.getAttribute("value")).toBe(LOGIN_USER_SECRET);
+});
 
 test('Should_go_to_admin_profile', async () => {
     await login(page);
@@ -71,11 +72,11 @@ test('Should_go_to_admin_profile', async () => {
     const saveButton = page.locator('#saveProfile');
 
     await expect.soft(email).toHaveText(LOGIN_USER_SECRET);
-    await expect.soft(await oldPassword?.getAttribute("value")).toBe("");
-    await expect.soft(await newPassword?.getAttribute("value")).toBe("");
-    await expect.soft(await newPasswordRepeat?.getAttribute("value")).toBe("");
+    expect.soft(await oldPassword?.getAttribute("value")).toBe("");
+    expect.soft(await newPassword?.getAttribute("value")).toBe("");
+    expect.soft(await newPasswordRepeat?.getAttribute("value")).toBe("");
     await expect.soft(saveButton).toHaveText("Сохранить");
-}, 60000);
+});
 
 test('Should_admin_logout', async () => {
     await login(page);
@@ -87,11 +88,11 @@ test('Should_admin_logout', async () => {
     await logout?.click();
 
     const currentUrl = page.url();
-    await expect.soft(currentUrl).toContain(ADMIN_URL);
+    expect.soft(currentUrl).toContain(ADMIN_URL);
     const cookieAfterLogout = await page.context().cookies();
-    await expect.soft(cookieAfterLogout.find(c => c.name === "authorization")).toBeUndefined();
-}, 60000);
+    expect.soft(cookieAfterLogout.find(c => c.name === "authorization")).toBeUndefined();
+});
 
-afterEach(async () => {
+test.afterEach(async () => {
     await page.close();
 });

@@ -10,7 +10,8 @@
     "start": "node build/app/app.js",
     "full": "npm run build-win && npm start",
     "heroku-postbuild": "tsc && cd frontend && npm install && npm run build",
-    "test": "jest",
+    "test": "jest --testPathPattern=tests/unit-tests",
+    "ui-test": "playwright test tests/playwright",
     "typeorm": "typeorm-ts-node-commonjs"
   },
   "keywords": [],
@@ -41,6 +42,7 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
