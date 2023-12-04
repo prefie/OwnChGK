@@ -6,7 +6,7 @@ import { allAdminRoles } from '../utils/roles';
 import { body, param, query } from 'express-validator';
 import { validateAccessLevel, validateGameStatus, validateRoundTypes } from '../utils/validators';
 import { validationMiddleware } from '../middleware/validation.middleware';
-import asyncHandler = require('express-async-handler');
+import asyncHandler from 'express-async-handler';
 
 export const gamesRouter = () => {
     const router = Router();

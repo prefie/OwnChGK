@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { UsersController } from '../controllers/users.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
 import { body, query } from 'express-validator';
-import asyncHandler = require('express-async-handler');
+import asyncHandler from 'express-async-handler';
 
 export const usersRouter = () => {
     const router = Router();
