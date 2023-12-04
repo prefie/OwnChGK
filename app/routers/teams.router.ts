@@ -5,7 +5,7 @@ import { roleMiddleware } from '../middleware/role.middleware';
 import { allAdminRoles } from '../utils/roles';
 import { body, param, query } from 'express-validator';
 import { validationMiddleware } from '../middleware/validation.middleware';
-import asyncHandler = require('express-async-handler');
+import asyncHandler from 'express-async-handler';
 
 export const teamsRouter = () => {
     const router = Router();
