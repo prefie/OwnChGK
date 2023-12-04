@@ -1,6 +1,7 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { AppConfig } from './app-config';
 import { Request, Response } from 'express';
+import {APIError} from './api-error';
 
 const secret = AppConfig.jwtSecretKey ?? 'SECRET_KEY';
 
@@ -28,6 +29,10 @@ export const getTokenFromString = (token: string): TokenPayload => jwt.verify(to
 
 export const getTokenFromRequest = (req: Request): TokenPayload => {
     const cookie = req.cookies['authorization'];
+    if (cookie === undefined) {
+        throw new APIError('jwt must be provided', 401);
+    }
+
     return jwt.verify(cookie, secret) as TokenPayload;
 }
 
