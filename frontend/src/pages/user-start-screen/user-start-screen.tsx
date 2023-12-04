@@ -27,6 +27,7 @@ import CustomButton, {ButtonType} from "../../components/custom-button/custom-bu
 import {AddRounded} from "@mui/icons-material";
 import TeamItem from "../../components/team-item/team-item";
 import Scrollbar from "../../components/scrollbar/scrollbar";
+import emptyOwlImage from '../../images/owl-images/empty_owl.svg';
 
 const UserStartScreen: FC<UserStartScreenProps> = props => {
     const [page, setPage] = useState<string>('teams');
@@ -233,7 +234,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                             gamesFromDB && !gamesFromDB.length
                             ?
                                 <div className={classes.sectionListEmpty}>
-                                    <img className={classes.emptyImage} src={require('../../images/owl-images/empty_owl.svg').default} alt="empty-owl"/>
+                                    <img className={classes.emptyImage} src={emptyOwlImage} alt="empty-owl"/>
                                     <h3 className={classes.emptyTitle}>Пока нет ни одной игры</h3>
                                 </div>
                             :
@@ -272,7 +273,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                             teamsFromDB && !teamsFromDB.length
                                 ?
                                 <div className={classes.sectionListEmpty}>
-                                    <img className={classes.emptyImage} src={require('../../images/owl-images/empty_owl.svg').default} alt="empty-owl"/>
+                                    <img className={classes.emptyImage} src={emptyOwlImage} alt="empty-owl"/>
                                     <h3 className={classes.emptyTitle}>Создайте свою команду</h3>
                                 </div>
                                 :

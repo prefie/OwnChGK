@@ -19,6 +19,7 @@ import {login} from '../../server-api/server-api';
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
 import {Input} from "../../components/input/input";
 import { allAdminRoles } from '../../entities/common/common.constants';
+import logoImage from '../../images/Logo.svg';
 
 const Authorization: FC<AuthorizationProps> = props => {
     const [wrongEmailOrPassword, setWrongEmailOrPassword] = useState<boolean>(false);
@@ -64,7 +65,7 @@ const Authorization: FC<AuthorizationProps> = props => {
             <Header isAuthorized={false}/>
 
             <div className={classes.contentWrapper}>
-                <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
+                <img className={classes.logo} src={logoImage} alt="logo"/>
 
                 <form onSubmit={handleSubmit} className={classes.authForm}>
                     <Input

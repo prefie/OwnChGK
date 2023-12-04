@@ -52,6 +52,7 @@
     "@types/nodemailer": "^6.4.7",
     "@types/selenium-webdriver": "^4.1.20",
     "@types/ws": "^8.5.4",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "vite-svg-loader": "^5.1.0"
   }
 }

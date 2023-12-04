@@ -12,6 +12,7 @@ import PageBackdrop from '../../components/backdrop/backdrop';
 import {createUser} from '../../server-api/server-api';
 import {Input} from "../../components/input/input";
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
+import logoImage from '../../images/Logo.svg';
 
 const Registration: FC<RegistrationProps> = props => {
     const [isRepeatedPasswordInvalid, setIsRepeatedPasswordInvalid] = useState<boolean>(false);
@@ -77,7 +78,7 @@ const Registration: FC<RegistrationProps> = props => {
             <Header isAuthorized={false} isAdmin={false}/>
 
             <div className={classes.contentWrapper}>
-                <img className={classes.logo} src={require('../../images/Logo.svg').default} alt="logo"/>
+                <img className={classes.logo} src={logoImage} alt="logo"/>
 
                 <form onSubmit={validateForm} className={classes.authForm}>
                     <Input
