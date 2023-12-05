@@ -3,9 +3,6 @@ import { GamePartSettings } from './type';
 type Request = RequestInit & { path: string };
 
 export class ServerApi {
-    // Для локального, поменять на
-    // private static serverPath = `http://localhost:${PORT}/api`
-
     private static serverPath = `/api`;
 
     private static Method = {
@@ -19,12 +16,12 @@ export class ServerApi {
         const fullPath = this.serverPath + request.path;
         return await fetch(fullPath, {
             method: request.method ?? this.Method.GET,
-            headers:
-                (request.body && {
-                    'Content-Type': 'application/json;charset=utf-8',
-                    Accept: 'application/json',
-                }) ||
-                undefined,
+            headers: request.body
+                ? {
+                      'Content-Type': 'application/json;charset=utf-8',
+                      Accept: 'application/json',
+                  }
+                : undefined,
             credentials: 'include',
             body: request.body,
         });
