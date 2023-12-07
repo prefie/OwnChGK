@@ -226,7 +226,7 @@ const AdminGame: FC<AdminGameProps> = () => {
     };
 
     useEffect(() => {
-        ServerApi.getGame(gameId).then((res) => {
+        ServerApi.getGame(gameId).then(res => {
             if (res.status === 200) {
                 res.json().then(({ name, chgkSettings, matrixSettings }) => {
                     setGameName(name);
@@ -455,7 +455,7 @@ const AdminGame: FC<AdminGameProps> = () => {
     };
 
     if (isLoading || !gameName) {
-        return <Loader/>;
+        return <Loader />;
     }
 
     return (
@@ -625,7 +625,10 @@ const AdminGame: FC<AdminGameProps> = () => {
                                 hasLeftIcon
                                 icon={
                                     <ExitToApp
-                                        style={{ color: 'var(--color-strokes-error)', fontSize: 'var(--font-size-24)' }}
+                                        style={{
+                                            color: 'var(--color-strokes-error)',
+                                            fontSize: 'var(--font-size-24)',
+                                        }}
                                     />
                                 }
                             />
