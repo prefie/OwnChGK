@@ -454,9 +454,9 @@ const AdminGame: FC<AdminGameProps> = () => {
         requester.stopBreak();
     };
 
-    /*if (isLoading || !gameName) {
-		return <Loader/>;
-	}*/
+    if (isLoading || !gameName) {
+        return <Loader/>;
+    }
 
     return (
         <PageWrapper>

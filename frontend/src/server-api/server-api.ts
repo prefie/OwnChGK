@@ -11,10 +11,10 @@ export class ServerApi {
         DELETE: 'DELETE',
         GET: 'GET',
     };
-    
+
     private static DefaultHeaders = {
         'Content-Type': 'application/json;charset=utf-8',
-        'Accept': 'application/json',
+        Accept: 'application/json',
     };
 
     private static async sendRequest(request: Request) {
@@ -343,6 +343,12 @@ export class ServerApi {
     public static async startGame(gameId: string) {
         return this.sendRequest({
             path: `/games/${gameId}/start`,
+        });
+    }
+
+    public static async endGame(gameId: string) {
+        return this.sendRequest({
+            path: `/games/${gameId}/end`,
         });
     }
 
