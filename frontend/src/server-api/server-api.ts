@@ -52,7 +52,7 @@ export const createGame = async (
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -60,8 +60,8 @@ export const createGame = async (
             teams,
             chgkSettings,
             matrixSettings,
-            accessLevel
-        })
+            accessLevel,
+        }),
     });
 };
 
@@ -70,13 +70,13 @@ export const createUser = async (email: string, password: string) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
             email,
-            password
-        })
+            password,
+        }),
     });
 };
 
@@ -85,13 +85,13 @@ export const login = async (email: string, password: string, isAdmin: boolean) =
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
             email,
-            password
-        })
+            password,
+        }),
     });
 };
 
@@ -101,13 +101,17 @@ export const logout = async () => {
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        }
+            Accept: 'application/json',
+        },
     });
 };
 
 export const startGame = async (gameId: string) => {
     return fetch(`/api/games/${gameId}/start`);
+};
+
+export const endGame = async (gameId: string) => {
+    return fetch(`/api/games/${gameId}/end`);
 };
 
 export const editGame = async (
@@ -121,15 +125,15 @@ export const editGame = async (
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
             newGameName,
             chgkSettings,
             matrixSettings,
-            accessLevel
-        })
+            accessLevel,
+        }),
     });
 };
 
@@ -138,7 +142,7 @@ export const addCurrentTeamInGame = async (gameId: string) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
     });
@@ -149,18 +153,18 @@ export const addTeamInGame = async (gameId: string, teamId: string) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
-            teamId
-        })
+            teamId,
+        }),
     });
 };
 
 export const deleteCurrentTeamFromGame = async (gameId: string) => {
     return await fetch(`/api/games/${gameId}/team`, {
-        method: 'DELETE'
+        method: 'DELETE',
     });
 };
 
@@ -169,24 +173,24 @@ export const deleteTeamFromGame = async (gameId: string, teamId: string) => {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
-            teamId
-        })
+            teamId,
+        }),
     });
 };
 
 export const deleteGame = async (gameId: string) => {
     return await fetch(`/api/games/${gameId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
     });
 };
 
 export const deleteTeam = async (teamId: string) => {
     return await fetch(`/api/teams/${teamId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
     });
 };
 
@@ -194,35 +198,40 @@ export const getTeam = async (teamId: string) => {
     return await fetch(`/api/teams/${teamId}`);
 };
 
-export const createTeam = async (teamName: string, captain?: string, participants?: { name: string, email: string }[]) => {
+export const createTeam = async (teamName: string, captain?: string, participants?: { name: string; email: string }[]) => {
     return await fetch('/api/teams/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
             teamName,
             captain,
             participants,
-        })
+        }),
     });
 };
 
-export const editTeam = async (teamId: string, newTeamName: string, captain?: string, participants?: { name: string, email: string }[]) => {
+export const editTeam = async (
+    teamId: string,
+    newTeamName: string,
+    captain?: string,
+    participants?: { name: string; email: string }[],
+) => {
     return await fetch(`/api/teams/${teamId}/change`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
             newTeamName,
             captain,
             participants,
-        })
+        }),
     });
 };
 
@@ -232,8 +241,8 @@ export const editTeamCaptainByCurrentUser = async (teamId: string) => {
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
-        }
+            Accept: 'application/json',
+        },
     });
 };
 
@@ -254,12 +263,12 @@ export const sendTemporaryPassword = async (email: string, isAdmin: boolean) => 
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
-            email
-        })
+            email,
+        }),
     });
 };
 
@@ -268,13 +277,13 @@ export const checkTemporaryPassword = async (email: string, code: string, isAdmi
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
             email,
-            code
-        })
+            code,
+        }),
     });
 };
 
@@ -283,14 +292,14 @@ export const changePassword = async (email: string, password: string, oldPasswor
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
             email,
             password,
-            oldPassword
-        })
+            oldPassword,
+        }),
     });
 };
 
@@ -299,14 +308,14 @@ export const changePasswordByCode = async (email: string, password: string, code
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
             email,
             password,
-            code
-        })
+            code,
+        }),
     });
 };
 
@@ -315,12 +324,12 @@ export const changeName = async (newName: string, isAdmin: boolean) => {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
-            newName
-        })
+            newName,
+        }),
     });
 };
 
@@ -329,12 +338,12 @@ export const changeIntrigueGameStatus = async (gameId: string, isIntrigue: boole
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
-            isIntrigue
-        })
+            isIntrigue,
+        }),
     });
 };
 
@@ -343,12 +352,12 @@ export const deleteAdmin = async (adminEmail: string) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
-            email: adminEmail
-        })
+            email: adminEmail,
+        }),
     });
 };
 
@@ -357,13 +366,13 @@ export const addAdmin = async (adminEmail: string, adminName = '') => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
         body: JSON.stringify({
             email: adminEmail,
-            name: adminName
-        })
+            name: adminName,
+        }),
     });
 };
 
@@ -372,7 +381,7 @@ export const insertDemoAdmin = async () => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
     });
@@ -383,7 +392,7 @@ export const insertDemoUser = async () => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'Accept': 'application/json'
+            Accept: 'application/json',
         },
         credentials: 'include',
     });
@@ -393,5 +402,5 @@ export enum AnswerStatus {
     RIGHT = 'right',
     WRONG = 'wrong',
     UNCHECKED = 'unchecked',
-    ON_APPEAL = 'on_appeal'
+    ON_APPEAL = 'on_appeal',
 }

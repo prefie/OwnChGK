@@ -21,17 +21,30 @@
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
+  --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --font-weight-bolder: 900;
 
+
   // Colors
   // Background
-  --color-bg-main: #00131D;
+  --color-bg-main: #000B1D;
   --color-bg-plates: #00283D;
   --color-bg-overlay-default: rgba(255, 255, 255, .06);
   --color-bg-overlay-success: rgba(36, 255, 36, .06);
+  --color-block: #0F1A2B;
 
   // Fills
+  --color-default-default: rgba(255, 255, 255, 0.06);
+  --color-default-hover: rgba(255, 255, 255, 0.12);
+  --color-default-pressed: rgba(255, 255, 255, 0.16);
+  --color-default-disabled: rgba(20, 31, 47, 1);
+
+  --color-primary-default: #1A5FC6;
+  --color-primary-hover: #1857B6;
+  --color-primary-pressed: #1650A6;
+  --color-primary-disabled: #124187;
+
   --color-fill-accent-enabled: #0077B8;
   --color-fill-accent-hover: #0069A3;
   --color-fill-accent-pressed: #005787;
@@ -53,6 +66,13 @@
   --color-fill-notify: #FF00E5;
 
   // Text&Icon
+  --color-text-icon-default-primary: #F1F3F9;
+  --color-text-icon-default-disabled: rgba(241, 243, 249, 0.4);
+  --color-text-icon-link-primary: #5B9CFE;
+  --color-text-icon-link-hover: #8FBCFF;
+
+
+
   --color-text-icon-primary: rgb(235, 248, 255);
   --color-text-icon-secondary: rgba(235, 248, 255, 0.48);
   --color-text-icon-disabled: rgba(235, 248, 255, 0.32);
@@ -60,6 +80,12 @@
   --color-text-icon-success: #24ff24;
 
   --color-text-icon-link-enabled: #0AA9FF;
+
+  // Line
+  --color-divider: rgba(235, 248, 255, 0.12);
+
+  // Control
+  --color-strokes-error: #FF3D3D
 }
 
 * {
