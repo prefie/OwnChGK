@@ -1,14 +1,24 @@
 # Своя ЧГК
 
-Шушарин Николай - prefie (backend, devops)
+#### Актуальная команда разработки
 
-Кряжев Александр - kryaazh (frontend, design)
+Шушарин Николай - prefie (fullstack)
 
-Старые игроки:
+Кряжев Александр - kryaazh (design, frontend)
+
+Шрейн Ольга - OlgaShreyn (testing, backend)
+
+Соколов Алексей - alex3453 (backend)
+
+Мельникова Анастасия - Nastja0 (frontend)
+
+Мизурова Дарья - udarenienao (testing)
+
+Щербакова Полина - Polinariaa (design)
+
+#### Старые игроки:
 
 Вихлянцева Дарья - DaryaVkh (frontend)
-
-Шрейн Ольга - OlgaShreyn (backend, testing)
 
 
 
@@ -42,6 +52,8 @@
 ```bash
     npm run build-win
 ```
+
+5) Создать `.env` файл на основе `.env.example`
 
 ## Запустить приложение
 
