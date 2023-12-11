@@ -172,8 +172,13 @@ export class UsersController { // TODO: дописать смену имени �
     }
 
     public async getTeam(req: Request, res: Response) {
-        const { id: userId } = getTokenFromRequest(req);
+        const { id: userId, teamId } = getTokenFromRequest(req);
         const user = await this.userRepository.findById(userId);
+
+        if (teamId != user.team?.id) {
+            const token = generateAccessToken(user.id, user.email, 'user', user.team?.id, user.name);
+            setTokenInResponse(res, token);
+        }
 
         if (user.team !== null) {
             return res.status(200).json(new TeamDto(user.team));

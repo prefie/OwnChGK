@@ -30,7 +30,8 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.0",
     "sass": "^1.69.5",
-    "vite": "4.4.5"
+    "vite": "4.4.5",
+    "vite-svg-loader": "^5.1.0"
   },
   "scripts": {
     "start": "vite",
