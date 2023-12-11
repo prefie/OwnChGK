@@ -7,15 +7,10 @@ import { Scrollbars } from 'rc-scrollbars';
 import { Table, TableBody, TableCell, tableCellClasses, TableHead, TableRow } from '@mui/material';
 import { TeamTableRow, TourHeaderCell } from '../../components/table/table';
 import { Link, useParams } from 'react-router-dom';
-import {
-    changeIntrigueGameStatus,
-    getResultTable,
-    getResultTableFormat,
-    getTeamsParticipantTable
-} from '../../server-api/server-api';
 import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
 import { createFileLink } from '../../fileWorker';
 import Loader from '../../components/loader/loader';
+import {ServerApi} from "../../server-api/server-api";
 
 const Rating: FC<RatingProps> = props => {
     const {gameId} = useParams<{ gameId: string }>();
@@ -45,7 +40,7 @@ const Rating: FC<RatingProps> = props => {
     };
 
     useEffect(() => {
-        getResultTable(gameId).then(res => {
+        ServerApi.getResultTable(gameId).then(res => {
             if (res.status === 200) {
                 res.json().then(({
                                      isIntrigue,
@@ -122,13 +117,13 @@ const Rating: FC<RatingProps> = props => {
 
     const turnOnIntrigue = () => {
         if (!isIntrigue) {
-            changeIntrigueGameStatus(gameId, true).then(res => {
+            ServerApi.changeIntrigueGameStatus(gameId, true).then(res => {
                 if (res.status === 200) {
                     setIsIntrigue(true);
                 }
             });
         } else {
-            changeIntrigueGameStatus(gameId, false).then(res => {
+            ServerApi.changeIntrigueGameStatus(gameId, false).then(res => {
                 if (res.status === 200) {
                     setIsIntrigue(false);
                 }
@@ -137,7 +132,7 @@ const Rating: FC<RatingProps> = props => {
     };
 
     const downloadResults = async () => {
-        getResultTableFormat(gameId).then(res => {
+        ServerApi.getResultTableFormat(gameId).then(res => {
             if (res.status === 200) {
                 res.json().then(({totalTable}) => {
                     createFileLink(totalTable, `game-${gameId}-result.csv`);
@@ -147,7 +142,7 @@ const Rating: FC<RatingProps> = props => {
     };
 
     const downloadTeams = async () => {
-        getTeamsParticipantTable(gameId).then(res => {
+        ServerApi.getTeamsParticipantTable(gameId).then(res => {
             if (res.status === 200) {
                 res.json().then(({participants}) => {
                     createFileLink(participants, `game-${gameId}-participants.csv`);

@@ -2,7 +2,7 @@ import React, {FC, useEffect, useState} from 'react';
 import classes from './admin-start-game.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import {Redirect, useParams} from 'react-router-dom';
-import {getGame, getTeamsParticipantTable, startGame} from '../../server-api/server-api';
+import {ServerApi} from '../../server-api/server-api';
 import Header from '../../components/header/header';
 import NavBar from '../../components/nav-bar/nav-bar';
 import Loader from '../../components/loader/loader';
@@ -17,7 +17,7 @@ const StartGame: FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        getGame(gameId).then((res) => {
+        ServerApi.getGame(gameId).then((res) => {
             if (res.status === 200) {
                 res.json().then(({name, isStarted}) => {
                     setGameName(name);
@@ -37,7 +37,7 @@ const StartGame: FC = () => {
     }
 
     const handleStart = async () => {
-        startGame(gameId).then((res) => {
+        ServerApi.startGame(gameId).then((res) => {
                 if (res.status === 200) {
                     setIsGameStart(true);
                 }
@@ -46,7 +46,7 @@ const StartGame: FC = () => {
 
     const downloadResults = async (event: React.MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
-        getTeamsParticipantTable(gameId).then(res => {
+        ServerApi.getTeamsParticipantTable(gameId).then(res => {
             if (res.status === 200) {
                 res.json().then(({participants}) => {
                     createFileLink(participants, `game-${gameId}-participants.csv`);

@@ -6,8 +6,8 @@ import {CustomInput} from '../../components/custom-input/custom-input';
 import {Link, Redirect} from 'react-router-dom';
 import {RestoringPasswordProps} from '../../entities/restoring-password/restoring-password.interfaces';
 import {Alert, Snackbar} from '@mui/material';
-import {changePasswordByCode, checkTemporaryPassword, sendTemporaryPassword} from '../../server-api/server-api';
 import PageBackdrop from '../../components/backdrop/backdrop';
+import {ServerApi} from "../../server-api/server-api";
 
 const RestoringPassword: FC<RestoringPasswordProps> = props => {
     const [isEmailInvalid, setIsEmailInvalid] = useState<boolean>(false);
@@ -47,7 +47,7 @@ const RestoringPassword: FC<RestoringPasswordProps> = props => {
     const handleSendCode = (event: React.SyntheticEvent) => {
         event.preventDefault();
         setIsLoading(true);
-        sendTemporaryPassword(email, props.isAdmin).then(res => {
+        ServerApi.sendTemporaryPassword(email, props.isAdmin).then(res => {
             if (res.status === 200) {
                 setStep('second');
             } else if (res.status === 404 || res.status === 400) {
@@ -61,7 +61,7 @@ const RestoringPassword: FC<RestoringPasswordProps> = props => {
 
     const handleResendCode = () => {
         setIsLoading(true);
-        sendTemporaryPassword(email, props.isAdmin).then(res => {
+        ServerApi.sendTemporaryPassword(email, props.isAdmin).then(res => {
             if (res.status === 500) {
                 setIsResendCodeInvalid(true);
             }
@@ -71,7 +71,7 @@ const RestoringPassword: FC<RestoringPasswordProps> = props => {
 
     const handleCheckCode = () => {
         setIsLoading(true);
-        checkTemporaryPassword(email, code, props.isAdmin).then(res => {
+        ServerApi.checkTemporaryPassword(email, code, props.isAdmin).then(res => {
             if (res.status === 200) {
                 setStep('third');
             } else {
@@ -106,7 +106,7 @@ const RestoringPassword: FC<RestoringPasswordProps> = props => {
         } else {
             setIsRepeatedPasswordInvalid(false);
             setIsLoading(true);
-            changePasswordByCode(email, newPassword, code, props.isAdmin).then(res => {
+            ServerApi.changePasswordByCode(email, newPassword, code, props.isAdmin).then(res => {
                 if (res.status === 200) {
                     setIsSuccess(true);
                 } else {

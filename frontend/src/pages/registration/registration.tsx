@@ -9,9 +9,9 @@ import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces
 import {authorizeUserWithRole} from '../../redux/actions/app-actions/app-actions';
 import {connect} from 'react-redux';
 import PageBackdrop from '../../components/backdrop/backdrop';
-import {createUser} from '../../server-api/server-api';
 import {Input} from "../../components/input/input";
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
+import {ServerApi} from "../../server-api/server-api";
 import logoImage from '../../images/Logo.svg';
 
 const Registration: FC<RegistrationProps> = props => {
@@ -54,7 +54,7 @@ const Registration: FC<RegistrationProps> = props => {
             return false;
         } else {
             setIsLoading(true);
-            createUser(email, password).then(response => {
+            ServerApi.createUser(email, password).then(response => {
                 if (response.status === 200) {
                     props.onAuthorizeUserWithRole('user', '', email, '');
                     setLoggedIn(true);

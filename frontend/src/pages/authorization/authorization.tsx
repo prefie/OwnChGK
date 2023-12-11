@@ -15,7 +15,7 @@ import {Dispatch} from 'redux';
 import {authorizeUserWithRole, checkToken as testToken} from '../../redux/actions/app-actions/app-actions';
 import {AppState} from '../../entities/app/app.interfaces';
 import PageBackdrop from '../../components/backdrop/backdrop';
-import {login} from '../../server-api/server-api';
+import {ServerApi} from '../../server-api/server-api';
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
 import {Input} from "../../components/input/input";
 import { allAdminRoles } from '../../entities/common/common.constants';
@@ -30,7 +30,7 @@ const Authorization: FC<AuthorizationProps> = props => {
     const handleSubmit = async (event: React.SyntheticEvent) => {
         event.preventDefault();
         setIsLoading(true);
-        login(email, password, !!props.isAdmin).then(response => {
+        ServerApi.login(email, password, !!props.isAdmin).then(response => {
             if (response.status === 200) {
                 response.json().then(({role, team, email, name}) => {
                     props.onAuthorizeUserWithRole(role, team, email, name);

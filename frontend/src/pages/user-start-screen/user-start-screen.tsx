@@ -9,12 +9,6 @@ import {
 } from '../../entities/user-start-screen/user-start-screen.interfaces';
 import {Link, Redirect, useLocation} from 'react-router-dom';
 import {Alert, Skeleton, Snackbar} from '@mui/material';
-import {
-    editTeamCaptainByCurrentUser,
-    getAmIParticipateAndPublicGames,
-    getTeamByCurrentUser,
-    getTeamsWithoutUser
-} from '../../server-api/server-api';
 import {Game, Team} from '../admin-start-screen/admin-start-screen';
 import {Dispatch} from 'redux';
 import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces';
@@ -28,6 +22,7 @@ import {AddRounded} from "@mui/icons-material";
 import TeamItem from "../../components/team-item/team-item";
 import Scrollbar from "../../components/scrollbar/scrollbar";
 import emptyOwlImage from '../../images/owl-images/empty_owl.svg';
+import {ServerApi} from "../../server-api/server-api";
 
 const UserStartScreen: FC<UserStartScreenProps> = props => {
     const [page, setPage] = useState<string>('teams');
@@ -67,7 +62,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
     }, [location]);
 
     useEffect(() => {
-        getTeamByCurrentUser().then(res => {
+        ServerApi.getTeamByCurrentUser().then(res => {
             if (res.status === 200) {
                 res.json().then((team) => {
                     if (team.name !== undefined) {
@@ -75,7 +70,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                         setTeamsFromDB([team]);
                         setNumberLoading(prev => Math.min(prev + 1, 2));
                     } else {
-                        getTeamsWithoutUser().then(res => {
+                        ServerApi.getTeamsWithoutUser().then(res => {
                             if (res.status === 200) {
                                 res.json().then(({teams}) => {
                                     setTeamsFromDB(teams.sort((team1: Team, team2: Team) => team1.name.toLowerCase() > team2.name.toLowerCase() ? 1 : -1));
@@ -90,7 +85,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
             }
         });
 
-        getAmIParticipateAndPublicGames().then(res => {
+        ServerApi.getAmIParticipateAndPublicGames().then(res => {
             if (res.status === 200) {
                 res.json().then(({games}) => {
                     setGamesFromDB(games.sort((game1: Game, game2: Game) => game1.name.toLowerCase() > game2.name.toLowerCase() ? 1 : -1));
@@ -104,7 +99,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
 
      const handleChooseTeam = (team: Team) => {
         if (userTeam.name === '') {
-            editTeamCaptainByCurrentUser(team.id)
+            ServerApi.editTeamCaptainByCurrentUser(team.id)
                 .then(res => {
                     if (res.status === 200) {
                         res.json().then(({name, id, captainEmail, captainId, participants, participantsCount}) => {
@@ -119,7 +114,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                             setIsTeamNotFree(false);
                             props.onAddUserTeam(name);
                         });
-                        getAmIParticipateAndPublicGames().then(res => {
+                        ServerApi.getAmIParticipateAndPublicGames().then(res => {
                             if (res.status === 200) {
                                 res.json().then(({games}) => {
                                     setGamesFromDB(games.sort((game1: Game, game2: Game) => game1.name.toLowerCase() > game2.name.toLowerCase() ? 1 : -1));
