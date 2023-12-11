@@ -6,6 +6,7 @@ import { allAdminRoles } from '../utils/roles';
 import { body, param, query } from 'express-validator';
 import { validateAccessLevel, validateGameStatus, validateRoundTypes } from '../utils/validators';
 import { validationMiddleware } from '../middleware/validation.middleware';
+import asyncHandler from 'express-async-handler';
 
 export const gamesRouter = () => {
     const router = Router();
@@ -17,7 +18,7 @@ export const gamesRouter = () => {
         authMiddleware,
         query('amIParticipate').optional().isBoolean(),
         validationMiddleware,
-        gamesController.getAll.bind(gamesController)
+        asyncHandler(gamesController.getAll.bind(gamesController))
     );
 
     router.get(
@@ -25,7 +26,7 @@ export const gamesRouter = () => {
         authMiddleware,
         param('gameId').isUUID(),
         validationMiddleware,
-        gamesController.getGame.bind(gamesController)
+        asyncHandler(gamesController.getGame.bind(gamesController))
     );
 
     router.get(
@@ -33,7 +34,7 @@ export const gamesRouter = () => {
         roleMiddleware(allAdminRoles),
         param('gameId').isUUID(),
         validationMiddleware,
-        gamesController.startGame.bind(gamesController)
+        asyncHandler(gamesController.startGame.bind(gamesController))
     );
 
     router.get(
@@ -41,7 +42,7 @@ export const gamesRouter = () => {
         roleMiddleware(allAdminRoles),
         param('gameId').isUUID(),
         validationMiddleware,
-        gamesController.getParticipants.bind(gamesController)
+        asyncHandler(gamesController.getParticipants.bind(gamesController))
     );
 
     router.post(
@@ -50,7 +51,7 @@ export const gamesRouter = () => {
         param('gameId').isUUID(),
         body('teamId').optional().isUUID(),
         validationMiddleware,
-        gamesController.addTeamInBigGame.bind(gamesController)
+        asyncHandler(gamesController.addTeamInBigGame.bind(gamesController))
     );
 
     router.delete(
@@ -59,7 +60,7 @@ export const gamesRouter = () => {
         param('gameId').isUUID(),
         body('teamId').optional().isUUID(),
         validationMiddleware,
-        gamesController.deleteTeamFromBigGame.bind(gamesController)
+        asyncHandler(gamesController.deleteTeamFromBigGame.bind(gamesController))
     );
 
     router.patch(
@@ -110,7 +111,7 @@ export const gamesRouter = () => {
             .isObject(),
 
         validationMiddleware,
-        gamesController.changeGame.bind(gamesController)
+        asyncHandler(gamesController.changeGame.bind(gamesController))
     );
 
     router.patch(
@@ -119,7 +120,7 @@ export const gamesRouter = () => {
         param('gameId').isUUID(),
         body('status').custom(validateGameStatus),
         validationMiddleware,
-        gamesController.changeGameStatus.bind(gamesController)
+        asyncHandler(gamesController.changeGameStatus.bind(gamesController))
     );
 
     router.patch(
@@ -128,7 +129,7 @@ export const gamesRouter = () => {
         param('gameId').isUUID(),
         body('isIntrigue').isBoolean(),
         validationMiddleware,
-        gamesController.changeIntrigueStatus.bind(gamesController)
+        asyncHandler(gamesController.changeIntrigueStatus.bind(gamesController))
     );
 
     router.patch(
@@ -137,7 +138,7 @@ export const gamesRouter = () => {
         param('gameId').isUUID(),
         body('newGameName').isString().notEmpty(),
         validationMiddleware,
-        gamesController.editGameName.bind(gamesController)
+        asyncHandler(gamesController.editGameName.bind(gamesController))
     );
 
     router.patch(
@@ -146,7 +147,7 @@ export const gamesRouter = () => {
         param('gameId').isUUID(),
         body('adminEmail').isEmail(),
         validationMiddleware,
-        gamesController.editGameAdmin.bind(gamesController)
+        asyncHandler(gamesController.editGameAdmin.bind(gamesController))
     ); // Не используется
 
     router.delete(
@@ -154,7 +155,7 @@ export const gamesRouter = () => {
         roleMiddleware(allAdminRoles),
         param('gameId').isUUID(),
         validationMiddleware,
-        gamesController.deleteGame.bind(gamesController)
+        asyncHandler(gamesController.deleteGame.bind(gamesController))
     );
 
     router.get(
@@ -162,7 +163,7 @@ export const gamesRouter = () => {
         authMiddleware,
         param('gameId').isUUID(),
         validationMiddleware,
-        gamesController.getGameResult.bind(gamesController)
+        asyncHandler(gamesController.getGameResult.bind(gamesController))
     );
 
     router.get(
@@ -170,7 +171,7 @@ export const gamesRouter = () => {
         authMiddleware,
         param('gameId').isUUID(),
         validationMiddleware,
-        gamesController.getGameResultScoreTable.bind(gamesController)
+        asyncHandler(gamesController.getGameResultScoreTable.bind(gamesController))
     );
 
     router.get(
@@ -178,7 +179,7 @@ export const gamesRouter = () => {
         authMiddleware,
         param('gameId').isUUID(),
         validationMiddleware,
-        gamesController.getResultWithFormat.bind(gamesController)
+        asyncHandler(gamesController.getResultWithFormat.bind(gamesController))
     );
 
     router.post(
@@ -229,7 +230,7 @@ export const gamesRouter = () => {
             .isObject(),
 
         validationMiddleware,
-        gamesController.insertGame.bind(gamesController)
+        asyncHandler(gamesController.insertGame.bind(gamesController))
     );
 
     return router;

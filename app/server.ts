@@ -12,6 +12,7 @@ import path from 'path';
 import { Server as WSServer } from 'ws';
 import { HandlerWebsocket } from './socket';
 import { AppDataSource } from './utils/data-source';
+import { errorHandler } from './utils/api-error';
 
 export class Server {
     private app;
@@ -20,6 +21,7 @@ export class Server {
         this.app = express();
         this.config();
         this.routerConfig();
+        this.app.use(errorHandler);
         this.DBconnection().then(() => {
         });
     }

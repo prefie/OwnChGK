@@ -5,6 +5,7 @@ import { allAdminRoles, superAdminRoles } from '../utils/roles';
 import { body } from 'express-validator';
 import { validationMiddleware } from '../middleware/validation.middleware';
 import { authMiddleware } from '../middleware/auth.middleware';
+import asyncHandler from 'express-async-handler';
 
 export const adminsRouter = () => {
     const router = Router();
@@ -15,7 +16,7 @@ export const adminsRouter = () => {
         '/',
         roleMiddleware(allAdminRoles),
         validationMiddleware,
-        adminsController.getAll.bind(adminsController)
+        asyncHandler(adminsController.getAll.bind(adminsController))
     );
 
     router.post(
@@ -23,7 +24,7 @@ export const adminsRouter = () => {
         body('email').isEmail(),
         body('password').isString().notEmpty(),
         validationMiddleware,
-        adminsController.login.bind(adminsController)
+        asyncHandler(adminsController.login.bind(adminsController))
     );
 
     router.post(
@@ -33,18 +34,18 @@ export const adminsRouter = () => {
         body('name').optional({ nullable: true }).isString(),
         body('password').optional({ nullable: true }).isString(),
         validationMiddleware,
-        adminsController.insert.bind(adminsController)
+        asyncHandler(adminsController.insert.bind(adminsController))
     );
 
     router.post(
         '/demo',
         authMiddleware,
-        adminsController.insertDemo.bind(adminsController)
+        asyncHandler(adminsController.insertDemo.bind(adminsController))
     );
 
     router.post(
         '/logout',
-        adminsController.logout.bind(adminsController)
+        asyncHandler(adminsController.logout.bind(adminsController))
     );
 
     router.post(
@@ -52,14 +53,14 @@ export const adminsRouter = () => {
         roleMiddleware(superAdminRoles),
         body('email').isEmail(),
         validationMiddleware,
-        adminsController.delete.bind(adminsController)
+        asyncHandler(adminsController.delete.bind(adminsController))
     );
 
     router.post(
         '/sendMail',
         body('email').isEmail(),
         validationMiddleware,
-        adminsController.sendPasswordWithTemporaryPassword.bind(adminsController)
+        asyncHandler(adminsController.sendPasswordWithTemporaryPassword.bind(adminsController))
     );
 
     router.post(
@@ -67,7 +68,7 @@ export const adminsRouter = () => {
         body('email').isEmail(),
         body('code').isString().notEmpty(),
         validationMiddleware,
-        adminsController.confirmTemporaryPassword.bind(adminsController)
+        asyncHandler(adminsController.confirmTemporaryPassword.bind(adminsController))
     );
 
     router.patch(
@@ -76,7 +77,7 @@ export const adminsRouter = () => {
         body('password').isString().notEmpty(),
         body('code').isString().notEmpty(),
         validationMiddleware,
-        adminsController.changePasswordByCode.bind(adminsController)
+        asyncHandler(adminsController.changePasswordByCode.bind(adminsController))
     );
 
     router.patch(
@@ -86,7 +87,7 @@ export const adminsRouter = () => {
         body('password').isString().notEmpty(),
         body('oldPassword').isString().notEmpty(),
         validationMiddleware,
-        adminsController.changePasswordByOldPassword.bind(adminsController)
+        asyncHandler(adminsController.changePasswordByOldPassword.bind(adminsController))
     );
 
     router.patch(
@@ -94,7 +95,7 @@ export const adminsRouter = () => {
         roleMiddleware(allAdminRoles),
         body('newName').isString(),
         validationMiddleware,
-        adminsController.changeName.bind(adminsController)
+        asyncHandler(adminsController.changeName.bind(adminsController))
     );
 
     return router;

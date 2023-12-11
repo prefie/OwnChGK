@@ -5,6 +5,7 @@ import { roleMiddleware } from '../middleware/role.middleware';
 import { allAdminRoles } from '../utils/roles';
 import { body, param, query } from 'express-validator';
 import { validationMiddleware } from '../middleware/validation.middleware';
+import asyncHandler from 'express-async-handler';
 
 export const teamsRouter = () => {
     const router = Router();
@@ -16,7 +17,7 @@ export const teamsRouter = () => {
         authMiddleware,
         query('withoutUser').optional().isBoolean(),
         validationMiddleware,
-        teamsController.getAll.bind(teamsController)
+        asyncHandler(teamsController.getAll.bind(teamsController))
     );
 
     router.get(
@@ -24,7 +25,7 @@ export const teamsRouter = () => {
         authMiddleware,
         param('teamId').isUUID(),
         validationMiddleware,
-        teamsController.getTeam.bind(teamsController)
+        asyncHandler(teamsController.getTeam.bind(teamsController))
     );
 
     router.get(
@@ -32,7 +33,7 @@ export const teamsRouter = () => {
         authMiddleware,
         param('teamId').isUUID(),
         validationMiddleware,
-        teamsController.getParticipants.bind(teamsController)
+        asyncHandler(teamsController.getParticipants.bind(teamsController))
     );
 
     router.patch(
@@ -45,7 +46,7 @@ export const teamsRouter = () => {
         body('participants.*.email').optional().isString(), // TODO: потом добавить валидацию на мыло
         body('participants.*.name').optional().isString(),
         validationMiddleware,
-        teamsController.editTeam.bind(teamsController)
+        asyncHandler(teamsController.editTeam.bind(teamsController))
     );
 
     router.patch(
@@ -53,7 +54,7 @@ export const teamsRouter = () => {
         authMiddleware,
         param('teamId').isUUID(),
         validationMiddleware,
-        teamsController.editTeamCaptainByCurrentUser.bind(teamsController)
+        asyncHandler(teamsController.editTeamCaptainByCurrentUser.bind(teamsController))
     );
 
     router.delete(
@@ -61,7 +62,7 @@ export const teamsRouter = () => {
         roleMiddleware(allAdminRoles),
         param('teamId').isUUID(),
         validationMiddleware,
-        teamsController.deleteTeam.bind(teamsController)
+        asyncHandler(teamsController.deleteTeam.bind(teamsController))
     );
 
     router.post(
@@ -73,7 +74,7 @@ export const teamsRouter = () => {
         body('participants.*.email').optional().isString(), // TODO: потом добавить валидацию на мыло
         body('participants.*.name').optional().isString(),
         validationMiddleware,
-        teamsController.insertTeam.bind(teamsController)
+        asyncHandler(teamsController.insertTeam.bind(teamsController))
     );
 
     return router;
