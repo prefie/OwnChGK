@@ -11,7 +11,7 @@ import { AdminRepository } from '../db/repositories/admin.repository';
 import { allAdminRoles, demoAdminRoles, userRoles } from '../utils/roles';
 import { User } from '../db/entities/user';
 
-export class UsersController { // TODO: дописать смену имени пользователя, удаление
+export class UsersController {
     private readonly userRepository: UserRepository;
     private readonly adminRepository: AdminRepository;
 
