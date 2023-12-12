@@ -29,7 +29,7 @@ export const getTokenFromString = (token: string): TokenPayload => jwt.verify(to
 
 export const getTokenFromRequest = (req: Request): TokenPayload => {
     const cookie = req.cookies['authorization'];
-    if (cookie === undefined) {
+    if (!cookie) {
         throw new APIError('jwt must be provided', 401);
     }
 

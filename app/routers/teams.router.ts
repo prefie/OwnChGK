@@ -43,7 +43,7 @@ export const teamsRouter = () => {
         body('newTeamName').isString().notEmpty(),
         body('captain').optional({ nullable: true }).isEmail(),
         body('participants').optional({ nullable: true }).isArray(),
-        body('participants.*.email').optional().isString(), // TODO: потом добавить валидацию на мыло
+        body('participants.*.email').optional().isString(), // TODO: shusharin потом добавить валидацию на мыло
         body('participants.*.name').optional().isString(),
         validationMiddleware,
         asyncHandler(teamsController.editTeam.bind(teamsController))
@@ -71,7 +71,7 @@ export const teamsRouter = () => {
         body('teamName').isString().notEmpty(),
         body('captain').optional({ nullable: true }).isEmail(),
         body('participants').optional({ nullable: true }).isArray(),
-        body('participants.*.email').optional().isString(), // TODO: потом добавить валидацию на мыло
+        body('participants.*.email').optional().isString(), // TODO: shusharin потом добавить валидацию на мыло
         body('participants.*.name').optional().isString(),
         validationMiddleware,
         asyncHandler(teamsController.insertTeam.bind(teamsController))

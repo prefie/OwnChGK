@@ -145,7 +145,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
     }, [location]);
 
     useEffect(() => {
-        ServerApi.getAll('/teams/').then(res => {
+        ServerApi.getAll('teams').then(res => {
             if (res.status === 200) {
                 res.json().then(({teams}) => {
                     setTeams(teams.sort((team1: Team, team2: Team) => team1.name.toLowerCase() > team2.name.toLowerCase() ? 1 : -1));
@@ -155,7 +155,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
             }
         });
 
-        ServerApi.getAll('/games/').then(res => {
+        ServerApi.getAll('games').then(res => {
             if (res.status === 200) {
                 res.json().then(({games}) => {
                     setGames(games.sort((game1: Game, game2: Game) => game1.name.toLowerCase() > game2.name.toLowerCase() ? 1 : -1));
@@ -165,7 +165,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
             }
         });
 
-        ServerApi.getAll('/admins/').then(res => {
+        ServerApi.getAll('admins').then(res => {
             if (res.status === 200) {
                 res.json().then(({admins}) => {
                     setAdmins(admins.sort((admin1: Admin, admin2: Admin) => admin1.email.toLowerCase() > admin2.email.toLowerCase() ? 1 : -1));

@@ -74,7 +74,7 @@ export class Server {
                         ws.send(JSON.stringify({
                             'action': 'ERROR'
                         }));
-                        console.log(error);
+                        console.error(error);
                     }
                 });
             });

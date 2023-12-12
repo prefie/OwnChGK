@@ -44,8 +44,3 @@ export async function SendMailWithTemporaryPasswordToAdmin(transporter, email: s
         html: `${adminPasswordMessage} <b>${code}</b><br>${ignoreMessage}`
     });
 }
-
-export function validateEmail(email: string) {
-    const reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{1,4})$/;
-    return reg.test(email);
-}

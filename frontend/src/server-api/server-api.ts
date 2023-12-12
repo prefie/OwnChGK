@@ -11,19 +11,19 @@ export class ServerApi {
         DELETE: 'DELETE',
         GET: 'GET',
     };
+    
+    private static DefaultHeaders = {
+        'Content-Type': 'application/json;charset=utf-8',
+        'Accept': 'application/json',
+    };
 
     private static async sendRequest(request: Request) {
         const fullPath = this.serverPath + request.path;
         return await fetch(fullPath, {
             method: request.method ?? this.Method.GET,
-            headers: request.body
-                ? {
-                      'Content-Type': 'application/json;charset=utf-8',
-                      Accept: 'application/json',
-                  }
-                : undefined,
-            credentials: 'include',
+            headers: request.body ? this.DefaultHeaders : {},
             body: request.body,
+            credentials: 'include',
         });
     }
 
@@ -294,13 +294,13 @@ export class ServerApi {
 
     public static async getAmIParticipateGames() {
         return this.sendRequest({
-            path: '/games/?amIParticipate=true',
+            path: '/games?amIParticipate=true',
         });
     }
 
     public static async getAmIParticipateAndPublicGames() {
         return this.sendRequest({
-            path: '/games/?amIParticipate=true&publicEnabled=true',
+            path: '/games?amIParticipate=true&publicEnabled=true',
         });
     }
 
@@ -330,7 +330,7 @@ export class ServerApi {
 
     public static async getUsersWithoutTeam() {
         return this.sendRequest({
-            path: '/users/?withoutTeam=true',
+            path: '/users?withoutTeam=true',
         });
     }
 
@@ -360,7 +360,7 @@ export class ServerApi {
 
     public static async getTeamsWithoutUser() {
         return this.sendRequest({
-            path: '/teams/?withoutUser=true',
+            path: '/teams?withoutUser=true',
         });
     }
 

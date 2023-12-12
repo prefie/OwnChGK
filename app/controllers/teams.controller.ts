@@ -19,6 +19,7 @@ export class TeamsController {
     public async getAll(req: Request, res: Response) {
         const { withoutUser } = req.query;
         const { email, role } = getTokenFromRequest(req);
+        
         let teams: Team[];
         if (demoAdminRoles.has(role)) {
             const team = await this.teamRepository.findByCaptainEmail(email);
@@ -69,6 +70,7 @@ export class TeamsController {
     public async deleteTeam(req: Request, res: Response) {
         const { teamId } = req.params;
         const { email, role } = getTokenFromRequest(req);
+        
         if (demoAdminRoles.has(role)) {
             const team = await this.teamRepository.findByIdWithRelations(teamId);
             if (team.captain?.email !== email) {
@@ -140,6 +142,7 @@ export class TeamsController {
 
     public async getTeam(req: Request, res: Response) {
         const { teamId } = req.params;
+        
         const team = await this.teamRepository.findByIdWithRelations(teamId);
         if (!team) {
             return res.status(404).json({ message: 'team not found' });
@@ -150,6 +153,7 @@ export class TeamsController {
 
     public async getParticipants(req: Request, res: Response) {
         const { teamId } = req.params;
+        
         const team = await this.teamRepository.findById(teamId);
         return res.status(200).json({
             participants: team.participants

@@ -5,7 +5,7 @@ import { GameStatus, GameType } from '../db/entities/game';
 import { BigGameRepository } from '../db/repositories/big-game.repository';
 import { BigGameDto, GameDto, MatrixGameDto, QuizGameDto } from '../dtos/big-game.dto';
 import { BigGameLogic } from '../logic/big-game-logic';
-import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: избавиться
+import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: shusharin избавиться
 import { AccessType, CheckAccessResult } from '../utils/check-access-result';
 import { getTokenFromRequest } from '../utils/jwt-token';
 import { allAdminRoles, demoAdminRoles, smallAdminRoles, superAdminRoles, userRoles } from '../utils/roles';
@@ -21,9 +21,9 @@ export class GamesController {
 
     public async getAll(req: Request, res: Response) {
         const { amIParticipate, publicEnabled } = req.query;
-        let games: BigGame[] = [];
         const { id, role, teamId } = getTokenFromRequest(req);
-
+        
+        let games: BigGame[] = [];
         if (amIParticipate) {
             games = publicEnabled
                 ? await this.bigGameRepository.findPublicGamesByCaptainId(id)
@@ -50,6 +50,7 @@ export class GamesController {
         } = req.body;
 
         const { email, id, role } = getTokenFromRequest(req);
+        
         const game = await this.bigGameRepository.findByName(gameName);
         if (game) {
             return res.status(409).json({ message: 'Игра с таким названием уже есть' });
@@ -112,6 +113,7 @@ export class GamesController {
 
     public async getGame(req: Request, res: Response) {
         const { gameId } = req.params;
+        
         const bigGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
         if (!bigGame) {
             return res.status(404).json({ message: 'game not found' });
@@ -125,7 +127,7 @@ export class GamesController {
 
         await this.restoreBigGameIfNeeded(bigGame.id, bigGame.status);
 
-        const answer = { // TODO: DTO
+        const answer = { // TODO: shusharin DTO
             name: bigGame.name,
             isStarted: !!bigGames[gameId],
             id: bigGame.id,
@@ -141,8 +143,8 @@ export class GamesController {
 
     public async startGame(req: Request, res: Response) {
         const { gameId } = req.params;
+        
         const bigGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
-
         if (!bigGame) {
             return res.status(404).json({ message: 'game not found' });
         }
@@ -163,13 +165,13 @@ export class GamesController {
                 delete bigGames[gameId];
                 delete gameUsers[gameId];
                 delete gameAdmins[gameId];
-            }, 1000 * 60 * 60 * 24); // TODO: избавиться
+            }, 1000 * 60 * 60 * 24); // TODO: shusharin избавиться
         }
 
         const chgkFromDB = bigGame.games.find(game => game.type == GameType.CHGK);
         const matrixFromDB = bigGame.games.find(game => game.type == GameType.MATRIX);
 
-        const answer = { // TODO: DTO
+        const answer = { // TODO: shusharin DTO
             name: bigGame.name,
             id: bigGame.id,
             teams: bigGame.teams.map(value => value.name),
@@ -183,6 +185,7 @@ export class GamesController {
 
     public async changeGame(req: Request, res: Response) {
         const { gameId } = req.params;
+        
         const {
             newGameName,
             accessLevel,
@@ -213,6 +216,7 @@ export class GamesController {
         }
 
         const { role } = getTokenFromRequest(req);
+        
         if (demoAdminRoles.has(role) && accessLevel != AccessLevel.PRIVATE) {
             return res.status(403).json({ message: 'Демо-админ может создавать только приватные игры' });
         }
@@ -221,7 +225,7 @@ export class GamesController {
         return res.status(200).json({});
     }
 
-    // TODO: почему интрига через запрос, а не в сокетах?
+    // TODO: shusharin почему интрига через запрос, а не в сокетах?
     public async changeIntrigueStatus(req: Request, res: Response) {
         const { gameId } = req.params;
         const { isIntrigue } = req.body;
@@ -241,6 +245,7 @@ export class GamesController {
 
     public async getGameResult(req: Request, res: Response) {
         const { gameId } = req.params;
+        
         if (!bigGames[gameId]) {
             return res.status(404).json({ 'message': 'Игра не началась' });
         }
@@ -255,7 +260,6 @@ export class GamesController {
 
     public async getGameResultScoreTable(req: Request, res: Response) {
         const { gameId } = req.params;
-
         const { role, teamId } = getTokenFromRequest(req);
 
         if (userRoles.has(role) && !teamId) {
@@ -281,7 +285,7 @@ export class GamesController {
 
         const matrixSums = bigGame.isFullGame() ? bigGame.matrixGame.getTotalScoreForAllTeams() : undefined;
 
-        const answer = { // TODO: DTO
+        const answer = { // TODO: shusharin DTO
             gameId,
             isIntrigue: bigGame.intrigueEnabled,
             roundsCount: game.getRoundsCount(),
@@ -296,7 +300,6 @@ export class GamesController {
 
     public async getResultWithFormat(req: Request, res: Response) {
         const { gameId } = req.params;
-
         const { role, teamId } = getTokenFromRequest(req);
 
         if (userRoles.has(role) && !teamId) {
@@ -310,10 +313,10 @@ export class GamesController {
             await this.restoreBigGameIfNeeded(gameId, bigGameFromDb.status);
         } else if (allAdminRoles.has(role)) {
             this.bigGameRepository.updateBigGameState(bigGame)
-                .catch(e => console.log(`Ошибка при сохранении состояния игры ${bigGame.id} -- ${bigGame.name} -- ${e}`));
+                .catch(e => console.error(`Ошибка при сохранении состояния игры ${bigGame.id} -- ${bigGame.name} -- ${e}`));
         }
 
-        const headersList = ['Название команды', 'Сумма']; // TODO: DTO
+        const headersList = ['Название команды', 'Сумма']; // TODO: shusharin убрать эту логику отсюда
         if (bigGame.isFullGame()) {
             headersList.push('Матрица');
         }
@@ -377,7 +380,6 @@ export class GamesController {
     public async addTeamInBigGame(req: Request, res: Response) {
         const { gameId } = req.params;
         const { teamId } = req.body;
-
         const { role, teamId: userTeamId, email } = getTokenFromRequest(req);
 
         if (userRoles.has(role) && !userTeamId || allAdminRoles.has(role) && !teamId) {
@@ -413,7 +415,6 @@ export class GamesController {
     public async deleteTeamFromBigGame(req: Request, res: Response) {
         const { gameId } = req.params;
         const { teamId } = req.body;
-
         const { role, teamId: userTeamId } = getTokenFromRequest(req);
 
         if (userRoles.has(role) && !userTeamId || allAdminRoles.has(role) && !teamId) {
@@ -437,6 +438,7 @@ export class GamesController {
 
     public async getParticipants(req: Request, res: Response) {
         const { gameId } = req.params;
+        
         const game = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
         const table = [];
         const sortedTeams = game.teams.sort((a, b) => a.createdDate > b.createdDate ? 1 : -1);
@@ -478,7 +480,7 @@ export class GamesController {
                 delete bigGames[gameId];
                 delete gameUsers[gameId];
                 delete gameAdmins[gameId];
-            }, 1000 * 60 * 60 * 24); // TODO: избавиться
+            }, 1000 * 60 * 60 * 24); // TODO: shusharin избавиться
 
             return bigGames[gameId];
         }
@@ -486,6 +488,7 @@ export class GamesController {
 
     private async checkAccess(req: Request, gameId: string, withAdditionalAdmins = false): Promise<CheckAccessResult> {
         const { id, role } = getTokenFromRequest(req);
+        
         const defaultAnswer = { type: AccessType.ACCESS };
         if (superAdminRoles.has(role)) return defaultAnswer;
 

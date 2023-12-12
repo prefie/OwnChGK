@@ -1,21 +1,23 @@
+const BAD_REQUEST_STATUS = 500;
+
 export class APIError extends Error {
     public constructor(
         public message: string,
         public status?: number,
     ) {
         super(message);
-        this.status = status || 500;
+        this.status = status || BAD_REQUEST_STATUS;
 
         Error.captureStackTrace(this, APIError);
     }
 }
 
-export const errorHandler = (err, req, res, next) => {
-    console.error(err?.stack);
-
-    if (err instanceof APIError) {
-        return res.status(err.status || 500).json({message: err.message});
+export const errorHandler = (err, req, res, _) => {
+    if (err instanceof APIError && err?.status) {
+        return res.status(err.status).json({message: err.message});
     } else {
-        return res.status(500).json({message: err.message});
+        console.error(err?.stack);
+
+        return res.status(BAD_REQUEST_STATUS).json({message: err?.message});
     }
 };
