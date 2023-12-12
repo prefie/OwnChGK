@@ -310,7 +310,7 @@ export class GamesController {
             await this.restoreBigGameIfNeeded(gameId, bigGameFromDb.status);
         } else if (allAdminRoles.has(role)) {
             this.bigGameRepository.updateBigGameState(bigGame)
-                .catch(e => console.log(`Ошибка при сохранении состояния игры ${bigGame.id} -- ${bigGame.name} -- ${e}`));
+                .catch(e => console.error(`Ошибка при сохранении состояния игры ${bigGame.id} -- ${bigGame.name} -- ${e}`));
         }
 
         const headersList = ['Название команды', 'Сумма']; // TODO: shusharin DTO
