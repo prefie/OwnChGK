@@ -50,6 +50,7 @@ export class GamesController {
         } = req.body;
 
         const { email, id, role } = getTokenFromRequest(req);
+        
         const game = await this.bigGameRepository.findByName(gameName);
         if (game) {
             return res.status(409).json({ message: 'Игра с таким названием уже есть' });
@@ -112,6 +113,7 @@ export class GamesController {
 
     public async getGame(req: Request, res: Response) {
         const { gameId } = req.params;
+        
         const bigGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
         if (!bigGame) {
             return res.status(404).json({ message: 'game not found' });
@@ -141,8 +143,8 @@ export class GamesController {
 
     public async startGame(req: Request, res: Response) {
         const { gameId } = req.params;
+        
         const bigGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
-
         if (!bigGame) {
             return res.status(404).json({ message: 'game not found' });
         }
@@ -183,6 +185,7 @@ export class GamesController {
 
     public async changeGame(req: Request, res: Response) {
         const { gameId } = req.params;
+        
         const {
             newGameName,
             accessLevel,
@@ -213,6 +216,7 @@ export class GamesController {
         }
 
         const { role } = getTokenFromRequest(req);
+        
         if (demoAdminRoles.has(role) && accessLevel != AccessLevel.PRIVATE) {
             return res.status(403).json({ message: 'Демо-админ может создавать только приватные игры' });
         }
@@ -241,6 +245,7 @@ export class GamesController {
 
     public async getGameResult(req: Request, res: Response) {
         const { gameId } = req.params;
+        
         if (!bigGames[gameId]) {
             return res.status(404).json({ 'message': 'Игра не началась' });
         }
@@ -255,7 +260,6 @@ export class GamesController {
 
     public async getGameResultScoreTable(req: Request, res: Response) {
         const { gameId } = req.params;
-
         const { role, teamId } = getTokenFromRequest(req);
 
         if (userRoles.has(role) && !teamId) {
@@ -296,7 +300,6 @@ export class GamesController {
 
     public async getResultWithFormat(req: Request, res: Response) {
         const { gameId } = req.params;
-
         const { role, teamId } = getTokenFromRequest(req);
 
         if (userRoles.has(role) && !teamId) {
@@ -313,7 +316,7 @@ export class GamesController {
                 .catch(e => console.error(`Ошибка при сохранении состояния игры ${bigGame.id} -- ${bigGame.name} -- ${e}`));
         }
 
-        const headersList = ['Название команды', 'Сумма']; // TODO: shusharin DTO
+        const headersList = ['Название команды', 'Сумма']; // TODO: shusharin убрать эту логику отсюда
         if (bigGame.isFullGame()) {
             headersList.push('Матрица');
         }
@@ -377,7 +380,6 @@ export class GamesController {
     public async addTeamInBigGame(req: Request, res: Response) {
         const { gameId } = req.params;
         const { teamId } = req.body;
-
         const { role, teamId: userTeamId, email } = getTokenFromRequest(req);
 
         if (userRoles.has(role) && !userTeamId || allAdminRoles.has(role) && !teamId) {
@@ -413,7 +415,6 @@ export class GamesController {
     public async deleteTeamFromBigGame(req: Request, res: Response) {
         const { gameId } = req.params;
         const { teamId } = req.body;
-
         const { role, teamId: userTeamId } = getTokenFromRequest(req);
 
         if (userRoles.has(role) && !userTeamId || allAdminRoles.has(role) && !teamId) {
@@ -437,6 +438,7 @@ export class GamesController {
 
     public async getParticipants(req: Request, res: Response) {
         const { gameId } = req.params;
+        
         const game = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
         const table = [];
         const sortedTeams = game.teams.sort((a, b) => a.createdDate > b.createdDate ? 1 : -1);
@@ -486,6 +488,7 @@ export class GamesController {
 
     private async checkAccess(req: Request, gameId: string, withAdditionalAdmins = false): Promise<CheckAccessResult> {
         const { id, role } = getTokenFromRequest(req);
+        
         const defaultAnswer = { type: AccessType.ACCESS };
         if (superAdminRoles.has(role)) return defaultAnswer;
 
