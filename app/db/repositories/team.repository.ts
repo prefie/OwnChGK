@@ -63,10 +63,6 @@ export class TeamRepository extends BaseRepository<Team> {
         return this.innerRepository.save(team);
     }
 
-    deleteByName(name: string) {
-        return this.innerRepository.delete({ name });
-    }
-
     async updateByParams(
         teamId: string,
         newName: string,

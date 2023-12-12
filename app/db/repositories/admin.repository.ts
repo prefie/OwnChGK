@@ -26,13 +26,6 @@ export class AdminRepository extends BaseRepository<Admin> {
         return this.innerRepository.save(admin);
     }
 
-    async updateByEmailAndPassword(email: string, password: string) {
-        const admin = await this.innerRepository.findOneBy({ email: email.toLowerCase() });
-        admin.password = password;
-
-        return this.innerRepository.save(admin);
-    }
-
     updateName(admin: Admin, newName: string) {
         admin.name = newName;
         return admin.save();

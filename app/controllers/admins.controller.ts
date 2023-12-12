@@ -24,6 +24,7 @@ export class AdminsController {
 
     public async getAll(req: Request, res: Response) {
         const {role} = getTokenFromRequest(req);
+        
         if (demoAdminRoles.has(role)) {
             return res.status(200).json({
                 admins: [],
@@ -57,6 +58,7 @@ export class AdminsController {
 
     public async insert(req: Request, res: Response) {
         const {email, name, password} = req.body;
+        
         if (password) {
             const hashedPassword = await hash(password, 10);
             await this.adminRepository.insertByEmailAndPassword(email, hashedPassword, name);
@@ -71,6 +73,7 @@ export class AdminsController {
 
     public async insertDemo(req: Request, res: Response) {
         const {email} = getTokenFromRequest(req);
+        
         let admin = await this.adminRepository.findByEmail(email);
         if (!admin) {
             const user = await this.userRepository.findByEmail(email);
@@ -100,6 +103,7 @@ export class AdminsController {
 
     public async confirmTemporaryPassword(req: Request, res: Response) {
         const {email, code} = req.body;
+        
         let admin = await this.adminRepository.findByEmail(email);
         if (!admin) {
             return res.status(404).json({message: 'admin not found'});
@@ -170,6 +174,7 @@ export class AdminsController {
 
     public async delete(req: Request, res: Response) {
         const {email} = req.body;
+        
         await this.adminRepository.deleteByEmail(email);
         return res.status(200).json({});
     }

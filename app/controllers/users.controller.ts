@@ -22,8 +22,8 @@ export class UsersController {
 
     public async getAll(req: Request, res: Response) {
         const { withoutTeam } = req.query;
-
         const { email, role } = getTokenFromRequest(req);
+        
         let users: User[];
         if (demoAdminRoles.has(role)) {
             const user = await this.userRepository.findByEmail(email);
@@ -159,6 +159,7 @@ export class UsersController {
 
     public async confirmTemporaryPassword(req: Request, res: Response) {
         const { email, code } = req.body;
+        
         let user = await this.userRepository.findByEmail(email);
         if (!user) {
             return res.status(404).json({ message: 'user not found' });
@@ -173,8 +174,8 @@ export class UsersController {
 
     public async getTeam(req: Request, res: Response) {
         const { id: userId, teamId } = getTokenFromRequest(req);
+        
         const user = await this.userRepository.findById(userId);
-
         if (teamId != user.team?.id) {
             const token = generateAccessToken(user.id, user.email, 'user', user.team?.id, user.name);
             setTokenInResponse(res, token);
