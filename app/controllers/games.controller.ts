@@ -21,9 +21,9 @@ export class GamesController {
 
     public async getAll(req: Request, res: Response) {
         const { amIParticipate, publicEnabled } = req.query;
-        let games: BigGame[] = [];
         const { id, role, teamId } = getTokenFromRequest(req);
-
+        
+        let games: BigGame[] = [];
         if (amIParticipate) {
             games = publicEnabled
                 ? await this.bigGameRepository.findPublicGamesByCaptainId(id)

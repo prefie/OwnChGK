@@ -69,7 +69,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
     }
 
     useEffect(() => {
-        ServerApi.getAll('/teams/').then(res => {
+        ServerApi.getAll('teams').then(res => {
             if (res.status === 200) {
                 res.json().then(({teams}) => {
                     setTeamsFromDB(teams);
