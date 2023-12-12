@@ -5,7 +5,7 @@ import { GameStatus, GameType } from '../db/entities/game';
 import { BigGameRepository } from '../db/repositories/big-game.repository';
 import { BigGameDto, GameDto, MatrixGameDto, QuizGameDto } from '../dtos/big-game.dto';
 import { BigGameLogic } from '../logic/big-game-logic';
-import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: избавиться
+import { bigGames, gameAdmins, gameUsers } from '../socket'; // TODO: shusharin избавиться
 import { AccessType, CheckAccessResult } from '../utils/check-access-result';
 import { getTokenFromRequest } from '../utils/jwt-token';
 import { allAdminRoles, demoAdminRoles, smallAdminRoles, superAdminRoles, userRoles } from '../utils/roles';
@@ -125,7 +125,7 @@ export class GamesController {
 
         await this.restoreBigGameIfNeeded(bigGame.id, bigGame.status);
 
-        const answer = { // TODO: DTO
+        const answer = { // TODO: shusharin DTO
             name: bigGame.name,
             isStarted: !!bigGames[gameId],
             id: bigGame.id,
@@ -163,13 +163,13 @@ export class GamesController {
                 delete bigGames[gameId];
                 delete gameUsers[gameId];
                 delete gameAdmins[gameId];
-            }, 1000 * 60 * 60 * 24); // TODO: избавиться
+            }, 1000 * 60 * 60 * 24); // TODO: shusharin избавиться
         }
 
         const chgkFromDB = bigGame.games.find(game => game.type == GameType.CHGK);
         const matrixFromDB = bigGame.games.find(game => game.type == GameType.MATRIX);
 
-        const answer = { // TODO: DTO
+        const answer = { // TODO: shusharin DTO
             name: bigGame.name,
             id: bigGame.id,
             teams: bigGame.teams.map(value => value.name),
@@ -221,7 +221,7 @@ export class GamesController {
         return res.status(200).json({});
     }
 
-    // TODO: почему интрига через запрос, а не в сокетах?
+    // TODO: shusharin почему интрига через запрос, а не в сокетах?
     public async changeIntrigueStatus(req: Request, res: Response) {
         const { gameId } = req.params;
         const { isIntrigue } = req.body;
@@ -281,7 +281,7 @@ export class GamesController {
 
         const matrixSums = bigGame.isFullGame() ? bigGame.matrixGame.getTotalScoreForAllTeams() : undefined;
 
-        const answer = { // TODO: DTO
+        const answer = { // TODO: shusharin DTO
             gameId,
             isIntrigue: bigGame.intrigueEnabled,
             roundsCount: game.getRoundsCount(),
@@ -313,7 +313,7 @@ export class GamesController {
                 .catch(e => console.log(`Ошибка при сохранении состояния игры ${bigGame.id} -- ${bigGame.name} -- ${e}`));
         }
 
-        const headersList = ['Название команды', 'Сумма']; // TODO: DTO
+        const headersList = ['Название команды', 'Сумма']; // TODO: shusharin DTO
         if (bigGame.isFullGame()) {
             headersList.push('Матрица');
         }
@@ -478,7 +478,7 @@ export class GamesController {
                 delete bigGames[gameId];
                 delete gameUsers[gameId];
                 delete gameAdmins[gameId];
-            }, 1000 * 60 * 60 * 24); // TODO: избавиться
+            }, 1000 * 60 * 60 * 24); // TODO: shusharin избавиться
 
             return bigGames[gameId];
         }
