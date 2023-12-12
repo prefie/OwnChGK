@@ -152,7 +152,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
     }, [location]);
 
     useEffect(() => {
-        ServerApi.getAll('/teams/').then(res => {
+        ServerApi.getAll('teams').then(res => {
             if (res.status === 200) {
                 res.json().then(({ teams }) => {
                     setTeams(
@@ -166,7 +166,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
             }
         });
 
-        ServerApi.getAll('/games/').then(res => {
+        ServerApi.getAll('games').then(res => {
             if (res.status === 200) {
                 res.json().then(({ games }) => {
                     setGames(
@@ -180,7 +180,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
             }
         });
 
-        ServerApi.getAll('/admins/').then(res => {
+        ServerApi.getAll('admins').then(res => {
             if (res.status === 200) {
                 res.json().then(({ admins }) => {
                     setAdmins(
