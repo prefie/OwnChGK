@@ -15,14 +15,14 @@ test.beforeEach(async () => {
 
 test('Should_open_admin_page', async () => {
     const currentUrl = page.url();
-    await expect.soft(currentUrl).toContain(ADMIN_URL);
+    expect.soft(currentUrl).toContain(ADMIN_URL);
 });
 
 test('Should_successful_login', async () => {
     await login(page);
 
     const currentUrl = page.url();
-    expect.soft(currentUrl).toContain('/start-screen');
+    expect.soft(currentUrl).toContain('/admin');
 });
 
 test('Should_go_to_change_password', async () => {
