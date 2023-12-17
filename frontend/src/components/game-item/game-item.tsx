@@ -1,18 +1,16 @@
-import { DeleteRounded, EditRounded, PeopleAltRounded, ExitToApp } from '@mui/icons-material';
+import { PeopleRounded } from '@mui/icons-material';
 import { GameTypeItemProps } from '../game-type-item/game-type-item';
 import classes from './game-item.module.scss';
 import GameTypeList from '../game-type-list/game-type-list';
-import { IconButton } from '@mui/material';
-import React, { Dispatch, SetStateAction, useCallback, useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import SignUpToGameItem from '../sign-up-to-game-item/sign-up-to-game-item';
 import { addCurrentTeamInGame, deleteCurrentTeamFromGame } from '../../server-api/server-api';
-import GameStatus from '../game-status/game-status';
 import { Team } from '../../pages/admin-start-screen/admin-start-screen';
 import { OperationName } from '../modal/modal.tsx';
-import Button from '../button/button.tsx';
-import classesButton from '../button/button.module.scss';
+import GameItemFooter from '../game-footer/footer.tsx';
+import { wordFormat } from './utils.ts';
 
 export enum Roles {
     user,
@@ -50,6 +48,7 @@ interface GameItemProps {
 
 function GameItem(props: GameItemProps) {
     const [isRedirectedToEdit, setIsRedirectedToEdit] = useState(false);
+    const [isRedirectedToDownload, setIsRedirectedToDownload] = useState(false);
     const [amIParticipate, setAmIParticipate] = useState(props.amIParticipate);
     const [teamsCount, setTeamsCount] = useState(props.teamsCount);
     const gameId = props.id;
@@ -81,71 +80,34 @@ function GameItem(props: GameItemProps) {
         });
     }
 
-    const handleDeleteClick = () => {
-        setItemName();
-        if (props.setOperationName) {
-            props.setOperationName(OperationName.Deletion);
-        }
-        handleOpenModal();
-    };
+    if (isRedirectedToEdit) {
+        return <Redirect to={{ pathname: '/admin/game-creation/edit', state: { id: props.id, name: props.name } }} />;
+    }
 
-    const handleEndClick = () => {
-        setItemName();
-        if (props.setOperationName) {
-            props.setOperationName(OperationName.Ending);
-        }
-        handleOpenModal();
-    };
+    if (isRedirectedToDownload) {
+        return <Redirect to={{ pathname: `/admin/rating/${props.id}` }} />;
+    }
 
-    const renderGameTitle = () => {
-        if (props.role === Roles.admin) {
-            return (
-                <Link to={linkToGame} className={classes.gameTitle} id={gameId}>
-                    {props.name}
-                </Link>
-            );
-        } else if (props.role === Roles.user) {
-            return props.amIParticipate ? (
-                <Link to={linkToGame} className={classes.gameTitle} id={gameId}>
-                    {props.name}
-                </Link>
-            ) : (
-                <div className={classes.gameTitle}>{props.name}</div>
-            );
-        } else {
-            return <div className={classes.gameTitle}>{props.name}</div>;
-        }
-    };
-
-    const setItemName = useCallback(() => {
-        if (props.setItemName) {
-            props.setItemName(props.name);
-        }
-        if (props.setItemId) {
-            props.setItemId(props.id as string);
-        }
-    }, [props]);
-
-    const handleOpenModal = useCallback(() => {
-        if (props.openModal) {
-            props.openModal(true);
-        }
-    }, [props]);
-
-    const handleEditClick = () => {
-        setIsRedirectedToEdit(true);
-    };
-
-    return isRedirectedToEdit ? (
-        <Redirect to={{ pathname: '/admin/game-creation/edit', state: { id: props.id, name: props.name } }} />
-    ) : (
-        <div className={classes.gameContent}>
-            {renderGameTitle()}
+    return (
+        <Link
+            to={linkToGame}
+            className={`${classes.gameContent} ${
+                (props.role !== Roles.admin && (props.role !== Roles.user || !props.amIParticipate)) ||
+                props.status === Status.Finished
+                    ? classes.admin
+                    : ''
+            }`}
+        >
+            <div className={classes.gameTitle}>{props.name}</div>
             <GameTypeList types={props.games} />
-            <div className={classes.gameFooter}>
+            <div className={classes.gameInfo}>
                 <div className={classes.gameTeams}>
-                    <PeopleAltRounded fontSize={'medium'} />
-                    <div className={classes.gameTeamsCount}>{teamsCount}</div>
+                    <PeopleRounded
+                        style={{
+                            fontSize: 'var(--font-size-20)',
+                        }}
+                    />
+                    <div className={classes.gameTeamsCount}>{`${teamsCount} ${wordFormat(teamsCount)}`}</div>
                 </div>
                 {props.role === Roles.user && props.accessLevel === AccessLevel.PUBLIC && props.status !== Status.Started ? (
                     <SignUpToGameItem
@@ -156,51 +118,12 @@ function GameItem(props: GameItemProps) {
                     />
                 ) : null}
             </div>
-            <GameStatus status={props.status} />
-
-            {props.role === Roles.admin ? (
-                <div className={classes.gameActions}>
-                    {props.status === Status.NotStarted && (
-                        <>
-                            <IconButton
-                                onClick={handleEditClick}
-                                edge={'end'}
-                                sx={{
-                                    '& .MuiSvgIcon-root': {
-                                        color: 'var(--color-text-icon-link-enabled)',
-                                        fontSize: 'var(--font-size-24)',
-                                    },
-                                }}
-                            >
-                                <EditRounded />
-                            </IconButton>
-                            <IconButton
-                                onClick={handleDeleteClick}
-                                edge={'end'}
-                                sx={{
-                                    '& .MuiSvgIcon-root': {
-                                        color: 'var(--color-text-icon-error)',
-                                        fontSize: 'var(--font-size-24)',
-                                    },
-                                }}
-                            >
-                                <DeleteRounded />
-                            </IconButton>
-                        </>
-                    )}
-                    {props.status === Status.Started && (
-                        <Button
-                            className={`${classesButton.button} ${classesButton.button_red} ${classesButton.button_link}`}
-                            onClick={handleEndClick}
-                            hasLeftIcon
-                            leftIcon={
-                                <ExitToApp style={{ color: 'var(--color-strokes-error)', fontSize: 'var(--font-size-24)' }} />
-                            }
-                        />
-                    )}
-                </div>
-            ) : null}
-        </div>
+            <GameItemFooter
+                {...props}
+                setIsRedirectedToEdit={setIsRedirectedToEdit}
+                setIsRedirectedToDownload={setIsRedirectedToDownload}
+            />
+        </Link>
     );
 }
 

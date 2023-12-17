@@ -4,10 +4,11 @@ import React, { FC, useCallback, useState } from 'react';
 import classes from './modal.module.scss';
 import classesButton from '../button/button.module.scss';
 import { ModalProps } from '../../entities/modal/modal.interfaces';
-import { deleteGame, deleteTeam, endGame } from '../../server-api/server-api';
+import { deleteGame, deleteTeam, finishedGame } from '../../server-api/server-api';
 import { getCookie, getUrlForSocket } from '../../commonFunctions';
 import { createPortal } from 'react-dom';
 import Button from '../button/button.tsx';
+import { Status } from '../game-item/game-item.tsx';
 
 let conn: WebSocket;
 
@@ -47,8 +48,17 @@ const Modal: FC<ModalProps> = props => {
         }
     }, [props]);
 
-    const handleEnd = useCallback(() => {
-        endGame(props.itemId as string);
+    const handleFinished = useCallback(() => {
+        try {
+            finishedGame(props.itemId as string)
+                .then(
+                    () =>
+                        props.deleteGame?.(
+                            arr => arr?.map(game => (game.id !== props.itemId ? game : { ...game, status: Status.Finished })),
+                        ),
+                )
+                .then(() => handleCloseModal());
+        } catch (e) {}
     }, [props]);
 
     const handleDeleteClick = () => {
@@ -56,8 +66,26 @@ const Modal: FC<ModalProps> = props => {
         handleCloseModal();
     };
 
-    const handleEndClick = () => {
-        handleEnd();
+    const handleFinishedClick = () => {
+        handleFinished();
+    };
+
+    const handleStartBreak = () => {
+        if (minutes !== 0) {
+            props.setBreakTime?.(minutes * 60);
+            props.startBreak?.(true);
+            conn = new WebSocket(getUrlForSocket());
+            conn.onopen = () => {
+                conn.send(
+                    JSON.stringify({
+                        cookie: getCookie('authorization'),
+                        gameId: props.gameId,
+                        action: 'breakTime',
+                        time: minutes * 60,
+                    }),
+                );
+            };
+        }
         handleCloseModal();
     };
 
@@ -72,12 +100,12 @@ const Modal: FC<ModalProps> = props => {
                                 <div className={classes.modalButtons}>
                                     <Button
                                         className={`${classesButton.button} ${classesButton.button_primary}`}
-                                        onClick={handleEndClick}
+                                        onClick={handleFinishedClick}
                                         content={'Завершить'}
                                     />
                                     <Button
                                         className={`${classesButton.button}`}
-                                        onClick={handleEndClick}
+                                        onClick={handleCloseModal}
                                         content={'Отменить'}
                                     />
                                 </div>
@@ -125,25 +153,6 @@ const Modal: FC<ModalProps> = props => {
             })()}
         </div>
     );
-
-    const handleStartBreak = () => {
-        if (minutes !== 0) {
-            props.setBreakTime?.(minutes * 60);
-            props.startBreak?.(true);
-            conn = new WebSocket(getUrlForSocket());
-            conn.onopen = () => {
-                conn.send(
-                    JSON.stringify({
-                        cookie: getCookie('authorization'),
-                        gameId: props.gameId,
-                        action: 'breakTime',
-                        time: minutes * 60,
-                    }),
-                );
-            };
-        }
-        handleCloseModal();
-    };
 
     return createPortal(
         <>

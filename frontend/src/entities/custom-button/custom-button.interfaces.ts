@@ -8,11 +8,12 @@ export interface CustomButtonProps {
     type?: TypeButton | TypeButton.Default;
     content?: string;
     alt?: string;
-    ref?: string;
-    onClick: () => void;
+    to?: string;
+    onClick?: (event: Event) => void;
     hasLeftIcon?: boolean;
-    leftIcon?: Element;
     hasRightIcon?: boolean;
-    rightIcon?: Element;
+    icon?: JSX.Element;
     className: string;
+    disabled?: boolean | false;
+    active?: boolean | false;
 }

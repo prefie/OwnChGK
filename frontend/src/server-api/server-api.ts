@@ -1,3 +1,5 @@
+import { Status } from '../components/game-item/game-item.tsx';
+
 export const getAll = async (path: string) => {
     return await fetch('/api' + path);
 };
@@ -110,8 +112,18 @@ export const startGame = async (gameId: string) => {
     return fetch(`/api/games/${gameId}/start`);
 };
 
-export const endGame = async (gameId: string) => {
-    return fetch(`/api/games/${gameId}/end`);
+export const finishedGame = async (gameId: string) => {
+    return await fetch(`/api/games/${gameId}/changeStatus`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            Accept: 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+            status: Status.Finished,
+        }),
+    });
 };
 
 export const editGame = async (
@@ -198,7 +210,14 @@ export const getTeam = async (teamId: string) => {
     return await fetch(`/api/teams/${teamId}`);
 };
 
-export const createTeam = async (teamName: string, captain?: string, participants?: { name: string; email: string }[]) => {
+export const createTeam = async (
+    teamName: string,
+    captain?: string,
+    participants?: {
+        name: string;
+        email: string;
+    }[],
+) => {
     return await fetch('/api/teams/', {
         method: 'POST',
         headers: {

@@ -20,6 +20,9 @@ import CustomButton, { ButtonType } from '../../components/custom-button/custom-
 import { GameTypeItemProps } from '../../components/game-type-item/game-type-item';
 import TeamItem, { Participant } from '../../components/team-item/team-item';
 import emptyOwlImage from '../../images/owl-images/empty_owl.svg';
+import NewButton from '../../components/button/button';
+import { TypeButton } from '../../entities/custom-button/custom-button.interfaces.ts';
+import classesButton from '../../components/button/button.module.scss';
 
 const inputStyles = {
     '& .MuiOutlinedInput-notchedOutline': {
@@ -346,19 +349,16 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                     <div className={classes.sectionPage}>
                         <div className={classes.sectionHeader}>
                             <h1 className={classes.title}>Игры</h1>
-                            <Link
+                            <NewButton
+                                type={TypeButton.Link}
+                                hasLeftIcon
+                                icon={<AddRounded fontSize={'20px'} />}
                                 to={'/admin/game-creation'}
-                                className={classes.addButtonWrapper}
-                                style={{ pointerEvents: isDisabledGameButton ? 'none' : 'auto' }}
-                            >
-                                <CustomButton
-                                    disabled={isDisabledGameButton}
-                                    type={'button'}
-                                    text={'Создать игру'}
-                                    buttonType={ButtonType.primary}
-                                    startIcon={<AddRounded fontSize={'large'} />}
-                                />
-                            </Link>
+                                content={'Создать игру'}
+                                className={`${classesButton.button} ${classesButton.button_primary} ${
+                                    isDisabledGameButton ? classesButton.button_primary_disabled : ''
+                                }`}
+                            />
                         </div>
                         {games && !games.length ? (
                             <div className={classes.sectionListEmpty}>

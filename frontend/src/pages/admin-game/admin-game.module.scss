@@ -1,96 +1,24 @@
-.ratingLink {
-  text-decoration: none;
-  color: var(--color-text-icon-link-enabled);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-24);
-  display: flex;
-  align-items: center;
-}
-
 .gameName {
-  margin-left: 60px;
-  flex: 1;
-  font-size: 2.5vmax;
-  line-height: 3vmax;
-  color: #fff;
+  font-size: var(--font-size-20);
+  line-height: var(--line-height-large);
+  color: var(--color-text-icon-default-primary);
   word-break: break-all;
-  display: -webkit-box;
-  overflow: hidden;
   text-overflow: ellipsis;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  font-weight: 300;
-  height: 3vmax;
+  font-weight: var(--font-weight-semibold);
   align-self: center;
   text-align: center;
 }
 
-.button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: var(--font-size-24);
-  border-radius: .5rem;
-  padding: .75rem 1.5rem;
-  overflow: hidden;
-  user-select: none;
-  min-height: 26px;
-}
-
-.primaryButton {
-  background-color: var(--color-fill-accent-enabled);
-  color: var(--color-text-icon-primary);
-
-  &:disabled {
-    background-color: var(--color-fill-default-disabled);
-    color: var(--color-text-icon-disabled);
-  }
-
-  &:not(:disabled):hover {
-    cursor: pointer;
-    background-color: var(--color-fill-accent-hover);
-  }
-
-  &:not(:disabled):active {
-    background-color: var(--color-fill-accent-pressed);
-  }
-}
-
-.defaultButton {
-  background-color: var(--color-fill-default-enabled);
-  color: var(--color-text-icon-primary);
-
-  &:disabled {
-    background-color: var(--color-fill-default-disabled);
-    color: var(--color-text-icon-disabled);
-  }
-
-  &:not(:disabled):hover {
-    cursor: pointer;
-    background-color: var(--color-fill-default-hover);
-  }
-
-  &:not(:disabled):active {
-    background-color: var(--color-fill-default-pressed);
-  }
-}
-
-.mainWrapper {
+.contentWrapper {
   height: 100%;
-  width: 100%;
   overflow: hidden;
   overflow-y: auto;
   display: flex;
-}
-
-.contentWrapper {
-  display: flex;
-  width: 100%;
+  padding: 24px;
+  gap: 8px;
   flex-direction: column;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  padding: 0 80px;
-  margin: 2rem 0;
 
   &::-webkit-scrollbar {
     display: none;
@@ -98,44 +26,15 @@
 
   .buttonsWrapper {
     display: flex;
-    height: 124px;
     justify-content: space-between;
-    border-radius: 1rem;
-    padding: 2rem;
-    background-color: var(--color-default-default);
+    border-radius: 16px;
+    padding: 16px;
+    background-color: var(--color-bg-block);
     box-sizing: border-box;
 
     .buttons {
       display: flex;
-      gap: 1rem;
-    }
-
-    .breakButton {
-      padding: 0 2rem;
-    }
-
-    .playButton,
-    .stopButton {
-      width: 3.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .tenSecondsButton {
-      padding: 0 30px;
-    }
-
-    .answerTime {
-      width: 20%;
-      color: white;
-      font-weight: 600;
-      font-size: 4.5vw;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 7vh;
+      gap: 10px;
     }
   }
 
@@ -143,66 +42,58 @@
     width: 100%;
     height: 100%;
     display: flex;
-    gap: 20px;
+    gap: 8px;
 
-    .infoWrapper{
+    .toursWrapper {
+      padding: 16px;
+      gap: 16px;
+      flex-basis: 30%;
+    }
+
+    .questionsWrapper {
+      padding: 16px 24px;
+    }
+
+    .infoWrapper {
       flex-basis: 15%;
       display: flex;
       flex-direction: column;
       gap: 8px;
 
+      .buttonWrapper {
+        background-color: var(--color-bg-block);
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+      }
     }
 
     .toursWrapper,
     .questionsWrapper {
-      margin-top: 1rem;
-      border-radius: 1rem;
+      border-radius: 16px;
       height: 100%;
-      background-color: var(--color-default-default);
+      background-color: var(--color-bg-block);
       box-sizing: border-box;
     }
 
-    .tour {
-      padding-left: 5%;
-      font-weight: 500;
-    }
+    .questionWrapper {
+      padding: 4px 0;
+      border-bottom: 1px solid var(--color-line-divider);
 
-    .question {
-      justify-content: center;
-    }
+      &:hover {
+        background-color: var(--color-fill-default-hover);
+      }
 
-    .toursWrapper,
-    .questionsWrapper {
-      width: 30%;
-      padding: 1.5rem 2rem 3rem;
+      &:active {
+        background-color: var(--color-fill-default-pressed);
+      }
 
-      .tour,
       .question {
-        display: flex;
-        align-items: center;
-        font-size: var(--font-size-24);
-        border-radius: .5rem;
-        padding: 0.75rem 1rem;
-        margin-bottom: 0.5rem;
+        font-size: var(--font-size-18);
+        line-height: var(--line-height-medium);
+        width: var(--font-weight-regular);
         text-align: left;
-        background-color: transparent;
-        color: var(--color-text-icon-primary);
-      }
-
-      .tour:hover,
-      .question:hover {
-        background-color: rgba(255, 255, 255, .06);
-      }
-
-      .tour:active,
-      .question:active {
-        background-color: rgba(255, 255, 255, .02);
-      }
-
-      .activeTour,
-      .activeQuestion {
-        background-color: rgba(255, 255, 255, .06);
-        font-weight: var(--font-weight-bold);
+        color: var(--color-text-icon-default-primary);
       }
     }
 
@@ -213,21 +104,9 @@
     .questionWrapper {
       display: flex;
       align-items: center;
-      gap: 1rem;
       width: 100%;
+      justify-content: space-between;
 
-      .question {
-        width: 100%;
-        justify-content: space-between;
-      }
-
-      .answersButtonLink {
-        text-decoration: none;
-        position: relative;
-        color: var(--color-text-icon-link-enabled);
-        font-weight: var(--font-weight-medium);
-        font-size: var(--font-size-24);
-      }
     }
   }
 }
@@ -245,32 +124,22 @@
 .opposition {
   position: absolute;
   right: 0;
-  top: -0.5rem;
+  top: -5px;
   user-select: none;
   pointer-events: none;
 }
 
-.breakInformer {
-  color: white;
-  font-size: 3vmin;
-  margin: 4vh 0;
-}
-
 .gamePartWrapper {
   display: flex;
-  font-family: var(--font-family-primary);
-  font-size: var(--font-size-40);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-icon-primary);
-  margin-bottom: 1rem;
-}
+  flex-direction: column;
 
-.tourName {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  .gamePartName {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-28);
+    line-height: var(--line-height-medium);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-icon-default-primary);
+  }
 }
 
 .scrollbarView {
@@ -281,8 +150,4 @@
 
 .verticalTrack {
   z-index: 0 !important;
-}
-
-.scrollbarContainer {
-  align-self: center;
 }

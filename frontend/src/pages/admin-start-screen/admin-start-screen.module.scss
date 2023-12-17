@@ -13,13 +13,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 2rem 5rem;
+  padding: 16px 0;
 }
 
 .title {
   margin: 0;
-  font-size: 3rem;
-  line-height: var(--line-height-small);
+  font-size: var(--font-size-32);
+  line-height: var(--line-height-medium);
   font-family: var(--font-family-primary);
   color: var(--color-text-icon-primary);
 }
@@ -40,12 +40,14 @@
   display: flex;
   flex-direction: column;
   height: 90%;
+  padding: 24px;
+  gap: 8px;
 }
 
 .sectionList {
   display: flex;
   flex-wrap: wrap;
-  padding: 0 80px;
+  gap: 8px;
 }
 
 .sectionListEmpty {
@@ -56,7 +58,6 @@
   gap: 8px;
   flex: auto;
   border: 1px solid var(--color-bg-plates);
-  margin: 0 80px 40px;
   border-radius: 16px;
 }
 
