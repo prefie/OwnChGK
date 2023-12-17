@@ -10,7 +10,8 @@
     "start": "node build/app/app.js",
     "full": "npm run build-win && npm start",
     "heroku-postbuild": "tsc && cd frontend && npm install && npm run build",
-    "test": "jest --testPathPattern=tests/unit-tests",
+    "test": "npm run jest-test && npm run ui-test",
+    "jest-test": "jest --testPathPattern=tests/unit-tests",
     "ui-test": "playwright test tests/playwright",
     "typeorm": "typeorm-ts-node-commonjs"
   },
