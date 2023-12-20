@@ -14,6 +14,7 @@ services:
 
   app:
     image: app
+    restart: always
     depends_on:
       - postgres
     env_file:
