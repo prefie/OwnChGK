@@ -15,10 +15,6 @@ services:
   app:
     image: app
     restart: always
-    deploy:
-      resources:
-        limits:
-          memory: 6GB
     depends_on:
       - postgres
     env_file:
