@@ -480,9 +480,9 @@ function UsersAction(gameId, ws, jsonMessage, gameType, teamId) {
     switch (jsonMessage.action) {
         case 'Answer':
             if (gameType == GameTypeLogic.ChGK && bigGames[gameId].currentGame.timerStarted) {
-                GiveAnswer(jsonMessage.answer, teamId, gameId, ws);
+                GiveAnswer(jsonMessage.answer.trim(), teamId, gameId, ws);
             } else if (gameType == GameTypeLogic.Matrix) {
-                GiveAnswerMatrix(jsonMessage.answer, jsonMessage.roundNumber, jsonMessage.questionNumber, jsonMessage.roundName, teamId, gameId, ws);
+                GiveAnswerMatrix(jsonMessage.answer.trim(), jsonMessage.roundNumber, jsonMessage.questionNumber, jsonMessage.roundName, teamId, gameId, ws);
             }
             break;
         case 'appeal':
