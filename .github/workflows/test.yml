@@ -8,6 +8,10 @@ on:
     branches:
       - 'master'
 
+env:
+  # Setting an environment variable with the value of a configuration variable
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
 jobs:
   build:
 
