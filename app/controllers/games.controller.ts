@@ -22,7 +22,7 @@ export class GamesController {
     public async getAll(req: Request, res: Response) {
         const { amIParticipate, publicEnabled } = req.query;
         const { id, role, teamId } = getTokenFromRequest(req);
-        
+
         let games: BigGame[] = [];
         if (amIParticipate) {
             games = publicEnabled
@@ -50,7 +50,7 @@ export class GamesController {
         } = req.body;
 
         const { email, id, role } = getTokenFromRequest(req);
-        
+
         const game = await this.bigGameRepository.findByName(gameName);
         if (game) {
             return res.status(409).json({ message: 'Игра с таким названием уже есть' });
@@ -113,7 +113,7 @@ export class GamesController {
 
     public async getGame(req: Request, res: Response) {
         const { gameId } = req.params;
-        
+
         const bigGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
         if (!bigGame) {
             return res.status(404).json({ message: 'game not found' });
@@ -130,6 +130,7 @@ export class GamesController {
         const answer = { // TODO: shusharin DTO
             name: bigGame.name,
             isStarted: !!bigGames[gameId],
+            status: bigGame.status,
             id: bigGame.id,
             accessLevel: bigGame.accessLevel,
             teams: bigGame.teams.map(value => value.name),
@@ -143,7 +144,7 @@ export class GamesController {
 
     public async startGame(req: Request, res: Response) {
         const { gameId } = req.params;
-        
+
         const bigGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
         if (!bigGame) {
             return res.status(404).json({ message: 'game not found' });
@@ -185,7 +186,7 @@ export class GamesController {
 
     public async changeGame(req: Request, res: Response) {
         const { gameId } = req.params;
-        
+
         const {
             newGameName,
             accessLevel,
@@ -216,7 +217,7 @@ export class GamesController {
         }
 
         const { role } = getTokenFromRequest(req);
-        
+
         if (demoAdminRoles.has(role) && accessLevel != AccessLevel.PRIVATE) {
             return res.status(403).json({ message: 'Демо-админ может создавать только приватные игры' });
         }
@@ -245,7 +246,7 @@ export class GamesController {
 
     public async getGameResult(req: Request, res: Response) {
         const { gameId } = req.params;
-        
+
         if (!bigGames[gameId]) {
             return res.status(404).json({ 'message': 'Игра не началась' });
         }
@@ -438,7 +439,7 @@ export class GamesController {
 
     public async getParticipants(req: Request, res: Response) {
         const { gameId } = req.params;
-        
+
         const game = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
         const table = [];
         const sortedTeams = game.teams.sort((a, b) => a.createdDate > b.createdDate ? 1 : -1);
@@ -488,7 +489,7 @@ export class GamesController {
 
     private async checkAccess(req: Request, gameId: string, withAdditionalAdmins = false): Promise<CheckAccessResult> {
         const { id, role } = getTokenFromRequest(req);
-        
+
         const defaultAnswer = { type: AccessType.ACCESS };
         if (superAdminRoles.has(role)) return defaultAnswer;
 
