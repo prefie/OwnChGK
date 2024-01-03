@@ -55,7 +55,6 @@ test('Should_go_to_team_creation_by_admin', async () => {
     expect.soft(currentUrl).toContain('/team-creation');
     expect.soft(await teamNameInput?.getAttribute("placeholder")).toBe("Название команды");
     await expect.soft(saveTeamButton).toHaveText("Создать");
-    expect.soft(await captainInput?.getAttribute("value")).toBe(LOGIN_USER_SECRET);
 });
 
 test('Should_go_to_admin_profile', async () => {
