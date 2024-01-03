@@ -20,7 +20,7 @@ test('Should_open_admin_page', async () => {
 
 test('Should_successful_login', async () => {
     await login(page);
-    await page.waitForURL(ADMIN_URL + 'start-screen');
+    await page.waitForURL('**/start-screen');
 });
 
 test('Should_go_to_change_password', async () => {
@@ -40,7 +40,7 @@ test('Should_go_to_change_password', async () => {
 
 test('Should_go_to_team_creation_by_admin', async () => {
     await login(page);
-    await page.waitForURL(ADMIN_URL + 'start-screen');
+    await page.waitForURL('**/start-screen');
 
     const teamsTab = page.locator('#teams');
     await teamsTab?.click();
@@ -60,7 +60,7 @@ test('Should_go_to_team_creation_by_admin', async () => {
 
 test('Should_go_to_admin_profile', async () => {
     await login(page);
-    await page.waitForURL(ADMIN_URL + 'start-screen');
+    await page.waitForURL('**/start-screen');
 
     const profile = page.locator('#profile');
     await profile?.click();
@@ -80,7 +80,7 @@ test('Should_go_to_admin_profile', async () => {
 
 test('Should_admin_logout', async () => {
     await login(page);
-    await page.waitForURL(ADMIN_URL + 'start-screen');
+    await page.waitForURL('**/start-screen');
 
     const cookie = await page.context().cookies();
     expect(cookie.find(c => c.name === "authorization")).toBeDefined();

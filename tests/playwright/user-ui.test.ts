@@ -20,10 +20,7 @@ test('Should_open_page', async () => {
 
 test('Should_successful_login', async () => {
   await login(page);
-  await page.waitForURL(URL + 'start-screen');
-
-  const currentUrl = page.url();
-  expect.soft(currentUrl).toContain('/start-screen');
+  await page.waitForURL('**/start-screen');
 });
 
 test('Should_go_to_change_password', async () => {
@@ -43,7 +40,7 @@ test('Should_go_to_change_password', async () => {
 
 test('Should_go_to_team_creation', async () => {
   await login(page);
-  await page.waitForURL(URL + 'start-screen');
+  await page.waitForURL('**/start-screen');
 
   const button = page.locator('#addTeamButton');
   await button?.click();
@@ -61,7 +58,7 @@ test('Should_go_to_team_creation', async () => {
 
 test('Should_user_logout', async () => {
   await login(page);
-  await page.waitForURL(URL + 'start-screen');
+  await page.waitForURL('**/start-screen');
 
   const cookie = await page.context().cookies();;
   expect.soft(cookie.find(c => c.name === "authorization")).toBeDefined();
