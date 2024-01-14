@@ -1,22 +1,22 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import classes from './admin-answers.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import Header from '../../components/header/header';
-import { Link, useParams } from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
 import CheckboxBlock from '../../components/checkbox-block/checkbox-block';
-import { Scrollbars } from 'rc-scrollbars';
+import {Scrollbars} from 'rc-scrollbars';
 import _ from 'lodash';
-import { AnswerType, Opposition, Page } from '../../entities/admin-answers-page/admin-answers-page.interfaces';
+import {AnswerType, Opposition, Page} from '../../entities/admin-answers-page/admin-answers-page.interfaces';
 import Scrollbar from '../../components/scrollbar/scrollbar';
-import { getCookie, getUrlForSocket } from '../../commonFunctions';
-import Loader from '../../components/loader/loader';
+import {getCookie, getUrlForSocket} from '../../commonFunctions';
+import Loader from "../../components/loader/loader";
 
 let conn: WebSocket;
 let ping: any;
 
 const AdminAnswersPage: FC = () => {
-    const { gameId, gamePart } = useParams<{ gameId: string; gamePart: 'chgk' | 'matrix' }>();
-    const { tour, question } = useParams<{ tour: string; question: string }>();
+    const {gameId, gamePart} = useParams<{ gameId: string, gamePart: 'chgk' | 'matrix' }>();
+    const {tour, question} = useParams<{ tour: string, question: string }>();
     const [page, setPage] = useState<Page>('answers');
     const [answersType, setAnswersType] = useState<AnswerType>('unchecked');
     const [gameAnswers, setGameAnswers] = useState<string[]>([]); // Это accept + unchecked + rejected, нужно, чтобы считать
@@ -29,84 +29,71 @@ const AdminAnswersPage: FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const requester = {
-        getPayload: (obj: any) =>
-            JSON.stringify({
-                cookie: getCookie('authorization'),
-                gameId: gameId,
-                ...obj,
-            }),
+        getPayload: (obj: any) => JSON.stringify({
+            'cookie': getCookie('authorization'),
+            'gameId': gameId,
+            ...obj,
+        }),
 
         startRequests: () => {
-            conn.send(
-                requester.getPayload({
-                    action: 'getAnswers',
-                    roundNumber: +tour,
-                    questionNumber: +question,
-                    gamePart: gamePart,
-                }),
-            );
+            conn.send(requester.getPayload({
+                'action': 'getAnswers',
+                'roundNumber': +tour,
+                'questionNumber': +question,
+                'gamePart': gamePart,
+            }));
 
-            conn.send(
-                requester.getPayload({
-                    action: 'getAppealsByNumber',
-                    roundNumber: +tour,
-                    questionNumber: +question,
-                    gamePart: gamePart,
-                }),
-            );
+            conn.send(requester.getPayload({
+                'action': 'getAppealsByNumber',
+                'roundNumber': +tour,
+                'questionNumber': +question,
+                'gamePart': gamePart,
+            }));
 
             ping = setInterval(() => {
-                conn.send(JSON.stringify({ action: 'ping' }));
+                conn.send(JSON.stringify({ 'action': 'ping' }));
             }, 30000);
         },
 
         rejectAnswers: (answers: string[]) => {
-            conn.send(
-                requester.getPayload({
-                    action: 'RejectAnswer',
-                    gamePart: gamePart,
-                    roundNumber: tour,
-                    questionNumber: question,
-                    answers: answers,
-                }),
-            );
+            conn.send(requester.getPayload({
+                'action': 'RejectAnswer',
+                'gamePart': gamePart,
+                'roundNumber': tour,
+                'questionNumber': question,
+                'answers': answers
+            }));
         },
 
         acceptAnswers: (answers: string[]) => {
-            conn.send(
-                requester.getPayload({
-                    action: 'AcceptAnswer',
-                    gamePart: gamePart,
-                    roundNumber: tour,
-                    questionNumber: question,
-                    answers: answers,
-                }),
-            );
+            conn.send(requester.getPayload({
+                'action': 'AcceptAnswer',
+                'gamePart': gamePart,
+                'roundNumber': tour,
+                'questionNumber': question,
+                'answers': answers
+            }));
         },
 
         rejectAppeals: (appeals: string[]) => {
-            conn.send(
-                requester.getPayload({
-                    action: 'RejectAppeals',
-                    gamePart: gamePart,
-                    appeals: appeals,
-                    roundNumber: tour,
-                    questionNumber: question,
-                }),
-            );
+            conn.send(requester.getPayload({
+                'action': 'RejectAppeals',
+                'gamePart': gamePart,
+                'appeals': appeals,
+                'roundNumber': tour,
+                'questionNumber': question,
+            }));
         },
 
         acceptAppeals: (appeals: string[]) => {
-            conn.send(
-                requester.getPayload({
-                    action: 'AcceptAppeals',
-                    gamePart: gamePart,
-                    appeals: appeals,
-                    roundNumber: tour,
-                    questionNumber: question,
-                }),
-            );
-        },
+            conn.send(requester.getPayload({
+                'action': 'AcceptAppeals',
+                'gamePart': gamePart,
+                'appeals': appeals,
+                'roundNumber': tour,
+                'questionNumber': question,
+            }));
+        }
     };
 
     const handler = {
@@ -120,7 +107,7 @@ const AdminAnswersPage: FC = () => {
 
         handleAppealsByNumberMessage: (appeals: Opposition[]) => {
             setAppeals(appeals);
-        },
+        }
     };
 
     useEffect(() => {
@@ -144,11 +131,7 @@ const AdminAnswersPage: FC = () => {
             const jsonMessage = JSON.parse(event.data);
             switch (jsonMessage.action) {
                 case 'answers':
-                    handler.handleAnswersMessage(
-                        jsonMessage.acceptedAnswers,
-                        jsonMessage.rejectedAnswers,
-                        jsonMessage.uncheckedAnswers,
-                    );
+                    handler.handleAnswersMessage(jsonMessage.acceptedAnswers, jsonMessage.rejectedAnswers, jsonMessage.uncheckedAnswers);
                     break;
                 case 'appealsByNumber':
                     handler.handleAppealsByNumberMessage(jsonMessage.appeals);
@@ -171,7 +154,7 @@ const AdminAnswersPage: FC = () => {
             indicator.style.left = `${activeItem.offsetLeft}px`;
             indicator.style.backgroundColor = 'white';
         }
-    }, [isLoading]);
+    }, [isLoading])
 
     const handleCheckboxChange = (event: React.SyntheticEvent) => {
         const element = event.target as HTMLInputElement;
@@ -230,12 +213,8 @@ const AdminAnswersPage: FC = () => {
         return answersForRender.map(([answer, count]: [string, number]) => {
             return (
                 <div className={classes.answerWrapper} key={`${answersType}_${answer}`}>
-                    <CheckboxBlock
-                        name={answer}
-                        checked={checked}
-                        onChange={handleCheckboxChange}
-                        style={{ marginLeft: 0, marginBottom: 0 }}
-                    />
+                    <CheckboxBlock name={answer} checked={checked} onChange={handleCheckboxChange}
+                                   style={{marginLeft: 0, marginBottom: 0}}/>
                     <div className={classes.answerCountWrapper}>{count}</div>
                 </div>
             );
@@ -286,28 +265,18 @@ const AdminAnswersPage: FC = () => {
             return (
                 <div className={classes.oppositionWrapper} key={op.teamName}>
                     <p className={classes.teamName}>{op.teamName}</p>
-                    <CheckboxBlock
-                        name={op.answer}
-                        style={{ marginLeft: 0, marginBottom: 0, width: '100%' }}
-                        onChange={handleAppealCheckboxChange}
-                    />
+                    <CheckboxBlock name={op.answer} style={{marginLeft: 0, marginBottom: 0, width: '100%'}}
+                                   onChange={handleAppealCheckboxChange}/>
                     <div className={classes.explanation}>
-                        <Scrollbars
-                            autoHide
-                            autoHideTimeout={500}
-                            autoHideDuration={200}
-                            renderThumbVertical={() => (
-                                <div
-                                    style={{
+                        <Scrollbars autoHide autoHideTimeout={500}
+                                    autoHideDuration={200}
+                                    renderThumbVertical={() => <div style={{
                                         backgroundColor: 'var(--background-color)',
                                         borderRadius: '4px',
-                                        cursor: 'pointer',
-                                    }}
-                                />
-                            )}
-                            renderTrackHorizontal={props => <div {...props} style={{ display: 'none' }} />}
-                            classes={{ view: classes.scrollbarView }}
-                        >
+                                        cursor: 'pointer'
+                                    }}/>}
+                                    renderTrackHorizontal={props => <div {...props} style={{display: 'none'}}/>}
+                                    classes={{view: classes.scrollbarView}}>
                             {op.text}
                         </Scrollbars>
                     </div>
@@ -329,42 +298,28 @@ const AdminAnswersPage: FC = () => {
                     <div className={classes.sectionWrapper}>
                         <div className={classes.answersPageWrapper}>
                             <div className={classes.answerTypesWrapper}>
-                                <div
-                                    className={`${classes.answerType} ${
-                                        answersType === 'accepted' ? classes.activeAnswerType : ''
-                                    }`}
-                                    id="accepted"
-                                    onClick={handleAnswerTypeChange}
-                                >
-                                    принятые
+                                <div className={`${classes.answerType} ${answersType ===
+                                'accepted' ? classes.activeAnswerType : ''}`} id="accepted"
+                                     onClick={handleAnswerTypeChange}>принятые
                                 </div>
-                                <div
-                                    className={`${classes.answerType} ${
-                                        answersType === 'unchecked' ? classes.activeAnswerType : ''
-                                    }`}
-                                    id="unchecked"
-                                    onClick={handleAnswerTypeChange}
-                                >
-                                    непроверенные
+                                <div className={`${classes.answerType} ${answersType ===
+                                'unchecked' ? classes.activeAnswerType : ''}`} id="unchecked"
+                                     onClick={handleAnswerTypeChange}>непроверенные
                                 </div>
-                                <div
-                                    className={`${classes.answerType} ${
-                                        answersType === 'rejected' ? classes.activeAnswerType : ''
-                                    }`}
-                                    id="rejected"
-                                    onClick={handleAnswerTypeChange}
-                                >
-                                    отклоненные
+                                <div className={`${classes.answerType} ${answersType ===
+                                'rejected' ? classes.activeAnswerType : ''}`} id="rejected"
+                                     onClick={handleAnswerTypeChange}>отклоненные
                                 </div>
                             </div>
 
                             <div className={classes.answersWrapper}>
-                                <Scrollbar>{renderAnswers()}</Scrollbar>
+                                <Scrollbar>
+                                    {renderAnswers()}
+                                </Scrollbar>
                             </div>
 
                             <div className={classes.saveButtonWrapper}>
-                                <button className={classes.saveButton} onClick={handleSaveButtonClick}>
-                                    Сохранить
+                                <button className={classes.saveButton} onClick={handleSaveButtonClick}>Сохранить
                                 </button>
                             </div>
                         </div>
@@ -374,30 +329,21 @@ const AdminAnswersPage: FC = () => {
                 return (
                     <div className={classes.oppositionsPageWrapper}>
                         <div className={classes.oppositionsWrapper}>
-                            <Scrollbars
-                                className={classes.scrollbar}
-                                autoHide
-                                autoHideTimeout={500}
-                                autoHideDuration={200}
-                                renderThumbVertical={() => (
-                                    <div
-                                        style={{
+                            <Scrollbars className={classes.scrollbar} autoHide autoHideTimeout={500}
+                                        autoHideDuration={200}
+                                        renderThumbVertical={() => <div style={{
                                             backgroundColor: 'white',
                                             borderRadius: '4px',
-                                            cursor: 'pointer',
-                                        }}
-                                    />
-                                )}
-                                renderTrackHorizontal={props => <div {...props} style={{ display: 'none' }} />}
-                                classes={{ view: classes.oppositionsScrollbarView }}
-                            >
+                                            cursor: 'pointer'
+                                        }}/>}
+                                        renderTrackHorizontal={props => <div {...props} style={{display: 'none'}}/>}
+                                        classes={{view: classes.oppositionsScrollbarView}}>
                                 {renderOppositions()}
                             </Scrollbars>
                         </div>
 
                         <div className={classes.saveOppositionButtonWrapper}>
-                            <button className={classes.saveButton} onClick={handleSaveOppositionButtonClick}>
-                                Сохранить
+                            <button className={classes.saveButton} onClick={handleSaveOppositionButtonClick}>Сохранить
                             </button>
                         </div>
                     </div>
@@ -405,14 +351,10 @@ const AdminAnswersPage: FC = () => {
         }
     };
 
-    return isLoading ? (
-        <Loader />
-    ) : (
+    return isLoading ? <Loader/> : (
         <PageWrapper>
             <Header isAuthorized={false} isAdmin={true}>
-                <Link to={`/admin/game/${gameId}`} className={classes.toGameLink}>
-                    В игру
-                </Link>
+                <Link to={`/admin/game/${gameId}`} className={classes.toGameLink}>В игру</Link>
 
                 <div className={classes.questionWrapper}>
                     <div className={classes.tourNumber}>Тур {tour}</div>
@@ -420,21 +362,15 @@ const AdminAnswersPage: FC = () => {
                 </div>
 
                 <nav className={classes.nav}>
-                    <Link
-                        to={{}}
-                        className={`${classes['nav-item']} ${page === 'answers' ? classes['is-active'] : null}`}
-                        onClick={changePageToAnswers}
-                    >
-                        Ответы
-                    </Link>
-                    <Link
-                        to={{}}
-                        className={`${classes['nav-item']} ${page === 'oppositions' ? classes['is-active'] : null}`}
-                        onClick={changePageToOppositions}
-                    >
+                    <Link to={{}}
+                          className={`${classes['nav-item']} ${page === 'answers' ? classes['is-active'] : null}`}
+                          onClick={changePageToAnswers}>Ответы</Link>
+                    <Link to={{}}
+                          className={`${classes['nav-item']} ${page === 'oppositions' ? classes['is-active'] : null}`}
+                          onClick={changePageToOppositions}>
                         Апелляции {appeals.length !== 0 ? <b className={classes.opposition}>&#9679;</b> : ''}
                     </Link>
-                    <span className={`${classes['nav-indicator']}`} id="indicator" />
+                    <span className={`${classes['nav-indicator']}`} id="indicator"/>
                 </nav>
             </Header>
 

@@ -9,5 +9,5 @@ export enum AnswerStatus {
     RIGHT = 'right',
     WRONG = 'wrong',
     UNCHECKED = 'unchecked',
-    ON_APPEAL = 'on_appeal',
+    ON_APPEAL = 'on_appeal'
 }

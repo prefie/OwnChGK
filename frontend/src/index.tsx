@@ -3,11 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.scss';
 import App from './app';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter } from 'react-router-dom';
-import { applyMiddleware, compose, createStore, Store } from 'redux';
-import { AppReducerState } from './redux/reducers/app-reducer/app-reducer.interfaces';
+import {BrowserRouter} from 'react-router-dom';
+import {applyMiddleware, compose, createStore, Store} from 'redux';
+import {AppReducerState} from './redux/reducers/app-reducer/app-reducer.interfaces';
 import rootReducer from './redux/reducers/root-reducer';
-import { Provider } from 'react-redux';
+import {Provider} from 'react-redux';
 
 export const composeEnhancers = (window && (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 
@@ -21,11 +21,11 @@ ReactDOM.render(
     <Provider store={store}>
         <React.StrictMode>
             <BrowserRouter>
-                <App />
+                <App/>
             </BrowserRouter>
         </React.StrictMode>
     </Provider>,
-    document.getElementById('root'),
+    document.getElementById('root')
 );
 
 // If you want to start measuring performance in your app, pass a function

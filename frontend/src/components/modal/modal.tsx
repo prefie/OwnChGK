@@ -38,13 +38,13 @@ const Modal: FC<ModalProps> = props => {
         if (props.modalType === 'delete-game-part') {
             props.setGamePartUndefined?.(undefined);
         } else {
-            if (props.type === 'game') {
-                props.deleteGame?.(arr => arr?.filter(el => el.name !== props.itemName));
-                ServerApi.deleteGame(props.itemId as string);
-            } else {
-                props.deleteTeam?.(arr => arr?.filter(el => el.name !== props.itemName));
-                ServerApi.deleteTeam(props.itemId as string);
-            }
+			if (props.type === 'game') {
+				props.deleteGame?.(arr => arr?.filter(el => el.name !== props.itemName));
+				ServerApi.deleteGame(props.itemId as string);
+			} else {
+				props.deleteTeam?.(arr => arr?.filter(el => el.name !== props.itemName));
+				ServerApi.deleteTeam(props.itemId as string);
+			}
         }
     }, [props]);
 

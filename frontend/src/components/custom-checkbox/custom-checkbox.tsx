@@ -1,6 +1,6 @@
-import { Checkbox } from '@mui/material';
-import React from 'react';
-import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
+import {Checkbox} from "@mui/material";
+import React from "react";
+import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import classes from './custom-checkbox.module.scss';
 
 interface CustomCheckboxProps {
@@ -24,9 +24,11 @@ function CustomCheckbox(props: CustomCheckboxProps) {
                         color: 'var(--color-fill-accent-enabled)',
                     },
                 }}
-                checkedIcon={<CheckBoxOutlinedIcon />}
+                checkedIcon={<CheckBoxOutlinedIcon/>}
             />
-            <p className={classes.checkboxLabel}>{props.label}</p>
+            <p className={classes.checkboxLabel}>
+                {props.label}
+            </p>
         </div>
     );
 }

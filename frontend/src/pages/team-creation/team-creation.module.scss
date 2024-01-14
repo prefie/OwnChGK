@@ -1,212 +1,212 @@
 .teamCreationForm {
-    width: 50%;
-    height: 90%;
-    align-self: center;
+  width: 50%;
+  height: 90%;
+  align-self: center;
 }
 
 .pageTitle {
-    font-size: 4vmin;
-    color: white;
-    display: flex;
-    text-align: center;
-    align-self: center;
-    font-weight: 300;
-    margin: 5vh 0;
+  font-size: 4vmin;
+  color: white;
+  display: flex;
+  text-align: center;
+  align-self: center;
+  font-weight: 300;
+  margin: 5vh 0;
 }
 
 .contentWrapper {
-    height: 85%;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    box-sizing: content-box;
+  height: 85%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  box-sizing: content-box;
 }
 
 .link {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .settingsWrapper {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    margin-bottom: 1%;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 1%;
 }
 
 .membersWrapper {
-    width: 100%;
-    border: 3px solid var(--color-fill-accent-enabled);
-    border-radius: 10px;
-    padding: 2vh 2vw;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
+  width: 100%;
+  border: 3px solid var(--color-fill-accent-enabled);
+  border-radius: 10px;
+  padding: 2vh 2vw;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .membersPanel {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1vh;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1vh;
 }
 
 .membersLabel {
-    height: 5vh;
-    width: 30%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    font-size: 1.5vw;
-    color: white;
+  height: 5vh;
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 1.5vw;
+  color: white;
 }
 
 .members {
-    width: 103.3%;
-    flex: 1;
+  width: 103.3%;
+  flex: 1;
 }
 
 .memberWrapper {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }
 
 .adminName {
-    width: 38%;
+  width: 38%;
 }
 
 .adminEmail {
-    width: 52%;
+  width: 52%;
 }
 
 .adminInput {
-    font-size: 1.4vw !important;
-    height: 6vh;
-    border-radius: 8px !important;
-    background-color: white;
-    box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.5);
-    margin-bottom: 2vh;
-    min-height: 26px;
-    cursor: text;
+  font-size: 1.4vw !important;
+  height: 6vh;
+  border-radius: 8px !important;
+  background-color: white;
+  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.5);
+  margin-bottom: 2vh;
+  min-height: 26px;
+  cursor: text;
 
-    input {
-        cursor: text;
-    }
+  input {
+    cursor: text;
+  }
 }
 
 .button {
-    height: 5vh;
-    font-size: 1.1vw;
-    font-weight: var(--font-weight-medium);
-    border: 2px solid var(--color-fill-accent-enabled);
-    border-radius: 8px;
-    overflow: hidden;
-    user-select: none;
-    font-family: Roboto, sans-serif;
-    min-height: 26px;
-    padding: 0 2vw;
+  height: 5vh;
+  font-size: 1.1vw;
+  font-weight: var(--font-weight-medium);
+  border: 2px solid var(--color-fill-accent-enabled);
+  border-radius: 8px;
+  overflow: hidden;
+  user-select: none;
+  font-family: Roboto, sans-serif;
+  min-height: 26px;
+  padding: 0 2vw;
 
-    &:not(:disabled):hover {
-        cursor: pointer;
-        box-shadow: 0 0 2vh 2px var(--color-fill-accent-enabled);
-    }
+  &:not(:disabled):hover {
+    cursor: pointer;
+    box-shadow: 0 0 2vh 2px var(--color-fill-accent-enabled);
+  }
 
-    &:active {
-        box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.5);
-    }
+  &:active {
+    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, .50);
+  }
 }
 
 .adminButton {
-    width: 7% !important;
-    min-width: 0 !important;
-    height: 6vh;
-    font-size: 1.5vw;
-    border: 2px solid var(--color-fill-accent-enabled) !important;
-    background-color: white !important;
-    border-radius: 8px !important;
-    overflow: hidden;
-    user-select: none;
-    font-family: Roboto, sans-serif;
-    min-height: 26px;
+  width: 7% !important;
+  min-width: 0 !important;
+  height: 6vh;
+  font-size: 1.5vw;
+  border: 2px solid var(--color-fill-accent-enabled) !important;
+  background-color: white !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  user-select: none;
+  font-family: Roboto, sans-serif;
+  min-height: 26px;
 
-    &:not(:disabled):hover {
-        cursor: pointer;
-    }
+  &:not(:disabled):hover {
+    cursor: pointer;
+  }
 }
 
 .scrollbarView {
-    overflow-x: hidden !important;
-    padding: 1vh 1.5vw 1vh 0;
+  overflow-x: hidden !important;
+  padding: 1vh 1.5vw 1vh 0;
 }
 
 .verticalTrack {
-    z-index: 0 !important;
+  z-index: 0 !important;
 }
 
 @media only screen and (max-width: 600px) {
-    .teamCreationForm {
-        width: 80%;
-        height: calc(100% - 28vw);
-    }
+  .teamCreationForm {
+    width: 80%;
+    height: calc(100% - 28vw);
+  }
 
-    .pageTitle {
-        margin: 9vw 0;
-        font-size: 7vmin;
-    }
+  .pageTitle {
+    margin: 9vw 0;
+    font-size: 7vmin;
+  }
 
-    .settingsWrapper {
-        flex-direction: column;
-    }
+  .settingsWrapper {
+    flex-direction: column;
+  }
 
-    .membersWrapper {
-        border: 2px solid var(--color-fill-accent-enabled);
-        border-radius: 3px;
-        padding: 3vw;
-    }
+  .membersWrapper {
+    border: 2px solid var(--color-fill-accent-enabled);
+    border-radius: 3px;
+    padding: 3vw;
+  }
 
-    .membersPanel {
-        margin-bottom: 2vw;
-    }
+  .membersPanel {
+    margin-bottom: 2vw;
+  }
 
-    .membersLabel {
-        height: auto;
-        width: auto;
-        font-size: 4.5vw;
-    }
+  .membersLabel {
+    height: auto;
+    width: auto;
+    font-size: 4.5vw;
+  }
 
-    .button {
-        height: 9vw;
-        font-size: 3.5vw;
-        padding: 0 5vw;
-    }
+  .button {
+    height: 9vw;
+    font-size: 3.5vw;
+    padding: 0 5vw;
+  }
 
-    .memberWrapper {
-        flex-direction: column;
-        align-items: flex-end;
-    }
+  .memberWrapper {
+    flex-direction: column;
+    align-items: flex-end;
+  }
 
-    .adminName {
-        width: 100%;
-    }
+  .adminName {
+    width: 100%;
+  }
 
-    .adminEmail {
-        width: 100%;
-    }
+  .adminEmail {
+    width: 100%;
+  }
 
-    .adminButton {
-        width: auto !important;
-        text-transform: capitalize !important;
-        color: black !important;
-        padding: 0 5vw !important;
-        font-size: 3.5vw !important;
-        height: 9vw !important;
-    }
+  .adminButton {
+    width: auto !important;
+    text-transform: capitalize !important;
+    color: black !important;
+    padding: 0 5vw !important;
+    font-size: 3.5vw !important;
+    height: 9vw !important;
+  }
 
-    .adminInput {
-        height: 11vw !important;
-        font-size: 5.3vw !important;
-        margin-bottom: 3% !important;
-    }
+  .adminInput {
+    height: 11vw !important;
+    font-size: 5.3vw !important;
+    margin-bottom: 3% !important;
+  }
 }

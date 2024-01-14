@@ -1,11 +1,11 @@
-import { Reducer } from 'redux';
-import { AppAction, AppReducerState } from './app-reducer.interfaces';
+import {Reducer} from 'redux';
+import {AppAction, AppReducerState} from './app-reducer.interfaces';
 import {
     AUTHORIZE_USER_WITH_ROLE,
     LOG_OUT,
     CHECK_TOKEN,
     ADD_USER_TEAM,
-    ADD_USER_NAME,
+    ADD_USER_NAME
 } from '../../actions/app-actions/app-action-types';
 
 const initialState: AppReducerState = {
@@ -13,16 +13,13 @@ const initialState: AppReducerState = {
         role: '',
         team: '',
         email: '',
-        name: '',
+        name: ''
     },
     isLoggedIn: false,
-    isTokenChecked: false,
+    isTokenChecked: false
 };
 
-export const appReducer: Reducer<AppReducerState, AppAction> = (
-    state: AppReducerState = initialState,
-    action: AppAction,
-): AppReducerState => {
+export const appReducer: Reducer<AppReducerState, AppAction> = (state: AppReducerState = initialState, action: AppAction): AppReducerState => {
     switch (action.type) {
         case AUTHORIZE_USER_WITH_ROLE:
             return {
@@ -32,10 +29,10 @@ export const appReducer: Reducer<AppReducerState, AppAction> = (
                     role: action.payload.role,
                     team: action.payload.team,
                     email: action.payload.email,
-                    name: action.payload.name,
+                    name: action.payload.name
                 },
                 isLoggedIn: true,
-                isTokenChecked: true,
+                isTokenChecked: true
             };
         case LOG_OUT:
             return {
@@ -47,29 +44,29 @@ export const appReducer: Reducer<AppReducerState, AppAction> = (
                     email: '',
                     name: '',
                 },
-                isLoggedIn: false,
+                isLoggedIn: false
             };
         case CHECK_TOKEN:
             return {
                 ...state,
-                isTokenChecked: true,
+                isTokenChecked: true
             };
         case ADD_USER_TEAM:
             return {
                 ...state,
                 user: {
                     ...state.user,
-                    team: action.payload,
-                },
-            };
+                    team: action.payload
+                }
+            }
         case ADD_USER_NAME:
             return {
                 ...state,
                 user: {
                     ...state.user,
-                    name: action.payload,
-                },
-            };
+                    name: action.payload
+                }
+            }
         default:
             return state;
     }

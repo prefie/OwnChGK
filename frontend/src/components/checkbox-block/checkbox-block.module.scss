@@ -1,25 +1,25 @@
 .checkboxBlock {
-    margin-bottom: 0.5rem;
-    padding: 0.5rem 1rem;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-radius: 0.5rem;
-    background-color: var(--color-bg-overlay-default);
-    color: var(--color-text-icon-primary);
+  margin-bottom: .5rem;
+  padding: .5rem 1rem;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: .5rem;
+  background-color: var(--color-bg-overlay-default);
+  color: var(--color-text-icon-primary);
 }
 
 .labelWrapper {
-    width: 90%;
-    max-width: 90%;
-    font-size: var(--font-size-20);
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    word-break: break-all;
-    text-overflow: ellipsis;
-    -webkit-box-orient: vertical;
-    cursor: default;
+  width: 90%;
+  max-width: 90%;
+  font-size: var(--font-size-20);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  word-break: break-all;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  cursor: default;
 }

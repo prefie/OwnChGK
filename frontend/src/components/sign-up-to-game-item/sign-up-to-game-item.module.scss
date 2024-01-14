@@ -1,17 +1,17 @@
 .signUpLink,
 .signOutLink {
-    font-size: var(--font-size-20);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-icon-link-enabled);
+  font-size: var(--font-size-20);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-icon-link-enabled);
 }
 
 .signUpLinkDisabled {
-    color: var(--color-text-icon-disabled);
+  color: var(--color-text-icon-disabled);
 }
 
 .signUpLinkSuccess {
-    display: flex;
-    gap: 0.5rem;
-    font-size: var(--font-size-20);
-    color: var(--color-text-icon-secondary);
+  display: flex;
+  gap: .5rem;
+  font-size: var(--font-size-20);
+  color: var(--color-text-icon-secondary);
 }

@@ -1,53 +1,53 @@
 .Header {
-    height: 10%;
-    position: sticky;
-    top: 0;
-    background-color: var(--color-bg-main);
-    border-bottom: 1px solid var(--color-strokes-default);
-    display: flex;
-    z-index: 1;
-    user-select: none;
-    padding: 0 24px;
+  height: 10%;
+  position: sticky;
+  top: 0;
+  background-color: var(--color-bg-main);
+  border-bottom: 1px solid var(--color-strokes-default);
+  display: flex;
+  z-index: 1;
+  user-select: none;
+  padding: 0 24px;
 }
 
 .logo {
-    width: 40px;
-    user-select: none;
+  width: 40px;
+  user-select: none;
 
-    &:hover {
-        cursor: pointer;
-    }
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .logoLink {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .MenuLink {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .userActionsWrapper {
-    display: flex;
-    gap: 8px;
+  display: flex;
+  gap: 8px;
 
-    * {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
+  * {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 }
 
 .childrenWrapper {
-    padding: 0 16px;
-    display: flex;
-    position: relative;
-    justify-content: center;
-    height: 100%;
-    flex: 1;
+  padding: 0 16px;
+  display: flex;
+  position: relative;
+  justify-content: center;
+  height: 100%;
+  flex: 1;
 }
