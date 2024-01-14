@@ -11,7 +11,7 @@ import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
 import { createFileLink } from '../../fileWorker';
 import Loader from '../../components/loader/loader';
 import { Status } from '../../components/game-item/game-item.tsx';
-import { ServerApi } from "../../server-api/server-api";
+import { ServerApi } from '../../server-api/server-api';
 
 const Rating: FC<RatingProps> = props => {
     const { gameId } = useParams<{
@@ -45,20 +45,14 @@ const Rating: FC<RatingProps> = props => {
     useEffect(() => {
         ServerApi.getResultTable(gameId).then(res => {
             if (res.status === 200) {
-                res.json().then(({
-                                     isIntrigue,
-                                     roundsCount,
-                                     questionsCount,
-                                     totalScoreForAllTeams,
-                                     matrixSums,
-                                     teamsDictionary,
-                                 }) => {
-                    setIsIntrigue(isIntrigue);
-                    setGameParams({toursCount: roundsCount, questionsCount: questionsCount});
-                    setExpandedTours(new Array(roundsCount).fill(false));
-                    if (matrixSums) {
-                        setIsFullGame(true);
-                    }
+                res.json().then(
+                    ({ isIntrigue, roundsCount, questionsCount, totalScoreForAllTeams, matrixSums, teamsDictionary }) => {
+                        setIsIntrigue(isIntrigue);
+                        setGameParams({ toursCount: roundsCount, questionsCount: questionsCount });
+                        setExpandedTours(new Array(roundsCount).fill(false));
+                        if (matrixSums) {
+                            setIsFullGame(true);
+                        }
 
                         const result = [];
                         const teams = Object.keys(totalScoreForAllTeams);
@@ -75,7 +69,7 @@ const Rating: FC<RatingProps> = props => {
                 );
             }
         });
-        ServerApi.endGame(gameId).then(res => {
+        ServerApi.getGame(gameId).then(res => {
             if (res.status === 200) {
                 res.json().then(({ status }) => {
                     setStatusGame(status);
