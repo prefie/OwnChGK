@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useCallback } from 'react';
 import { OperationName } from '../modal/modal.tsx';
 import Button from '../button/button.tsx';
 import classesButton from '../button/button.module.scss';
-import { Status as StatusGame } from '../game-item/game-item.tsx';
+import { Roles, Status as StatusGame } from '../game-item/game-item.tsx';
 
 export enum Status {
     NotStarted = 'not_started',
@@ -22,6 +22,7 @@ interface GameItemButtonProps {
     setItemName?: Dispatch<SetStateAction<string>>;
     setItemId?: Dispatch<SetStateAction<string>>;
     setOperationName?: Dispatch<SetStateAction<OperationName | null>>;
+    role: Roles;
 }
 
 function GameItemButtons(props: GameItemButtonProps) {
@@ -67,6 +68,30 @@ function GameItemButtons(props: GameItemButtonProps) {
             props.openModal(true);
         }
     }, [props]);
+
+    if (props.role === Roles.user) {
+        if (props.status === Status.Finished) {
+            return (
+                <div className={classes.gameActions}>
+                    <Button
+                        className={`${classesButton.button} ${classesButton.button_red} ${classesButton.button_link}`}
+                        onClick={handleDownloadClick}
+                        hasLeftIcon
+                        icon={
+                            <DownloadRounded
+                                style={{
+                                    color: 'var(--color-text-icon-link-primary)',
+                                    fontSize: 'var(--font-size-20)',
+                                }}
+                            />
+                        }
+                    />
+                </div>
+            );
+        } else {
+            return null;
+        }
+    }
 
     if (props.status === Status.NotStarted) {
         return (

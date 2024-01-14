@@ -7,7 +7,7 @@ import { AdminStartScreenProps } from '../../entities/admin-start-screen/admin-s
 import { Button, IconButton, OutlinedInput, Skeleton } from '@mui/material';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import { Scrollbars } from 'rc-scrollbars';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { ServerApi } from '../../server-api/server-api';
 import Modal, { OperationName } from '../../components/modal/modal';
 import CloseIcon from '@mui/icons-material/Close';
@@ -16,7 +16,6 @@ import Scrollbar from '../../components/scrollbar/scrollbar';
 import Loader from '../../components/loader/loader';
 import { AddRounded } from '@mui/icons-material';
 import GameItem, { AccessLevel, Roles, Status } from '../../components/game-item/game-item';
-import CustomButton, { ButtonType } from '../../components/custom-button/custom-button';
 import { GameTypeItemProps } from '../../components/game-type-item/game-type-item';
 import TeamItem, { Participant } from '../../components/team-item/team-item';
 import emptyOwlImage from '../../images/owl-images/empty_owl.svg';
@@ -216,8 +215,8 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                 participants={team.participants}
                 participantsCount={team.participantsCount}
                 openModal={setIsModalVisible}
-                setItemForDeleteName={setItemName}
-                setItemForDeleteId={setItemId}
+                setItemName={setItemName}
+                setItemId={setItemId}
                 role={Roles.admin}
             />
         ));
@@ -377,20 +376,16 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                     <div className={classes.sectionPage}>
                         <div className={classes.sectionHeader}>
                             <h1 className={classes.title}>Команды</h1>
-                            <Link
+                            <NewButton
+                                type={TypeButton.Link}
+                                hasLeftIcon
+                                icon={<AddRounded fontSize={'20px'} />}
                                 to={'/admin/team-creation'}
-                                className={classes.addButtonWrapper}
-                                style={{ pointerEvents: isDisabledTeamButton ? 'none' : 'auto' }}
-                            >
-                                <CustomButton
-                                    id={'addTeamButton'}
-                                    disabled={isDisabledTeamButton}
-                                    type={'button'}
-                                    text={'Создать команду'}
-                                    buttonType={ButtonType.primary}
-                                    startIcon={<AddRounded fontSize={'large'} />}
-                                />
-                            </Link>
+                                content={'Создать команду'}
+                                className={`${classesButton.button} ${classesButton.button_primary} ${
+                                    isDisabledTeamButton ? classesButton.button_primary_disabled : ''
+                                }`}
+                            />
                         </div>
                         {teams && !teams.length ? (
                             <div className={classes.sectionListEmpty}>

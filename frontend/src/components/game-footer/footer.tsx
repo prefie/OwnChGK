@@ -23,7 +23,7 @@ function GameItemFooter(props: GameItemFooterProps) {
         <div className={classes.gameFooter}>
             <GameStatus status={props.status} />
 
-            {props.role === Roles.admin && <GameItemButtons {...props} />}
+            <GameItemButtons {...props} />
         </div>
     );
 }
