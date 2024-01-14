@@ -35,7 +35,7 @@ export class GamesController {
         }
 
         return res.status(200).json({
-            games: games?.map(value => new BigGameDto(value, teamId)),
+            games: games?.map(value => new BigGameDto(value, teamId))
         });
     }
 
@@ -65,7 +65,7 @@ export class GamesController {
             accessLevel,
             chgkSettings,
             matrixSettings,
-            quizSettings,
+            quizSettings
         );
         return res.status(200).json({});
     }
@@ -138,7 +138,7 @@ export class GamesController {
             teams: bigGame.teams.map(value => value.name),
             chgkSettings: chgk ? new GameDto(chgk, allAdminRoles.has(role)) : null,
             matrixSettings: matrix ? new MatrixGameDto(matrix, allAdminRoles.has(role)) : null,
-            quizSettings: quiz ? new QuizGameDto(quiz, allAdminRoles.has(role)) : null,
+            quizSettings: quiz ? new QuizGameDto(quiz, allAdminRoles.has(role)) : null
         };
 
         return res.status(200).json(answer);
@@ -157,6 +157,10 @@ export class GamesController {
             return res.status(403).json({ message: checkAccessResult.message });
         }
 
+        if (bigGame.status === GameStatus.FINISHED) {
+            return res.status(400).json({ message: 'Нельзя начать завершившуюся игру' });
+        }
+
         if (!bigGames[bigGame.id]) {
             gameAdmins[gameId] = new Set();
             gameUsers[gameId] = new Set();
@@ -170,7 +174,7 @@ export class GamesController {
                     delete gameUsers[gameId];
                     delete gameAdmins[gameId];
                 },
-                1000 * 60 * 60 * 24,
+                1000 * 60 * 60 * 24
             ); // TODO: shusharin избавиться
         }
 
@@ -183,11 +187,33 @@ export class GamesController {
             id: bigGame.id,
             teams: bigGame.teams.map(value => value.name),
             chgkSettings: chgkFromDB ? new GameDto(chgkFromDB) : null,
-            matrixSettings: matrixFromDB ? new MatrixGameDto(matrixFromDB) : null,
+            matrixSettings: matrixFromDB ? new MatrixGameDto(matrixFromDB) : null
         };
 
         await this.bigGameRepository.updateByGameIdAndStatus(gameId, GameStatus.STARTED);
         return res.status(200).json(answer);
+    }
+
+    public async closeGame(req: Request, res: Response) {
+        const { gameId } = req.params;
+
+        const bigGame = await this.bigGameRepository.findWithAdminRelationsByBigGameId(gameId);
+        if (!bigGame) {
+            return res.status(404).json({ message: 'game not found' });
+        }
+
+        const checkAccessResult = await this.checkAccess(req, gameId, true);
+        if (checkAccessResult.type == AccessType.FORBIDDEN) {
+            return res.status(403).json({ message: checkAccessResult.message });
+        }
+
+        await this.bigGameRepository.updateByGameIdAndStatus(gameId, GameStatus.FINISHED);
+
+        if (!bigGames[bigGame.id]) {
+            await this.bigGameRepository.updateBigGameState(bigGames[gameId]);
+        }
+
+        return res.status(204);
     }
 
     public async changeGame(req: Request, res: Response) {
@@ -228,7 +254,7 @@ export class GamesController {
             accessLevel,
             chgkSettings,
             matrixSettings,
-            quizSettings,
+            quizSettings
         );
         return res.status(200).json({});
     }
@@ -260,7 +286,7 @@ export class GamesController {
 
         const totalScore = bigGames[gameId].currentGame.getTotalScoreForAllTeams();
         const answer = {
-            totalScoreForAllTeams: totalScore,
+            totalScoreForAllTeams: totalScore
         };
 
         return res.status(200).json(answer);
@@ -297,7 +323,7 @@ export class GamesController {
             questionsCount: game.rounds[0].questionsCount,
             matrixSums,
             totalScoreForAllTeams,
-            teamsDictionary,
+            teamsDictionary
         };
 
         return res.status(200).json(answer);
@@ -362,7 +388,7 @@ export class GamesController {
                     totalScoreForAllTeams[team] +
                     ';' +
                     (matrixSums ? `${matrixSums[team]};` : '') +
-                    roundsResultList.join(';'),
+                    roundsResultList.join(';')
             );
             roundsResultList = [];
         }
@@ -371,7 +397,7 @@ export class GamesController {
         const value = teamRows.join('\n');
 
         const answer = {
-            totalTable: [headers, value].join('\n'),
+            totalTable: [headers, value].join('\n')
         };
 
         return res.status(200).json(answer);
@@ -475,7 +501,7 @@ export class GamesController {
         }
 
         return res.status(200).json({
-            participants: table.join('\n'),
+            participants: table.join('\n')
         });
     }
 
@@ -494,7 +520,7 @@ export class GamesController {
                     delete gameUsers[gameId];
                     delete gameAdmins[gameId];
                 },
-                1000 * 60 * 60 * 24,
+                1000 * 60 * 60 * 24
             ); // TODO: shusharin избавиться
 
             return bigGames[gameId];
@@ -512,12 +538,12 @@ export class GamesController {
         if (game.admin.id !== id && withAdditionalAdmins && additionalAdmins.indexOf(id) == -1) {
             return {
                 type: AccessType.FORBIDDEN,
-                message: 'Админ/Демо-админ может изменять только свои игры',
+                message: 'Админ/Демо-админ может изменять только свои игры'
             };
         }
 
         return {
-            type: AccessType.ACCESS,
+            type: AccessType.ACCESS
         };
     }
 }
