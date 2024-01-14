@@ -1,5 +1,5 @@
-import {Tour} from '../rating/rating.interfaces';
-import {Dispatch, SetStateAction} from 'react';
+import { Tour } from '../rating/rating.interfaces';
+import { Dispatch, SetStateAction } from 'react';
 
 export interface TourHeaderCellProps {
     tourNumber: number;

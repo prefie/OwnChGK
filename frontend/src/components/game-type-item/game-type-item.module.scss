@@ -1,16 +1,16 @@
 .gameType {
-  font-size: var(--font-size-14);
-  line-height: var(--line-height-large);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex-wrap: wrap;
-  align-items: center;
-  padding: 6px 8px;
+    font-size: var(--font-size-14);
+    line-height: var(--line-height-large);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 6px 8px;
 }
 
 .gameTypeName {
-  color: var(--color-text-icon-default-secondary);
+    color: var(--color-text-icon-default-secondary);
 }
 
 .gameTypeQr {

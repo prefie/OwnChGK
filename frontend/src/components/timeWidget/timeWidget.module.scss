@@ -1,16 +1,16 @@
 .contentWrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: var(--color-bg-block);
-  color: var(--color-text-icon-default-primary);
-  padding: 32px 16px;
-  border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-bg-block);
+    color: var(--color-text-icon-default-primary);
+    padding: 32px 16px;
+    border-radius: 8px;
 }
 
 .time {
-  font-size: var(--font-size-32);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-small);
+    font-size: var(--font-size-32);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-small);
 }

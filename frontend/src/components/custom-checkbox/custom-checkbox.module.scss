@@ -1,10 +1,10 @@
 .checkboxWrapper {
-  display: flex;
-  gap: .5rem;
-  align-items: flex-start;
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
 }
 
 .checkboxLabel {
-  font-size: var(--font-size-24);
-  color: var(--color-text-icon-primary);
+    font-size: var(--font-size-24);
+    color: var(--color-text-icon-primary);
 }

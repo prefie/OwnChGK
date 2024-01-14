@@ -1,96 +1,96 @@
 .gamesHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
 }
 
 .gameContent {
-  position: relative;
-  text-decoration: none;
-  color: var(--color-text-icon-primary);
-  width: calc(25% - 48px);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  background-color: var(--color-bg-block);
-  padding: 8px 12px;
-  border-radius: 8px;
+    position: relative;
+    text-decoration: none;
+    color: var(--color-text-icon-primary);
+    width: calc(25% - 48px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background-color: var(--color-bg-block);
+    padding: 8px 12px;
+    border-radius: 8px;
 }
 
-.gameContent.admin{
-  pointer-events: none;
+.gameContent.admin {
+    pointer-events: none;
 }
 
 @media (max-width: 1280px) {
-  .gameContent {
-    width: calc(33.33% - 48px);
-  }
+    .gameContent {
+        width: calc(33.33% - 48px);
+    }
 }
 
 @media (max-width: 860px) {
-  .gameContent {
-    width: calc(50% - 48px);
-  }
+    .gameContent {
+        width: calc(50% - 48px);
+    }
 }
 
 @media (max-width: 600px) {
-  .gameContent {
-    width: 100%;
-    margin-right: 0;
-  }
+    .gameContent {
+        width: 100%;
+        margin-right: 0;
+    }
 }
 
 .gameTitle {
-  margin: 0;
-  text-decoration: none;
-  color: inherit;
-  font-size: var(--font-size-18);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-medium);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
+    margin: 0;
+    text-decoration: none;
+    color: inherit;
+    font-size: var(--font-size-18);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-medium);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 
 .gameTeamsCount {
-  font-size: var(--font-size-14);
-  line-height: var(--line-height-large);
+    font-size: var(--font-size-14);
+    line-height: var(--line-height-large);
 }
 
 .gameTeamsAddCount {
-  font-size: var(--font-size-20);
-  line-height: var(--line-height-small);
-  color: var(--color-text-icon-link-enabled);
+    font-size: var(--font-size-20);
+    line-height: var(--line-height-small);
+    color: var(--color-text-icon-link-enabled);
 }
 
 .gameTeams {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .gameInfo {
-  display: flex;
-  justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
 }
 
 .gameFooter {
-  position: relative;
-  bottom: 0;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-items: center;
+    position: relative;
+    bottom: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
 
-  button {
-    padding: 0;
-  }
+    button {
+        padding: 0;
+    }
 }
 
 .gameActions {
-  display: flex;
-  gap: 12px;
+    display: flex;
+    gap: 12px;
 }

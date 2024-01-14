@@ -1,10 +1,8 @@
 export const getCookie = (name: string) => {
-    let matches = document.cookie.match(new RegExp(
-        '(?:^|; )' + name.replace(/([$?*|{}\[\]\\\/^])/g, '\\$1') + '=([^;]*)'
-    ));
+    let matches = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([$?*|{}\[\]\\\/^])/g, '\\$1') + '=([^;]*)'));
     return matches ? decodeURIComponent(matches[1]) : undefined;
-}
+};
 
 export const getUrlForSocket = () => {
-    return `${window.location.origin.replace(/^http/, 'ws')}/api/ws`
-}
+    return `${window.location.origin.replace(/^http/, 'ws')}/api/ws`;
+};

@@ -12,10 +12,10 @@ export class ServerApi {
         DELETE: 'DELETE',
         GET: 'GET',
     };
-    
+
     private static DefaultHeaders = {
         'Content-Type': 'application/json;charset=utf-8',
-        'Accept': 'application/json',
+        Accept: 'application/json',
     };
 
     private static async sendRequest(request: Request) {
@@ -346,16 +346,16 @@ export class ServerApi {
             path: `/games/${gameId}/start`,
         });
     }
-	
-	public static async endGame(gameId: string) {
-		return this.sendRequest({
-			method: this.Method.PATCH,
-			path: `/games/${gameId}/changeStatus`,
-			body: JSON.stringify({
-				status: Status.Finished,
-			}),
-		});
-	}
+
+    public static async endGame(gameId: string) {
+        return this.sendRequest({
+            method: this.Method.PATCH,
+            path: `/games/${gameId}/changeStatus`,
+            body: JSON.stringify({
+                status: Status.Finished,
+            }),
+        });
+    }
 
     public static async getTeam(teamId: string) {
         return this.sendRequest({

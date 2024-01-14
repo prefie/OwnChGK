@@ -1,34 +1,34 @@
 .statusWrapper {
-  padding: 4px;
-  border-radius: 4px;
-  width: fit-content;
+    padding: 4px;
+    border-radius: 4px;
+    width: fit-content;
 }
 
 .statusWrapperNotStarted {
-  background-color: var(--color-fill-default-default);
+    background-color: var(--color-fill-default-default);
 }
 
 .statusWrapperStarted {
-  background-color: var(--color-fill-status-inprogress);
+    background-color: var(--color-fill-status-inprogress);
 }
 
 .statusWrapperFinished {
-  background-color: var(--color-fill-default-default);
+    background-color: var(--color-fill-default-default);
 }
 
 .statusCaption {
-  font-size: var(--font-size-12);
-  line-height: var(--line-height-medium);
+    font-size: var(--font-size-12);
+    line-height: var(--line-height-medium);
 }
 
 .statusCaptionNotStarted {
-  color: var(--color-text-icon-primary);
+    color: var(--color-text-icon-primary);
 }
 
 .statusCaptionStarted {
-  color: var(--color-text-icon-status-inprogress);
+    color: var(--color-text-icon-status-inprogress);
 }
 
 .statusCaptionFinished {
-  color: var(--color-text-icon-disabled);
+    color: var(--color-text-icon-disabled);
 }

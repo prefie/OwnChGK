@@ -80,13 +80,13 @@ const Header: FC<HeaderProps> = props => {
 function mapStateToProps(state: AppState): HeaderStateProps {
     return {
         user: state.appReducer.user,
-        isLoggedIn: state.appReducer.isLoggedIn
+        isLoggedIn: state.appReducer.isLoggedIn,
     };
 }
 
 function mapDispatchToProps(dispatch: Dispatch<AppAction>): HeaderDispatchProps {
     return {
-        onLogOut: () => dispatch(logOut())
+        onLogOut: () => dispatch(logOut()),
     };
 }
 

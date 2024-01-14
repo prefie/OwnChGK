@@ -6,7 +6,7 @@ import React, { Dispatch, SetStateAction, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import SignUpToGameItem from '../sign-up-to-game-item/sign-up-to-game-item';
-import { ServerApi } from "../../server-api/server-api";
+import { ServerApi } from '../../server-api/server-api';
 import { Team } from '../../pages/admin-start-screen/admin-start-screen';
 import { OperationName } from '../modal/modal.tsx';
 import GameItemFooter from '../game-footer/footer.tsx';
@@ -15,18 +15,18 @@ import { wordFormat } from './utils.ts';
 export enum Roles {
     user,
     admin,
-    superAdmin
+    superAdmin,
 }
 
 export enum AccessLevel {
     PUBLIC = 'public',
-    PRIVATE = 'private'
+    PRIVATE = 'private',
 }
 
 export enum Status {
     NotStarted = 'not_started',
     Started = 'started',
-    Finished = 'finished'
+    Finished = 'finished',
 }
 
 interface GameItemProps {
@@ -52,15 +52,13 @@ function GameItem(props: GameItemProps) {
     const [amIParticipate, setAmIParticipate] = useState(props.amIParticipate);
     const [teamsCount, setTeamsCount] = useState(props.teamsCount);
     const gameId = props.id;
-    const linkToGame = props.role === Roles.user
-        ? `/game/${props.id}`
-        : `/admin/start-game/${props.id}`
+    const linkToGame = props.role === Roles.user ? `/game/${props.id}` : `/admin/start-game/${props.id}`;
 
     function handleAddToGame() {
         ServerApi.addCurrentTeamInGame(gameId).then(res => {
             if (res.status === 200) {
                 setAmIParticipate(true);
-                res.json().then(({teamsCount}) => {
+                res.json().then(({ teamsCount }) => {
                     setTeamsCount(teamsCount);
                 });
             } else if (res.status === 403) {
@@ -73,13 +71,13 @@ function GameItem(props: GameItemProps) {
         ServerApi.deleteCurrentTeamFromGame(gameId).then(res => {
             if (res.status === 200) {
                 setAmIParticipate(false);
-                res.json().then(({teamsCount}) => {
+                res.json().then(({ teamsCount }) => {
                     setTeamsCount(teamsCount);
                 });
             } else if (res.status === 403) {
                 // добавить обработку
             }
-        })
+        });
     }
 
     if (isRedirectedToEdit) {

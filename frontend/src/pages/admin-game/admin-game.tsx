@@ -1,25 +1,20 @@
-import React, {FC, useEffect, useCallback,  useState} from 'react';
+import React, { FC, useEffect, useCallback, useState } from 'react';
 import classes from './admin-game.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import Header from '../../components/header/header';
-import {Link, useParams} from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
-import {AdminGameProps, TourProps} from '../../entities/admin-game/admin-game.interfaces';
+import { AdminGameProps, TourProps } from '../../entities/admin-game/admin-game.interfaces';
 import PauseIcon from '@mui/icons-material/Pause';
-import {GamePartSettings} from '../../server-api/type';
-import {getCookie, getUrlForSocket} from '../../commonFunctions';
+import { GamePartSettings } from '../../server-api/type';
+import { getCookie, getUrlForSocket } from '../../commonFunctions';
 import Modal, { OperationName } from '../../components/modal/modal';
 import Loader from '../../components/loader/loader';
-import {Alert, Divider, Snackbar} from '@mui/material';
-import {Scrollbars} from 'rc-scrollbars';
-import TimeWidget from "../../components/timeWidget/timeWidget";
-import {
-	AddRounded,
-	BarChartRounded,
-    CircleRounded,
-	ExitToApp,
-} from "@mui/icons-material";
+import { Alert, Divider, Snackbar } from '@mui/material';
+import { Scrollbars } from 'rc-scrollbars';
+import TimeWidget from '../../components/timeWidget/timeWidget';
+import { AddRounded, BarChartRounded, CircleRounded, ExitToApp } from '@mui/icons-material';
 import Button from '../../components/button/button.tsx';
 import classesButton from '../../components/button/button.module.scss';
 import { TypeButton } from '../../entities/custom-button/custom-button.interfaces.ts';
@@ -56,78 +51,91 @@ const AdminGame: FC<AdminGameProps> = () => {
     const [isStop, setIsStop] = useState<boolean>(false);
 
     const requester = {
-        getPayload: (obj: any) => JSON.stringify({
-            'cookie': getCookie('authorization'),
-            'gameId': gameId,
-            ...obj,
-        }),
+        getPayload: (obj: any) =>
+            JSON.stringify({
+                cookie: getCookie('authorization'),
+                gameId: gameId,
+                ...obj,
+            }),
 
         startRequests: () => {
-            conn.send(requester.getPayload({ 'action': 'time' }));
-            conn.send(requester.getPayload({ 'action': 'getAllAppeals' }));
-            conn.send(requester.getPayload({ 'action': 'isOnBreak' }));
-            conn.send(requester.getPayload({ 'action': 'getQuestionNumber' }));
+            conn.send(requester.getPayload({ action: 'time' }));
+            conn.send(requester.getPayload({ action: 'getAllAppeals' }));
+            conn.send(requester.getPayload({ action: 'isOnBreak' }));
+            conn.send(requester.getPayload({ action: 'getQuestionNumber' }));
 
             ping = setInterval(() => {
-                conn.send(JSON.stringify({ 'action': 'ping' }));
+                conn.send(JSON.stringify({ action: 'ping' }));
             }, 30000);
         },
 
         changeQuestion: (questionNumber: number, roundNumber: number, gamePart: 'chgk' | 'matrix') => {
-            conn.send(requester.getPayload({
-                'action': 'changeQuestion',
-                'questionNumber': questionNumber,
-                'tourNumber': roundNumber,
-                'activeGamePart': gamePart
-            }));
+            conn.send(
+                requester.getPayload({
+                    action: 'changeQuestion',
+                    questionNumber: questionNumber,
+                    tourNumber: roundNumber,
+                    activeGamePart: gamePart,
+                }),
+            );
         },
 
         getQuestionNumber: () => {
-            conn.send(requester.getPayload({ 'action': 'getQuestionNumber', }));
+            conn.send(requester.getPayload({ action: 'getQuestionNumber' }));
         },
 
         startGame: (gamePart: 'chgk' | 'matrix') => {
-            conn.send(requester.getPayload({
-                'action': 'Start',
-                'gamePart': gamePart,
-            }));
+            conn.send(
+                requester.getPayload({
+                    action: 'Start',
+                    gamePart: gamePart,
+                }),
+            );
         },
 
         pauseGame: (gamePart: 'chgk' | 'matrix') => {
-            conn.send(requester.getPayload({
-                'action': 'Pause',
-                'gamePart': gamePart,
-            }));
+            conn.send(
+                requester.getPayload({
+                    action: 'Pause',
+                    gamePart: gamePart,
+                }),
+            );
         },
 
         stopGame: (gamePart: 'chgk' | 'matrix') => {
-            conn.send(requester.getPayload({
-                'action': 'Stop',
-                'gamePart': gamePart
-            }));
+            conn.send(
+                requester.getPayload({
+                    action: 'Stop',
+                    gamePart: gamePart,
+                }),
+            );
         },
 
         addTenSeconds: (gamePart: 'chgk' | 'matrix') => {
-            conn.send(requester.getPayload({
-                'action': '+10sec',
-                'gamePart': gamePart
-            }));
+            conn.send(
+                requester.getPayload({
+                    action: '+10sec',
+                    gamePart: gamePart,
+                }),
+            );
         },
 
         stopBreak: () => {
-            conn.send(requester.getPayload({ 'action': 'stopBreak' }));
+            conn.send(requester.getPayload({ action: 'stopBreak' }));
         },
 
         checkTime: () => {
-            conn.send(requester.getPayload({ 'action': 'checkTime' }));
+            conn.send(requester.getPayload({ action: 'checkTime' }));
         },
 
         checkBreakTime: (time: number) => {
-            conn.send(requester.getPayload({
-                'action': 'checkBreakTime',
-                'time': time,
-            }));
-        }
+            conn.send(
+                requester.getPayload({
+                    action: 'checkBreakTime',
+                    time: time,
+                }),
+            );
+        },
     };
 
     const handlers = {
@@ -185,14 +193,18 @@ const AdminGame: FC<AdminGameProps> = () => {
                 setIsBreak(true);
                 setBreakTime(time);
                 clearInterval(breakInterval);
-                breakInterval = setInterval(() => setBreakTime((time) => {
-                    requester.checkBreakTime(time);
-                    if (time - 1 <= 0) {
-                        clearInterval(breakInterval);
-                        setIsBreak(false);
-                    }
-                    return time - 1 > 0 ? time - 1 : 0;
-                }), 1000);
+                breakInterval = setInterval(
+                    () =>
+                        setBreakTime(time => {
+                            requester.checkBreakTime(time);
+                            if (time - 1 <= 0) {
+                                clearInterval(breakInterval);
+                                setIsBreak(false);
+                            }
+                            return time - 1 > 0 ? time - 1 : 0;
+                        }),
+                    1000,
+                );
             }
         },
 
@@ -211,21 +223,19 @@ const AdminGame: FC<AdminGameProps> = () => {
             setClickedGamePart(activeGamePart);
             setActiveGamePart(activeGamePart);
             setIsLoading(false);
-        }
+        },
     };
 
     useEffect(() => {
-        ServerApi.getGame(gameId).then((res) => {
+        ServerApi.getGame(gameId).then(res => {
             if (res.status === 200) {
-                res.json().then(({
-                                     name,
-                                     chgkSettings,
-                                     matrixSettings
-                                 }) => {
+                res.json().then(({ name, chgkSettings, matrixSettings }) => {
                     setGameName(name);
                     setMatrixSettings(matrixSettings ?? null);
                     setChgkSettings(chgkSettings ?? null);
-                    setIsAppeal(new Array(chgkSettings ? chgkSettings.roundsCount * chgkSettings.questionsCount : 0).fill(false));
+                    setIsAppeal(
+                        new Array(chgkSettings ? chgkSettings.roundsCount * chgkSettings.questionsCount : 0).fill(false),
+                    );
                 });
             }
         });
@@ -307,8 +317,12 @@ const AdminGame: FC<AdminGameProps> = () => {
     };
 
     const parseTimer = (time: number) => {
-        const minutes = Math.floor(time / 1000 / 60).toString().padStart(1, '0');
-        const sec = Math.ceil(time / 1000 % 60).toString().padStart(2, '0');
+        const minutes = Math.floor(time / 1000 / 60)
+            .toString()
+            .padStart(1, '0');
+        const sec = Math.ceil((time / 1000) % 60)
+            .toString()
+            .padStart(2, '0');
         return `${minutes}:${sec}`;
     };
 
@@ -378,9 +392,15 @@ const AdminGame: FC<AdminGameProps> = () => {
             return null;
         }
 
-        return Array.from(Array(toursCount).keys()).map(i => <Tour gamePart={gamePart} key={`tour_${i}_${gamePart}`}
-                                                                   tourIndex={i + 1}
-                                                                   tourNumber={i + 1} tourName={tourNames?.[i]}/>);
+        return Array.from(Array(toursCount).keys()).map(i => (
+            <Tour
+                gamePart={gamePart}
+                key={`tour_${i}_${gamePart}`}
+                tourIndex={i + 1}
+                tourNumber={i + 1}
+                tourName={tourNames?.[i]}
+            />
+        ));
     };
 
     const renderQuestions = (questionsCount: number, gamePart: 'matrix' | 'chgk') => {
@@ -441,15 +461,13 @@ const AdminGame: FC<AdminGameProps> = () => {
     };
 
     if (isLoading || !gameName) {
-        return <Loader/>;
+        return <Loader />;
     }
 
     return (
         <PageWrapper>
             <Header isAuthorized={true} isAdmin={true}>
-                <div className={classes.gameName}>
-                    {gameName}
-                </div>
+                <div className={classes.gameName}>{gameName}</div>
             </Header>
 
             {isModalOpen ? (

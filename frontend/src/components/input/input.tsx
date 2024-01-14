@@ -1,26 +1,27 @@
-import React, {FC, useEffect, useState} from 'react';
-import {InputProps} from '../../entities/custom-input/custom-input.interfaces';
+import React, { FC, useEffect, useState } from 'react';
+import { InputProps } from '../../entities/custom-input/custom-input.interfaces';
 import {
     FormControl,
     FormHelperText,
-    IconButton, IconButtonProps,
+    IconButton,
+    IconButtonProps,
     InputAdornment,
     OutlinedInput,
     OutlinedInputProps,
-    styled
+    styled,
 } from '@mui/material';
-import {Visibility, VisibilityOff} from '@mui/icons-material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const StyledInput = styled(OutlinedInput)<OutlinedInputProps>({
-    backgroundColor: "var(--color-bg-plates)",
-    color: "var(--color-text-icon-primary)",
-    fontSize: "var(--font-size-24)",
-    lineHeight: "var(--line-height-small)",
-    borderRadius: 8
+    backgroundColor: 'var(--color-bg-plates)',
+    color: 'var(--color-text-icon-primary)',
+    fontSize: 'var(--font-size-24)',
+    lineHeight: 'var(--line-height-small)',
+    borderRadius: 8,
 });
 
 const StyledIconButton = styled(IconButton)<IconButtonProps>({
-    color: "var(--color-text-icon-secondary)"
+    color: 'var(--color-text-icon-secondary)',
 });
 
 export const Input: FC<InputProps> = props => {
@@ -29,7 +30,7 @@ export const Input: FC<InputProps> = props => {
     useEffect(() => {
         const resizeEventHandler = () => {
             setMediaMatch(window.matchMedia('(max-width: 600px)'));
-        }
+        };
 
         mediaMatch.addEventListener('change', resizeEventHandler);
 
@@ -40,7 +41,7 @@ export const Input: FC<InputProps> = props => {
 
     const [values, setValues] = useState({
         password: '',
-        showPassword: false
+        showPassword: false,
     });
 
     let required: boolean;
@@ -58,11 +59,15 @@ export const Input: FC<InputProps> = props => {
     };
 
     return (
-        <FormControl variant='outlined' sx={{marginBottom: mediaMatch.matches ? '5%' : '3%'}} fullWidth={true}
-                     style={props.style}>
+        <FormControl
+            variant="outlined"
+            sx={{ marginBottom: mediaMatch.matches ? '5%' : '3%' }}
+            fullWidth={true}
+            style={props.style}
+        >
             <StyledInput
                 fullWidth={true}
-                autoComplete={props.type === 'password' ? 'on' : (props.autocomplete ? 'on' : 'off')}
+                autoComplete={props.type === 'password' ? 'on' : props.autocomplete ? 'on' : 'off'}
                 type={values.showPassword && props.type === 'password' ? 'text' : props.type}
                 id={props.id}
                 error={props.isInvalid}
@@ -76,32 +81,26 @@ export const Input: FC<InputProps> = props => {
                 onFocus={props.onFocus}
                 readOnly={props.readonly}
                 endAdornment={
-                    props.type === 'password'
-                        ?
+                    props.type === 'password' ? (
                         <InputAdornment position="end">
-                            <StyledIconButton
-                                onClick={handleClickShowPassword}
-                                edge="end"
-                                size={"large"}
-                            >{values.showPassword ? <VisibilityOff/> : <Visibility/>}
+                            <StyledIconButton onClick={handleClickShowPassword} edge="end" size={'large'}>
+                                {values.showPassword ? <VisibilityOff /> : <Visibility />}
                             </StyledIconButton>
                         </InputAdornment>
-                        :
-                        null
+                    ) : null
                 }
             />
-            {
-                props.isInvalid && props.errorHelperText
-                    ?
-                    <FormHelperText sx={{
+            {props.isInvalid && props.errorHelperText ? (
+                <FormHelperText
+                    sx={{
                         marginLeft: '0 !important',
-                        fontSize: "var(--font-size-20)",
+                        fontSize: 'var(--font-size-20)',
                         color: 'var(--color-text-icon-error)',
-                    }}>
-                        {props.errorHelperText}
-                    </FormHelperText>
-                    : null
-            }
+                    }}
+                >
+                    {props.errorHelperText}
+                </FormHelperText>
+            ) : null}
         </FormControl>
     );
 };
