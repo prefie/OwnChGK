@@ -5,12 +5,12 @@ export abstract class BaseCreature extends BaseEntity {
     id: string;
 
     @CreateDateColumn({
-        name: 'created_date'
+        name: 'created_date',
     })
     createdDate: Date;
 
     @UpdateDateColumn({
-        name: 'updated_date'
+        name: 'updated_date',
     })
     updatedDate: Date;
 }

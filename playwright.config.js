@@ -1,9 +1,9 @@
 module.exports = {
     browserName: 'firefox',
     launchOptions: {
-      headless: true, 
+        headless: true,
     },
     contextOptions: {
-      viewport: { width: 1200, height: 800 }, 
+        viewport: { width: 1200, height: 800 },
     },
-  };
+};

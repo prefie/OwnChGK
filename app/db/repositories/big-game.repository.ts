@@ -18,13 +18,12 @@ import { Round, RoundType } from '../entities/round';
 import { Team } from '../entities/team';
 import { BaseRepository } from './base.repository';
 
-
 export interface DefaultGameSettings {
-    roundsCount: number,
-    questionsCount: number,
-    questionCost: number,
-    questionTime: number,
-    questions: Record<number, string[]>
+    roundsCount: number;
+    questionsCount: number;
+    questionCost: number;
+    questionTime: number;
+    questions: Record<number, string[]>;
 }
 
 export interface MatrixSettings extends DefaultGameSettings {
@@ -43,7 +42,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     findByName(name: string) {
         return this.innerRepository.findOne({
             where: { name },
-            relations: { games: true, teams: true }
+            relations: { games: true, teams: true },
         });
     }
 
@@ -55,7 +54,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 teams: { captain: true },
                 admin: true,
                 additionalAdmins: true,
-            }
+            },
         });
     }
 
@@ -70,7 +69,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             relations: {
                 admin: true,
                 additionalAdmins: true,
-            }
+            },
         });
     }
 
@@ -81,7 +80,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 teams: { captain: true },
                 admin: true,
                 additionalAdmins: true,
-            }
+            },
         });
     }
 
@@ -93,33 +92,33 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 teams: { captain: true },
                 admin: true,
                 additionalAdmins: true,
-            }
+            },
         });
     }
 
     getQuantityByAdminId(adminId: string) {
         return this.innerRepository.count({
-            where: { admin: { id: adminId } }
+            where: { admin: { id: adminId } },
         });
     }
 
     findAccessLevelAndStatusById(bigGameId: string) {
         return this.innerRepository.findOne({
             select: { id: true, accessLevel: true, status: true },
-            where: { id: bigGameId }
+            where: { id: bigGameId },
         });
     }
 
     addTeamInBigGame(bigGameId: string, teamId: string) {
-        return this.innerRepository.manager.transaction("SERIALIZABLE", async (entityManager: EntityManager) => {
+        return this.innerRepository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager) => {
             const team = await entityManager.findOne<Team>(Team, {
                 where: { id: teamId },
-                relations: { bigGames: true }
+                relations: { bigGames: true },
             });
 
             const bigGame = await entityManager.findOne<BigGame>(BigGame, {
                 where: { id: bigGameId },
-                relations: { teams: true }
+                relations: { teams: true },
             });
 
             if (team.bigGames.map(g => g.id).indexOf(bigGameId) == -1) {
@@ -133,15 +132,15 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     }
 
     deleteTeamFromBigGame(bigGameId: string, teamId: string) {
-        return this.innerRepository.manager.transaction("SERIALIZABLE", async (entityManager: EntityManager) => {
+        return this.innerRepository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager) => {
             const team = await entityManager.findOne<Team>(Team, {
                 where: { id: teamId },
-                relations: { bigGames: true }
+                relations: { bigGames: true },
             });
 
             const bigGame = await entityManager.findOne<BigGame>(BigGame, {
                 where: { id: bigGameId },
-                relations: { teams: true }
+                relations: { teams: true },
             });
 
             team.bigGames = team.bigGames.filter(g => g.id != bigGameId);
@@ -159,7 +158,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 where: { teams: { captain: { id: userId } } },
                 relations: {
                     teams: { captain: true },
-                }
+                },
             });
 
             const gameIds = games?.map(g => g.id) ?? [];
@@ -175,7 +174,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 where: [{ teams: { captain: { id: userId } } }, { accessLevel: AccessLevel.PUBLIC }],
                 relations: {
                     teams: { captain: true },
-                }
+                },
             });
 
             const gameIds = games?.map(g => g.id) ?? [];
@@ -191,8 +190,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             where: { id: In(gameIds) },
             relations: {
                 games: { rounds: { questions: true } },
-                teams: { captain: true }
-            }
+                teams: { captain: true },
+            },
         });
     }
 
@@ -205,10 +204,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         matrixSettings: MatrixSettings,
         quizSettings: QuizSettings,
     ) {
-        const admin = await this.innerRepository.manager
-            .findOneBy<Admin>(Admin, { email: adminEmail.toLowerCase() });
-        const teamsFromDb = await this.innerRepository.manager
-            .findBy<Team>(Team, { id: In(teams) });
+        const admin = await this.innerRepository.manager.findOneBy<Admin>(Admin, { email: adminEmail.toLowerCase() });
+        const teamsFromDb = await this.innerRepository.manager.findBy<Team>(Team, { id: In(teams) });
         const bigGame = new BigGame();
         bigGame.name = name;
         bigGame.admin = admin;
@@ -231,7 +228,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     ) {
         const bigGame = await this.innerRepository.manager.findOne<BigGame>(BigGame, {
             where: { id: bigGameId },
-            relations: { games: true }
+            relations: { games: true },
         });
         bigGame.name = newName;
         bigGame.accessLevel = accessLevel ?? AccessLevel.PRIVATE;
@@ -254,7 +251,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         bigGame: BigGame,
         chgkSettings: DefaultGameSettings,
         matrixSettings: MatrixSettings,
-        quizSettings: QuizSettings
+        quizSettings: QuizSettings,
     ) {
         const games = [];
         if (chgkSettings) {
@@ -270,7 +267,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 chgkSettings.questionCost ?? 1,
                 null,
                 chgkSettings.questions ?? null,
-                null
+                null,
             );
 
             games.push(chgk);
@@ -289,7 +286,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 matrixSettings.questionCost ?? 10,
                 matrixSettings.roundNames ?? null,
                 matrixSettings.questions ?? null,
-                null
+                null,
             );
 
             games.push(matrix);
@@ -308,7 +305,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 quizSettings.questionCost ?? 1,
                 quizSettings.roundNames ?? null,
                 quizSettings.questions ?? null,
-                quizSettings.roundTypes ?? null
+                quizSettings.roundTypes ?? null,
             );
 
             games.push(quiz);
@@ -327,8 +324,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     }
 
     async updateAdminByIdAndAdminEmail(bigGameId: string, newAdminEmail: string) {
-        const admin = await this.innerRepository.manager
-            .findOneBy<Admin>(Admin, { email: newAdminEmail.toLowerCase() });
+        const admin = await this.innerRepository.manager.findOneBy<Admin>(Admin, { email: newAdminEmail.toLowerCase() });
         const bigGame = await this.innerRepository.findOneBy({ id: bigGameId });
         bigGame.admin = admin;
 
@@ -403,7 +399,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             relations: {
                 games: { rounds: { questions: { answers: { appeal: true, team: true } } } },
                 teams: { captain: true },
-            }
+            },
         });
 
         return this.createBigGameLogic(bigGame);
@@ -418,7 +414,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         roundNames?: string[],
         questionsText?: Record<number, string[]>,
         roundTypes?: RoundType[],
-    ) : Round[] {
+    ): Round[] {
         if (roundNames && roundsCount !== roundNames.length) {
             throw new Error('roundNames.length !== roundsCount');
         }
@@ -486,61 +482,44 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             matrix.addRounds(rounds);
         }
 
-        return new BigGameLogic(
-            bigGame.id,
-            bigGame.name,
-            chgkFromDB ? chgk : null,
-            matrixFromDB ? matrix : null
-        );
+        return new BigGameLogic(bigGame.id, bigGame.name, chgkFromDB ? chgk : null, matrixFromDB ? matrix : null);
     }
 
     private getRoundsLogicFromDb(rounds: Round[], teams: Record<string, TeamLogic>): RoundLogic[] {
-        return rounds.map(r => {
-            const questions = r.questions.map(q => {
-                const answers = q.answers?.map(a => new AnswerLogic(
-                    a.team.id,
-                    r.number,
-                    q.number,
-                    a.text,
-                    a.status as AnswerStatus,
-                    a.score
-                )) ?? [];
+        return rounds
+            .map(r => {
+                const questions = r.questions
+                    .map(q => {
+                        const answers =
+                            q.answers?.map(
+                                a => new AnswerLogic(a.team.id, r.number, q.number, a.text, a.status as AnswerStatus, a.score),
+                            ) ?? [];
 
-                for (let ans of answers) {
-                    teams[ans.teamId].addAnswer(ans);
-                }
+                        for (let ans of answers) {
+                            teams[ans.teamId].addAnswer(ans);
+                        }
 
-                const appeals = q.answers
-                    ?.filter(a => a.appeal)
-                    .map(a => new AppealLogic(
-                        a.team.id,
-                        r.number,
-                        q.number,
-                        a.appeal.text,
-                        a.text,
-                        a.appeal.status as AppealStatus,
-                        a.appeal.comment
-                    )) ?? [];
-                return new QuestionLogic(
-                    q.id,
-                    q.cost,
-                    r.number,
-                    q.number,
-                    r.questionTime,
-                    q.text,
-                    answers,
-                    appeals
-                );
-            }).sort((a, b) => a.number > b.number ? 1 : -1);
+                        const appeals =
+                            q.answers
+                                ?.filter(a => a.appeal)
+                                .map(
+                                    a =>
+                                        new AppealLogic(
+                                            a.team.id,
+                                            r.number,
+                                            q.number,
+                                            a.appeal.text,
+                                            a.text,
+                                            a.appeal.status as AppealStatus,
+                                            a.appeal.comment,
+                                        ),
+                                ) ?? [];
+                        return new QuestionLogic(q.id, q.cost, r.number, q.number, r.questionTime, q.text, answers, appeals);
+                    })
+                    .sort((a, b) => (a.number > b.number ? 1 : -1));
 
-            return new RoundLogic(
-                r.id,
-                r.number,
-                questions.length,
-                r.questionTime,
-                GameTypeLogic.ChGK,
-                questions
-            );
-        }).sort((a, b) => a.number > b.number ? 1 : -1);
+                return new RoundLogic(r.id, r.number, questions.length, r.questionTime, GameTypeLogic.ChGK, questions);
+            })
+            .sort((a, b) => (a.number > b.number ? 1 : -1));
     }
 }

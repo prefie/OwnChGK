@@ -1,4 +1,4 @@
 export enum GameStatus {
     IsOnBreak,
-    Start
+    Start,
 }

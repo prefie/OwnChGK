@@ -11,21 +11,21 @@ export class UserRepository extends BaseRepository<User> {
     findById(userId: string) {
         return this.innerRepository.findOne({
             where: { id: userId },
-            relations: { team: { captain: true } }
+            relations: { team: { captain: true } },
         });
     }
 
     findByEmail(email: string) {
         return this.innerRepository.findOne({
             where: { email: email.toLowerCase() },
-            relations: { team: true }
+            relations: { team: true },
         });
     }
 
     findUsersWithoutTeam() {
         return this.innerRepository.find({
             where: { team: { id: IsNull() } },
-            relations: { team: true }
+            relations: { team: true },
         });
     }
 

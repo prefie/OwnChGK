@@ -11,12 +11,7 @@ export class AdminRepository extends BaseRepository<Admin> {
         return this.innerRepository.findOneBy({ email: email.toLowerCase() });
     }
 
-    insertByEmailAndPassword(
-        email: string,
-        password: string,
-        name: string = null,
-        role: AdminRoles = AdminRoles.ADMIN
-    ) {
+    insertByEmailAndPassword(email: string, password: string, name: string = null, role: AdminRoles = AdminRoles.ADMIN) {
         const admin = new Admin();
         admin.email = email.toLowerCase();
         admin.password = password;

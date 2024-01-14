@@ -43,12 +43,11 @@
     height: 90%;
     align-self: center;
     padding-right: 1rem;
-
 }
 
 .teamsWrapper {
     background-color: var(--color-bg-plates);
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     padding: 1rem;
 }
 
@@ -67,7 +66,7 @@
     color: var(--color-text-icon-primary);
     height: 4rem;
     width: 4rem;
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     font-size: var(--font-size-24);
     box-sizing: border-box;
     font-weight: var(--font-weight-regular);
@@ -110,9 +109,9 @@
     padding: 0 2vw;
 
     &:disabled {
-        background-color: #F6F7FF;
-        color: rgba(27, 38, 44, .5);
-        border-color: rgba(27, 38, 44, .5);
+        background-color: #f6f7ff;
+        color: rgba(27, 38, 44, 0.5);
+        border-color: rgba(27, 38, 44, 0.5);
     }
 
     &:not(:disabled):hover {
@@ -121,7 +120,7 @@
     }
 
     &:not(:disabled):active {
-        box-shadow: inset 3px 3px 5px rgba(0, 0, 0, .50);
+        box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.5);
     }
 }
 
@@ -143,7 +142,7 @@
 
 .scrollbarView {
     overflow-x: hidden !important;
-    padding-top: .5rem;
+    padding-top: 0.5rem;
 }
 
 .link {
@@ -151,17 +150,18 @@
 }
 
 .chgkWrapper,
-.matrixWrapper, .gameTypeWrapper {
+.matrixWrapper,
+.gameTypeWrapper {
     width: 100%;
     height: 3.5rem;
     display: flex;
     align-items: center;
-    border-radius: .5rem;
+    border-radius: 0.5rem;
     min-height: 26px;
     background-color: var(--color-bg-plates);
     color: var(--color-text-icon-primary);
     margin-bottom: 1rem;
-    padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
     box-sizing: border-box;
     overflow: hidden;
 }
@@ -200,8 +200,8 @@
     background-color: var(--color-bg-overlay-default);
     color: var(--color-text-icon-secondary) !important;
     font-family: Roboto, sans-serif;
-    margin-bottom: .5rem;
-    border-radius: .5rem !important;
+    margin-bottom: 0.5rem;
+    border-radius: 0.5rem !important;
     min-height: 26px;
     align-self: center;
 }
@@ -223,8 +223,8 @@
     justify-content: center;
     align-items: center;
     font-size: var(--font-size-24);
-    border-radius: .5rem;
-    padding: .75rem 1.5rem;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
     overflow: hidden;
     user-select: none;
     min-height: 26px;

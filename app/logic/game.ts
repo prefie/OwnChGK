@@ -3,7 +3,6 @@ import { seconds20PerQuestion, seconds70PerQuestion } from '../socket';
 import { Round } from './round';
 import { GameTypeLogic } from './enums/game-type-logic.enum';
 
-
 export class Game {
     public readonly id: string;
     public readonly name: string;
@@ -17,7 +16,6 @@ export class Game {
     public leftTime: number;
     public maxTime: number;
     public timeIsOnPause: boolean;
-
 
     constructor(id: string, name: string, type: GameTypeLogic) {
         this.id = id;

@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { AppConfig } from './app-config';
 import { Request, Response } from 'express';
-import {APIError} from './api-error';
+import { APIError } from './api-error';
 
 const secret = AppConfig.jwtSecretKey ?? 'SECRET_KEY';
 
@@ -19,13 +19,13 @@ export const generateAccessToken = (id: string, email: string, role: string, tea
         email: email.toLowerCase(),
         role,
         teamId,
-        name
+        name,
     };
 
     return jwt.sign(payload, secret, { expiresIn: '24h' });
 };
 
-export const getTokenFromString = (token: string): TokenPayload => jwt.verify(token, secret) as TokenPayload
+export const getTokenFromString = (token: string): TokenPayload => jwt.verify(token, secret) as TokenPayload;
 
 export const getTokenFromRequest = (req: Request): TokenPayload => {
     const cookie = req.cookies['authorization'];
@@ -34,11 +34,11 @@ export const getTokenFromRequest = (req: Request): TokenPayload => {
     }
 
     return jwt.verify(cookie, secret) as TokenPayload;
-}
+};
 
 export const setTokenInResponse = (res: Response, token: string): void => {
     res.cookie('authorization', token, {
         maxAge: 24 * 60 * 60 * 1000,
-        secure: true
+        secure: true,
     });
-}
+};

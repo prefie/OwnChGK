@@ -22,7 +22,7 @@ export class Question {
         time: number,
         text: string = null,
         answers?: Answer[] | undefined,
-        appeals?: Appeal[] | undefined
+        appeals?: Appeal[] | undefined,
     ) {
         this.id = id;
         this.cost = cost;
@@ -55,9 +55,7 @@ export class Question {
     changeAnswer(team: Team, roundNumber: number, questionNumber: number, isMatrixType = false): void {
         let answer = this._answers[team.id];
         if (answer) {
-            answer.status == AnswerStatus.RIGHT
-                ? answer.reject(isMatrixType ? this.cost : 0)
-                : answer.accept(this.cost);
+            answer.status == AnswerStatus.RIGHT ? answer.reject(isMatrixType ? this.cost : 0) : answer.accept(this.cost);
         } else {
             answer = new Answer(team.id, this.roundNumber, this.number, '');
             this._answers[team.id] = answer;
@@ -83,8 +81,7 @@ export class Question {
     }
 
     acceptAppeal(answer: string, comment: string = ''): void {
-        const appeals = Object.values(this._appeals)
-            .filter((value) => value.wrongAnswer == answer);
+        const appeals = Object.values(this._appeals).filter(value => value.wrongAnswer == answer);
 
         for (const appeal of appeals) {
             appeal.accept(comment);
@@ -94,8 +91,7 @@ export class Question {
     }
 
     rejectAppeal(answer: string, comment: string = ''): void {
-        const appeals = Object.values(this._appeals)
-            .filter((value) => value.wrongAnswer == answer);
+        const appeals = Object.values(this._appeals).filter(value => value.wrongAnswer == answer);
 
         for (const appeal of appeals) {
             appeal.reject(comment);

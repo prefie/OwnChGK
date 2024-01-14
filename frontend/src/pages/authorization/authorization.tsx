@@ -1,23 +1,23 @@
-import React, {FC, useState} from 'react';
+import React, { FC, useState } from 'react';
 import classes from './authorization.module.scss';
 import Header from '../../components/header/header';
-import {Link, Redirect} from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import {
     AuthorizationDispatchProps,
     AuthorizationProps,
-    AuthorizationStateProps
+    AuthorizationStateProps,
 } from '../../entities/authorization/authorization.interfaces';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
-import {CustomInput} from '../../components/custom-input/custom-input';
-import {connect} from 'react-redux';
-import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces';
-import {Dispatch} from 'redux';
-import {authorizeUserWithRole, checkToken as testToken} from '../../redux/actions/app-actions/app-actions';
-import {AppState} from '../../entities/app/app.interfaces';
+import { CustomInput } from '../../components/custom-input/custom-input';
+import { connect } from 'react-redux';
+import { AppAction } from '../../redux/reducers/app-reducer/app-reducer.interfaces';
+import { Dispatch } from 'redux';
+import { authorizeUserWithRole, checkToken as testToken } from '../../redux/actions/app-actions/app-actions';
+import { AppState } from '../../entities/app/app.interfaces';
 import PageBackdrop from '../../components/backdrop/backdrop';
-import {ServerApi} from '../../server-api/server-api';
-import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
-import {Input} from "../../components/input/input";
+import { ServerApi } from '../../server-api/server-api';
+import CustomButton, { ButtonType } from '../../components/custom-button/custom-button';
+import { Input } from '../../components/input/input';
 import { allAdminRoles } from '../../entities/common/common.constants';
 import logoImage from '../../images/Logo.svg';
 
@@ -32,7 +32,7 @@ const Authorization: FC<AuthorizationProps> = props => {
         setIsLoading(true);
         ServerApi.login(email, password, !!props.isAdmin).then(response => {
             if (response.status === 200) {
-                response.json().then(({role, team, email, name}) => {
+                response.json().then(({ role, team, email, name }) => {
                     props.onAuthorizeUserWithRole(role, team, email, name);
                 });
             } else {
@@ -58,14 +58,13 @@ const Authorization: FC<AuthorizationProps> = props => {
     };
 
     return props.isLoggedIn ? (
-        <Redirect
-            to={allAdminRoles.includes(props.user.role) ? '/admin/start-screen' : '/start-screen'}/>
+        <Redirect to={allAdminRoles.includes(props.user.role) ? '/admin/start-screen' : '/start-screen'} />
     ) : (
         <PageWrapper>
-            <Header isAuthorized={false}/>
+            <Header isAuthorized={false} />
 
             <div className={classes.contentWrapper}>
-                <img className={classes.logo} src={logoImage} alt="logo"/>
+                <img className={classes.logo} src={logoImage} alt="logo" />
 
                 <form onSubmit={handleSubmit} className={classes.authForm}>
                     <Input
@@ -87,30 +86,33 @@ const Authorization: FC<AuthorizationProps> = props => {
                         isInvalid={wrongEmailOrPassword}
                         autocomplete={true}
                         onFocus={handleErrorFixes}
-                        errorHelperText='Неверный логин или пароль'
+                        errorHelperText="Неверный логин или пароль"
                     />
                     <div className={classes.buttonWrapper}>
-                        <CustomButton type={"submit"} text={"Войти"} buttonType={ButtonType.primary}/>
+                        <CustomButton type={'submit'} text={'Войти'} buttonType={ButtonType.primary} />
                     </div>
                 </form>
                 <div className={classes.restoreLinkWrapper}>
-                    <Link className={classes.restorePasswordLink}
-                          to={props.isAdmin ? '/admin/restore-password' : '/restore-password'}
-                          id="restore">Восстановить пароль</Link>
+                    <Link
+                        className={classes.restorePasswordLink}
+                        to={props.isAdmin ? '/admin/restore-password' : '/restore-password'}
+                        id="restore"
+                    >
+                        Восстановить пароль
+                    </Link>
                 </div>
 
-                {
-                    props.isAdmin
-                        ? null
-                        :
-                        <div className={classes.toRegistrationWrapper}>
-                            <p className={classes.toRegistrationParagraph}>Ещё нет аккаунта?</p>
-                            <Link className={classes.toRegistrationLink} to="/registration"
-                                  id="toRegistration"> Зарегистрироваться</Link>
-                        </div>
-                }
+                {props.isAdmin ? null : (
+                    <div className={classes.toRegistrationWrapper}>
+                        <p className={classes.toRegistrationParagraph}>Ещё нет аккаунта?</p>
+                        <Link className={classes.toRegistrationLink} to="/registration" id="toRegistration">
+                            {' '}
+                            Зарегистрироваться
+                        </Link>
+                    </div>
+                )}
             </div>
-            <PageBackdrop isOpen={isLoading}/>
+            <PageBackdrop isOpen={isLoading} />
         </PageWrapper>
     );
 };
@@ -119,14 +121,15 @@ function mapStateToProps(state: AppState): AuthorizationStateProps {
     return {
         isLoggedIn: state.appReducer.isLoggedIn,
         user: state.appReducer.user,
-        isTokenChecked: state.appReducer.isTokenChecked
+        isTokenChecked: state.appReducer.isTokenChecked,
     };
 }
 
 function mapDispatchToProps(dispatch: Dispatch<AppAction>): AuthorizationDispatchProps {
     return {
         onCheckToken: () => dispatch(testToken()),
-        onAuthorizeUserWithRole: (role: string, team: string, email: string, name: string) => dispatch(authorizeUserWithRole(role, team, email, name))
+        onAuthorizeUserWithRole: (role: string, team: string, email: string, name: string) =>
+            dispatch(authorizeUserWithRole(role, team, email, name)),
     };
 }
 

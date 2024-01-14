@@ -11,10 +11,10 @@ export class ServerApi {
         DELETE: 'DELETE',
         GET: 'GET',
     };
-    
+
     private static DefaultHeaders = {
         'Content-Type': 'application/json;charset=utf-8',
-        'Accept': 'application/json',
+        Accept: 'application/json',
     };
 
     private static async sendRequest(request: Request) {

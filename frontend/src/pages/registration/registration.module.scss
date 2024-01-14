@@ -1,87 +1,87 @@
 .contentWrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  align-self: center;
-  height: 90%;
-  width: 100%;
-  padding: 0 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    height: 90%;
+    width: 100%;
+    padding: 0 80px;
 }
 
 .logo {
-  margin-bottom: 3rem;
-  user-select: none;
+    margin-bottom: 3rem;
+    user-select: none;
 }
 
 .authForm {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 25%;
 }
 
 .buttonWrapper {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 1.5rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
 }
 
 .toAuthorizationParagraph {
-  font-size: var(--font-size-24);
-  color: var(--color-text-icon-primary);
-  display: inline-block;
+    font-size: var(--font-size-24);
+    color: var(--color-text-icon-primary);
+    display: inline-block;
 }
 
 .toAuthorizationLink {
-  text-decoration: none;
-  color: var(--color-text-icon-link-enabled);
-  font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-24);
+    text-decoration: none;
+    color: var(--color-text-icon-link-enabled);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-24);
 }
 
 .toAuthorizationWrapper {
-  width: 100%;
-  font-size: var(--font-size-24);
-  text-align: center;
-  margin-top: 2rem;
-  user-select: none;
+    width: 100%;
+    font-size: var(--font-size-24);
+    text-align: center;
+    margin-top: 2rem;
+    user-select: none;
 }
 
 @media only screen and (max-width: 1400px) {
-  .authForm {
-    width: 30%
-  }
+    .authForm {
+        width: 30%;
+    }
 }
 
 @media only screen and (max-width: 992px) {
-  .authForm {
-    width: 40%
-  }
+    .authForm {
+        width: 40%;
+    }
 }
 
 @media only screen and (max-width: 600px) {
-  .contentWrapper {
-    width: 80%;
-  }
+    .contentWrapper {
+        width: 80%;
+    }
 
-  .authForm {
-    width: 100%;
-  }
+    .authForm {
+        width: 100%;
+    }
 
-  .logo {
-    width: 48%;
-    height: 14%;
-  }
+    .logo {
+        width: 48%;
+        height: 14%;
+    }
 
-  .toAuthorizationLink,
-  .toAuthorizationParagraph {
-    font-size: var(--font-size-16);
-  }
+    .toAuthorizationLink,
+    .toAuthorizationParagraph {
+        font-size: var(--font-size-16);
+    }
 
-  .toAuthorizationWrapper {
-    font-size: var(--font-size-16);
-    margin-top: 2rem;
-  }
+    .toAuthorizationWrapper {
+        font-size: var(--font-size-16);
+        margin-top: 2rem;
+    }
 }

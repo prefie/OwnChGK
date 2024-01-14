@@ -17,7 +17,7 @@ export const teamsRouter = () => {
         authMiddleware,
         query('withoutUser').optional().isBoolean(),
         validationMiddleware,
-        asyncHandler(teamsController.getAll.bind(teamsController))
+        asyncHandler(teamsController.getAll.bind(teamsController)),
     );
 
     router.get(
@@ -25,7 +25,7 @@ export const teamsRouter = () => {
         authMiddleware,
         param('teamId').isUUID(),
         validationMiddleware,
-        asyncHandler(teamsController.getTeam.bind(teamsController))
+        asyncHandler(teamsController.getTeam.bind(teamsController)),
     );
 
     router.get(
@@ -33,7 +33,7 @@ export const teamsRouter = () => {
         authMiddleware,
         param('teamId').isUUID(),
         validationMiddleware,
-        asyncHandler(teamsController.getParticipants.bind(teamsController))
+        asyncHandler(teamsController.getParticipants.bind(teamsController)),
     );
 
     router.patch(
@@ -46,7 +46,7 @@ export const teamsRouter = () => {
         body('participants.*.email').optional().isString(), // TODO: shusharin потом добавить валидацию на мыло
         body('participants.*.name').optional().isString(),
         validationMiddleware,
-        asyncHandler(teamsController.editTeam.bind(teamsController))
+        asyncHandler(teamsController.editTeam.bind(teamsController)),
     );
 
     router.patch(
@@ -54,7 +54,7 @@ export const teamsRouter = () => {
         authMiddleware,
         param('teamId').isUUID(),
         validationMiddleware,
-        asyncHandler(teamsController.editTeamCaptainByCurrentUser.bind(teamsController))
+        asyncHandler(teamsController.editTeamCaptainByCurrentUser.bind(teamsController)),
     );
 
     router.delete(
@@ -62,7 +62,7 @@ export const teamsRouter = () => {
         roleMiddleware(allAdminRoles),
         param('teamId').isUUID(),
         validationMiddleware,
-        asyncHandler(teamsController.deleteTeam.bind(teamsController))
+        asyncHandler(teamsController.deleteTeam.bind(teamsController)),
     );
 
     router.post(
@@ -74,7 +74,7 @@ export const teamsRouter = () => {
         body('participants.*.email').optional().isString(), // TODO: shusharin потом добавить валидацию на мыло
         body('participants.*.name').optional().isString(),
         validationMiddleware,
-        asyncHandler(teamsController.insertTeam.bind(teamsController))
+        asyncHandler(teamsController.insertTeam.bind(teamsController)),
     );
 
     return router;

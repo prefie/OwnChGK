@@ -4,7 +4,7 @@ import { BaseCreature } from './base-creature';
 @Entity()
 export abstract class Person extends BaseCreature {
     @Column({
-        unique: true
+        unique: true,
     })
     email: string;
 
@@ -12,12 +12,12 @@ export abstract class Person extends BaseCreature {
     password: string;
 
     @Column({
-        nullable: true
+        nullable: true,
     })
     name: string;
 
     @Column({
-        nullable: true
+        nullable: true,
     })
     temporary_code: string;
 }

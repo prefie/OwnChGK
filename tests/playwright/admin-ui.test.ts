@@ -1,7 +1,7 @@
-import { ADMIN_URL, LOGIN_USER_SECRET, login } from "../test-helper";
+import { ADMIN_URL, LOGIN_USER_SECRET, login } from '../test-helper';
 
 import { Page, firefox } from 'playwright';
-import { test, expect } from '@playwright/test'
+import { test, expect } from '@playwright/test';
 
 let page: Page;
 
@@ -32,10 +32,10 @@ test('Should_go_to_change_password', async () => {
     const input = page.locator('#email');
     const rememberPasswordLink = page.locator('#remember');
 
-    expect.soft(await input?.getAttribute("placeholder")).toBe("Почта");
+    expect.soft(await input?.getAttribute('placeholder')).toBe('Почта');
     await expect.soft(button).toHaveText('Отправить');
-    expect.soft(await rememberPasswordLink?.getAttribute("href")).toContain("/admin");
-    await expect.soft(rememberPasswordLink).toHaveText("Вспомнил пароль");
+    expect.soft(await rememberPasswordLink?.getAttribute('href')).toContain('/admin');
+    await expect.soft(rememberPasswordLink).toHaveText('Вспомнил пароль');
 });
 
 test('Should_go_to_team_creation_by_admin', async () => {
@@ -53,8 +53,8 @@ test('Should_go_to_team_creation_by_admin', async () => {
 
     const currentUrl = page.url();
     expect.soft(currentUrl).toContain('/team-creation');
-    expect.soft(await teamNameInput?.getAttribute("placeholder")).toBe("Название команды");
-    await expect.soft(saveTeamButton).toHaveText("Создать");
+    expect.soft(await teamNameInput?.getAttribute('placeholder')).toBe('Название команды');
+    await expect.soft(saveTeamButton).toHaveText('Создать');
 });
 
 test('Should_go_to_admin_profile', async () => {
@@ -71,10 +71,10 @@ test('Should_go_to_admin_profile', async () => {
     const saveButton = page.locator('#saveProfile');
 
     await expect.soft(email).toHaveText(LOGIN_USER_SECRET);
-    expect.soft(await oldPassword?.getAttribute("value")).toBe("");
-    expect.soft(await newPassword?.getAttribute("value")).toBe("");
-    expect.soft(await newPasswordRepeat?.getAttribute("value")).toBe("");
-    await expect.soft(saveButton).toHaveText("Сохранить");
+    expect.soft(await oldPassword?.getAttribute('value')).toBe('');
+    expect.soft(await newPassword?.getAttribute('value')).toBe('');
+    expect.soft(await newPasswordRepeat?.getAttribute('value')).toBe('');
+    await expect.soft(saveButton).toHaveText('Сохранить');
 });
 
 test('Should_admin_logout', async () => {
@@ -82,7 +82,7 @@ test('Should_admin_logout', async () => {
     await page.waitForURL('**/start-screen');
 
     const cookie = await page.context().cookies();
-    expect(cookie.find(c => c.name === "authorization")).toBeDefined();
+    expect(cookie.find(c => c.name === 'authorization')).toBeDefined();
 
     const logout = page.locator('img[alt="LogOut"]');
     await logout?.click();
@@ -90,7 +90,7 @@ test('Should_admin_logout', async () => {
     const currentUrl = page.url();
     expect.soft(currentUrl).toContain(ADMIN_URL);
     const cookieAfterLogout = await page.context().cookies();
-    expect.soft(cookieAfterLogout.find(c => c.name === "authorization")).toBeUndefined();
+    expect.soft(cookieAfterLogout.find(c => c.name === 'authorization')).toBeUndefined();
 });
 
 test.afterEach(async () => {

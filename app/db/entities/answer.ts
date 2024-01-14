@@ -8,7 +8,7 @@ export enum AnswerStatus {
     RIGHT = 'right',
     WRONG = 'wrong',
     UNCHECKED = 'unchecked',
-    ON_APPEAL = 'on_appeal'
+    ON_APPEAL = 'on_appeal',
 }
 
 @Entity('answers')
@@ -20,52 +20,39 @@ export class Answer extends BaseCreature {
     text: string;
 
     @Column({
-            default: 0
-        }
-    )
+        default: 0,
+    })
     score: number;
 
     @Column({
         type: 'enum',
         enum: AnswerStatus,
-        default: AnswerStatus.UNCHECKED
+        default: AnswerStatus.UNCHECKED,
     })
     status: AnswerStatus;
 
-    @ManyToOne(
-        () => Team,
-        {
-            nullable: false,
-            onDelete: 'CASCADE',
-            onUpdate: 'CASCADE'
-        }
-    )
+    @ManyToOne(() => Team, {
+        nullable: false,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
     @JoinColumn({
-            name: 'team_id',
-        }
-    )
+        name: 'team_id',
+    })
     team: Team;
 
-    @ManyToOne(
-        () => Question,
-        {
-            nullable: false,
-            onDelete: 'CASCADE',
-            onUpdate: 'CASCADE',
-        }
-    )
+    @ManyToOne(() => Question, {
+        nullable: false,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
     @JoinColumn({
-            name: 'question_id',
-        }
-    )
+        name: 'question_id',
+    })
     question: Question;
 
-    @OneToOne(
-        () => Appeal,
-        appeal => appeal.answer,
-        {
-            cascade: true,
-        }
-    )
+    @OneToOne(() => Appeal, appeal => appeal.answer, {
+        cascade: true,
+    })
     appeal: Appeal;
 }

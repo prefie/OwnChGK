@@ -5,7 +5,7 @@ import { BaseCreature } from './base-creature';
 
 export enum RoundType {
     NORMAL = 'normal',
-    BLITZ = 'blitz'
+    BLITZ = 'blitz',
 }
 
 @Entity('rounds')
@@ -17,38 +17,32 @@ export class Round extends BaseCreature {
     number: number;
 
     @Column({
-        nullable: true
+        nullable: true,
     })
     name: string;
 
     @Column({
-        name: 'questions_time'
+        name: 'questions_time',
     })
     questionTime: number;
 
     @Column({
         type: 'enum',
         enum: RoundType,
-        default: RoundType.NORMAL
+        default: RoundType.NORMAL,
     })
     type: RoundType;
 
-    @OneToMany(
-        () => Question,
-        question => question.round,
-        {
-            cascade: true,
-        }
-    )
+    @OneToMany(() => Question, question => question.round, {
+        cascade: true,
+    })
     questions: Question[];
 
-    @ManyToOne(
-        () => Game,
-        {
-            nullable: false,
-            onDelete: 'CASCADE',
-            onUpdate: 'CASCADE'
-        })
+    @ManyToOne(() => Game, {
+        nullable: false,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
     @JoinColumn({
         name: 'game_id',
     })

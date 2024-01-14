@@ -1,67 +1,81 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import classes from './user-answers.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
-import {Link, useParams} from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Header from '../../components/header/header';
-import {Answer, UserAnswersPageProps} from '../../entities/user-answers/user-answers.interfaces';
+import { Answer, UserAnswersPageProps } from '../../entities/user-answers/user-answers.interfaces';
 import UserAnswer from '../../components/user-answer/user-answer';
 import Scrollbar from '../../components/scrollbar/scrollbar';
-import {getCookie, getUrlForSocket} from '../../commonFunctions';
+import { getCookie, getUrlForSocket } from '../../commonFunctions';
 import Loader from '../../components/loader/loader';
-import {AppState} from '../../entities/app/app.interfaces';
-import {connect} from 'react-redux';
+import { AppState } from '../../entities/app/app.interfaces';
+import { connect } from 'react-redux';
 import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
-import {ServerApi} from "../../server-api/server-api";
-import {AnswerStatus} from "../../server-api/type";
+import { ServerApi } from '../../server-api/server-api';
+import { AnswerStatus } from '../../server-api/type';
 
 let conn: WebSocket;
 let ping: any;
 
 const UserAnswersPage: FC<UserAnswersPageProps> = props => {
-    const {gameId} = useParams<{ gameId: string }>();
+    const { gameId } = useParams<{ gameId: string }>();
     const [gameName, setGameName] = useState<string>();
-    const [answers, setAnswers] = useState<{ [key: string]: Answer[] }>({matrix: [], chgk: []});
+    const [answers, setAnswers] = useState<{ [key: string]: Answer[] }>({ matrix: [], chgk: [] });
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [gamePart, setGamePart] = useState<'chgk' | 'matrix'>('matrix');
     const [isBothPartsInGame, setIsBothPartsInGame] = useState<boolean>();
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
 
     const requester = {
-        getPayload: (obj: any) => JSON.stringify({
-            'cookie': getCookie('authorization'),
-            'gameId': gameId,
-            ...obj,
-        }),
+        getPayload: (obj: any) =>
+            JSON.stringify({
+                cookie: getCookie('authorization'),
+                gameId: gameId,
+                ...obj,
+            }),
 
         startRequests: () => {
-            conn.send(requester.getPayload({ 'action': 'getTeamAnswers' }));
+            conn.send(requester.getPayload({ action: 'getTeamAnswers' }));
 
             ping = setInterval(() => {
-                conn.send(JSON.stringify({ 'action': 'ping' }));
+                conn.send(JSON.stringify({ action: 'ping' }));
             }, 30000);
-        }
+        },
     };
 
     const handler = {
-        handleTeamAnswersMessage: (chgkAnswers: { answer: string; status: AnswerStatus; number: number }[], matrixAnswers: { answer: string; status: AnswerStatus; number: number }[]) => {
+        handleTeamAnswersMessage: (
+            chgkAnswers: { answer: string; status: AnswerStatus; number: number }[],
+            matrixAnswers: { answer: string; status: AnswerStatus; number: number }[],
+        ) => {
             let dictionary: { [key: string]: Answer[] };
             dictionary = {};
             if (matrixAnswers) {
-                dictionary['matrix'] = matrixAnswers.map((ans: { answer: string; status: AnswerStatus; number: number; }) => {
+                dictionary['matrix'] = matrixAnswers.map((ans: { answer: string; status: AnswerStatus; number: number }) => {
                     return {
                         answer: ans.answer,
-                        status: ans.status == AnswerStatus.RIGHT ? 'success' : (ans.status == AnswerStatus.WRONG ? 'error' : 'opposition'),
-                        number: ans.number
+                        status:
+                            ans.status == AnswerStatus.RIGHT
+                                ? 'success'
+                                : ans.status == AnswerStatus.WRONG
+                                  ? 'error'
+                                  : 'opposition',
+                        number: ans.number,
                     };
                 });
             }
 
             if (chgkAnswers) {
-                dictionary['chgk'] = chgkAnswers.map((ans: { answer: string; status: AnswerStatus; number: number; }) => {
+                dictionary['chgk'] = chgkAnswers.map((ans: { answer: string; status: AnswerStatus; number: number }) => {
                     return {
                         answer: ans.answer,
-                        status: ans.status == AnswerStatus.RIGHT ? 'success' : (ans.status == AnswerStatus.WRONG ? 'error' : 'opposition'),
-                        number: ans.number
+                        status:
+                            ans.status == AnswerStatus.RIGHT
+                                ? 'success'
+                                : ans.status == AnswerStatus.WRONG
+                                  ? 'error'
+                                  : 'opposition',
+                        number: ans.number,
                     };
                 });
 
@@ -76,7 +90,7 @@ const UserAnswersPage: FC<UserAnswersPageProps> = props => {
             setAnswers(dictionary);
 
             setIsLoading(false);
-        }
+        },
     };
 
     useEffect(() => {
@@ -99,15 +113,11 @@ const UserAnswersPage: FC<UserAnswersPageProps> = props => {
     }, []);
 
     useEffect(() => {
-        ServerApi.getGame(gameId).then((res) => {
+        ServerApi.getGame(gameId).then(res => {
             if (res.status === 200) {
-                res.json().then(({
-                                     name,
-                                     chgkSettings,
-                                     matrixSettings
-                                 }) => {
+                res.json().then(({ name, chgkSettings, matrixSettings }) => {
                     setGameName(name);
-                    setGamePart(matrixSettings ? "matrix": "chgk");
+                    setGamePart(matrixSettings ? 'matrix' : 'chgk');
                     setIsBothPartsInGame(() => {
                         if (chgkSettings && matrixSettings) {
                             activateIndicator();
@@ -155,7 +165,8 @@ const UserAnswersPage: FC<UserAnswersPageProps> = props => {
     };
 
     const renderAnswers = () => {
-        return answers[gamePart]?.sort((answer1, answer2) => answer1.number > answer2.number ? 1 : -1)
+        return answers[gamePart]
+            ?.sort((answer1, answer2) => (answer1.number > answer2.number ? 1 : -1))
             .map((answer, index) => {
                 return (
                     <UserAnswer
@@ -190,34 +201,27 @@ const UserAnswersPage: FC<UserAnswersPageProps> = props => {
     };
 
     if (!gameName || isLoading) {
-        return <Loader/>;
+        return <Loader />;
     }
 
     return (
         <PageWrapper>
             <Header isAuthorized={true} isAdmin={false}>
-                {
-                    !mediaMatch.matches
-                        ?
-                        <>
-                            <Link to={`/rating/${gameId}`}
-                                  className={`${classes.menuLink} ${classes.ratingLink}`}>Рейтинг</Link>
-                            <Link to={`/game/${gameId}`} className={`${classes.menuLink} ${classes.toGameLink}`}>В
-                                игру</Link>
-                        </>
-                        : null
-                }
+                {!mediaMatch.matches ? (
+                    <>
+                        <Link to={`/rating/${gameId}`} className={`${classes.menuLink} ${classes.ratingLink}`}>
+                            Рейтинг
+                        </Link>
+                        <Link to={`/game/${gameId}`} className={`${classes.menuLink} ${classes.toGameLink}`}>
+                            В игру
+                        </Link>
+                    </>
+                ) : null}
 
-                <div className={classes.gameName}>
-                    {gameName}
-                </div>
+                <div className={classes.gameName}>{gameName}</div>
             </Header>
 
-            {
-                mediaMatch.matches
-                    ? <MobileNavbar isGame={true} isAdmin={false} page='' toGame={true} gameId={gameId}/>
-                    : null
-            }
+            {mediaMatch.matches ? <MobileNavbar isGame={true} isAdmin={false} page="" toGame={true} gameId={gameId} /> : null}
             <div className={classes.contentWrapper}>
                 <div className={classes.teamWrapper}>
                     <div className={classes.team}>Команда</div>
@@ -225,27 +229,26 @@ const UserAnswersPage: FC<UserAnswersPageProps> = props => {
                 </div>
 
                 <div className={classes.answersWrapper}>
-                    {
-                        isBothPartsInGame
-                            ?
-                            <nav className={classes.nav}>
-                                <div id='matrix'
-                                     className={`${classes['nav-item']} ${gamePart === 'matrix' ? classes['is-active'] : ''}`}
-                                     onClick={handleIndicator}>
-                                    Матрица
-                                </div>
-                                <div id='chgk'
-                                     className={`${classes['nav-item']} ${gamePart === 'chgk' ? classes['is-active'] : ''}`}
-                                     onClick={handleIndicator}>
-                                    ЧГК
-                                </div>
-                                <span className={`${classes['nav-indicator']}`} id='indicator'/>
-                            </nav>
-                            : null
-                    }
-                    <Scrollbar>
-                        {renderAnswers()}
-                    </Scrollbar>
+                    {isBothPartsInGame ? (
+                        <nav className={classes.nav}>
+                            <div
+                                id="matrix"
+                                className={`${classes['nav-item']} ${gamePart === 'matrix' ? classes['is-active'] : ''}`}
+                                onClick={handleIndicator}
+                            >
+                                Матрица
+                            </div>
+                            <div
+                                id="chgk"
+                                className={`${classes['nav-item']} ${gamePart === 'chgk' ? classes['is-active'] : ''}`}
+                                onClick={handleIndicator}
+                            >
+                                ЧГК
+                            </div>
+                            <span className={`${classes['nav-indicator']}`} id="indicator" />
+                        </nav>
+                    ) : null}
+                    <Scrollbar>{renderAnswers()}</Scrollbar>
                 </div>
             </div>
         </PageWrapper>
@@ -254,7 +257,7 @@ const UserAnswersPage: FC<UserAnswersPageProps> = props => {
 
 function mapStateToProps(state: AppState) {
     return {
-        userTeam: state.appReducer.user.team
+        userTeam: state.appReducer.user.team,
     };
 }
 

@@ -12,28 +12,23 @@ export class Question extends BaseCreature {
     number: number;
 
     @Column({
-        nullable: true
+        nullable: true,
     })
     text: string;
 
     @Column()
     cost: number;
 
-    @ManyToOne(
-        () => Round,
-        {
-            nullable: false,
-            onDelete: 'CASCADE',
-            onUpdate: 'CASCADE'
-        })
+    @ManyToOne(() => Round, {
+        nullable: false,
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
     @JoinColumn({
         name: 'round_id',
     })
     round: Round;
 
-    @OneToMany(
-        () => Answer,
-        answer => answer.question
-    )
+    @OneToMany(() => Answer, answer => answer.question)
     answers: Answer[];
 }
