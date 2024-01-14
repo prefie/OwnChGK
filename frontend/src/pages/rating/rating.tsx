@@ -23,20 +23,7 @@ const Rating: FC<RatingProps> = props => {
     const [isIntrigue, setIsIntrigue] = useState(false);
     const [isFullGame, setIsFullGame] = useState(false);
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
-    const [gameStatus, setGameStatus] = useState<Status>(Status.Finished);
-
-    useEffect(() => {
-        getAll('/games/').then(res => {
-            if (res.status === 200) {
-                res.json().then(({ games }) => {
-                    setGameStatus(games?.find(({ id }) => id === gameId)?.status);
-                });
-            } else {
-                // TODO: обработать ошибку
-            }
-        });
-    }, []);
-
+    const [statusGame, setStatusGame] = useState<Status>();
     useEffect(() => {
         const resizeEventHandler = () => {
             setMediaMatch(window.matchMedia('(max-width: 600px)'));
@@ -58,14 +45,20 @@ const Rating: FC<RatingProps> = props => {
     useEffect(() => {
         ServerApi.getResultTable(gameId).then(res => {
             if (res.status === 200) {
-                res.json().then(
-                    ({ isIntrigue, roundsCount, questionsCount, totalScoreForAllTeams, matrixSums, teamsDictionary }) => {
-                        setIsIntrigue(isIntrigue);
-                        setGameParams({ toursCount: roundsCount, questionsCount: questionsCount });
-                        setExpandedTours(new Array(roundsCount).fill(false));
-                        if (matrixSums) {
-                            setIsFullGame(true);
-                        }
+                res.json().then(({
+                                     isIntrigue,
+                                     roundsCount,
+                                     questionsCount,
+                                     totalScoreForAllTeams,
+                                     matrixSums,
+                                     teamsDictionary,
+                                 }) => {
+                    setIsIntrigue(isIntrigue);
+                    setGameParams({toursCount: roundsCount, questionsCount: questionsCount});
+                    setExpandedTours(new Array(roundsCount).fill(false));
+                    if (matrixSums) {
+                        setIsFullGame(true);
+                    }
 
                         const result = [];
                         const teams = Object.keys(totalScoreForAllTeams);
@@ -80,6 +73,13 @@ const Rating: FC<RatingProps> = props => {
                         setTeams(result);
                     },
                 );
+            }
+        });
+        ServerApi.endGame(gameId).then(res => {
+            if (res.status === 200) {
+                res.json().then(({ status }) => {
+                    setStatusGame(status);
+                });
             }
         });
     }, []);
@@ -178,7 +178,7 @@ const Rating: FC<RatingProps> = props => {
     return (
         <PageWrapper>
             <Header isAuthorized={true} isAdmin={props.isAdmin}>
-                {!mediaMatch.matches && gameStatus !== Status.Finished ? (
+                {!mediaMatch.matches && statusGame !== Status.Finished ? (
                     <Link to={props.isAdmin ? `/admin/game/${gameId}` : `/game/${gameId}`} className={classes.menuLink}>
                         В игру
                     </Link>
@@ -187,7 +187,7 @@ const Rating: FC<RatingProps> = props => {
                 <div className={classes.pageTitle}>Рейтинг</div>
             </Header>
 
-            {mediaMatch.matches && gameStatus !== Status.Finished ? (
+            {mediaMatch.matches && statusGame !== Status.Finished ? (
                 <MobileNavbar isGame={true} isAdmin={false} page="" toGame={true} gameId={gameId} />
             ) : null}
             <div className={classes.mainWrapper}>

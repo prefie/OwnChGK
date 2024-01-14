@@ -8,6 +8,7 @@ import { ServerApi } from '../../server-api/server-api';
 import { getCookie, getUrlForSocket } from '../../commonFunctions';
 import { createPortal } from 'react-dom';
 import Button from '../button/button.tsx';
+import { useHistory } from 'react-router-dom';
 import { Status } from '../game-item/game-item.tsx';
 
 let conn: WebSocket;
@@ -19,7 +20,7 @@ export enum OperationName {
 
 const Modal: FC<ModalProps> = props => {
     const [minutes, setMinutes] = useState<number>(0);
-
+    const history = useHistory();
     const handleMinutesCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (+event.target.value <= 99) {
             setMinutes(+event.target.value);
@@ -40,23 +41,24 @@ const Modal: FC<ModalProps> = props => {
         } else {
             if (props.type === 'game') {
                 props.deleteGame?.(arr => arr?.filter(el => el.name !== props.itemName));
-				ServerApi.deleteGame(props.itemId as string);
+                ServerApi.deleteGame(props.itemId as string);
             } else {
                 props.deleteTeam?.(arr => arr?.filter(el => el.name !== props.itemName));
-				ServerApi.deleteTeam(props.itemId as string);
+                ServerApi.deleteTeam(props.itemId as string);
             }
         }
     }, [props]);
 
     const handleFinished = useCallback(() => {
         try {
-			ServerApi.endGame(props.itemId as string)
+            ServerApi.endGame(props.itemId as string)
                 .then(
                     () =>
                         props.deleteGame?.(
                             arr => arr?.map(game => (game.id !== props.itemId ? game : { ...game, status: Status.Finished })),
                         ),
                 )
+                .then(() => history.push('/admin/start-screen'))
                 .then(() => handleCloseModal());
         } catch (e) {}
     }, [props]);

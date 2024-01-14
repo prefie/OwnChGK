@@ -444,6 +444,7 @@ const AdminGame: FC<AdminGameProps> = () => {
     };
 
     const openBreakModal = () => {
+        setOperationName(null);
         setIsModalOpen(true);
     };
 

@@ -1,4 +1,5 @@
 import { GamePartSettings } from './type';
+import { Status } from '../components/game-item/game-item.tsx';
 
 type Request = RequestInit & { path: string };
 
@@ -348,7 +349,11 @@ export class ServerApi {
 
     public static async endGame(gameId: string) {
         return this.sendRequest({
-            path: `/games/${gameId}/end`,
+            method: this.Method.PATCH,
+            path: `/games/${gameId}/changeStatus`,
+            body: JSON.stringify({
+                status: Status.Finished,
+            }),
         });
     }
 
