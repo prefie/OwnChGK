@@ -15,18 +15,18 @@ import { wordFormat } from './utils.ts';
 export enum Roles {
     user,
     admin,
-    superAdmin,
+    superAdmin
 }
 
 export enum AccessLevel {
     PUBLIC = 'public',
-    PRIVATE = 'private',
+    PRIVATE = 'private'
 }
 
 export enum Status {
     NotStarted = 'not_started',
     Started = 'started',
-    Finished = 'finished',
+    Finished = 'finished'
 }
 
 interface GameItemProps {
@@ -52,13 +52,15 @@ function GameItem(props: GameItemProps) {
     const [amIParticipate, setAmIParticipate] = useState(props.amIParticipate);
     const [teamsCount, setTeamsCount] = useState(props.teamsCount);
     const gameId = props.id;
-    const linkToGame = props.role === Roles.user ? `/game/${props.id}` : `/admin/start-game/${props.id}`;
+    const linkToGame = props.role === Roles.user
+        ? `/game/${props.id}`
+        : `/admin/start-game/${props.id}`
 
     function handleAddToGame() {
         ServerApi.addCurrentTeamInGame(gameId).then(res => {
             if (res.status === 200) {
                 setAmIParticipate(true);
-                res.json().then(({ teamsCount }) => {
+                res.json().then(({teamsCount}) => {
                     setTeamsCount(teamsCount);
                 });
             } else if (res.status === 403) {
@@ -71,13 +73,13 @@ function GameItem(props: GameItemProps) {
         ServerApi.deleteCurrentTeamFromGame(gameId).then(res => {
             if (res.status === 200) {
                 setAmIParticipate(false);
-                res.json().then(({ teamsCount }) => {
+                res.json().then(({teamsCount}) => {
                     setTeamsCount(teamsCount);
                 });
             } else if (res.status === 403) {
                 // добавить обработку
             }
-        });
+        })
     }
 
     if (isRedirectedToEdit) {

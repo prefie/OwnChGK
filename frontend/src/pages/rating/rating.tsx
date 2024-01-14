@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import classes from './rating.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import { GameParams, RatingProps, TeamResult, Tour } from '../../entities/rating/rating.interfaces';
@@ -14,9 +14,7 @@ import { Status } from '../../components/game-item/game-item.tsx';
 import { ServerApi } from '../../server-api/server-api';
 
 const Rating: FC<RatingProps> = props => {
-    const { gameId } = useParams<{
-        gameId: string;
-    }>();
+    const {gameId} = useParams<{ gameId: string }>();
     const [gameParams, setGameParams] = useState<GameParams>();
     const [teams, setTeams] = useState<TeamResult[]>();
     const [expandedTours, setExpandedTours] = useState<boolean[]>([]);
@@ -24,6 +22,7 @@ const Rating: FC<RatingProps> = props => {
     const [isFullGame, setIsFullGame] = useState(false);
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
     const [statusGame, setStatusGame] = useState<Status>();
+	
     useEffect(() => {
         const resizeEventHandler = () => {
             setMediaMatch(window.matchMedia('(max-width: 600px)'));
@@ -45,37 +44,42 @@ const Rating: FC<RatingProps> = props => {
     useEffect(() => {
         ServerApi.getResultTable(gameId).then(res => {
             if (res.status === 200) {
-                res.json().then(
-                    ({ isIntrigue, roundsCount, questionsCount, totalScoreForAllTeams, matrixSums, teamsDictionary }) => {
-                        setIsIntrigue(isIntrigue);
-                        setGameParams({ toursCount: roundsCount, questionsCount: questionsCount });
-                        setExpandedTours(new Array(roundsCount).fill(false));
-                        if (matrixSums) {
-                            setIsFullGame(true);
-                        }
+                res.json().then(({
+                                     isIntrigue,
+                                     roundsCount,
+                                     questionsCount,
+                                     totalScoreForAllTeams,
+                                     matrixSums,
+                                     teamsDictionary,
+                                 }) => {
+                    setIsIntrigue(isIntrigue);
+                    setGameParams({toursCount: roundsCount, questionsCount: questionsCount});
+                    setExpandedTours(new Array(roundsCount).fill(false));
+                    if (matrixSums) {
+                        setIsFullGame(true);
+                    }
 
-                        const result = [];
-                        const teams = Object.keys(totalScoreForAllTeams);
-                        for (const team of teams) {
-                            result.push({
-                                teamName: team,
-                                teamId: teamsDictionary[team],
-                                matrixSum: matrixSums?.[team],
-                                toursWithResults: totalScoreForAllTeams[team],
-                            });
-                        }
-                        setTeams(result);
-                    },
-                );
-            }
-        });
-        ServerApi.getGame(gameId).then(res => {
-            if (res.status === 200) {
-                res.json().then(({ status }) => {
-                    setStatusGame(status);
+                    const result = [];
+                    const teams = Object.keys(totalScoreForAllTeams);
+                    for (const team of teams) {
+                        result.push({
+                            teamName: team,
+                            teamId: teamsDictionary[team],
+                            matrixSum: matrixSums?.[team],
+                            toursWithResults: totalScoreForAllTeams[team],
+                        });
+                    }
+                    setTeams(result);
                 });
             }
         });
+		ServerApi.getGame(gameId).then(res => {
+			if (res.status === 200) {
+				res.json().then(({ status }) => {
+					setStatusGame(status);
+				});
+			}
+		});
     }, []);
 
     const renderTourHeaders = () => {
@@ -109,7 +113,7 @@ const Rating: FC<RatingProps> = props => {
         teams.sort((a, b) => {
             const firstSum = countSums(a.toursWithResults).reduce((x, y) => x + y);
             const secondSum = countSums(b.toursWithResults).reduce((x, y) => x + y);
-            return firstSum < secondSum ? 1 : firstSum > secondSum ? -1 : a.matrixSum < b.matrixSum ? 1 : -1;
+            return firstSum < secondSum ? 1 : (firstSum > secondSum ? -1 : (a.matrixSum < b.matrixSum ? 1 : -1));
         });
 
         return teams.map((teamResult, i) => {
@@ -148,7 +152,7 @@ const Rating: FC<RatingProps> = props => {
     const downloadResults = async () => {
         ServerApi.getResultTableFormat(gameId).then(res => {
             if (res.status === 200) {
-                res.json().then(({ totalTable }) => {
+                res.json().then(({totalTable}) => {
                     createFileLink(totalTable, `game-${gameId}-result.csv`);
                 });
             }
@@ -158,7 +162,7 @@ const Rating: FC<RatingProps> = props => {
     const downloadTeams = async () => {
         ServerApi.getTeamsParticipantTable(gameId).then(res => {
             if (res.status === 200) {
-                res.json().then(({ participants }) => {
+                res.json().then(({participants}) => {
                     createFileLink(participants, `game-${gameId}-participants.csv`);
                 });
             }
@@ -166,7 +170,7 @@ const Rating: FC<RatingProps> = props => {
     };
 
     if (!teams || !expandedTours || !gameParams) {
-        return <Loader />;
+        return <Loader/>;
     }
 
     return (
@@ -201,29 +205,30 @@ const Rating: FC<RatingProps> = props => {
                 >
                     <div className={classes.contentWrapper}>
                         <div className={classes.buttonsWrapper}>
-                            {props.isAdmin ? (
-                                <button className={classes.button} onClick={turnOnIntrigue}>
-                                    {isIntrigue ? 'Выключить «Интригу»' : 'Включить «Интригу»'}
-                                </button>
-                            ) : null}
+                            {
+                                props.isAdmin
+                                    ? <button className={classes.button}
+                                              onClick={turnOnIntrigue}>{isIntrigue ? 'Выключить «Интригу»' : 'Включить «Интригу»'}</button>
+                                    : null
+                            }
 
                             <div>
-                                <button
-                                    className={`${classes.button} ${classes.downloadResultsButton}`}
-                                    onClick={downloadResults}
-                                >
-                                    Скачать результаты
+                                <button className={`${classes.button} ${classes.downloadResultsButton}`}
+                                        onClick={downloadResults}>Скачать результаты
                                 </button>
-                                {props.isAdmin ? (
-                                    <button className={classes.button} onClick={downloadTeams}>
-                                        Скачать список команд
-                                    </button>
-                                ) : null}
+                                {
+                                    props.isAdmin
+                                        ? <button className={classes.button} onClick={downloadTeams}>Скачать список
+                                            команд</button>
+                                        : null
+                                }
                             </div>
 
-                            {isIntrigue && !props.isAdmin ? (
-                                <p className={classes.intrigueParagraph}>Включен режим «Интрига»</p>
-                            ) : null}
+                            {
+                                isIntrigue && !props.isAdmin
+                                    ? <p className={classes.intrigueParagraph}>Включен режим «Интрига»</p>
+                                    : null
+                            }
                         </div>
 
                         <div className={classes.tableWrapper}>
@@ -233,75 +238,51 @@ const Rating: FC<RatingProps> = props => {
 
                                     [`& .${tableCellClasses.root}`]: {
                                         borderBottom: 'none',
-                                        padding: 0,
+                                        padding: 0
                                     },
 
                                     [`& .${tableCellClasses.head}`]: {
-                                        paddingBottom: '2.5vh',
+                                        paddingBottom: '2.5vh'
                                     },
 
                                     [`& .${tableCellClasses.body}`]: {
-                                        paddingBottom: '1vh',
+                                        paddingBottom: '1vh'
                                     },
-                                }}
-                            >
+                                }}>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell
-                                            sx={headerTableCellStyles}
-                                            align="center"
-                                            variant="head"
-                                            style={{
-                                                fontSize: mediaMatch.matches ? '2vmax' : '1.5vw',
-                                                minWidth: mediaMatch.matches ? '20vw' : '8vw',
-                                                maxWidth: mediaMatch.matches ? '20vw' : '8vw',
-                                            }}
-                                        >
-                                            Место
-                                        </TableCell>
-                                        <TableCell
-                                            sx={headerTableCellStyles}
-                                            align="left"
-                                            variant="head"
-                                            style={{
-                                                fontSize: mediaMatch.matches ? '2vmax' : '1.5vw',
-                                                minWidth: mediaMatch.matches ? '40vw' : '16vw',
-                                                maxWidth: mediaMatch.matches ? '40vw' : '16vw',
-                                            }}
-                                        >
-                                            Команда
-                                        </TableCell>
-                                        {isFullGame ? (
-                                            <TableCell
-                                                sx={headerTableCellStyles}
-                                                align="center"
-                                                variant="head"
-                                                style={{
-                                                    fontSize: mediaMatch.matches ? '2vmax' : '1.5vw',
-                                                    minWidth: mediaMatch.matches ? '20vw' : '8vw',
-                                                    maxWidth: mediaMatch.matches ? '20vw' : '8vw',
-                                                }}
-                                            >
-                                                Матрица
-                                            </TableCell>
-                                        ) : null}
-                                        <TableCell
-                                            sx={headerTableCellStyles}
-                                            align="center"
-                                            variant="head"
-                                            style={{
-                                                fontSize: mediaMatch.matches ? '2vmax' : '1.5vw',
-                                                minWidth: mediaMatch.matches ? '20vw' : '8vw',
-                                                maxWidth: mediaMatch.matches ? '20vw' : '8vw',
-                                            }}
-                                        >
-                                            Сумма
-                                        </TableCell>
+                                        <TableCell sx={headerTableCellStyles} align="center" variant="head"
+                                                   style={{
+                                                       fontSize: mediaMatch.matches ? '2vmax' : '1.5vw',
+                                                       minWidth: mediaMatch.matches ? '20vw' : '8vw',
+                                                       maxWidth: mediaMatch.matches ? '20vw' : '8vw'
+                                                   }}>Место</TableCell>
+                                        <TableCell sx={headerTableCellStyles} align="left" variant="head"
+                                                   style={{
+                                                       fontSize: mediaMatch.matches ? '2vmax' : '1.5vw',
+                                                       minWidth: mediaMatch.matches ? '40vw' : '16vw',
+                                                       maxWidth: mediaMatch.matches ? '40vw' : '16vw'
+                                                   }}>Команда</TableCell>
+                                        {isFullGame ? <TableCell sx={headerTableCellStyles} align="center"
+                                                                 variant="head"
+                                                                 style={{
+                                                                     fontSize: mediaMatch.matches ? '2vmax' : '1.5vw',
+                                                                     minWidth: mediaMatch.matches ? '20vw' : '8vw',
+                                                                     maxWidth: mediaMatch.matches ? '20vw' : '8vw'
+                                                                 }}>Матрица</TableCell> : null}
+                                        <TableCell sx={headerTableCellStyles} align="center" variant="head"
+                                                   style={{
+                                                       fontSize: mediaMatch.matches ? '2vmax' : '1.5vw',
+                                                       minWidth: mediaMatch.matches ? '20vw' : '8vw',
+                                                       maxWidth: mediaMatch.matches ? '20vw' : '8vw'
+                                                   }}>Сумма</TableCell>
                                         {renderTourHeaders()}
                                     </TableRow>
                                 </TableHead>
 
-                                <TableBody>{renderTeams()}</TableBody>
+                                <TableBody>
+                                    {renderTeams()}
+                                </TableBody>
                             </Table>
                         </div>
                     </div>

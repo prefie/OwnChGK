@@ -1,14 +1,14 @@
-import React, { Dispatch, FC, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
+import React, {Dispatch, FC, SetStateAction, useCallback, useEffect, useRef, useState} from 'react';
 import classes from './admin-start-screen.module.scss';
 import Header from '../../components/header/header';
 import NavBar from '../../components/nav-bar/nav-bar';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
-import { AdminStartScreenProps } from '../../entities/admin-start-screen/admin-start-screen.interfaces';
-import { Button, IconButton, OutlinedInput, Skeleton } from '@mui/material';
+import {AdminStartScreenProps} from '../../entities/admin-start-screen/admin-start-screen.interfaces';
+import {Button, IconButton, OutlinedInput, Skeleton} from '@mui/material';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
-import { Scrollbars } from 'rc-scrollbars';
-import { Link, useLocation } from 'react-router-dom';
-import { ServerApi } from '../../server-api/server-api';
+import {Scrollbars} from 'rc-scrollbars';
+import {Link, useLocation} from 'react-router-dom';
+import {ServerApi} from '../../server-api/server-api';
 import Modal, { OperationName } from '../../components/modal/modal';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
@@ -29,12 +29,12 @@ const inputStyles = {
         border: '2px solid var(--foreground-color) !important',
         borderRadius: '8px',
         minHeight: '26px',
-        padding: '0 !important',
+        padding: '0 !important'
     },
     '& .MuiOutlinedInput-input': {
         padding: '0 0 0 1.5vw !important',
         color: 'black',
-    },
+    }
 };
 
 interface Admin {
@@ -51,14 +51,15 @@ interface AdminProps {
 }
 
 const AdminComponent: FC<AdminProps> = props => {
-    const handleDelete = useCallback(() => {
-        ServerApi.deleteAdmin(props.email).then(res => {
-            if (res.status === 200) {
-                props.deleteAdmin?.(admins => admins?.filter(a => a.email !== props.email));
-            } else {
-                // TODO: код не 200, мейби всплывашку, что что-то не так?
-            }
-        });
+    const handleDelete = useCallback(e => {
+        ServerApi.deleteAdmin(props.email)
+            .then(res => {
+                if (res.status === 200) {
+                    props.deleteAdmin?.(admins => admins?.filter(a => a.email !== props.email));
+                } else {
+                    // TODO: код не 200, мейби всплывашку, что что-то не так?
+                }
+            });
     }, [props]);
 
     const handleDeleteClick = (e: React.SyntheticEvent) => {
@@ -67,23 +68,17 @@ const AdminComponent: FC<AdminProps> = props => {
 
     return (
         <div className={props.isSuperAdmin ? classes.superAdminInfoWrapper : classes.adminInfoWrapper}>
-            <OutlinedInput
-                readOnly
-                sx={inputStyles}
-                className={`${classes.adminName} ${classes.adminInput}`}
-                value={props.name}
-            />
-            <OutlinedInput
-                readOnly
-                sx={inputStyles}
-                className={`${classes.adminEmail} ${classes.adminInput}`}
-                value={props.email}
-            />
-            {props.isSuperAdmin ? (
-                <Button className={classes.adminButton} onClick={handleDeleteClick}>
-                    <CloseIcon sx={{ color: 'red', fontSize: '5vmin' }} />
-                </Button>
-            ) : null}
+            <OutlinedInput readOnly sx={inputStyles} className={`${classes.adminName} ${classes.adminInput}`}
+                           value={props.name}/>
+            <OutlinedInput readOnly sx={inputStyles} className={`${classes.adminEmail} ${classes.adminInput}`}
+                           value={props.email}/>
+            {
+                props.isSuperAdmin
+                    ? <Button className={classes.adminButton} onClick={handleDeleteClick}>
+                        <CloseIcon sx={{color: 'red', fontSize: '5vmin'}}/>
+                    </Button>
+                    : null
+            }
         </div>
     );
 };
@@ -99,8 +94,8 @@ export interface Game {
 }
 
 export interface Team {
-    name: string;
-    id: string;
+    name: string,
+    id: string
     captainEmail: string;
     captainId: string;
     participantsCount: number;
@@ -108,9 +103,9 @@ export interface Team {
 }
 
 export interface User {
-    name: string;
-    id?: string;
-    email: string;
+    name: string,
+    id?: string,
+    email: string
 }
 
 const AdminStartScreen: FC<AdminStartScreenProps> = props => {
@@ -137,12 +132,12 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
             border: isEmailInvalid ? '2px solid #FF0000 !important' : '2px solid var(--foreground-color) !important',
             borderRadius: '8px',
             minHeight: '26px',
-            padding: '0 !important',
+            padding: '0 !important'
         },
         '& .MuiOutlinedInput-input': {
             padding: '0 0 0 1.5vw !important',
             color: 'black',
-        },
+        }
     };
 
     useEffect(() => {
@@ -154,12 +149,8 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
     useEffect(() => {
         ServerApi.getAll('teams').then(res => {
             if (res.status === 200) {
-                res.json().then(({ teams }) => {
-                    setTeams(
-                        teams.sort((team1: Team, team2: Team) =>
-                            team1.name.toLowerCase() > team2.name.toLowerCase() ? 1 : -1,
-                        ),
-                    );
+                res.json().then(({teams}) => {
+                    setTeams(teams.sort((team1: Team, team2: Team) => team1.name.toLowerCase() > team2.name.toLowerCase() ? 1 : -1));
                 });
             } else {
                 // TODO: обработать ошибку
@@ -168,12 +159,8 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
 
         ServerApi.getAll('games').then(res => {
             if (res.status === 200) {
-                res.json().then(({ games }) => {
-                    setGames(
-                        games.sort((game1: Game, game2: Game) =>
-                            game1.name.toLowerCase() > game2.name.toLowerCase() ? 1 : -1,
-                        ),
-                    );
+                res.json().then(({games}) => {
+                    setGames(games.sort((game1: Game, game2: Game) => game1.name.toLowerCase() > game2.name.toLowerCase() ? 1 : -1));
                 });
             } else {
                 // TODO: обработать ошибку
@@ -182,12 +169,8 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
 
         ServerApi.getAll('admins').then(res => {
             if (res.status === 200) {
-                res.json().then(({ admins }) => {
-                    setAdmins(
-                        admins.sort((admin1: Admin, admin2: Admin) =>
-                            admin1.email.toLowerCase() > admin2.email.toLowerCase() ? 1 : -1,
-                        ),
-                    );
+                res.json().then(({admins}) => {
+                    setAdmins(admins.sort((admin1: Admin, admin2: Admin) => admin1.email.toLowerCase() > admin2.email.toLowerCase() ? 1 : -1));
                 });
             } else {
                 // TODO: обработать ошибку
@@ -197,17 +180,11 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
 
     const renderTeams = () => {
         if (!teams) {
-            return Array.from(Array(5).keys()).map(i => (
-                <Skeleton
-                    key={`team_skeleton_${i}`}
-                    variant="rectangular"
-                    width="100%"
-                    height="7vh"
-                    sx={{ marginBottom: '2.5vh' }}
-                />
-            ));
+            return Array.from(Array(5).keys()).map(i => <Skeleton key={`team_skeleton_${i}`} variant="rectangular"
+                                                                  width="100%" height="7vh"
+                                                                  sx={{marginBottom: '2.5vh'}}/>);
         }
-        return teams.map(team => (
+        return teams.map((team, index) =>
             <TeamItem
                 id={team.id}
                 name={team.name}
@@ -216,26 +193,19 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                 participants={team.participants}
                 participantsCount={team.participantsCount}
                 openModal={setIsModalVisible}
-                setItemForDeleteName={setItemName}
-                setItemForDeleteId={setItemId}
-                role={Roles.admin}
-            />
-        ));
+                setItemForDeleteName={setDeletedItemName}
+                setItemForDeleteId={setDeletedItemId}
+                role={Roles.admin}/>
+        )
     };
 
     const renderGames = () => {
         if (!games) {
-            return Array.from(Array(5).keys()).map(i => (
-                <Skeleton
-                    key={`game_skeleton_${i}`}
-                    variant="rectangular"
-                    width="100%"
-                    height="7vh"
-                    sx={{ marginBottom: '2.5vh' }}
-                />
-            ));
+            return Array.from(Array(5).keys()).map(i => <Skeleton key={`game_skeleton_${i}`} variant="rectangular"
+                                                                  width="100%" height="7vh"
+                                                                  sx={{marginBottom: '2.5vh'}}/>);
         }
-        return games.map((game, _) => (
+        return games.map((game, _) =>
             <GameItem
                 key={game.id}
                 id={game.id}
@@ -250,52 +220,37 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                 accessLevel={game.accessLevel}
                 amIParticipate={game.amIParticipate}
                 role={Roles.admin}
-            />
-        ));
+            />);
     };
 
     const renderAdmins = () => {
         if (!admins) {
-            return Array.from(Array(5).keys()).map(i => (
-                <div
-                    key={`admin_skeleton_${i}`}
-                    className={props.isSuperAdmin ? classes.superAdminInfoWrapper : classes.adminInfoWrapper}
-                >
-                    <Skeleton
-                        variant="rectangular"
-                        width="38%"
-                        height="7vh"
-                        sx={{ marginBottom: '2vh', marginRight: !props.isSuperAdmin ? '2%' : 0 }}
-                    />
-                    <Skeleton
-                        variant="rectangular"
-                        width="52%"
-                        height="7vh"
-                        sx={{ marginBottom: '2vh', marginRight: !props.isSuperAdmin ? '2%' : 0 }}
-                    />
-                    {props.isSuperAdmin ? (
-                        <Skeleton variant="rectangular" width="7%" height="7vh" sx={{ marginBottom: '2vh' }} />
-                    ) : null}
-                </div>
-            ));
+            return Array.from(Array(5).keys()).map(i =>
+                (
+                    <div key={`admin_skeleton_${i}`}
+                         className={props.isSuperAdmin ? classes.superAdminInfoWrapper : classes.adminInfoWrapper}>
+                        <Skeleton variant="rectangular" width="38%" height="7vh"
+                                  sx={{marginBottom: '2vh', marginRight: !props.isSuperAdmin ? '2%' : 0}}/>
+                        <Skeleton variant="rectangular" width="52%" height="7vh"
+                                  sx={{marginBottom: '2vh', marginRight: !props.isSuperAdmin ? '2%' : 0}}/>
+                        {
+                            props.isSuperAdmin
+                                ? <Skeleton variant="rectangular" width="7%" height="7vh" sx={{marginBottom: '2vh'}}/>
+                                : null
+                        }
+                    </div>
+                ));
         }
         let adminsForRender = [];
         for (let admin of admins) {
-            adminsForRender.push(
-                <AdminComponent
-                    key={admin.email + admin.name}
-                    name={admin.name}
-                    email={admin.email}
-                    deleteAdmin={setAdmins}
-                    isSuperAdmin={props.isSuperAdmin}
-                />,
-            );
+            adminsForRender.push(<AdminComponent key={admin.email + admin.name} name={admin.name} email={admin.email}
+                                                 deleteAdmin={setAdmins} isSuperAdmin={props.isSuperAdmin}/>);
         }
         return adminsForRender;
     };
 
     const handleAddAdminButton = () => {
-        setNewAdmin({ name: '', email: '' });
+        setNewAdmin({name: '', email: ''});
     };
 
     useEffect(() => {
@@ -312,21 +267,19 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
         let newAdminName = document.querySelector('#new-admin-name') as HTMLInputElement;
         let newAdminEmail = document.querySelector('#new-admin-email') as HTMLInputElement;
         if (newAdminEmail.value !== '') {
-            ServerApi.addAdmin(newAdminEmail.value, newAdminName.value).then(res => {
-                if (res.status === 200) {
-                    setAdmins(admins => [
-                        ...(admins ? admins : []),
-                        {
+            ServerApi.addAdmin(newAdminEmail.value, newAdminName.value)
+                .then(res => {
+                    if (res.status === 200) {
+                        setAdmins(admins => [...(admins ? admins : []), {
                             name: newAdminName.value,
-                            email: newAdminEmail.value,
-                        },
-                    ]);
-                    setNewAdmin(null);
-                    setIsEmailInvalid(false);
-                } else {
-                    setIsEmailInvalid(true);
-                }
-            });
+                            email: newAdminEmail.value
+                        }]);
+                        setNewAdmin(null);
+                        setIsEmailInvalid(false);
+                    } else {
+                        setIsEmailInvalid(true);
+                    }
+                })
         } else {
             setIsEmailInvalid(true);
         }
@@ -334,13 +287,14 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
 
     let isDisabledGameButton = false;
     if (games) {
-        isDisabledGameButton = props.role === 'demoadmin' && games.length >= 1;
+        isDisabledGameButton = props.role === "demoadmin" && games.length >= 1;
     }
 
     let isDisabledTeamButton = false;
     if (teams) {
-        isDisabledTeamButton = props.role === 'demoadmin' && teams.length >= 1;
+        isDisabledTeamButton = props.role === "demoadmin" && teams.length >= 1;
     }
+
 
     const renderPage = (page: string) => {
         switch (page) {
@@ -360,16 +314,22 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                 }`}
                             />
                         </div>
-                        {games && !games.length ? (
-                            <div className={classes.sectionListEmpty}>
-                                <img className={classes.emptyImage} src={emptyOwlImage} alt="empty-owl" />
-                                <h3 className={classes.emptyTitle}>Пока нет ни одной игры</h3>
-                            </div>
-                        ) : (
-                            <Scrollbar>
-                                <div className={classes.sectionList}>{renderGames()}</div>
-                            </Scrollbar>
-                        )}
+                        {
+                            games && !games.length
+                                ?
+                                <div className={classes.sectionListEmpty}>
+                                    <img className={classes.emptyImage}
+                                         src={emptyOwlImage}
+                                         alt="empty-owl"/>
+                                    <h3 className={classes.emptyTitle}>Пока нет ни одной игры</h3>
+                                </div>
+                                :
+                                <Scrollbar>
+                                    <div className={classes.sectionList}>
+                                        {renderGames()}
+                                    </div>
+                                </Scrollbar>
+                        }
                     </div>
                 );
             case 'teams':
@@ -378,115 +338,100 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                         <div className={classes.sectionHeader}>
                             <h1 className={classes.title}>Команды</h1>
                             <Link
-                                to={'/admin/team-creation'}
+                                to={"/admin/team-creation"}
                                 className={classes.addButtonWrapper}
-                                style={{ pointerEvents: isDisabledTeamButton ? 'none' : 'auto' }}
+                                style={{pointerEvents: isDisabledTeamButton ? 'none' : 'auto'}}
                             >
                                 <CustomButton
-                                    id={'addTeamButton'}
+                                    id={"addTeamButton"}
                                     disabled={isDisabledTeamButton}
-                                    type={'button'}
-                                    text={'Создать команду'}
+                                    type={"button"}
+                                    text={"Создать команду"}
                                     buttonType={ButtonType.primary}
-                                    startIcon={<AddRounded fontSize={'large'} />}
+                                    startIcon={<AddRounded fontSize={'large'}/>}
                                 />
                             </Link>
                         </div>
-                        {teams && !teams.length ? (
-                            <div className={classes.sectionListEmpty}>
-                                <img className={classes.emptyImage} src={emptyOwlImage} alt="empty-owl" />
-                                <h3 className={classes.emptyTitle}>Пока нет ни одной команды</h3>
-                            </div>
-                        ) : (
-                            <Scrollbar>
-                                <div className={classes.sectionList}>{renderTeams()}</div>
-                            </Scrollbar>
-                        )}
+                        {
+                            teams && !teams.length
+                                ?
+                                <div className={classes.sectionListEmpty}>
+                                    <img className={classes.emptyImage}
+                                         src={emptyOwlImage}
+                                         alt="empty-owl"/>
+                                    <h3 className={classes.emptyTitle}>Пока нет ни одной команды</h3>
+                                </div>
+                                :
+                                <Scrollbar>
+                                    <div className={classes.sectionList}>
+                                        {renderTeams()}
+                                    </div>
+                                </Scrollbar>
+                        }
                     </div>
                 );
             case 'admins':
-                if (props.role === 'demoadmin') {
-                    return <></>;
+                if (props.role === "demoadmin") {
+                    return (<></>);
                 }
                 return (
                     <div className={classes.adminsWrapper}>
                         <div className={props.isSuperAdmin ? classes.box : `${classes.box} ${classes.adminBox}`}>
                             <div
-                                className={props.isSuperAdmin ? classes.superAdminWrapper : classes.adminsWrapperWithScrollbar}
-                            >
-                                <Scrollbars
-                                    ref={scrollbars}
-                                    className={classes.scrollbar}
-                                    autoHide
-                                    autoHideTimeout={500}
-                                    autoHideDuration={200}
-                                    renderThumbVertical={() => (
-                                        <div
-                                            style={{
+                                className={props.isSuperAdmin ? classes.superAdminWrapper : classes.adminsWrapperWithScrollbar}>
+                                <Scrollbars ref={scrollbars} className={classes.scrollbar} autoHide
+                                            autoHideTimeout={500} autoHideDuration={200}
+                                            renderThumbVertical={() => <div style={{
                                                 backgroundColor: 'white',
                                                 borderRadius: '4px',
-                                                cursor: 'pointer',
-                                            }}
-                                        />
-                                    )}
-                                    renderTrackHorizontal={props => <div {...props} style={{ display: 'none' }} />}
-                                    classes={{ view: classes.scrollbarView }}
-                                >
+                                                cursor: 'pointer'
+                                            }}/>}
+                                            renderTrackHorizontal={props => <div {...props} style={{display: 'none'}}/>}
+                                            classes={{view: classes.scrollbarView}}>
+
                                     {renderAdmins()}
 
-                                    {newAdmin !== null ? (
-                                        <div className={classes.superAdminNewAdminInfoWrapper}>
-                                            <OutlinedInput
-                                                id="new-admin-name"
-                                                sx={inputStyles}
-                                                className={`${classes.adminName} ${classes.adminInput} ${classes.newAdmin}`}
-                                                placeholder="Имя"
-                                            />
-                                            <OutlinedInput
-                                                id="new-admin-email"
-                                                type="email"
-                                                sx={emailStyles}
-                                                className={`${classes.adminEmail} ${classes.adminInput} ${classes.newAdmin}`}
-                                                placeholder="Email*"
-                                            />
-                                            <Button
-                                                className={classes.adminButton}
-                                                onClick={handleAddNewAdmin}
-                                                id="addAdminButton"
-                                            >
-                                                <AddIcon sx={{ color: 'green', fontSize: '5vmin' }} />
-                                            </Button>
-                                        </div>
-                                    ) : null}
+                                    {
+                                        newAdmin !== null
+                                            ?
+                                            <div className={classes.superAdminNewAdminInfoWrapper}>
+                                                <OutlinedInput id="new-admin-name" sx={inputStyles}
+                                                               className={`${classes.adminName} ${classes.adminInput} ${classes.newAdmin}`}
+                                                               placeholder="Имя"/>
+                                                <OutlinedInput id="new-admin-email" type="email" sx={emailStyles}
+                                                               className={`${classes.adminEmail} ${classes.adminInput} ${classes.newAdmin}`}
+                                                               placeholder="Email*"/>
+                                                <Button className={classes.adminButton} onClick={handleAddNewAdmin}
+                                                        id="addAdminButton">
+                                                    <AddIcon sx={{color: 'green', fontSize: '5vmin'}}/>
+                                                </Button>
+                                            </div>
+                                            : null
+                                    }
                                 </Scrollbars>
                             </div>
 
-                            {props.isSuperAdmin ? (
-                                <IconButton sx={{ padding: '13px' }} id="addAdmin" onClick={handleAddAdminButton}>
-                                    <AddCircleOutlineOutlinedIcon
-                                        sx={{
-                                            color: 'white',
-                                            fontSize: '9vmin',
-                                        }}
-                                    />
+                            {props.isSuperAdmin
+                                ?
+                                <IconButton sx={{padding: '13px'}} id='addAdmin' onClick={handleAddAdminButton}>
+                                    <AddCircleOutlineOutlinedIcon sx={{
+                                        color: 'white',
+                                        fontSize: '9vmin'
+                                    }}/>
                                 </IconButton>
-                            ) : null}
+                                : null
+                            }
                         </div>
                     </div>
                 );
         }
     };
 
-    return isLoading ? (
-        <Loader />
-    ) : (
+    return isLoading ? <Loader/> : (
         <PageWrapper>
             <Header isAuthorized={true} isAdmin={true}>
-                <NavBar
-                    isAdmin={true}
-                    page={location.state !== undefined ? location.state.page : page}
-                    onLinkChange={setPage}
-                />
+                <NavBar isAdmin={true} page={location.state !== undefined ? location.state.page : page}
+                        onLinkChange={setPage}/>
             </Header>
 
             {isModalVisible ? (
