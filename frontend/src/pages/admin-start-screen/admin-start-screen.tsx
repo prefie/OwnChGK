@@ -28,12 +28,12 @@ const inputStyles = {
         border: '2px solid var(--foreground-color) !important',
         borderRadius: '8px',
         minHeight: '26px',
-        padding: '0 !important',
+        padding: '0 !important'
     },
     '& .MuiOutlinedInput-input': {
         padding: '0 0 0 1.5vw !important',
-        color: 'black',
-    },
+        color: 'black'
+    }
 };
 
 interface Admin {
@@ -136,12 +136,12 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
             border: isEmailInvalid ? '2px solid #FF0000 !important' : '2px solid var(--foreground-color) !important',
             borderRadius: '8px',
             minHeight: '26px',
-            padding: '0 !important',
+            padding: '0 !important'
         },
         '& .MuiOutlinedInput-input': {
             padding: '0 0 0 1.5vw !important',
-            color: 'black',
-        },
+            color: 'black'
+        }
     };
 
     useEffect(() => {
@@ -155,9 +155,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
             if (res.status === 200) {
                 res.json().then(({ teams }) => {
                     setTeams(
-                        teams.sort((team1: Team, team2: Team) =>
-                            team1.name.toLowerCase() > team2.name.toLowerCase() ? 1 : -1,
-                        ),
+                        teams.sort((team1: Team, team2: Team) => (team1.name.toLowerCase() > team2.name.toLowerCase() ? 1 : -1))
                     );
                 });
             } else {
@@ -169,9 +167,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
             if (res.status === 200) {
                 res.json().then(({ games }) => {
                     setGames(
-                        games.sort((game1: Game, game2: Game) =>
-                            game1.name.toLowerCase() > game2.name.toLowerCase() ? 1 : -1,
-                        ),
+                        games.sort((game1: Game, game2: Game) => (game1.name.toLowerCase() > game2.name.toLowerCase() ? 1 : -1))
                     );
                 });
             } else {
@@ -184,8 +180,8 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                 res.json().then(({ admins }) => {
                     setAdmins(
                         admins.sort((admin1: Admin, admin2: Admin) =>
-                            admin1.email.toLowerCase() > admin2.email.toLowerCase() ? 1 : -1,
-                        ),
+                            admin1.email.toLowerCase() > admin2.email.toLowerCase() ? 1 : -1
+                        )
                     );
                 });
             } else {
@@ -287,7 +283,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                     email={admin.email}
                     deleteAdmin={setAdmins}
                     isSuperAdmin={props.isSuperAdmin}
-                />,
+                />
             );
         }
         return adminsForRender;
@@ -317,8 +313,8 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                         ...(admins ? admins : []),
                         {
                             name: newAdminName.value,
-                            email: newAdminEmail.value,
-                        },
+                            email: newAdminEmail.value
+                        }
                     ]);
                     setNewAdmin(null);
                     setIsEmailInvalid(false);
@@ -420,7 +416,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                             style={{
                                                 backgroundColor: 'white',
                                                 borderRadius: '4px',
-                                                cursor: 'pointer',
+                                                cursor: 'pointer'
                                             }}
                                         />
                                     )}
@@ -461,7 +457,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                     <AddCircleOutlineOutlinedIcon
                                         sx={{
                                             color: 'white',
-                                            fontSize: '9vmin',
+                                            fontSize: '9vmin'
                                         }}
                                     />
                                 </IconButton>
