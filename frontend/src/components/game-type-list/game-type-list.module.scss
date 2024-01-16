@@ -1,4 +1,21 @@
 .gameTypesList {
-  display: flex;
-  gap: 4px;
+  border-radius: 8px;
+  border-collapse: collapse;
+  background-color: var(--color-fill-default-default);
+  width: 100%;
+  table-layout: fixed;
+
+  td {
+    border-left:solid var(--color-bg-block) 1px;
+    border-top:solid var(--color-bg-block) 1px;
+  }
+
+  td:first-child{
+    border-left: none;
+  }
+
+  td:last-child{
+    border-right: none;
+  }
 }
+

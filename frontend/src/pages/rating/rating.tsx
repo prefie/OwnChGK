@@ -10,7 +10,8 @@ import { Link, useParams } from 'react-router-dom';
 import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
 import { createFileLink } from '../../fileWorker';
 import Loader from '../../components/loader/loader';
-import {ServerApi} from "../../server-api/server-api";
+import { Status } from '../../components/game-item/game-item.tsx';
+import { ServerApi } from '../../server-api/server-api';
 
 const Rating: FC<RatingProps> = props => {
     const {gameId} = useParams<{ gameId: string }>();
@@ -20,7 +21,8 @@ const Rating: FC<RatingProps> = props => {
     const [isIntrigue, setIsIntrigue] = useState(false);
     const [isFullGame, setIsFullGame] = useState(false);
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
-
+    const [statusGame, setStatusGame] = useState<Status>();
+	
     useEffect(() => {
         const resizeEventHandler = () => {
             setMediaMatch(window.matchMedia('(max-width: 600px)'));
@@ -71,17 +73,28 @@ const Rating: FC<RatingProps> = props => {
                 });
             }
         });
+		ServerApi.getGame(gameId).then(res => {
+			if (res.status === 200) {
+				res.json().then(({ status }) => {
+					setStatusGame(status);
+				});
+			}
+		});
     }, []);
 
     const renderTourHeaders = () => {
         if (!gameParams || !expandedTours) {
             return;
         }
-        return Array.from(Array(gameParams.toursCount).keys()).map(i => <TourHeaderCell tourNumber={i + 1}
-                                                                                        questionsCount={gameParams.questionsCount}
-                                                                                        key={`tourTableCell_${i}`}
-                                                                                        isExpanded={expandedTours[i]}
-                                                                                        setIsExpanded={setExpandedTours}/>);
+        return Array.from(Array(gameParams.toursCount).keys()).map(i => (
+            <TourHeaderCell
+                tourNumber={i + 1}
+                questionsCount={gameParams.questionsCount}
+                key={`tourTableCell_${i}`}
+                isExpanded={expandedTours[i]}
+                setIsExpanded={setExpandedTours}
+            />
+        ));
     };
 
     const countSums = (toursWithResults: Tour[]) => {
@@ -104,14 +117,19 @@ const Rating: FC<RatingProps> = props => {
         });
 
         return teams.map((teamResult, i) => {
-            return <TeamTableRow key={teamResult.teamId} place={isIntrigue && !props.isAdmin ? '-' : i + 1}
-                                 teamName={teamResult.teamName}
-                                 teamId={teamResult.teamId}
-                                 matrixSum={teamResult.matrixSum}
-                                 toursWithResults={teamResult.toursWithResults} isExpanded={expandedTours}
-                                 gameId={gameId}
-                                 isAdmin={props.isAdmin}
-            />
+            return (
+                <TeamTableRow
+                    key={teamResult.teamId}
+                    place={isIntrigue && !props.isAdmin ? '-' : i + 1}
+                    teamName={teamResult.teamName}
+                    teamId={teamResult.teamId}
+                    matrixSum={teamResult.matrixSum}
+                    toursWithResults={teamResult.toursWithResults}
+                    isExpanded={expandedTours}
+                    gameId={gameId}
+                    isAdmin={props.isAdmin}
+                />
+            );
         });
     };
 
@@ -158,33 +176,33 @@ const Rating: FC<RatingProps> = props => {
     return (
         <PageWrapper>
             <Header isAuthorized={true} isAdmin={props.isAdmin}>
-                {
-                    !mediaMatch.matches
-                        ? <Link to={props.isAdmin ? `/admin/game/${gameId}` : `/game/${gameId}`}
-                                className={classes.menuLink}>В игру</Link>
-                        : null
-                }
+                {!mediaMatch.matches && statusGame !== Status.Finished ? (
+                    <Link to={props.isAdmin ? `/admin/game/${gameId}` : `/game/${gameId}`} className={classes.menuLink}>
+                        В игру
+                    </Link>
+                ) : null}
 
                 <div className={classes.pageTitle}>Рейтинг</div>
             </Header>
 
-            {
-                mediaMatch.matches
-                    ? <MobileNavbar isGame={true} isAdmin={false} page="" toGame={true} gameId={gameId}/>
-                    : null
-            }
+            {mediaMatch.matches && statusGame !== Status.Finished ? (
+                <MobileNavbar isGame={true} isAdmin={false} page="" toGame={true} gameId={gameId} />
+            ) : null}
             <div className={classes.mainWrapper}>
-                <Scrollbars autoHide autoHideTimeout={500}
-                            autoHideDuration={200}
-                            renderThumbVertical={() =>
-                                <div style={{backgroundColor: 'white', borderRadius: '4px', cursor: 'pointer'}}/>
-                            }
-                            renderTrackHorizontal={props => <div {...props} style={{display: 'none'}}/>}
-                            classes={{
-                                view: classes.mainScrollbarView,
-                                trackVertical: classes.verticalTrack,
-                                root: classes.scrollbarContainer
-                            }}>
+                <Scrollbars
+                    autoHide
+                    autoHideTimeout={500}
+                    autoHideDuration={200}
+                    renderThumbVertical={() => (
+                        <div style={{ backgroundColor: 'white', borderRadius: '4px', cursor: 'pointer' }} />
+                    )}
+                    renderTrackHorizontal={props => <div {...props} style={{ display: 'none' }} />}
+                    classes={{
+                        view: classes.mainScrollbarView,
+                        trackVertical: classes.verticalTrack,
+                        root: classes.scrollbarContainer,
+                    }}
+                >
                     <div className={classes.contentWrapper}>
                         <div className={classes.buttonsWrapper}>
                             {

@@ -1,18 +1,17 @@
 .Header {
-  width: 100vw;
   height: 10%;
   position: sticky;
   top: 0;
   background-color: var(--color-bg-main);
-  border-bottom: 1px solid var(--color-bg-plates);
+  border-bottom: 1px solid var(--color-strokes-default);
   display: flex;
   z-index: 1;
   user-select: none;
+  padding: 0 24px;
 }
 
 .logo {
-  width: 9vmin;
-  margin-left: 80px;
+  width: 40px;
   user-select: none;
 
   &:hover {
@@ -28,82 +27,27 @@
 }
 
 .MenuLink {
-  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.Menu {
-  height: 8vmin;
-  margin-right: 30px;
-}
-
 .userActionsWrapper {
   display: flex;
-}
+  gap: 8px;
 
-.Profile {
-  width: 4vmin;
-  margin-right: 60px;
-  align-self: center;
-  user-select: none;
-
-  &:hover {
-    cursor: pointer;
-  }
-}
-
-.LogOut {
-  width: 4vmin;
-  margin-right: 80px;
-  align-self: center;
-  user-select: none;
-
-  &:hover {
-    cursor: pointer;
+  * {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }
 
 .childrenWrapper {
-  padding: 0 30px;
+  padding: 0 16px;
   display: flex;
   position: relative;
+  justify-content: center;
   height: 100%;
   flex: 1;
-}
-
-@media only screen and (max-width: 1440px) {
-  .Profile {
-    margin-right: 35px;
-  }
-
-  .childrenWrapper {
-    padding: 0 25px;
-  }
-}
-
-@media only screen and (max-width: 960px) {
-  .Profile {
-    margin-right: 30px;
-  }
-
-  .childrenWrapper {
-    padding: 0 20px;
-  }
-}
-
-@media only screen and (max-width: 600px) {
-  .Header {
-    height: 15vw;
-  }
-
-  .logo {
-    height: 35px;
-    margin-left: 30px;
-  }
-
-  .childrenWrapper {
-    padding: 0 20px;
-  }
 }

@@ -1,110 +1,118 @@
 .teamContent {
-    position: relative;
-    text-decoration: none;
-    color: var(--color-text-icon-primary);
-    width: calc(20% - 48px);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    background-color: #00283d;
-    padding: 16px;
-    border-radius: 8px;
-    margin: 0 1rem 1rem 0;
+  position: relative;
+  text-decoration: none;
+  color: var(--color-text-icon-primary);
+  width: calc(25% - 48px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: var(--color-bg-block);
+  padding: 8px 12px 12px;
+  border-radius: 8px;
 }
 
 .teamActions {
-    display: flex;
-    gap: 8px;
-    position: absolute;
-    bottom: .5rem;
-    right: 1rem;
+  display: flex;
+  gap: 12px;
 }
 
 .teamContent:hover {
-    background-color: rgba(0, 40, 61, 0.8);
-    cursor: pointer;
+  background-color: rgba(0, 40, 61, 0.8);
+  cursor: pointer;
 }
 
 @media (max-width: 1280px) {
-.teamContent {
-        width: calc(33.33% - 48px);
-    }
+  .teamContent {
+    width: calc(33.33% - 48px);
+  }
 }
 
 @media (max-width: 860px) {
-.teamContent {
-        width: calc(50% - 48px);
-    }
+  .teamContent {
+    width: calc(50% - 48px);
+  }
 }
 
 @media (max-width: 600px) {
-.teamContent {
-        width: 100%;
-        margin-right: 0;
-    }
+  .teamContent {
+    width: 100%;
+    margin-right: 0;
+  }
 }
 
 .teamTitle {
-    margin-bottom: .5rem;
-    text-decoration: none;
-    color: inherit;
-    font-size: var(--font-size-24);
-    font-weight: var(--font-weight-medium);
-    line-height: var(--line-height-small);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
+  margin: 0;
+  text-decoration: none;
+  color: inherit;
+  font-size: var(--font-size-18);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-medium);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.teamInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .participantsCount {
-    font-size: var(--font-size-20);
-    line-height: var(--line-height-small);
+  font-size: var(--font-size-14);
+  line-height: var(--line-height-large);
+  font-weight: var(--font-weight-regular);
 }
 
 .teamsParticipants {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .teamsParticipantsEmpty {
-    color: var(--color-text-icon-secondary);
+  color: var(--color-text-icon-secondary);
 }
 
 .teamFooter {
-    display: flex;
-    justify-content: space-between;
+  position: relative;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+
+  button {
+    padding: 0;
+  }
+}
+
+
+.captain {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--font-size-14);
+  line-height: var(--line-height-large);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-icon-primary)
 }
 
 .captainNull {
-    display: flex;
-    gap: 4px;
-    font-size: var(--font-size-20);
-    line-height: var(--line-height-small);
-    color: var(--color-text-icon-secondary);
-    text-decoration: none;
+  color: var(--color-text-icon-secondary);
+  text-decoration: none;
 }
 
 .captainLink {
-    display: flex;
-    gap: 4px;
-    font-size: var(--font-size-20);
-    line-height: var(--line-height-small);
-    color: var(--color-text-icon-link-enabled);
-    text-decoration: none;
-}
-
-.captain {
-    display: flex;
-    gap: 4px;
-    font-size: var(--font-size-20);
-    line-height: var(--line-height-small);
-    color: var(--color-text-icon-primary)
+  color: var(--color-text-icon-link-enabled);
+  text-decoration: none;
 }
 
 .captainName {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
