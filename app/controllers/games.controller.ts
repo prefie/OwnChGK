@@ -180,6 +180,7 @@ export class GamesController {
 
         const chgkFromDB = bigGame.games.find(game => game.type == GameType.CHGK);
         const matrixFromDB = bigGame.games.find(game => game.type == GameType.MATRIX);
+        const quizFromDb = bigGame.games.find(game => game.type == GameType.QUIZ);
 
         const answer = {
             // TODO: shusharin DTO
@@ -187,7 +188,8 @@ export class GamesController {
             id: bigGame.id,
             teams: bigGame.teams.map(value => value.name),
             chgkSettings: chgkFromDB ? new GameDto(chgkFromDB) : null,
-            matrixSettings: matrixFromDB ? new MatrixGameDto(matrixFromDB) : null
+            matrixSettings: matrixFromDB ? new MatrixGameDto(matrixFromDB) : null,
+            quizSettings: quizFromDb ? new QuizGameDto(quizFromDb) : null
         };
 
         await this.bigGameRepository.updateByGameIdAndStatus(gameId, GameStatus.STARTED);
