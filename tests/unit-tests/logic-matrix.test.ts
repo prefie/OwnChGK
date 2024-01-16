@@ -1,9 +1,9 @@
-import { AnswerStatus } from "../app/db/entities/answer";
-import { GameTypeLogic } from "../app/logic/enums/game-type-logic.enum";
-import { Round } from "../app/logic/round";
-import {Team} from "../app/logic/team";
-import {Question} from "../app/logic/question";
-import {Game} from "../app/logic/game";
+import { AnswerStatus } from "../../app/db/entities/answer";
+import { GameTypeLogic } from "../../app/logic/enums/game-type-logic.enum";
+import { Round } from "../../app/logic/round";
+import {Team} from "../../app/logic/team";
+import {Question} from "../../app/logic/question";
+import {Game} from "../../app/logic/game";
 
 let game;
 let team;
