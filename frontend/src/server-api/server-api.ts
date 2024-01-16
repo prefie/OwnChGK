@@ -33,6 +33,7 @@ export class ServerApi {
         teams: string[],
         chgkSettings?: GamePartSettings,
         matrixSettings?: GamePartSettings,
+        quizSettings?: GamePartSettings,
         accessLevel: 'public' | 'private' = 'private'
     ) {
         return this.sendRequest({
@@ -43,6 +44,7 @@ export class ServerApi {
                 teams,
                 chgkSettings,
                 matrixSettings,
+                quizSettings,
                 accessLevel
             })
         });
@@ -174,6 +176,7 @@ export class ServerApi {
         newGameName: string,
         chgkSettings?: GamePartSettings,
         matrixSettings?: GamePartSettings,
+        quizSettings?: GamePartSettings,
         accessLevel: 'public' | 'private' = 'private'
     ) {
         return this.sendRequest({
@@ -183,6 +186,7 @@ export class ServerApi {
                 newGameName,
                 chgkSettings,
                 matrixSettings,
+                quizSettings,
                 accessLevel
             })
         });
