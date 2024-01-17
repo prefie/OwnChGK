@@ -174,7 +174,8 @@ function GiveAnswer(answer: string, teamId: string, gameId: number, ws) {
     const questionNumber = bigGames[gameId].currentGame.currentQuestion[1] - 1;
     bigGames[gameId].currentGame.rounds[roundNumber].questions[questionNumber].giveAnswer(
         bigGames[gameId].currentGame.teams[teamId],
-        answer
+        answer,
+        false
     );
     ws.send(
         JSON.stringify({
@@ -316,7 +317,8 @@ function GiveAnswerMatrix(
 ) {
     bigGames[gameId].matrixGame.rounds[roundNumber - 1].questions[questionNumber - 1].giveAnswer(
         bigGames[gameId].matrixGame.teams[teamId],
-        answer
+        answer,
+        false
     );
     ws.send(
         JSON.stringify({
@@ -415,12 +417,26 @@ function GetTeamAnswers(gameId, teamId, ws) {
             };
         });
     }
+    if (bigGames[gameId].quizGame) {
+        const quiz = bigGames[gameId].quizGame.teams[teamId].getAnswers();
+
+        answer['quiz'] = quiz.map(ans => {
+            return {
+                number: (ans.roundNumber - 1) * bigGames[gameId].quizGame.rounds[0].questionsCount + ans.questionNumber,
+                roundNumber: ans.roundNumber,
+                questionNumber: ans.questionNumber,
+                answer: ans.text,
+                status: ans.status
+            };
+        });
+    }
 
     ws.send(
         JSON.stringify({
             action: 'teamAnswers',
             chgkAnswers: answer['chgk'],
-            matrixAnswers: answer['matrix']
+            matrixAnswers: answer['matrix'],
+            quiz: answer['quiz']
         })
     );
 }
@@ -683,13 +699,21 @@ function GetGameStatus(gameId, ws) {
                 isOnBreak: bigGames[gameId].status == GameStatus.IsOnBreak,
                 breakTime: bigGames[gameId].breakTime,
                 currentQuestionNumber: currentQuestionNumber, //todo: тут вроде надо ток для чгк
-                matrixActive:
+                active:
                     currentGame.type == GameTypeLogic.Matrix && currentGame.currentQuestion
                         ? {
                               round: currentRound,
                               question: currentQuestion
                           }
                         : null,
+                question: {
+                    number: currentQuestionNumber,
+                    text: currentGame.rounds[currentRound - 1]?.questions[currentQuestion - 1]?.text
+                },
+                round: {
+                    number: currentRound,
+                    name: currentGame.rounds[currentRound - 1].name
+                },
                 text: currentGame.rounds[currentRound - 1]?.questions[currentQuestion - 1]?.text,
                 maxTime: currentGame.maxTime,
                 time: GetPreliminaryTime(gameId)

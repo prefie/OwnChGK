@@ -510,7 +510,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                     .map(q => {
                         const answers =
                             q.answers?.map(
-                                a => new AnswerLogic(a.team.id, r.number, q.number, a.text, a.status as AnswerStatus, a.score)
+                                a => new AnswerLogic(a.team.id, r.number, q.number, false, a.text, a.status as AnswerStatus, a.score)
                             ) ?? [];
 
                         for (let ans of answers) {
@@ -539,6 +539,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 return new RoundLogic(
                     r.id,
                     r.number,
+                    r.name,
                     questions.length,
                     r.questionTime,
                     GameTypeLogic.ChGK,

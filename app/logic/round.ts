@@ -4,6 +4,7 @@ import { GameTypeLogic } from './enums/game-type-logic.enum';
 export class Round {
     public readonly id: string;
     public readonly number: number;
+    public readonly name: string;
     public readonly questions: Question[];
     public readonly questionsCount: number;
     public readonly questionTime: number;
@@ -13,6 +14,7 @@ export class Round {
     constructor(
         id: string,
         number: number,
+        name: string,
         questionsCount: number,
         questionTime: number,
         gameType = GameTypeLogic.ChGK,
@@ -24,6 +26,7 @@ export class Round {
         this.questionsCount = questionsCount;
         this.questionTime = questionTime;
         this.number = number;
+        this.name = name;
         this.questions = questions ?? this.createQuestions();
         this.isBlitz = isBlitz;
     }

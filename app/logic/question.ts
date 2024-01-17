@@ -42,8 +42,8 @@ export class Question {
         return Object.values(this._appeals);
     }
 
-    giveAnswer(team: Team, text: string): void {
-        this._answers[team.id] = new Answer(team.id, this.roundNumber, this.number, text);
+    giveAnswer(team: Team, text: string, isBlitz: boolean): void {
+        this._answers[team.id] = new Answer(team.id, this.roundNumber, this.number, isBlitz, text);
         team.addAnswer(this._answers[team.id]);
     }
 
@@ -59,7 +59,7 @@ export class Question {
                 ? answer.reject(isMatrixType ? this.cost : 0)
                 : answer.accept(this.cost);
         } else {
-            answer = new Answer(team.id, this.roundNumber, this.number, '');
+            answer = new Answer(team.id, this.roundNumber, this.number, false, '');
             this._answers[team.id] = answer;
             answer.accept(this.cost);
             team.addAnswer(answer);
