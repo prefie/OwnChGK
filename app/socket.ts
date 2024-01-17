@@ -333,6 +333,34 @@ function GiveAnswerMatrix(
     );
 }
 
+function GiveAnswerQuiz(
+    answer: string,
+    roundNumber: number,
+    questionNumber: number,
+    roundName: string,
+    isBlitz: boolean,
+    teamId: string,
+    gameId: string,
+    ws
+) {
+    bigGames[gameId].quizGame.rounds[roundNumber - 1].questions[questionNumber - 1].giveAnswer(
+        bigGames[gameId].quizGame.teams[teamId],
+        answer,
+        isBlitz
+    );
+    ws.send(
+        JSON.stringify({
+            action: 'statusAnswer',
+            isAccepted: true,
+            roundNumber: roundNumber,
+            questionNumber: questionNumber,
+            roundName: roundName,
+            answer: answer,
+            activeGamePart: GameTypeLogic.Quiz
+        })
+    );
+}
+
 function StartBreakTime(gameId, time) {
     bigGames[gameId].startBreak(time);
     for (const adminWs of gameAdmins[gameId]) {
@@ -608,6 +636,17 @@ function UsersAction(gameId, ws, jsonMessage, gameType, teamId) {
                     jsonMessage.roundNumber,
                     jsonMessage.questionNumber,
                     jsonMessage.roundName,
+                    teamId,
+                    gameId,
+                    ws
+                );
+            } else {
+                GiveAnswerQuiz(
+                    jsonMessage.answer.trim(),
+                    jsonMessage.roundNumber,
+                    jsonMessage.questionNumber,
+                    jsonMessage.roundName,
+                    jsonMessage.isBlitz,
                     teamId,
                     gameId,
                     ws
