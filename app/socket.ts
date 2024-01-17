@@ -1,11 +1,12 @@
-import { getTokenFromString } from './utils/jwt-token';
-import { WebSocket } from 'ws';
-import { BigGameLogic } from './logic/big-game-logic';
-import { allAdminRoles, userRoles } from './utils/roles';
-import { GameTypeLogic } from './logic/enums/game-type-logic.enum';
-import { GameStatus } from './logic/enums/game-status.enum';
-import { AnswerStatus } from './db/entities/answer';
-import { AppealStatus } from './db/entities/appeal';
+import {getTokenFromString} from './utils/jwt-token';
+import {WebSocket} from 'ws';
+import {BigGameLogic} from './logic/big-game-logic';
+import {allAdminRoles, userRoles} from './utils/roles';
+import {GameTypeLogic} from './logic/enums/game-type-logic.enum';
+import {GameStatus} from './logic/enums/game-status.enum';
+import {AnswerStatus} from './db/entities/answer';
+import {AppealStatus} from './db/entities/appeal';
+import {Game} from "./logic/game";
 
 export const bigGames: Record<string, BigGameLogic> = {};
 export const gameAdmins: Record<string, Set<WebSocket>> = {};
@@ -13,6 +14,7 @@ export const gameUsers: Record<string, Set<WebSocket>> = {};
 export const seconds70PerQuestion = 70000;
 export const seconds20PerQuestion = 20000;
 export const extra10Seconds = 10000;
+export const seconds100PerQuestion = 100000;
 
 function GiveAddedTime(gameId: number, gamePart: GameTypeLogic) {
     const game = gamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
@@ -112,17 +114,14 @@ function StartTimer(gameId: number, gamePart: GameTypeLogic) {
     }
 }
 
-function StopTimer(gameId: number, gamePart: GameTypeLogic) {
-    const game = gamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+function StopTimer(gameId: number, gamePart: GameTypeLogic, isBlitz: boolean) {
+    const game = GetGame(gameId, gamePart);
     game.timerStarted = false;
     clearTimeout(game.timer);
     game.timeIsOnPause = false;
-    game.leftTime = game.type == GameTypeLogic.ChGK
-        ? seconds70PerQuestion
-        : seconds20PerQuestion;
-    game.maxTime = game.type == GameTypeLogic.ChGK
-        ? seconds70PerQuestion
-        : seconds20PerQuestion;
+    const time = GetTimeForGame(gamePart, isBlitz);
+    game.leftTime = time;
+    game.maxTime = time;
     for (let user of gameUsers[gameId]) {
         user.send(JSON.stringify({
             'action': 'stop',
@@ -419,7 +418,7 @@ function AdminsAction(gameId, ws, jsonMessage, gameType) {
             PauseTimer(gameId, jsonMessage.gamePart);
             break;
         case 'Stop':
-            StopTimer(gameId, jsonMessage.gamePart);
+            StopTimer(gameId, jsonMessage.gamePart, jsonMessage.isBlitz);
             break;
         case 'AcceptAnswer':
             AcceptAnswer(gameId, jsonMessage.gamePart, jsonMessage.roundNumber, jsonMessage.questionNumber, jsonMessage.answers);
@@ -574,6 +573,28 @@ function GetGameStatus(gameId, ws) {
 
 function GetNotAuthorizeMessage(ws) {
     ws.send(JSON.stringify({ 'action': 'notAuthorized' }));
+}
+
+function GetGame(gameId: number, gamePart: GameTypeLogic): Game {
+    switch (gamePart) {
+        case (GameTypeLogic.ChGK):
+            return bigGames[gameId].chGKGame;
+        case (GameTypeLogic.Matrix):
+            return bigGames[gameId].matrixGame;
+        default:
+            return bigGames[gameId].quizGame;
+    }
+}
+
+function GetTimeForGame(gamePart: GameTypeLogic, isBlitz): number {
+    switch (gamePart) {
+        case (GameTypeLogic.ChGK):
+            return seconds70PerQuestion;
+        case (GameTypeLogic.Matrix):
+            return seconds20PerQuestion;
+        default:
+            return isBlitz ? seconds100PerQuestion : seconds20PerQuestion;
+    }
 }
 
 export function HandlerWebsocket(ws: WebSocket, message: string) {

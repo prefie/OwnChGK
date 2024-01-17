@@ -7,6 +7,7 @@ export class BigGameLogic {
     public readonly name: String;
     public readonly chGKGame: Game;
     public readonly matrixGame: Game;
+    public readonly quizGame: Game;
 
     public currentGame: Game;
     public intrigueEnabled: boolean;
@@ -20,11 +21,13 @@ export class BigGameLogic {
         name: String,
         ChGK: Game = null,
         Matrix: Game = null,
+        Quiz: Game = null,
         intrigueEnabled: boolean = false
     ) {
         this.id = id;
         this.matrixGame = Matrix;
         this.chGKGame = ChGK;
+        this.quizGame = Quiz;
         this.name = name;
         this.currentGame = this.matrixGame ?? this.chGKGame;
         this.intrigueEnabled = intrigueEnabled;
@@ -42,7 +45,7 @@ export class BigGameLogic {
     }
 
     isFullGame() {
-        return this.matrixGame && this.chGKGame;
+        return this.matrixGame && this.chGKGame && this.quizGame;
     }
 
     startBreak(time: number): void {
