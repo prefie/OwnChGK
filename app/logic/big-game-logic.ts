@@ -29,7 +29,7 @@ export class BigGameLogic {
         this.chGKGame = ChGK;
         this.quizGame = Quiz;
         this.name = name;
-        this.currentGame = this.matrixGame ?? this.chGKGame;
+        this.currentGame = this.matrixGame ?? this.chGKGame ?? this.quizGame;
         this.intrigueEnabled = intrigueEnabled;
 
         this._status = GameStatus.Start;
