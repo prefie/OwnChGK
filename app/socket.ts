@@ -355,12 +355,12 @@ function GiveAnswerQuiz(
         ws.send(
             JSON.stringify({
                 action: 'statusAnswer',
-                isAccepted: false
+                isOnPause: true
             })
         );
         return;
     }
-    
+
     bigGames[gameId].quizGame.rounds[roundNumber - 1].questions[questionNumber - 1].giveAnswer(
         bigGames[gameId].quizGame.teams[teamId],
         answer,
