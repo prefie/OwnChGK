@@ -17,7 +17,7 @@ export const extra10Seconds = 10000;
 export const seconds100PerQuestion = 100000;
 
 function GiveAddedTime(gameId: number, gamePart: GameTypeLogic) {
-    const game = gamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    const game = GetGame(gameId, gamePart);
     if (game.timeIsOnPause) {
         game.leftTime += extra10Seconds;
         game.maxTime += extra10Seconds;
@@ -67,7 +67,7 @@ function GiveAddedTime(gameId: number, gamePart: GameTypeLogic) {
 }
 
 function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber: number, activeGamePart: GameTypeLogic) {
-    bigGames[gameId].currentGame = activeGamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    bigGames[gameId].currentGame = GetGame(gameId, activeGamePart);
     bigGames[gameId].currentGame.currentQuestion = [tourNumber, questionNumber];
 
     for (let user of gameUsers[gameId]) {
@@ -81,8 +81,12 @@ function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber
     }
 }
 
-function StartTimer(gameId: number, gamePart: GameTypeLogic) {
-    const game = gamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+function StartTimer(gameId: number, gamePart: GameTypeLogic, isBlitz: boolean) {
+    const game = GetGame(gameId, gamePart);
+    const time = GetTimeForGame(gamePart, isBlitz);
+    game.leftTime = time;
+    game.maxTime = time;
+
     if (!game.timeIsOnPause) {
         game.timerStarted = true;
         game.timer = setTimeout(() => {
@@ -131,7 +135,7 @@ function StopTimer(gameId: number, gamePart: GameTypeLogic, isBlitz: boolean) {
 }
 
 function PauseTimer(gameId: number, gamePart: GameTypeLogic) {
-    const game = gamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    const game = GetGame(gameId, gamePart);
     if (game.timerStarted) {
         game.timerStarted = false;
         game.timeIsOnPause = true;
@@ -159,49 +163,49 @@ function GiveAnswer(answer: string, teamId: string, gameId: number, ws) {
 }
 
 function GiveAppeal(appeal: string, teamId: string, gameId: number, number: number, answer: string, gamePart: GameTypeLogic) {
-    const game = gamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    const game = GetGame(gameId, gamePart);
     const roundNumber = Math.ceil(number / game.rounds[0].questionsCount);
     let questionNumber = number - (roundNumber - 1) * game.rounds[0].questionsCount;
     game.rounds[roundNumber - 1].questions[questionNumber - 1].giveAppeal(teamId, appeal, answer);
 }
 
 function AcceptAnswer(gameId: number, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, answers: string[]) {
-    const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    const game = GetGame(gameId, gameType);
     for (const answer of answers) {
         game.rounds[roundNumber - 1].questions[questionNumber - 1].acceptAnswers(answer);
     }
 }
 
 function ChangeAnswer(gameId: number, gameType: GameTypeLogic, teamId: string, number: number) {
-    const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    const game = GetGame(gameId, gameType);
     const roundNumber = Math.ceil(number / game.rounds[0].questionsCount);
     let questionNumber = number - (roundNumber - 1) * game.rounds[0].questionsCount;
     game.rounds[roundNumber - 1].questions[questionNumber - 1].changeAnswer(game.teams[teamId], roundNumber, questionNumber, gameType == GameTypeLogic.Matrix);
 }
 
 function AcceptAppeal(gameId: number, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, answers: string[]) {
-    const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    const game = GetGame(gameId, gameType);
     for (const answer of answers) {
         game.rounds[roundNumber - 1].questions[questionNumber - 1].acceptAppeal(answer, '');
     }
 }
 
 function RejectAppeal(gameId: number, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, answers: string[]) {
-    const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    const game = GetGame(gameId, gameType);;
     for (const answer of answers) {
         game.rounds[roundNumber - 1].questions[questionNumber - 1].rejectAppeal(answer, '');
     }
 }
 
 function RejectAnswer(gameId: number, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, answers: string[], isMatrixType = false) {
-    const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    const game = GetGame(gameId, gameType);;
     for (const answer of answers) {
         game.rounds[roundNumber - 1].questions[questionNumber - 1].rejectAnswers(answer, isMatrixType);
     }
 }
 
 function GetAllTeamsAnswers(gameId: number, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, ws) {
-    const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    const game = GetGame(gameId, gameType);;
     const answers = game.rounds[roundNumber - 1].questions[questionNumber - 1].answers.filter(ans => ans.text.length > 0);
     const acceptedAnswers = answers
         .filter(ans => ans.status == AnswerStatus.RIGHT)
@@ -221,7 +225,7 @@ function GetAllTeamsAnswers(gameId: number, gameType: GameTypeLogic, roundNumber
 }
 
 function GetAppealsByNumber(gameId: number, gameType: GameTypeLogic, roundNumber: number, questionNumber: number, ws) {
-    const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
+    const game = GetGame(gameId, gameType);
     const appeals = game.rounds[roundNumber - 1].questions[questionNumber - 1].appeals
         .filter(appeal => appeal.status == AppealStatus.UNCHECKED)
         .map(appeal => {
@@ -412,7 +416,7 @@ function AdminsAction(gameId, ws, jsonMessage, gameType) {
             GiveAddedTime(gameId, jsonMessage.gamePart);
             break;
         case 'Start':
-            StartTimer(gameId, jsonMessage.gamePart);
+            StartTimer(gameId, jsonMessage.gamePart, jsonMessage.isBlitz);
             break;
         case 'Pause':
             PauseTimer(gameId, jsonMessage.gamePart);
@@ -586,7 +590,7 @@ function GetGame(gameId: number, gamePart: GameTypeLogic): Game {
     }
 }
 
-function GetTimeForGame(gamePart: GameTypeLogic, isBlitz): number {
+function GetTimeForGame(gamePart: GameTypeLogic, isBlitz: boolean): number {
     switch (gamePart) {
         case (GameTypeLogic.ChGK):
             return seconds70PerQuestion;
