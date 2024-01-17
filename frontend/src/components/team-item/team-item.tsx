@@ -4,7 +4,6 @@ import { PersonAddAltRounded, PersonRounded } from '@mui/icons-material';
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import { Roles } from '../game-item/game-item';
 import { Team } from '../../pages/admin-start-screen/admin-start-screen';
-import classNames from 'classnames';
 import TeamItemFooter from '../team-footer/footer.tsx';
 
 export interface Participant {
