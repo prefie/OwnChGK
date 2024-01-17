@@ -485,12 +485,12 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         }
 
         if (quizFromDB) {
-            quiz = new GameLogic(matrixFromDB.id, bigGame.name, GameTypeLogic.Quiz);
+            quiz = new GameLogic(quizFromDB.id, bigGame.name, GameTypeLogic.Quiz);
             for (const team of bigGame.teams) {
                 quiz.addTeam(new TeamLogic(team.name, team.id));
             }
 
-            const rounds = this.getRoundsLogicFromDb(matrixFromDB.rounds, quiz.teams);
+            const rounds = this.getRoundsLogicFromDb(quizFromDB.rounds, quiz.teams);
             quiz.addRounds(rounds);
         }
 
