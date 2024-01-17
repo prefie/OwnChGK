@@ -8,6 +8,7 @@ export class Round {
     public readonly questionsCount: number;
     public readonly questionTime: number;
     public readonly gameType: GameTypeLogic;
+    public readonly isBlitz: boolean;
 
     constructor(
         id: string,
@@ -16,6 +17,7 @@ export class Round {
         questionTime: number,
         gameType = GameTypeLogic.ChGK,
         questions?: Question[] | undefined,
+        isBlitz = false
     ) {
         this.id = id;
         this.gameType = gameType;
@@ -23,6 +25,7 @@ export class Round {
         this.questionTime = questionTime;
         this.number = number;
         this.questions = questions ?? this.createQuestions();
+        this.isBlitz = isBlitz;
     }
 
     createQuestions(): Question[] {
