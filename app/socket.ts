@@ -712,7 +712,7 @@ function GetGameStatus(gameId, ws) {
                 },
                 round: {
                     number: currentRound,
-                    name: currentGame.rounds[currentRound - 1].name
+                    name: currentGame.rounds[currentRound - 1]?.name || ''
                 },
                 text: currentGame.rounds[currentRound - 1]?.questions[currentQuestion - 1]?.text,
                 maxTime: currentGame.maxTime,
