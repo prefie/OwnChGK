@@ -12,6 +12,8 @@ function getTypeName(type: string) {
             return 'ЧГК';
         case 'matrix':
             return 'Матрица';
+        case 'quiz':
+            return 'Квиз';
         default:
             return '';
     }

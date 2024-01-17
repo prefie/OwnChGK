@@ -131,8 +131,11 @@ function StartTimer(gameId: number, gamePart: GameTypeLogic, isBlitz: boolean) {
 }
 
 function StopTimer(gameId: number, gamePart: GameTypeLogic, isBlitz: boolean) {
+    console.log(gameId, gamePart, isBlitz);
     const game = GetGame(gameId, gamePart);
+    console.log(game);
     game.timerStarted = false;
+    console.log(game.timerStarted);
     clearTimeout(game.timer);
     game.timeIsOnPause = false;
     const time = GetTimeForGame(gamePart, isBlitz);

@@ -3,7 +3,17 @@ export interface GamePartSettings {
     questionsCount: number;
     questions?: Record<number, string[]> | undefined;
     roundNames?: string[];
+    roundTypes?: RoundType[];
 }
+
+export enum RoundType {
+    NORMAL = 'normal',
+    BLITZ = 'blitz'
+}
+
+export const roundTypeToBool = (type: RoundType) => {
+    return type === RoundType.BLITZ;
+};
 
 export enum AnswerStatus {
     RIGHT = 'right',
