@@ -7,7 +7,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import { AdminGameProps, TourProps } from '../../entities/admin-game/admin-game.interfaces';
 import PauseIcon from '@mui/icons-material/Pause';
-import { GamePartSettings } from '../../server-api/type';
+import { GamePartSettings, RoundType } from '../../server-api/type';
 import { getCookie, getUrlForSocket } from '../../commonFunctions';
 import Modal, { OperationName } from '../../components/modal/modal';
 import Loader from '../../components/loader/loader';
@@ -28,14 +28,15 @@ let ping: any;
 const AdminGame: FC<AdminGameProps> = () => {
     const [playOrPause, setPlayOrPause] = useState<'play' | 'pause'>('play');
 
-    const [clickedTourIndex, setClickedTourIndex] = useState<number>(1); // Тур, на который жмякнули
-    const [clickedGamePart, setClickedGamePart] = useState<'matrix' | 'chgk'>(); // Часть игры, на тур которой жмякнули (чтобы перерисовать количество вопросов)
-    const [activeTourIndex, setActiveTour] = useState<number | undefined>(1); // Индекс активного тура активной части игры
-    const [activeGamePart, setActiveGamePart] = useState<'chgk' | 'matrix'>(); // Активная часть игры
+    const [clickedTourIndex, setClickedTourIndex] = useState<number>(); // Тур, на который жмякнули
+    const [clickedGamePart, setClickedGamePart] = useState<'matrix' | 'chgk' | 'quiz'>(); // Часть игры, на тур которой жмякнули (чтобы перерисовать количество вопросов)
+    const [activeTourIndex, setActiveTour] = useState<number | undefined>(); // Индекс активного тура активной части игры
+    const [activeGamePart, setActiveGamePart] = useState<'chgk' | 'matrix' | 'quiz'>(); // Активная часть игры
     const [activeQuestionNumber, setActiveQuestion] = useState<number | undefined>(undefined); // Индекс активного вопроса в активном туре активной части игры
 
     const [chgkSettings, setChgkSettings] = useState<GamePartSettings>(); // Настройки ЧГК
     const [matrixSettings, setMatrixSettings] = useState<GamePartSettings>(); // Настройки матрицы
+    const [quizSettings, setQuizSettings] = useState<GamePartSettings>(); // Настройки квиза
     const [gameName, setGameName] = useState<string>();
     const { gameId } = useParams<{ gameId: string }>();
     const [timer, setTimer] = useState<number>(70000); // Таймер одного вопроса
@@ -55,7 +56,7 @@ const AdminGame: FC<AdminGameProps> = () => {
             JSON.stringify({
                 cookie: getCookie('authorization'),
                 gameId: gameId,
-                ...obj,
+                ...obj
             }),
 
         startRequests: () => {
@@ -69,14 +70,14 @@ const AdminGame: FC<AdminGameProps> = () => {
             }, 30000);
         },
 
-        changeQuestion: (questionNumber: number, roundNumber: number, gamePart: 'chgk' | 'matrix') => {
+        changeQuestion: (questionNumber: number, roundNumber: number, gamePart: 'chgk' | 'matrix' | 'quiz') => {
             conn.send(
                 requester.getPayload({
                     action: 'changeQuestion',
                     questionNumber: questionNumber,
                     tourNumber: roundNumber,
-                    activeGamePart: gamePart,
-                }),
+                    activeGamePart: gamePart
+                })
             );
         },
 
@@ -84,39 +85,41 @@ const AdminGame: FC<AdminGameProps> = () => {
             conn.send(requester.getPayload({ action: 'getQuestionNumber' }));
         },
 
-        startGame: (gamePart: 'chgk' | 'matrix') => {
+        startGame: (gamePart: 'chgk' | 'matrix' | 'quiz', isBlitz: boolean) => {
             conn.send(
                 requester.getPayload({
                     action: 'Start',
                     gamePart: gamePart,
-                }),
+                    isBlitz: isBlitz
+                })
             );
         },
 
-        pauseGame: (gamePart: 'chgk' | 'matrix') => {
+        pauseGame: (gamePart: 'chgk' | 'matrix' | 'quiz') => {
             conn.send(
                 requester.getPayload({
                     action: 'Pause',
-                    gamePart: gamePart,
-                }),
+                    gamePart: gamePart
+                })
             );
         },
 
-        stopGame: (gamePart: 'chgk' | 'matrix') => {
+        stopGame: (gamePart: 'chgk' | 'matrix' | 'quiz', isBlitz: boolean) => {
             conn.send(
                 requester.getPayload({
                     action: 'Stop',
                     gamePart: gamePart,
-                }),
+                    isBlitz: isBlitz
+                })
             );
         },
 
-        addTenSeconds: (gamePart: 'chgk' | 'matrix') => {
+        addTenSeconds: (gamePart: 'chgk' | 'matrix' | 'quiz') => {
             conn.send(
                 requester.getPayload({
                     action: '+10sec',
-                    gamePart: gamePart,
-                }),
+                    gamePart: gamePart
+                })
             );
         },
 
@@ -132,14 +135,15 @@ const AdminGame: FC<AdminGameProps> = () => {
             conn.send(
                 requester.getPayload({
                     action: 'checkBreakTime',
-                    time: time,
-                }),
+                    time: time
+                })
             );
-        },
+        }
     };
 
     const handlers = {
         handleTimeMessage: (time: number, isStarted: boolean) => {
+            console.log(handleTimeMessage);
             setTimer(time);
             if (isStarted) {
                 setPlayOrPause('pause');
@@ -158,7 +162,7 @@ const AdminGame: FC<AdminGameProps> = () => {
                     if (time == 0) {
                         setPlayOrPause('play');
                     }
-
+                    console.log('handleCheckTimeMessage');
                     setTimer(time);
                 }
 
@@ -203,12 +207,13 @@ const AdminGame: FC<AdminGameProps> = () => {
                             }
                             return time - 1 > 0 ? time - 1 : 0;
                         }),
-                    1000,
+                    1000
                 );
             }
         },
 
-        handleChangeQuestionNumber: (round: number, question: number, activeGamePart: 'chgk' | 'matrix') => {
+        handleChangeQuestionNumber: (round: number, question: number, activeGamePart: 'chgk' | 'matrix' | 'quiz') => {
+            console.log('handleChangeQuestionNumber');
             setClickedTourIndex(round);
             setActiveTour(round);
             setClickedGamePart(activeGamePart);
@@ -217,24 +222,26 @@ const AdminGame: FC<AdminGameProps> = () => {
             setIsLoading(false);
         },
 
-        handleQuestionNumberIsUndefinedMessage: (activeGamePart: 'chgk' | 'matrix') => {
+        handleQuestionNumberIsUndefinedMessage: (activeGamePart: 'chgk' | 'matrix' | 'quiz') => {
+            console.log('handleQuestionNumberIsUndefinedMessage');
             setClickedTourIndex(1);
             setActiveTour(1);
             setClickedGamePart(activeGamePart);
             setActiveGamePart(activeGamePart);
             setIsLoading(false);
-        },
+        }
     };
 
     useEffect(() => {
         ServerApi.getGame(gameId).then(res => {
             if (res.status === 200) {
-                res.json().then(({ name, chgkSettings, matrixSettings }) => {
+                res.json().then(({ name, chgkSettings, matrixSettings, quizSettings }) => {
                     setGameName(name);
                     setMatrixSettings(matrixSettings ?? null);
                     setChgkSettings(chgkSettings ?? null);
+                    setQuizSettings(quizSettings ?? null);
                     setIsAppeal(
-                        new Array(chgkSettings ? chgkSettings.roundsCount * chgkSettings.questionsCount : 0).fill(false),
+                        new Array(chgkSettings ? chgkSettings.roundsCount * chgkSettings.questionsCount : 0).fill(false)
                     );
                 });
             }
@@ -306,7 +313,7 @@ const AdminGame: FC<AdminGameProps> = () => {
                         <PlayArrowIcon
                             sx={{
                                 fontSize: 'var(--font-size-32)',
-                                color: 'var(--color-text-icon-secondary)',
+                                color: 'var(--color-text-icon-secondary)'
                             }}
                         />
                     }
@@ -317,6 +324,7 @@ const AdminGame: FC<AdminGameProps> = () => {
     };
 
     const parseTimer = (time: number) => {
+        console.log(time);
         const minutes = Math.floor(time / 1000 / 60)
             .toString()
             .padStart(1, '0');
@@ -326,7 +334,7 @@ const AdminGame: FC<AdminGameProps> = () => {
         return `${minutes}:${sec}`;
     };
 
-    const handleQuestionClick = (event: React.SyntheticEvent, gamePart: 'matrix' | 'chgk') => {
+    const handleQuestionClick = (event: React.SyntheticEvent, gamePart: 'matrix' | 'chgk' | 'quiz') => {
         const activeQuestion = document.querySelector(`.${classes.activeQuestion}`) as HTMLDivElement;
         const clickedQuestion = event.target as HTMLDivElement;
         if (activeQuestion) {
@@ -336,16 +344,35 @@ const AdminGame: FC<AdminGameProps> = () => {
         setActiveQuestion(+clickedQuestion.id);
         setActiveTour(clickedTourIndex || 0);
         setActiveGamePart(gamePart);
-        setTimer(gamePart === 'chgk' ? 70000 : 20000);
-
+        if (activeGamePart !== gamePart || activeTourIndex !== (clickedTourIndex || 0)) {
+            console.log('handleQuestionClick');
+            setTimer(
+                gamePart === 'chgk'
+                    ? 70000
+                    : gamePart === 'quiz' &&
+                        quizSettings &&
+                        quizSettings.roundTypes &&
+                        clickedTourIndex &&
+                        quizSettings.roundTypes[clickedTourIndex - 1] === RoundType.BLITZ
+                      ? 100000
+                      : 20000
+            );
+        }
         requester.changeQuestion(+clickedQuestion.id, clickedTourIndex || 0, gamePart);
 
         handleStopClick(gamePart); // Прошлый вопрос остановится!
     };
 
-    const handlePlayClick = (gamePart: 'chgk' | 'matrix') => {
+    const handlePlayClick = (gamePart: 'chgk' | 'matrix' | 'quiz') => {
         if (playOrPause === 'play') {
-            requester.startGame(gamePart);
+            requester.startGame(
+                gamePart,
+                gamePart === 'quiz' &&
+                    !!quizSettings &&
+                    !!quizSettings.roundTypes &&
+                    !!clickedTourIndex &&
+                    quizSettings.roundTypes[clickedTourIndex - 1] === RoundType.BLITZ
+            );
             setIsStop(false);
             setPlayOrPause('pause');
             clearInterval(interval);
@@ -357,18 +384,37 @@ const AdminGame: FC<AdminGameProps> = () => {
         }
     };
 
-    const handleStopClick = (gamePart: 'matrix' | 'chgk' | undefined) => {
+    const handleStopClick = (gamePart: 'matrix' | 'chgk' | 'quiz' | undefined) => {
         setPlayOrPause('play');
         if (gamePart !== undefined) {
-            requester.stopGame(gamePart);
+            requester.stopGame(
+                gamePart,
+                gamePart === 'quiz' &&
+                    !!quizSettings &&
+                    !!quizSettings.roundTypes &&
+                    !!clickedTourIndex &&
+                    quizSettings.roundTypes[clickedTourIndex - 1] === RoundType.BLITZ
+            );
         }
         setIsStop(true);
         clearInterval(interval);
-        setTimer(gamePart === 'chgk' ? 70000 : 20000);
+        console.log('handleStopClick');
+        setTimer(
+            gamePart === 'chgk'
+                ? 70000
+                : gamePart === 'quiz' &&
+                    quizSettings &&
+                    quizSettings.roundTypes &&
+                    clickedTourIndex &&
+                    quizSettings.roundTypes[clickedTourIndex - 1] === RoundType.BLITZ
+                  ? 100000
+                  : 20000
+        );
     };
 
-    const handleAddedTimeClick = (gamePart: 'chgk' | 'matrix') => {
+    const handleAddedTimeClick = (gamePart: 'chgk' | 'matrix' | 'quiz') => {
         requester.addTenSeconds(gamePart);
+        console.log('handleAddedTimeClick');
         setTimer(t => t + 10000);
     };
 
@@ -387,7 +433,7 @@ const AdminGame: FC<AdminGameProps> = () => {
         }
     }, [gameName, gameId]);
 
-    const renderTours = (toursCount: number, gamePart: 'matrix' | 'chgk', tourNames?: string[]) => {
+    const renderTours = (toursCount: number, gamePart: 'matrix' | 'chgk' | 'quiz', tourNames?: string[]) => {
         if (!activeTourIndex || !clickedTourIndex) {
             return null;
         }
@@ -403,7 +449,7 @@ const AdminGame: FC<AdminGameProps> = () => {
         ));
     };
 
-    const renderQuestions = (questionsCount: number, gamePart: 'matrix' | 'chgk') => {
+    const renderQuestions = (questionsCount: number, gamePart: 'matrix' | 'chgk' | 'quiz') => {
         if (!activeTourIndex || !clickedTourIndex || !questionsCount) {
             return null;
         }
@@ -438,7 +484,7 @@ const AdminGame: FC<AdminGameProps> = () => {
                                         fontSize: 'var(--font-size-20)',
                                         color: 'darkred',
                                         userSelect: 'none',
-                                        pointerEvents: 'none',
+                                        pointerEvents: 'none'
                                     }}
                                 />
                             </div>
@@ -494,18 +540,18 @@ const AdminGame: FC<AdminGameProps> = () => {
                                 playOrPause === 'play' ? (
                                     <PlayArrowIcon
                                         sx={{
-                                            fontSize: 'var(--font-size-20)',
+                                            fontSize: 'var(--font-size-20)'
                                         }}
                                     />
                                 ) : (
                                     <PauseIcon
                                         sx={{
-                                            fontSize: 'var(--font-size-20)',
+                                            fontSize: 'var(--font-size-20)'
                                         }}
                                     />
                                 )
                             }
-                            onClick={() => handlePlayClick(activeGamePart as 'chgk' | 'matrix')}
+                            onClick={() => handlePlayClick(activeGamePart as 'chgk' | 'matrix' | 'quiz')}
                             disabled={isBreak || activeQuestionNumber === undefined}
                         />
 
@@ -515,7 +561,7 @@ const AdminGame: FC<AdminGameProps> = () => {
                             icon={
                                 <StopIcon
                                     sx={{
-                                        fontSize: 'var(--font-size-20)',
+                                        fontSize: 'var(--font-size-20)'
                                     }}
                                 />
                             }
@@ -529,11 +575,11 @@ const AdminGame: FC<AdminGameProps> = () => {
                             icon={
                                 <AddRounded
                                     sx={{
-                                        fontSize: 'var(--font-size-20)',
+                                        fontSize: 'var(--font-size-20)'
                                     }}
                                 />
                             }
-                            onClick={() => handleAddedTimeClick(activeGamePart as 'chgk' | 'matrix')}
+                            onClick={() => handleAddedTimeClick(activeGamePart as 'chgk' | 'matrix' | 'quiz')}
                             disabled={isBreak || activeQuestionNumber === undefined}
                         />
                         <Button
@@ -563,7 +609,7 @@ const AdminGame: FC<AdminGameProps> = () => {
                                     style={{
                                         backgroundColor: 'white',
                                         borderRadius: '4px',
-                                        cursor: 'pointer',
+                                        cursor: 'pointer'
                                     }}
                                 />
                             )}
@@ -571,7 +617,7 @@ const AdminGame: FC<AdminGameProps> = () => {
                             classes={{
                                 view: classes.scrollbarView,
                                 trackVertical: classes.verticalTrack,
-                                root: classes.scrollbarContainer,
+                                root: classes.scrollbarContainer
                             }}
                         >
                             {matrixSettings ? (
@@ -581,7 +627,19 @@ const AdminGame: FC<AdminGameProps> = () => {
                                     <Divider
                                         sx={{
                                             margin: '16px 0',
-                                            borderColor: 'var(--color-strokes-default)',
+                                            borderColor: 'var(--color-strokes-default)'
+                                        }}
+                                    />
+                                </div>
+                            ) : null}
+                            {quizSettings ? (
+                                <div className={classes.gamePartWrapper}>
+                                    <div className={classes.gamePartName}>Квиз</div>
+                                    {renderTours(quizSettings.roundsCount, 'quiz', quizSettings.roundNames)}
+                                    <Divider
+                                        sx={{
+                                            margin: '16px 0',
+                                            borderColor: 'var(--color-strokes-default)'
                                         }}
                                     />
                                 </div>
@@ -605,7 +663,7 @@ const AdminGame: FC<AdminGameProps> = () => {
                                     style={{
                                         backgroundColor: 'white',
                                         borderRadius: '4px',
-                                        cursor: 'pointer',
+                                        cursor: 'pointer'
                                     }}
                                 />
                             )}
@@ -613,12 +671,13 @@ const AdminGame: FC<AdminGameProps> = () => {
                             classes={{
                                 view: classes.scrollbarView,
                                 trackVertical: classes.verticalTrack,
-                                root: classes.scrollbarContainer,
+                                root: classes.scrollbarContainer
                             }}
                         >
                             {clickedGamePart === 'matrix'
                                 ? renderQuestions(matrixSettings?.questionsCount || 0, 'matrix')
                                 : null}
+                            {clickedGamePart === 'quiz' ? renderQuestions(quizSettings?.questionsCount || 0, 'quiz') : null}
                             {clickedGamePart === 'chgk' ? renderQuestions(chgkSettings?.questionsCount || 0, 'chgk') : null}
                         </Scrollbars>
                     </div>
@@ -634,7 +693,7 @@ const AdminGame: FC<AdminGameProps> = () => {
                                     <ExitToApp
                                         style={{
                                             color: 'var(--color-strokes-error)',
-                                            fontSize: 'var(--font-size-24)',
+                                            fontSize: 'var(--font-size-24)'
                                         }}
                                     />
                                 }
