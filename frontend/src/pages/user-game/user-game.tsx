@@ -680,7 +680,7 @@ const UserGame: FC<UserGameProps> = props => {
 
     const chooseColor = (time: number, gamePart: GameType) => {
         const redTime = gamePart === GameType.chgk ? 10 : 5;
-        const yellowTime = gamePart === GameType.chgk ? 33 : 10;
+        const yellowTime = gamePart === GameType.chgk ? 25 : 10;
         switch (true) {
             case time <= redTime: // 10-0, 5-0
                 return 'var(--color-fill-progressBar-red)';
@@ -925,7 +925,7 @@ const UserGame: FC<UserGameProps> = props => {
                                         border: '2px solid var(--color-text-icon-secondary)',
                                         borderRadius: '.5rem'
                                     }}
-                                    value={acceptedAnswersQuiz?.[activeRound.number][j].answer}
+                                    value={answersQuiz?.[activeRound.number][j].answer}
                                     onChange={e => handleAnswer(e, GameType.quiz, j, activeRound.number)}
                                 />
                                 <div className={classes.answerButtonWrapper}>
