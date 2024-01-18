@@ -1,4 +1,5 @@
 import React, {FC, useEffect, useRef, useState} from 'react';
+import { useHistory } from "react-router-dom";
 import classes from './team-creation.module.scss';
 import Header from '../../components/header/header';
 import {FormButton} from '../../components/form-button/form-button';
@@ -8,19 +9,16 @@ import {
     TeamCreatorStateProps
 } from '../../entities/team-creation/team-creation.interfaces';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
-import {Alert, Autocomplete, Button, OutlinedInput, Skeleton, Snackbar, TextField} from '@mui/material';
+import {Alert, Autocomplete, OutlinedInput, Skeleton, Snackbar, TextField} from '@mui/material';
 import {CustomInput} from '../../components/custom-input/custom-input';
 import {Redirect, useLocation} from 'react-router-dom';
-import NavBar from '../../components/nav-bar/nav-bar';
 import PageBackdrop from '../../components/backdrop/backdrop';
 import {Dispatch} from 'redux';
 import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces';
 import {addUserTeam} from '../../redux/actions/app-actions/app-actions';
 import {connect} from 'react-redux';
 import {AppState} from '../../entities/app/app.interfaces';
-import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
 import Loader from '../../components/loader/loader';
-import CloseIcon from '@mui/icons-material/Close';
 import {Scrollbars} from 'rc-scrollbars';
 import {User} from '../admin-start-screen/admin-start-screen';
 import {ServerApi} from "../../server-api/server-api";
@@ -45,6 +43,7 @@ const TeamCreator: FC<TeamCreatorProps> = props => {
     const [isSaveError, setIsSaveError] = useState<boolean>(false);
     const scrollbars = useRef<Scrollbars>(null);
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
+    const history = useHistory();
 
     useEffect(() => {
         const resizeEventHandler = () => {
@@ -382,7 +381,7 @@ const TeamCreator: FC<TeamCreatorProps> = props => {
                                         marginTop: '0rem'
                                     }}/>
                             <button className={classes.button}
-                                                onClick={addMember}
+                                                onClick={() => history.goBack()}
                                                 disabled={members.length === 9}
                                                 type='button'
                             >
