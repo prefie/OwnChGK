@@ -531,7 +531,7 @@ const GameCreator: FC<GameCreatorProps> = props => {
                         isInvalid={submitted && !tempQuizRoundNames?.[index]}
                     />
                     <CustomCheckbox
-                        label={'Блитц-тур'}
+                        label={'Блиц-тур'}
                         checked={tempQuizRoundTypes?.[index] === RoundType.BLITZ || false}
                         onChange={event => setTourQuizBlitz(event as React.ChangeEvent<HTMLInputElement>, index)}
                     />

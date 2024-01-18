@@ -806,7 +806,7 @@ const UserGame: FC<UserGameProps> = props => {
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >
                 <Alert onClose={handleClose} severity={'error'} sx={{ width: '100%' }}>
-                    {timeForAnswer ? 'Дождитесь начата тура' : 'Время на ответ закончилось'}
+                    {timeForAnswer ? 'Дождитесь начала тура' : 'Время на ответ закончилось'}
                 </Alert>
             </Snackbar>
         );
