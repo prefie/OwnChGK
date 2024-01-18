@@ -318,8 +318,7 @@ function GiveAnswerChgk(answer: string, teamId: string, gameId: number, ws) {
             action: 'statusAnswer',
             isAccepted: true,
             answer: answer,
-            activeGamePart: GameTypeLogic.ChGK,
-            isOnPause: bigGames[gameId].currentGame.timeIsOnPause
+            activeGamePart: GameTypeLogic.ChGK
         })
     );
 }
@@ -361,7 +360,7 @@ function GiveAnswerQuiz(
     gameId: string,
     ws
 ) {
-    if (bigGames[gameId].quizGame.timeIsOnPause) {
+    if (bigGames[gameId].quizGame.timeIsOnPause || !bigGames[gameId].quizGame.timerStarted) {
         ws.send(
             JSON.stringify({
                 action: 'statusAnswer',
