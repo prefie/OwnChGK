@@ -15,16 +15,15 @@ import Scrollbar from '../../components/scrollbar/scrollbar';
 import { Input } from '../../components/input/input';
 import readyOwlImage from '../../images/owl-images/ready-owl.svg';
 import breakOwlImage from '../../images/owl-images/break_owl.svg';
-import { GamePartSettings } from '../../server-api/type';
+import { AnswerQuizType, GamePartSettings, RoundType } from '../../server-api/type';
 import { ServerApi } from '../../server-api/server-api';
+import CustomCheckbox from '../../components/custom-checkbox/custom-checkbox';
 
 let progressBarInterval: any;
 let interval: any;
 let checkStart: any;
 let ping: any;
 let conn: WebSocket;
-let matrixSettingsCurrent: GamePartSettings | undefined;
-let quizSettingsCurrent: GamePartSettings | undefined;
 
 export enum GameType {
     chgk = 'chgk',
@@ -33,48 +32,59 @@ export enum GameType {
 }
 
 const UserGame: FC<UserGameProps> = props => {
-    const { gameId } = useParams<{ gameId: string }>();
-    const [answer, setAnswer] = useState<string>('');
+    const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
+    const { gameId } = useParams<{
+        gameId: string;
+    }>();
     const [gameName, setGameName] = useState<string>();
-    const [questionNumber, setQuestionNumber] = useState<number>(1);
+    const [gamePart, setGamePart] = useState<GameType>(); // активная часть игры
+    const [activeRound, setActiveRound] = useState<{
+        number: number;
+        name: string;
+    }>({ number: 0, name: '' });
+    const [activeQuestion, setActiveQuestion] = useState<{
+        number: number;
+        question: string;
+    }>({
+        number: 0,
+        question: ''
+    });
     const [timeForAnswer, setTimeForAnswer] = useState<number>(70);
     const [maxTime, setMaxTime] = useState<number>(70);
     const [flags, setFlags] = useState<{
         isSnackbarOpen: boolean;
         isAnswerAccepted: boolean;
+        isSnackbarQuizOpen: boolean;
     }>({
         isSnackbarOpen: false,
-        isAnswerAccepted: false
+        isAnswerAccepted: false,
+        isSnackbarQuizOpen: false
     });
     const [isBreak, setIsBreak] = useState<boolean>(false);
     const [breakTime, setBreakTime] = useState<number>(0);
     const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
     const [isConnectionError, setIsConnectionError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [gamePart, setGamePart] = useState<GameType>(); // активная часть игры
+
     const [chgkSettings, setChgkSettings] = useState<GamePartSettings>();
-    const [acceptedAnswer, setAcceptedAnswer] = useState<string | undefined>();
-    const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
+    const [answerChgk, setAnswerChgk] = useState<string>('');
+    const [acceptedAnswerChgk, setAcceptedAnswerChgk] = useState<string>('');
 
-    const [matrixAnswers, setMatrixAnswers] = useState<{ [key: number]: string[] } | null>(null); // Заполнить там же, где matrixSettings, вызвав fillMatrixAnswers(tourNames, questionsCount)
-    const [acceptedMatrixAnswers, setAcceptedMatrixAnswers] = useState<{ [key: number]: string[] } | null>(null); // Заполнить там же, где matrixSettings, вызвав fillMatrixAnswers(tourNames, questionsCount)
-    const [activeMatrixRound, setActiveMatrixRound] = useState<{ name: string; index: number }>();
-    const [activeMatrixQuestion, setActiveMatrixQuestion] = useState<number>(1);
-    const [focusedMatrixAnswerInfo, setFocusedMatrixAnswerInfo] = useState<{
-        index: number;
-        roundName: string;
-        roundNumber: number;
-    }>();
+    const [matrixSettings, setMatrixSettings] = useState<GamePartSettings>();
+    const [answersMatrix, setAnswersMatrix] = useState<{
+        [key: number]: string[];
+    } | null>(null); // Заполнить там же, где matrixSettings, вызвав fillMatrixAnswers(tourNames, questionsCount)
+    const [acceptedAnswersMatrix, setAcceptedAnswersMatrix] = useState<{
+        [key: number]: string[];
+    } | null>(null); // Заполнить там же, где matrixSettings, вызвав fillMatrixAnswers(tourNames, questionsCount)
 
-    const [activeQuizRound, setActiveQuizRound] = useState<{ name: string; blitz: boolean; index: number }>();
-    const [acceptedQuizAnswers, setAcceptedQuizAnswers] = useState<{ [key: number]: string[] } | null>(null); // Заполнить там же, где matrixSettings, вызвав fillMatrixAnswers(tourNames, questionsCount)
-    const [quizAnswers, setQuizAnswers] = useState<{ [key: number]: string[] } | null>(null); // Заполнить там же, где matrixSettings, вызвав fillMatrixAnswers(tourNames, questionsCount)
-    const [focusedQuizAnswerInfo, setFocusedQuizAnswerInfo] = useState<{
-        index: number;
-        roundName: string;
-        roundNumber: number;
-    }>();
-    const [currentQuestion, setCurrentQuestion] = useState<string>('');
+    const [quizSettings, setQuizSettings] = useState<GamePartSettings>();
+    const [answersQuiz, setAnswersQuiz] = useState<{
+        [key: number]: AnswerQuizType[];
+    } | null>(null); // Заполнить там же, где matrixSettings, вызвав fillMatrixAnswers(tourNames, questionsCount)
+    const [acceptedAnswersQuiz, setAcceptedAnswersQuiz] = useState<{
+        [key: number]: AnswerQuizType[];
+    } | null>(null); // Заполнить там же, где matrixSettings, вызвав fillMatrixAnswers(tourNames, questionsCount)
 
     const requester = {
         getPayload: (obj: any) =>
@@ -135,6 +145,25 @@ const UserGame: FC<UserGameProps> = props => {
             );
         },
 
+        giveAnswerToQuiz: (
+            answer: string,
+            isBlitz: boolean,
+            roundNumber: number,
+            questionNumber: number,
+            roundName: string
+        ) => {
+            conn.send(
+                requester.getPayload({
+                    action: 'Answer',
+                    answer: answer,
+                    isBlitz: isBlitz,
+                    roundNumber: roundNumber,
+                    questionNumber: questionNumber,
+                    roundName: roundName
+                })
+            );
+        },
+
         getTeamAnswers: () => {
             conn.send(requester.getPayload({ action: 'getTeamAnswers' }));
         },
@@ -160,26 +189,24 @@ const UserGame: FC<UserGameProps> = props => {
             gamePart: GameType,
             isOnBreak: boolean,
             breakTime: number,
-            questionNumber: number,
-            matrixActive: { round: number; question: number },
+            question: {
+                number: number;
+                text: string;
+            },
+            round: {
+                number: number;
+                name: string;
+            },
             maxTime: number,
-            time: number,
-            text: string
+            time: number
         ) => {
             if (isStarted) {
                 setGamePart(gamePart);
                 setIsGameStarted(true);
                 clearInterval(checkStart);
                 clearInterval(interval);
-                setQuestionNumber(questionNumber);
-                setCurrentQuestion(text);
-                if (gamePart === GameType.matrix) {
-                    const matrixRoundName = matrixSettingsCurrent?.roundNames?.[matrixActive.round - 1];
-                    if (matrixRoundName) {
-                        setActiveMatrixRound({ name: matrixRoundName, index: matrixActive.round });
-                    }
-                    setActiveMatrixQuestion(matrixActive.question);
-                }
+                setActiveQuestion({ number: question.number || 1, question: question.text ?? '' });
+                setActiveRound(round);
                 setTimeForAnswer(time / 1000);
                 setMaxTime(maxTime / 1000);
                 if (isOnBreak) {
@@ -198,7 +225,6 @@ const UserGame: FC<UserGameProps> = props => {
                         1000
                     );
                 }
-
                 setIsLoading(false);
                 requester.getQuestionTime();
             } else {
@@ -206,8 +232,19 @@ const UserGame: FC<UserGameProps> = props => {
             }
         },
 
-        handleGetTeamAnswers: (matrixAnswers: { roundNumber: number; questionNumber: number; answer: string }[]) => {
-            setAcceptedMatrixAnswers(prevValue => {
+        handleGetTeamAnswers: (
+            matrixAnswers: {
+                roundNumber: number;
+                questionNumber: number;
+                answer: string;
+            }[],
+            quizAnswers: {
+                roundNumber: number;
+                questionNumber: number;
+                answer: string;
+            }[]
+        ) => {
+            setAcceptedAnswersMatrix(prevValue => {
                 const copy = prevValue ? { ...prevValue } : {};
                 if (!matrixAnswers) {
                     return copy;
@@ -215,6 +252,18 @@ const UserGame: FC<UserGameProps> = props => {
 
                 for (const answer of matrixAnswers) {
                     copy[answer.roundNumber][answer.questionNumber - 1] = answer.answer;
+                }
+                return copy;
+            });
+
+            setAcceptedAnswersQuiz(prevValue => {
+                const copy = prevValue ? { ...prevValue } : {};
+                if (!quizAnswers) {
+                    return copy;
+                }
+
+                for (const answer of quizAnswers) {
+                    copy[answer.roundNumber][answer.questionNumber - 1] = { answer: answer.answer, blitz: false };
                 }
                 return copy;
             });
@@ -279,63 +328,79 @@ const UserGame: FC<UserGameProps> = props => {
             clearInterval(progressBarInterval);
         },
 
-        handleStopMessage: (gamePart: GameType) => {
+        handleStopMessage: (gamePart: GameType, time: number) => {
             clearInterval(progressBarInterval);
-            setTimeForAnswer(gamePart === GameType.chgk ? 70 : 20);
+            setTimeForAnswer(time / 1000);
             let progress = document.querySelector('#progress-bar') as HTMLDivElement;
             if (progress) {
                 progress.style.width = '100%';
-                changeColor(progress, gamePart, gamePart === GameType.chgk ? 70 : 20);
+                changeColor(progress, gamePart, time / 1000);
             }
         },
 
         handleChangeQuestionNumberMessage: (
             gamePart: GameType,
-            number: number,
-            matrixActive: { round: number; question: number },
-            text: string
+            question: {
+                number: number;
+                text: string;
+            },
+            round: {
+                number: number;
+                name: string;
+            },
+            old: {
+                numberRoundOld: number;
+                gamePartOld: string;
+            },
+            isBlitz: boolean
         ) => {
-            clearInterval(progressBarInterval);
-            setAnswer('');
-            let progress = document.querySelector('#progress-bar') as HTMLDivElement;
-            if (progress) {
-                progress.style.width = '100%';
+            if (gamePart === GameType.chgk) {
+                setAnswerChgk('');
+                setAcceptedAnswerChgk('');
             }
-            let answerInput = document.querySelector('#answer') as HTMLInputElement;
-            if (answerInput && gamePart === GameType.chgk) {
-                answerInput.focus();
-            }
-            changeColor(progress, gamePart, gamePart === GameType.chgk ? 70 : 20);
-            setTimeForAnswer(gamePart === GameType.chgk ? 70 : 20);
-            setMaxTime(gamePart === GameType.chgk ? 70 : 20);
-            if (number != questionNumber) {
-                setAcceptedAnswer(undefined);
-            }
-            setQuestionNumber(number);
-            setCurrentQuestion(text);
-            if (gamePart === GameType.matrix) {
-                const matrixRoundName = matrixSettingsCurrent?.roundNames?.[matrixActive.round - 1];
-                if (matrixRoundName) {
-                    setActiveMatrixRound({ name: matrixRoundName, index: matrixActive.round });
-                }
-                setActiveMatrixQuestion(matrixActive.question);
-            }
-            setGamePart(gamePart);
-        },
 
-        handleCurrentQuestionNumberMessage: (
-            gamePart: GameType,
-            questionNumber: number,
-            matrixActive: { round: number; question: number }
-        ) => {
-            setQuestionNumber(questionNumber);
-            if (gamePart === GameType.matrix) {
-                const matrixRoundName = matrixSettingsCurrent?.roundNames?.[matrixActive.round - 1];
-                if (matrixRoundName) {
-                    setActiveMatrixRound({ name: matrixRoundName, index: matrixActive.round });
+            if (old.gamePartOld === GameType.matrix && gamePart !== GameType.matrix && matrixSettings) {
+                const answers: {
+                    [key: number]: string[];
+                } = {};
+                for (let i = 1; i <= (matrixSettings?.roundsCount || 0); i++) {
+                    answers[i] = Array(matrixSettings?.questionsCount).fill('');
                 }
-                setActiveMatrixQuestion(matrixActive.question);
+                fillMatrixAnswers(matrixSettings.roundsCount, matrixSettings.questionsCount);
             }
+
+            if (old.gamePartOld === GameType.quiz && gamePart !== GameType.quiz && quizSettings) {
+                const answers: {
+                    [key: number]: AnswerQuizType[];
+                } = {};
+                for (let i = 1; i <= (matrixSettings?.roundsCount || 0); i++) {
+                    answers[i] = Array(matrixSettings?.questionsCount).fill('');
+                }
+                fillQuizAnswers(quizSettings.roundsCount, quizSettings.questionsCount);
+            }
+
+            if (
+                !(
+                    old.gamePartOld === GameType.quiz &&
+                    gamePart === GameType.quiz &&
+                    old.numberRoundOld === round.number &&
+                    isBlitz
+                )
+            ) {
+                clearInterval(progressBarInterval);
+
+                let progress = document.querySelector('#progress-bar') as HTMLDivElement;
+                if (progress) {
+                    progress.style.width = '100%';
+                }
+                changeColor(progress, gamePart, gamePart === GameType.chgk ? 70 : isBlitz ? 100 : 20);
+                setTimeForAnswer(gamePart === GameType.chgk ? 70 : isBlitz ? 100 : 20);
+                setMaxTime(gamePart === GameType.chgk ? 70 : isBlitz ? 100 : 20);
+            }
+
+            setActiveRound(round);
+            setActiveQuestion({ number: question.number || 1, question: question.text ?? '' });
+
             setGamePart(gamePart);
         },
 
@@ -344,34 +409,63 @@ const UserGame: FC<UserGameProps> = props => {
             newAnswer: string,
             roundNumber: number,
             questionNumber: number,
+            isOnPause: boolean,
             isAccepted: boolean
         ) => {
-            if (gamePart === GameType.chgk) {
-                setAcceptedAnswer(newAnswer);
-            } else {
-                setAcceptedMatrixAnswers(prevValue => {
-                    const copy = { ...prevValue };
-                    copy[roundNumber] = copy[roundNumber].map((answer, i) => (i === questionNumber - 1 ? newAnswer : answer));
-                    return copy;
-                });
+            switch (gamePart) {
+                case GameType.chgk: {
+                    setAcceptedAnswerChgk(newAnswer);
+                    break;
+                }
+                case GameType.matrix: {
+                    setAcceptedAnswersMatrix(prevValue => {
+                        const copy = { ...prevValue };
+                        copy[roundNumber] = copy[roundNumber].map((answer, i) =>
+                            i === questionNumber - 1 ? newAnswer : answer
+                        );
+                        return copy;
+                    });
+                    break;
+                }
+                default: {
+                    if (isOnPause) break;
+                    setAcceptedAnswersQuiz(prevValue => {
+                        const copy = { ...prevValue };
+                        copy[roundNumber] = copy[roundNumber].map((answer, i) =>
+                            i === questionNumber - 1 ? { answer: newAnswer, blitz: false } : answer
+                        );
+                        return copy;
+                    });
+                }
             }
 
-            if (isAccepted) {
-                setFlags({
-                    isAnswerAccepted: true,
-                    isSnackbarOpen: true
-                });
-            } else {
+            if (isOnPause) {
                 setFlags({
                     isAnswerAccepted: false,
-                    isSnackbarOpen: true
+                    isSnackbarOpen: false,
+                    isSnackbarQuizOpen: true
                 });
+            } else {
+                if (isAccepted) {
+                    setFlags({
+                        isAnswerAccepted: true,
+                        isSnackbarOpen: true,
+                        isSnackbarQuizOpen: false
+                    });
+                } else {
+                    setFlags({
+                        isAnswerAccepted: false,
+                        isSnackbarOpen: true,
+                        isSnackbarQuizOpen: false
+                    });
+                }
             }
             setTimeout(
                 () =>
                     setFlags(flags => ({
                         isSnackbarOpen: false,
-                        isAnswerAccepted: flags.isAnswerAccepted
+                        isAnswerAccepted: flags.isAnswerAccepted,
+                        isSnackbarQuizOpen: false
                     })),
                 5000
             );
@@ -419,30 +513,6 @@ const UserGame: FC<UserGameProps> = props => {
     }, []);
 
     useEffect(() => {
-        const enterEventHandler = (e: KeyboardEvent) => {
-            if (e.key === 'Enter') {
-                if (gamePart === GameType.matrix) {
-                    if (focusedMatrixAnswerInfo) {
-                        handleSendMatrixAnswer(
-                            focusedMatrixAnswerInfo.index,
-                            focusedMatrixAnswerInfo.roundName,
-                            focusedMatrixAnswerInfo.roundNumber
-                        );
-                    }
-                } else if (gamePart === GameType.chgk) {
-                    handleSendButtonClick();
-                }
-            }
-        };
-
-        window.addEventListener('keypress', enterEventHandler);
-
-        return () => {
-            window.removeEventListener('keypress', enterEventHandler);
-        };
-    }, [answer, focusedMatrixAnswerInfo, gamePart, matrixAnswers, acceptedMatrixAnswers, acceptedAnswer, flags]);
-
-    useEffect(() => {
         const openWs = () => {
             conn = new WebSocket(getUrlForSocket());
 
@@ -463,11 +533,10 @@ const UserGame: FC<UserGameProps> = props => {
                             jsonMessage.activeGamePart,
                             jsonMessage.isOnBreak,
                             jsonMessage.breakTime,
-                            jsonMessage.currentQuestionNumber,
-                            jsonMessage.matrixActive,
+                            jsonMessage.question,
+                            jsonMessage.round,
                             jsonMessage.maxTime,
-                            jsonMessage.time,
-                            jsonMessage.text
+                            jsonMessage.time
                         );
                         break;
                     case 'time':
@@ -491,21 +560,15 @@ const UserGame: FC<UserGameProps> = props => {
                         handler.handlePauseMessage();
                         break;
                     case 'stop':
-                        handler.handleStopMessage(jsonMessage.activeGamePart);
+                        handler.handleStopMessage(jsonMessage.activeGamePart, jsonMessage.time);
                         break;
                     case 'changeQuestionNumber':
                         handler.handleChangeQuestionNumberMessage(
                             jsonMessage.activeGamePart,
-                            jsonMessage.number,
-                            jsonMessage.matrixActive,
-                            jsonMessage.text
-                        );
-                        break;
-                    case 'currentQuestionNumber':
-                        handler.handleCurrentQuestionNumberMessage(
-                            jsonMessage.activeGamePart,
-                            jsonMessage.number,
-                            jsonMessage.matrixActive
+                            jsonMessage.question,
+                            jsonMessage.round,
+                            jsonMessage.old,
+                            jsonMessage.isBlitz
                         );
                         break;
                     case 'statusAnswer':
@@ -514,6 +577,7 @@ const UserGame: FC<UserGameProps> = props => {
                             jsonMessage.answer,
                             jsonMessage.roundNumber,
                             jsonMessage.questionNumber,
+                            jsonMessage.isOnPause,
                             jsonMessage.isAccepted
                         );
                         break;
@@ -521,7 +585,7 @@ const UserGame: FC<UserGameProps> = props => {
                         handler.handleIsOnBreakMessage(jsonMessage.status, jsonMessage.time);
                         break;
                     case 'teamAnswers':
-                        handler.handleGetTeamAnswers(jsonMessage.matrixAnswers);
+                        handler.handleGetTeamAnswers(jsonMessage.matrixAnswers, jsonMessage.quizAnswers);
                         break;
                     case 'checkBreakTime':
                         handler.handleCheckBreakTimeMessage(jsonMessage.currentTime, jsonMessage.time);
@@ -532,15 +596,27 @@ const UserGame: FC<UserGameProps> = props => {
 
         ServerApi.getGame(gameId).then(res => {
             if (res.status === 200) {
-                res.json().then(({ name, chgkSettings, matrixSettings }) => {
+                res.json().then(({ name, chgkSettings, matrixSettings, quizSettings }) => {
                     setGameName(name);
-                    matrixSettingsCurrent = undefined;
+
                     if (matrixSettings) {
-                        matrixSettingsCurrent = matrixSettings;
+                        setMatrixSettings(matrixSettings);
                         fillMatrixAnswers(matrixSettings.roundsCount, matrixSettings.questionsCount);
+                    } else {
+                        setMatrixSettings(undefined);
                     }
+
+                    if (quizSettings) {
+                        setQuizSettings(quizSettings);
+                        fillQuizAnswers(quizSettings.roundsCount, quizSettings.questionsCount);
+                    } else {
+                        setQuizSettings(undefined);
+                    }
+
                     if (chgkSettings) {
                         setChgkSettings(chgkSettings);
+                    } else {
+                        setChgkSettings(undefined);
                     }
 
                     openWs();
@@ -552,12 +628,25 @@ const UserGame: FC<UserGameProps> = props => {
     }, []);
 
     const fillMatrixAnswers = (roundsCount: number, questionsCount: number) => {
-        const answers: { [key: number]: string[] } = {};
+        const answers: {
+            [key: number]: string[];
+        } = {};
         for (let i = 1; i <= roundsCount; i++) {
             answers[i] = Array(questionsCount).fill('');
         }
-        setMatrixAnswers(answers);
-        setAcceptedMatrixAnswers(answers);
+        setAnswersMatrix(answers);
+        setAcceptedAnswersMatrix(answers);
+    };
+
+    const fillQuizAnswers = (roundsCount: number, questionsCount: number) => {
+        const answers: {
+            [key: number]: AnswerQuizType[];
+        } = {};
+        for (let i = 1; i <= roundsCount; i++) {
+            answers[i] = Array(questionsCount).fill('');
+        }
+        setAnswersQuiz(answers);
+        setAcceptedAnswersQuiz(answers);
     };
 
     const getTeamName = () => {
@@ -591,7 +680,7 @@ const UserGame: FC<UserGameProps> = props => {
 
     const chooseColor = (time: number, gamePart: GameType) => {
         const redTime = gamePart === GameType.chgk ? 10 : 5;
-        const yellowTime = gamePart === GameType.chgk ? 20 : 10;
+        const yellowTime = gamePart === GameType.chgk ? 33 : 10;
         switch (true) {
             case time <= redTime: // 10-0, 5-0
                 return 'var(--color-fill-progressBar-red)';
@@ -612,116 +701,75 @@ const UserGame: FC<UserGameProps> = props => {
 
         setFlags(flags => ({
             isSnackbarOpen: false,
-            isAnswerAccepted: flags.isAnswerAccepted
+            isAnswerAccepted: flags.isAnswerAccepted,
+            isSnackbarQuizOpen: false
         }));
     };
 
-    const handleAnswer = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setAnswer(event.target.value);
-    };
-
-    const handleSendButtonClick = () => {
-        requester.giveAnswerToChgk(answer);
-
-        setTimeout(() => {
-            setFlags(flags => {
-                if (!flags.isSnackbarOpen) {
-                    return {
-                        isSnackbarOpen: true,
-                        isAnswerAccepted: false
-                    };
+    const handleAnswer = (
+        event: React.ChangeEvent<HTMLInputElement>,
+        gamePart: GameType,
+        questionNumber: number,
+        roundNumber: number
+    ) => {
+        switch (gamePart) {
+            case GameType.chgk: {
+                setAnswerChgk(event.target.value);
+                break;
+            }
+            case GameType.matrix: {
+                setAnswersMatrix(prevValue => {
+                    const copy = { ...prevValue };
+                    copy[roundNumber] = copy[roundNumber].map((answer, i) =>
+                        i === questionNumber ? event.target.value : answer
+                    );
+                    return copy;
+                });
+                break;
+            }
+            default: {
+                if (event.target.checked) {
+                    setAnswersQuiz(prevValue => {
+                        const copy = { ...prevValue };
+                        copy[roundNumber] = copy[roundNumber].map((answer, i) =>
+                            i === questionNumber ? { answer: answer.answer, blitz: event.target.checked } : answer
+                        );
+                        return copy;
+                    });
+                } else {
+                    setAnswersQuiz(prevValue => {
+                        const copy = { ...prevValue };
+                        copy[roundNumber] = copy[roundNumber].map((answer, i) =>
+                            i === questionNumber ? { answer: event.target.value, blitz: answer.blitz } : answer
+                        );
+                        return copy;
+                    });
                 }
-
-                return flags;
-            });
-
-            setTimeout(
-                () =>
-                    setFlags(flags => ({
-                        isSnackbarOpen: false,
-                        isAnswerAccepted: flags.isAnswerAccepted
-                    })),
-                5000
-            );
-        }, 1500);
+            }
+        }
     };
 
-    const handleMatrixAnswer = (event: ChangeEvent<HTMLInputElement>, index: number, roundNumber: number) => {
-        setMatrixAnswers(prevValue => {
-            const copy = { ...prevValue };
-            copy[roundNumber] = copy[roundNumber].map((answer, i) => (i === index ? event.target.value : answer));
-            return copy;
-        });
-    };
-
-    const handleQuizAnswer = (event: ChangeEvent<HTMLInputElement>, index: number, roundNumber: number) => {
-        setQuizAnswers(prevValue => {
-            const copy = { ...prevValue };
-            copy[roundNumber] = copy[roundNumber].map((answer, i) => (i === index ? event.target.value : answer));
-            return copy;
-        });
+    const handleSendChgkAnswer = () => {
+        requester.giveAnswerToChgk(answerChgk);
     };
 
     const handleSendMatrixAnswer = (questionNumber: number, roundName: string, roundNumber: number) => {
         requester.giveAnswerToMatrix(
-            matrixAnswers?.[roundNumber]?.[questionNumber - 1] as string,
+            answersMatrix?.[roundNumber]?.[questionNumber - 1] as string,
             roundNumber,
             questionNumber,
             roundName
         );
-
-        setTimeout(() => {
-            setFlags(flags => {
-                if (!flags.isSnackbarOpen) {
-                    return {
-                        isSnackbarOpen: true,
-                        isAnswerAccepted: false
-                    };
-                }
-
-                return flags;
-            });
-
-            setTimeout(
-                () =>
-                    setFlags(flags => ({
-                        isSnackbarOpen: false,
-                        isAnswerAccepted: flags.isAnswerAccepted
-                    })),
-                5000
-            );
-        }, 1500);
     };
 
     const handleSendQuizAnswer = (questionNumber: number, roundName: string, roundNumber: number) => {
-        requester.giveAnswerToMatrix(
-            matrixAnswers?.[roundNumber]?.[questionNumber - 1] as string,
+        requester.giveAnswerToQuiz(
+            answersQuiz?.[roundNumber]?.[questionNumber - 1].answer as string,
+            answersQuiz?.[roundNumber]?.[questionNumber - 1].blitz as boolean,
             roundNumber,
             questionNumber,
             roundName
         );
-
-        setTimeout(() => {
-            setFlags(flags => {
-                if (!flags.isSnackbarOpen) {
-                    return {
-                        isSnackbarOpen: true,
-                        isAnswerAccepted: false
-                    };
-                }
-
-                return flags;
-            });
-
-            setTimeout(
-                () =>
-                    setFlags(flags => ({
-                        isSnackbarOpen: false,
-                        isAnswerAccepted: flags.isAnswerAccepted
-                    })),
-                5000
-            );
-        }, 1500);
     };
 
     const getShortenedAnswer = (answer: string) => {
@@ -748,6 +796,22 @@ const UserGame: FC<UserGameProps> = props => {
         );
     };
 
+    const renderAnswerSnackbarQuiz = () => {
+        return (
+            <Snackbar
+                open={flags.isSnackbarQuizOpen}
+                autoHideDuration={5000}
+                onClose={handleClose}
+                sx={{ marginTop: '8vh' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleClose} severity={'error'} sx={{ width: '100%' }}>
+                    {timeForAnswer ? 'Дождитесь начата тура' : 'Время на ответ закончилось'}
+                </Alert>
+            </Snackbar>
+        );
+    };
+
     const renderErrorSnackbar = () => {
         return (
             <Snackbar
@@ -764,19 +828,19 @@ const UserGame: FC<UserGameProps> = props => {
     };
 
     const renderMatrix = () => {
-        return matrixSettingsCurrent?.roundNames?.map((tourName, i) => {
+        return matrixSettings?.roundNames?.map((tourName, i) => {
             return (
                 <div className={classes.tourQuestionsWrapper} key={`${tourName}_${i}`}>
                     <div className={classes.tourName}>{tourName}</div>
 
-                    {Array.from(Array(matrixSettingsCurrent?.questionsCount).keys()).map(j => {
+                    {Array.from(Array(matrixSettings?.questionsCount).keys()).map(j => {
                         return (
                             <div
                                 key={`matrix_question_${j}`}
                                 style={{
                                     marginBottom:
-                                        j === (matrixSettingsCurrent?.questionsCount as number) - 1 &&
-                                        i !== (matrixSettingsCurrent?.roundNames?.length || 0) - 1
+                                        j === (matrixSettings?.questionsCount as number) - 1 &&
+                                        i !== (matrixSettings?.roundNames?.length || 0) - 1
                                             ? mediaMatch.matches
                                                 ? '2rem'
                                                 : '2.5rem'
@@ -785,11 +849,11 @@ const UserGame: FC<UserGameProps> = props => {
                             >
                                 <div className={classes.matrixAnswerNumberWrapper}>
                                     <p className={classes.matrixAnswerNumber}>Вопрос за {j + 1}0</p>
-                                    {acceptedMatrixAnswers?.[i + 1][j] ? (
+                                    {acceptedAnswersMatrix?.[i + 1][j] ? (
                                         <small className={classes.accepted}>
                                             {'Ответ: '}
                                             <span className={classes.acceptedAnswer}>
-                                                {getShortenedAnswer(acceptedMatrixAnswers?.[i + 1][j] as string)}
+                                                {getShortenedAnswer(acceptedAnswersMatrix?.[i + 1][j] as string)}
                                             </span>
                                         </small>
                                     ) : null}
@@ -806,15 +870,8 @@ const UserGame: FC<UserGameProps> = props => {
                                             border: '2px solid var(--color-text-icon-secondary)',
                                             borderRadius: '.5rem'
                                         }}
-                                        value={matrixAnswers?.[i + 1][j]}
-                                        onFocus={() =>
-                                            setFocusedMatrixAnswerInfo({
-                                                index: j + 1,
-                                                roundName: tourName,
-                                                roundNumber: i + 1
-                                            })
-                                        }
-                                        onChange={event => handleMatrixAnswer(event, j, i + 1)}
+                                        value={answersMatrix?.[i + 1][j]}
+                                        onChange={e => handleAnswer(e, GameType.matrix, j, i + 1)}
                                     />
                                     <div className={classes.answerButtonWrapper}>
                                         <button
@@ -835,74 +892,72 @@ const UserGame: FC<UserGameProps> = props => {
     };
 
     const renderQuiz = () => {
-        return quizSettingsCurrent?.roundNames?.map((tourName, i) => {
-            return (
-                <div className={classes.tourQuestionsWrapper} key={`${tourName}_${i}`}>
-                    <div className={classes.tourName}>{tourName}</div>
-
-                    {Array.from(Array(quizSettingsCurrent?.questionsCount).keys()).map(j => {
-                        return (
-                            <div
-                                key={`matrix_question_${j}`}
-                                style={{
-                                    marginBottom:
-                                        j === (quizSettingsCurrent?.questionsCount as number) - 1 &&
-                                        i !== (quizSettingsCurrent?.roundNames?.length || 0) - 1
-                                            ? mediaMatch.matches
-                                                ? '2rem'
-                                                : '2.5rem'
-                                            : 0
-                                }}
-                            >
-                                <div className={classes.matrixAnswerNumberWrapper}>
-                                    <p className={classes.matrixAnswerNumber}>Вопрос за {j + 1}0</p>
-                                    {acceptedQuizAnswers?.[i + 1][j] ? (
-                                        <small className={classes.accepted}>
-                                            {'Ответ: '}
-                                            <span className={classes.acceptedAnswer}>
-                                                {getShortenedAnswer(acceptedQuizAnswers?.[i + 1][j] as string)}
-                                            </span>
-                                        </small>
-                                    ) : null}
-                                </div>
-                                <div className={classes.answerInputWrapper}>
-                                    <Input
-                                        type="text"
-                                        id="answer"
-                                        name="answer"
-                                        placeholder="Ответ"
-                                        style={{
-                                            width: mediaMatch.matches ? '80%' : '',
-                                            margin: mediaMatch.matches ? '0' : '0 1rem 0 0',
-                                            border: '2px solid var(--color-text-icon-secondary)',
-                                            borderRadius: '.5rem'
-                                        }}
-                                        value={quizAnswers?.[i + 1][j]}
-                                        onFocus={() =>
-                                            setFocusedQuizAnswerInfo({
-                                                index: j + 1,
-                                                roundName: tourName,
-                                                roundNumber: i + 1
-                                            })
-                                        }
-                                        onChange={event => handleQuizAnswer(event, j, i + 1)}
-                                    />
-                                    <div className={classes.answerButtonWrapper}>
-                                        <button
-                                            className={classes.sendAnswerButton}
-                                            onClick={() => handleSendQuizAnswer(j + 1, tourName, i + 1)}
-                                        >
-                                            <span className={classes.sendText}>Отправить</span>
-                                            <SendRoundedIcon className={classes.sendIcon} />
-                                        </button>
-                                    </div>
+        return (
+            <div className={classes.tourQuestionsWrapper} key={`${activeRound.name}_${activeRound.number}`}>
+                {Array.from(Array(quizSettings?.questionsCount).keys()).map(j => {
+                    return (
+                        <div
+                            key={`quiz_question_${j}`}
+                            style={{
+                                marginBottom: 32
+                            }}
+                        >
+                            <div className={classes.matrixAnswerNumberWrapper}>
+                                <p className={classes.matrixAnswerNumber}>Вопрос {j + 1}0</p>
+                                {acceptedAnswersQuiz?.[activeRound.number][j].answer ? (
+                                    <small className={classes.accepted}>
+                                        {'Ответ: '}
+                                        <span className={classes.acceptedAnswer}>
+                                            {getShortenedAnswer(acceptedAnswersQuiz?.[activeRound.number][j].answer)}
+                                        </span>
+                                    </small>
+                                ) : null}
+                            </div>
+                            <div className={`${classes.answerInputWrapper} ${classes.answerQuizInputWrapper}`}>
+                                <Input
+                                    type="text"
+                                    id="answer"
+                                    name="answer"
+                                    placeholder="Ответ"
+                                    style={{
+                                        width: mediaMatch.matches ? '80%' : '',
+                                        margin: mediaMatch.matches ? '0' : '0 1rem 0 0',
+                                        border: '2px solid var(--color-text-icon-secondary)',
+                                        borderRadius: '.5rem'
+                                    }}
+                                    value={acceptedAnswersQuiz?.[activeRound.number][j].answer}
+                                    onChange={e => handleAnswer(e, GameType.quiz, j, activeRound.number + 1)}
+                                />
+                                <div className={classes.answerButtonWrapper}>
+                                    <button
+                                        className={classes.sendAnswerButton}
+                                        onClick={() => handleSendQuizAnswer(j + 1, activeRound.name, activeRound.number + 1)}
+                                    >
+                                        <span className={classes.sendText}>Отправить</span>
+                                        <SendRoundedIcon className={classes.sendIcon} />
+                                    </button>
                                 </div>
                             </div>
-                        );
-                    })}
-                </div>
-            );
-        });
+                            {quizSettings?.roundTypes &&
+                                quizSettings?.roundTypes[activeRound.number - 1] === RoundType.BLITZ && (
+                                    <CustomCheckbox
+                                        label={'Точно правильный ответ'}
+                                        onChange={e =>
+                                            handleAnswer(
+                                                e as React.ChangeEvent<HTMLInputElement>,
+                                                GameType.quiz,
+                                                j,
+                                                activeRound.number + 1
+                                            )
+                                        }
+                                        checked={acceptedAnswersQuiz?.[activeRound.number][j].blitz || false}
+                                    />
+                                )}
+                        </div>
+                    );
+                })}
+            </div>
+        );
     };
 
     const renderChgk = () => {
@@ -920,20 +975,20 @@ const UserGame: FC<UserGameProps> = props => {
                             border: '2px solid var(--color-text-icon-secondary)',
                             borderRadius: '.5rem'
                         }}
-                        value={answer}
-                        onChange={handleAnswer}
+                        value={answerChgk}
+                        onChange={e => handleAnswer(e, GameType.chgk, 0, 0)}
                     />
                     <div className={classes.answerButtonWrapper}>
-                        <button className={classes.sendAnswerButton} onClick={handleSendButtonClick}>
+                        <button className={classes.sendAnswerButton} onClick={handleSendChgkAnswer}>
                             <span className={classes.sendText}>Отправить</span>
                             <SendRoundedIcon className={classes.sendIcon} />
                         </button>
                     </div>
                 </div>
-                {acceptedAnswer ? (
+                {acceptedAnswerChgk ? (
                     <small className={classes.accepted}>
                         {'Ответ: '}
-                        <span className={classes.acceptedAnswer}>{getShortenedAnswer(acceptedAnswer)}</span>
+                        <span className={classes.acceptedAnswer}>{getShortenedAnswer(acceptedAnswerChgk)}</span>
                     </small>
                 ) : null}
             </div>
@@ -941,8 +996,8 @@ const UserGame: FC<UserGameProps> = props => {
     };
 
     const renderQuestionText = () => {
-        if (currentQuestion) {
-            return <div className={classes.questionText}>{currentQuestion}</div>;
+        if (activeQuestion.question) {
+            return <div className={classes.questionText}>{activeQuestion.question}</div>;
         }
         return null;
     };
@@ -961,12 +1016,14 @@ const UserGame: FC<UserGameProps> = props => {
                     <div className={classes.answersWrapper}>
                         <div className={classes.questionWrapper}>
                             <div className={classes.activeQuestionHeader}>
-                                <div>Вопрос за {activeMatrixQuestion}0</div>
+                                <div>Вопрос за {activeQuestion.number}0</div>
                                 <div className={classes.matrixRoundName} style={{ maxWidth: '60%' }}>
-                                    {activeMatrixRound?.name}
+                                    {activeRound.name}
                                 </div>
                             </div>
+
                             {renderQuestionText()}
+
                             <div className={classes.leftTime} style={{ color: chooseColor(timeForAnswer, gamePart) }}>
                                 Осталось: {Math.ceil(timeForAnswer ?? 0) >= 0 ? Math.ceil(timeForAnswer ?? 0) : 0} сек.
                             </div>
@@ -998,12 +1055,14 @@ const UserGame: FC<UserGameProps> = props => {
                     <div className={classes.answersWrapper}>
                         <div className={classes.questionWrapper}>
                             <div className={classes.activeQuestionHeader}>
-                                <div>Вопрос {activeMatrixQuestion}</div>
+                                <div>Вопрос {activeQuestion.number}</div>
                                 <div className={classes.matrixRoundName} style={{ maxWidth: '60%' }}>
-                                    {activeQuizRound?.name}
+                                    {activeRound.name}
                                 </div>
                             </div>
+
                             {renderQuestionText()}
+
                             <div className={classes.leftTime} style={{ color: chooseColor(timeForAnswer, gamePart) }}>
                                 Осталось: {Math.ceil(timeForAnswer ?? 0) >= 0 ? Math.ceil(timeForAnswer ?? 0) : 0} сек.
                             </div>
@@ -1034,7 +1093,7 @@ const UserGame: FC<UserGameProps> = props => {
 
                     <div className={classes.answersWrapper}>
                         <div className={classes.questionWrapper}>
-                            <div className={classes.activeQuestionHeader}>{`Вопрос ${questionNumber}`}</div>
+                            <div className={classes.activeQuestionHeader}>{`Вопрос ${activeQuestion.number}`}</div>
                             {renderQuestionText()}
                             <div className={classes.leftTime} style={{ color: chooseColor(timeForAnswer, gamePart) }}>
                                 Осталось: {Math.ceil(timeForAnswer ?? 0) >= 0 ? Math.ceil(timeForAnswer ?? 0) : 0} сек.
@@ -1130,12 +1189,14 @@ const UserGame: FC<UserGameProps> = props => {
                 <div className={classes.contentWrapper}>{renderGamePart()}</div>
                 {renderErrorSnackbar()}
                 {renderAnswerSnackbar()}
+                {renderAnswerSnackbarQuiz()}
             </PageWrapper>
         );
     };
 
     return isLoading || !gameName ? <Loader /> : renderPage();
 };
+
 function mapStateToProps(state: AppState) {
     return {
         userTeam: state.appReducer.user.team

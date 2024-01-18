@@ -19,6 +19,7 @@ import Button from '../../components/button/button.tsx';
 import classesButton from '../../components/button/button.module.scss';
 import { TypeButton } from '../../entities/custom-button/custom-button.interfaces.ts';
 import { ServerApi } from '../../server-api/server-api';
+import { GameType } from '../user-game/user-game.tsx';
 
 let interval: any;
 let breakInterval: any;
@@ -70,13 +71,21 @@ const AdminGame: FC<AdminGameProps> = () => {
             }, 30000);
         },
 
-        changeQuestion: (questionNumber: number, roundNumber: number, gamePart: 'chgk' | 'matrix' | 'quiz') => {
+        changeQuestion: (
+            questionNumber: number,
+            roundNumber: number,
+            gamePart: 'chgk' | 'matrix' | 'quiz',
+            roundNumberOld: number,
+            gamePartOld: 'chgk' | 'matrix' | 'quiz'
+        ) => {
             conn.send(
                 requester.getPayload({
                     action: 'changeQuestion',
                     questionNumber: questionNumber,
                     tourNumber: roundNumber,
-                    activeGamePart: gamePart
+                    activeGamePart: gamePart,
+                    roundNumberOld: roundNumberOld,
+                    gamePartOld: gamePartOld
                 })
             );
         },
@@ -143,7 +152,6 @@ const AdminGame: FC<AdminGameProps> = () => {
 
     const handlers = {
         handleTimeMessage: (time: number, isStarted: boolean) => {
-            console.log(handleTimeMessage);
             setTimer(time);
             if (isStarted) {
                 setPlayOrPause('pause');
@@ -162,7 +170,6 @@ const AdminGame: FC<AdminGameProps> = () => {
                     if (time == 0) {
                         setPlayOrPause('play');
                     }
-                    console.log('handleCheckTimeMessage');
                     setTimer(time);
                 }
 
@@ -213,7 +220,6 @@ const AdminGame: FC<AdminGameProps> = () => {
         },
 
         handleChangeQuestionNumber: (round: number, question: number, activeGamePart: 'chgk' | 'matrix' | 'quiz') => {
-            console.log('handleChangeQuestionNumber');
             setClickedTourIndex(round);
             setActiveTour(round);
             setClickedGamePart(activeGamePart);
@@ -223,7 +229,6 @@ const AdminGame: FC<AdminGameProps> = () => {
         },
 
         handleQuestionNumberIsUndefinedMessage: (activeGamePart: 'chgk' | 'matrix' | 'quiz') => {
-            console.log('handleQuestionNumberIsUndefinedMessage');
             setClickedTourIndex(1);
             setActiveTour(1);
             setClickedGamePart(activeGamePart);
@@ -324,7 +329,6 @@ const AdminGame: FC<AdminGameProps> = () => {
     };
 
     const parseTimer = (time: number) => {
-        console.log(time);
         const minutes = Math.floor(time / 1000 / 60)
             .toString()
             .padStart(1, '0');
@@ -335,6 +339,9 @@ const AdminGame: FC<AdminGameProps> = () => {
     };
 
     const handleQuestionClick = (event: React.SyntheticEvent, gamePart: 'matrix' | 'chgk' | 'quiz') => {
+        const activeRoundNumberDouble = activeTourIndex;
+        const activeGamePartDouble = activeGamePart;
+
         const activeQuestion = document.querySelector(`.${classes.activeQuestion}`) as HTMLDivElement;
         const clickedQuestion = event.target as HTMLDivElement;
         if (activeQuestion) {
@@ -345,7 +352,6 @@ const AdminGame: FC<AdminGameProps> = () => {
         setActiveTour(clickedTourIndex || 0);
         setActiveGamePart(gamePart);
         if (activeGamePart !== gamePart || activeTourIndex !== (clickedTourIndex || 0)) {
-            console.log('handleQuestionClick');
             setTimer(
                 gamePart === 'chgk'
                     ? 70000
@@ -358,9 +364,26 @@ const AdminGame: FC<AdminGameProps> = () => {
                       : 20000
             );
         }
-        requester.changeQuestion(+clickedQuestion.id, clickedTourIndex || 0, gamePart);
+        requester.changeQuestion(
+            +clickedQuestion.id,
+            clickedTourIndex || 0,
+            gamePart,
+            activeRoundNumberDouble || 0,
+            activeGamePartDouble || 'chgk'
+        );
 
-        handleStopClick(gamePart); // Прошлый вопрос остановится!
+        if (
+            !(
+                activeGamePartDouble === gamePart &&
+                gamePart === GameType.quiz &&
+                activeRoundNumberDouble === (clickedTourIndex || 0) &&
+                quizSettings &&
+                quizSettings?.roundTypes &&
+                quizSettings?.roundTypes[activeRoundNumberDouble - 1] === RoundType.BLITZ
+            )
+        ) {
+            handleStopClick(gamePart); // Прошлый вопрос остановится!
+        }
     };
 
     const handlePlayClick = (gamePart: 'chgk' | 'matrix' | 'quiz') => {
@@ -398,7 +421,6 @@ const AdminGame: FC<AdminGameProps> = () => {
         }
         setIsStop(true);
         clearInterval(interval);
-        console.log('handleStopClick');
         setTimer(
             gamePart === 'chgk'
                 ? 70000
@@ -414,7 +436,6 @@ const AdminGame: FC<AdminGameProps> = () => {
 
     const handleAddedTimeClick = (gamePart: 'chgk' | 'matrix' | 'quiz') => {
         requester.addTenSeconds(gamePart);
-        console.log('handleAddedTimeClick');
         setTimer(t => t + 10000);
     };
 

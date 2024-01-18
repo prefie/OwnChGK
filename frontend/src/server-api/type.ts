@@ -11,6 +11,11 @@ export enum RoundType {
     BLITZ = 'blitz'
 }
 
+export interface AnswerQuizType {
+    answer: string;
+    blitz: boolean;
+}
+
 export const roundTypeToBool = (type: RoundType) => {
     return type === RoundType.BLITZ;
 };
