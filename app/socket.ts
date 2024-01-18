@@ -72,7 +72,7 @@ function GiveAddedTime(gameId: number, gamePart: GameTypeLogic) {
     }
 }
 
-function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber: number, activeGamePart: GameTypeLogic) {
+function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber: number, activeGamePart: GameTypeLogic, oldGamePart: GameTypeLogic, oldQuestionNumber: number) {
     bigGames[gameId].currentGame = GetGame(gameId, activeGamePart);
     bigGames[gameId].currentGame.currentQuestion = [tourNumber, questionNumber];
 
@@ -92,6 +92,10 @@ function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber
                     number: tourNumber,
                     name: bigGames[gameId].currentGame.rounds[tourNumber - 1]?.name || ''
                 },
+                old: {
+                    questionNumberOld: oldQuestionNumber,
+                    gamePartOld: oldGamePart
+                }
             })
         );
     }
@@ -614,7 +618,7 @@ function AdminsAction(gameId, ws, jsonMessage, gameType) {
             StopBreakTime(gameId);
             break;
         case 'changeQuestion':
-            ChangeQuestionNumber(gameId, jsonMessage.questionNumber, jsonMessage.tourNumber, jsonMessage.activeGamePart);
+            ChangeQuestionNumber(gameId, jsonMessage.questionNumber, jsonMessage.tourNumber, jsonMessage.activeGamePart, jsonMessage.gamePartOld, jsonMessage.questionNumberOld);
             break;
         case 'getQuestionNumber':
             GetQuestionNumber(gameId, ws);
