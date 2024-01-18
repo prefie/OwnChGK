@@ -315,7 +315,8 @@ export class GamesController {
 
         const teamsDictionary = userRoles.has(role) && teamId ? game.getTeamDictionary(teamId) : game.getAllTeamsDictionary();
 
-        const matrixSums = bigGame.isFullGame() ? bigGame.matrixGame.getTotalScoreForAllTeams() : undefined;
+        const matrixSums = bigGame.matrixGame ? bigGame.matrixGame.getTotalScoreForAllTeams() : undefined;
+        const quizSums = bigGame.quizGame ? bigGame.quizGame.getTotalScoreForAllTeams() : undefined;
 
         const answer = {
             // TODO: shusharin DTO
@@ -324,6 +325,7 @@ export class GamesController {
             roundsCount: game.getRoundsCount(),
             questionsCount: game.rounds[0].questionsCount,
             matrixSums,
+            quizSums,
             totalScoreForAllTeams,
             teamsDictionary
         };
