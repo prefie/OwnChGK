@@ -75,6 +75,8 @@ function GiveAddedTime(gameId: number, gamePart: GameTypeLogic) {
 function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber: number, activeGamePart: GameTypeLogic, oldGamePart: GameTypeLogic, oldRoundNumber: number) {
     bigGames[gameId].currentGame = GetGame(gameId, activeGamePart);
     bigGames[gameId].currentGame.currentQuestion = [tourNumber, questionNumber];
+    const isBlitz = bigGames[gameId].currentGame.rounds[tourNumber - 1].isBlitz;
+    const time = GetTimeForGame(bigGames[gameId].currentGame.type, isBlitz);
 
     for (let user of gameUsers[gameId]) {
         user.send(
@@ -96,7 +98,8 @@ function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber
                     numberRoundOld: oldRoundNumber,
                     gamePartOld: oldGamePart
                 },
-                isBlitz: bigGames[gameId].currentGame.rounds[tourNumber - 1]?.isBlitz
+                isBlitz: bigGames[gameId].currentGame.rounds[tourNumber - 1]?.isBlitz,
+                time: time
             })
         );
     }
