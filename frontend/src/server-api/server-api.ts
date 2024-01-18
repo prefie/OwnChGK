@@ -353,6 +353,7 @@ export class ServerApi {
 
     public static async endGame(gameId: string) {
         return this.sendRequest({
+            method: this.Method.POST,
             path: `/games/${gameId}/close`
         });
     }
