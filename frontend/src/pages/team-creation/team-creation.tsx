@@ -308,7 +308,7 @@ const TeamCreator: FC<TeamCreatorProps> = props => {
                                                             },
                                                             '& .Mui-disabled': {
                                                                 color: 'transparentF',
-                                                                '-webkit-text-fill-color': '#FFFFFF'
+                                                                '-webkit-text-fill-color': '#FFFFFF !important'
                                                             }
                                                         }}
                                                         renderInput={(params) => <TextField {...params} placeholder="Капитан"/>}
