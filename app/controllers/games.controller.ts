@@ -368,7 +368,8 @@ export class GamesController {
 
         const teamRows = [];
         const totalScoreForAllTeams = game.getTotalScoreForAllTeams();
-        const matrixSums = bigGame.isFullGame() ? bigGame.matrixGame.getTotalScoreForAllTeams() : undefined;
+        const matrixSums = bigGame.matrixGame ? bigGame.matrixGame.getTotalScoreForAllTeams() : undefined;
+            const quizSums = bigGame.quizGame ? bigGame.quizGame.getTotalScoreForAllTeams() : undefined;
 
         const scoreTable =
             userRoles.has(role) && teamId && bigGames[gameId].intrigueEnabled
@@ -392,6 +393,7 @@ export class GamesController {
                     totalScoreForAllTeams[team] +
                     ';' +
                     (matrixSums ? `${matrixSums[team]};` : '') +
+                    (quizSums ? `${quizSums[team]};` : '') +
                     roundsResultList.join(';')
             );
             roundsResultList = [];
