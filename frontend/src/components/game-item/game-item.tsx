@@ -1,15 +1,16 @@
-import {DeleteRounded, EditRounded, PeopleAltRounded} from "@mui/icons-material";
-import {GameTypeItemProps} from "../game-type-item/game-type-item";
+import { PeopleRounded } from '@mui/icons-material';
+import { GameTypeItemProps } from '../game-type-item/game-type-item';
 import classes from './game-item.module.scss';
-import GameTypeList from "../game-type-list/game-type-list";
-import {IconButton} from "@mui/material";
-import React, {Dispatch, SetStateAction, useCallback, useEffect, useState} from "react";
-import {Redirect} from "react-router-dom";
-import {Link} from 'react-router-dom';
-import SignUpToGameItem from "../sign-up-to-game-item/sign-up-to-game-item";
-import {ServerApi} from "../../server-api/server-api";
-import GameStatus from "../game-status/game-status";
-import {Team} from "../../pages/admin-start-screen/admin-start-screen";
+import GameTypeList from '../game-type-list/game-type-list';
+import React, { Dispatch, SetStateAction, useState } from 'react';
+import { Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import SignUpToGameItem from '../sign-up-to-game-item/sign-up-to-game-item';
+import { ServerApi } from "../../server-api/server-api";
+import { Team } from '../../pages/admin-start-screen/admin-start-screen';
+import { OperationName } from '../modal/modal.tsx';
+import GameItemFooter from '../game-footer/footer.tsx';
+import { wordFormat } from './utils.ts';
 
 export enum Roles {
     user,
@@ -32,20 +33,22 @@ interface GameItemProps {
     id: string;
     name: string;
     teamsCount: number;
-    status: Status,
+    status: Status;
     games: GameTypeItemProps[];
     accessLevel: AccessLevel;
     amIParticipate: boolean;
     userTeam?: Team;
     openModal?: Dispatch<SetStateAction<boolean>>;
-    setItemForDeleteName?: Dispatch<SetStateAction<string>>;
-    setItemForDeleteId?: Dispatch<SetStateAction<string>>;
+    setItemName?: Dispatch<SetStateAction<string>>;
+    setItemId?: Dispatch<SetStateAction<string>>;
+    setOperationName?: Dispatch<SetStateAction<OperationName | null>>;
     role: Roles;
-    onClick?: React.MouseEventHandler
+    onClick?: React.MouseEventHandler;
 }
 
 function GameItem(props: GameItemProps) {
     const [isRedirectedToEdit, setIsRedirectedToEdit] = useState(false);
+    const [isRedirectedToDownload, setIsRedirectedToDownload] = useState(false);
     const [amIParticipate, setAmIParticipate] = useState(props.amIParticipate);
     const [teamsCount, setTeamsCount] = useState(props.teamsCount);
     const gameId = props.id;
@@ -79,115 +82,51 @@ function GameItem(props: GameItemProps) {
         })
     }
 
-    const handleDeleteClick = (event: React.SyntheticEvent) => {
-        setItemName(event);
-        handleOpenModal(event);
-    };
-
-    const renderGameTitle = () => {
-        if (props.role === Roles.admin) {
-            return(
-                <Link to={linkToGame} className={classes.gameTitle} id={gameId}>{props.name}</Link>
-            );
-        } else if (props.role === Roles.user) {
-            return(
-                props.amIParticipate
-                    ? <Link to={linkToGame} className={classes.gameTitle} id={gameId}>{props.name}</Link>
-                    : <div className={classes.gameTitle}>{props.name}</div>
-            );
-        } else {
-            return(
-                <div className={classes.gameTitle}>{props.name}</div>
-            );
-        }
+    if (isRedirectedToEdit) {
+        return <Redirect to={{ pathname: '/admin/game-creation/edit', state: { id: props.id, name: props.name } }} />;
     }
 
-    const setItemName = useCallback(e => {
-        if (props.setItemForDeleteName) {
-            props.setItemForDeleteName(props.name);
-        }
-        if (props.setItemForDeleteId) {
-            props.setItemForDeleteId(props.id as string);
-        }
-    }, [props]);
+    if (isRedirectedToDownload) {
+        return <Redirect to={{ pathname: `/admin/rating/${props.id}` }} />;
+    }
 
-    const handleOpenModal = useCallback(e => {
-        if (props.openModal) {
-            props.openModal(true);
-        }
-    }, [props]);
-
-    const handleEditClick = (event: React.SyntheticEvent) => {
-        setIsRedirectedToEdit(true);
-    };
-
-    return isRedirectedToEdit
-        ? <Redirect to={{pathname: '/admin/game-creation/edit', state: {id: props.id, name: props.name}}}/>
-        : (
-            <div className={classes.gameContent}>
-                {
-                    renderGameTitle()
-                }
-                <GameTypeList types={props.games}/>
-                <div className={classes.gameFooter}>
-                    <div className={classes.gameTeams}>
-                        <PeopleAltRounded fontSize={"medium"}/>
-                        <div className={classes.gameTeamsCount}>{teamsCount}</div>
-                    </div>
-                    {
-                        props.role === Roles.user &&
-                        props.accessLevel === AccessLevel.PUBLIC &&
-                        props.status !== Status.Started
-                            ?
-                            <SignUpToGameItem
-                                isAddToGame={amIParticipate}
-                                userTeam={props.userTeam}
-                                handleAdd={handleAddToGame}
-                                handleOut={handleOutOfGame}
-                            />
-                            : null
-                    }
+    return (
+        <Link
+            to={linkToGame}
+            className={`${classes.gameContent} ${
+                (props.role !== Roles.admin && (props.role !== Roles.user || !props.amIParticipate)) ||
+                props.status === Status.Finished
+                    ? classes.admin
+                    : ''
+            }`}
+        >
+            <div className={classes.gameTitle}>{props.name}</div>
+            <GameTypeList types={props.games} />
+            <div className={classes.gameInfo}>
+                <div className={classes.gameTeams}>
+                    <PeopleRounded
+                        style={{
+                            fontSize: 'var(--font-size-20)',
+                        }}
+                    />
+                    <div className={classes.gameTeamsCount}>{`${teamsCount} ${wordFormat(teamsCount)}`}</div>
                 </div>
-                <GameStatus status={props.status}/>
-
-                {
-                    props.role === Roles.admin
-                        ?
-                        <div className={classes.gameActions}>
-                            {props.status === Status.NotStarted
-                                ?
-                                <IconButton
-                                    onClick={handleEditClick}
-                                    edge={'end'}
-                                    sx={{
-                                        '& .MuiSvgIcon-root': {
-                                            color: 'var(--color-text-icon-link-enabled)',
-                                            fontSize: 'var(--font-size-24)'
-                                        },
-                                    }}
-                                >
-                                    <EditRounded/>
-                                </IconButton>
-                                : null
-                            }
-                            <IconButton
-                                onClick={handleDeleteClick}
-                                edge={'end'}
-                                sx={{
-                                    '& .MuiSvgIcon-root': {
-                                        color: 'var(--color-text-icon-error)',
-                                        fontSize: 'var(--font-size-24)'
-                                    }
-                                }}
-                            >
-                                <DeleteRounded/>
-                            </IconButton>
-                        </div>
-                        :
-                        null
-                }
+                {props.role === Roles.user && props.accessLevel === AccessLevel.PUBLIC && props.status !== Status.Started ? (
+                    <SignUpToGameItem
+                        isAddToGame={amIParticipate}
+                        userTeam={props.userTeam}
+                        handleAdd={handleAddToGame}
+                        handleOut={handleOutOfGame}
+                    />
+                ) : null}
             </div>
-        );
+            <GameItemFooter
+                {...props}
+                setIsRedirectedToEdit={setIsRedirectedToEdit}
+                setIsRedirectedToDownload={setIsRedirectedToDownload}
+            />
+        </Link>
+    );
 }
 
 export default GameItem;

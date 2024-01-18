@@ -1,6 +1,7 @@
-import classes from './sign-up-to-game-item.module.scss'
-import React from "react";
-import {Team} from "../../pages/admin-start-screen/admin-start-screen";
+import React from 'react';
+import { Team } from '../../pages/admin-start-screen/admin-start-screen';
+import Button from '../button/button.tsx';
+import classesButton from '../button/button.module.scss';
 
 interface SignUpToGameItemProps {
     isAddToGame: boolean;
@@ -11,21 +12,28 @@ interface SignUpToGameItemProps {
 
 function SignUpToGameItem(props: SignUpToGameItemProps) {
     if (props.userTeam && props.userTeam.name !== '') {
-        return (
-            props.isAddToGame
-                ?
-                <div className={classes.signUpLinkSuccess}>
-                    <p className={classes.signOutLink} onClick={props.handleOut}>Выйти из игры</p>
-                </div>
-                :
-                <p className={classes.signUpLink} onClick={props.handleAdd}>Вступить в игру</p>
+        return props.isAddToGame ? (
+            <Button
+                className={`${classesButton.button} ${classesButton.button_link}`}
+                content={'Выйти из игры'}
+                onClick={props.handleOut}
+            />
+        ) : (
+            <Button
+                className={`${classesButton.button} ${classesButton.button_link}`}
+                content={'Вступить в игру'}
+                onClick={props.handleAdd}
+            />
         );
     } else {
-        return(
-            <p className={`${classes.signUpLink} ${classes.signUpLinkDisabled}`}>Вступить в игру</p>
+        return (
+            <Button
+                className={`${classesButton.button} ${classesButton.button_link} ${classesButton.button_link_disabled}`}
+                content={'Вступить в игру'}
+                onClick={props.handleAdd}
+            />
         );
     }
-
 }
 
 export default SignUpToGameItem;

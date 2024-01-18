@@ -18,13 +18,12 @@ import { Round, RoundType } from '../entities/round';
 import { Team } from '../entities/team';
 import { BaseRepository } from './base.repository';
 
-
 export interface DefaultGameSettings {
-    roundsCount: number,
-    questionsCount: number,
-    questionCost: number,
-    questionTime: number,
-    questions: Record<number, string[]>
+    roundsCount: number;
+    questionsCount: number;
+    questionCost: number;
+    questionTime: number;
+    questions: Record<number, string[]>;
 }
 
 export interface MatrixSettings extends DefaultGameSettings {
@@ -54,7 +53,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 games: { rounds: { questions: true } },
                 teams: { captain: true },
                 admin: true,
-                additionalAdmins: true,
+                additionalAdmins: true
             }
         });
     }
@@ -64,12 +63,12 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             select: {
                 id: true,
                 admin: { id: true },
-                additionalAdmins: { id: true },
+                additionalAdmins: { id: true }
             },
             where: { id: bigGameId },
             relations: {
                 admin: true,
-                additionalAdmins: true,
+                additionalAdmins: true
             }
         });
     }
@@ -80,7 +79,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 games: { rounds: { questions: true } },
                 teams: { captain: true },
                 admin: true,
-                additionalAdmins: true,
+                additionalAdmins: true
             }
         });
     }
@@ -92,7 +91,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 games: { rounds: { questions: true } },
                 teams: { captain: true },
                 admin: true,
-                additionalAdmins: true,
+                additionalAdmins: true
             }
         });
     }
@@ -111,7 +110,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     }
 
     addTeamInBigGame(bigGameId: string, teamId: string) {
-        return this.innerRepository.manager.transaction("SERIALIZABLE", async (entityManager: EntityManager) => {
+        return this.innerRepository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager) => {
             const team = await entityManager.findOne<Team>(Team, {
                 where: { id: teamId },
                 relations: { bigGames: true }
@@ -133,7 +132,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     }
 
     deleteTeamFromBigGame(bigGameId: string, teamId: string) {
-        return this.innerRepository.manager.transaction("SERIALIZABLE", async (entityManager: EntityManager) => {
+        return this.innerRepository.manager.transaction('SERIALIZABLE', async (entityManager: EntityManager) => {
             const team = await entityManager.findOne<Team>(Team, {
                 where: { id: teamId },
                 relations: { bigGames: true }
@@ -158,7 +157,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 select: { id: true },
                 where: { teams: { captain: { id: userId } } },
                 relations: {
-                    teams: { captain: true },
+                    teams: { captain: true }
                 }
             });
 
@@ -174,7 +173,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                 select: { id: true },
                 where: [{ teams: { captain: { id: userId } } }, { accessLevel: AccessLevel.PUBLIC }],
                 relations: {
-                    teams: { captain: true },
+                    teams: { captain: true }
                 }
             });
 
@@ -203,12 +202,10 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         accessLevel: AccessLevel | undefined,
         chgkSettings: DefaultGameSettings,
         matrixSettings: MatrixSettings,
-        quizSettings: QuizSettings,
+        quizSettings: QuizSettings
     ) {
-        const admin = await this.innerRepository.manager
-            .findOneBy<Admin>(Admin, { email: adminEmail.toLowerCase() });
-        const teamsFromDb = await this.innerRepository.manager
-            .findBy<Team>(Team, { id: In(teams) });
+        const admin = await this.innerRepository.manager.findOneBy<Admin>(Admin, { email: adminEmail.toLowerCase() });
+        const teamsFromDb = await this.innerRepository.manager.findBy<Team>(Team, { id: In(teams) });
         const bigGame = new BigGame();
         bigGame.name = name;
         bigGame.admin = admin;
@@ -227,7 +224,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         accessLevel: AccessLevel | undefined,
         chgkSettings: DefaultGameSettings,
         matrixSettings: MatrixSettings,
-        quizSettings: QuizSettings,
+        quizSettings: QuizSettings
     ) {
         const bigGame = await this.innerRepository.manager.findOne<BigGame>(BigGame, {
             where: { id: bigGameId },
@@ -327,8 +324,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     }
 
     async updateAdminByIdAndAdminEmail(bigGameId: string, newAdminEmail: string) {
-        const admin = await this.innerRepository.manager
-            .findOneBy<Admin>(Admin, { email: newAdminEmail.toLowerCase() });
+        const admin = await this.innerRepository.manager.findOneBy<Admin>(Admin, { email: newAdminEmail.toLowerCase() });
         const bigGame = await this.innerRepository.findOneBy({ id: bigGameId });
         bigGame.admin = admin;
 
@@ -402,7 +398,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             where: { id: bigGameId },
             relations: {
                 games: { rounds: { questions: { answers: { appeal: true, team: true } } } },
-                teams: { captain: true },
+                teams: { captain: true }
             }
         });
 
@@ -417,8 +413,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
         questionCost: number,
         roundNames?: string[],
         questionsText?: Record<number, string[]>,
-        roundTypes?: RoundType[],
-    ) : Round[] {
+        roundTypes?: RoundType[]
+    ): Round[] {
         if (roundNames && roundsCount !== roundNames.length) {
             throw new Error('roundNames.length !== roundsCount');
         }
@@ -462,9 +458,11 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     async createBigGameLogic(bigGame: BigGame) {
         const chgkFromDB = bigGame.games.find(game => game.type == GameType.CHGK);
         const matrixFromDB = bigGame.games.find(game => game.type == GameType.MATRIX);
+        const quizFromDB = bigGame.games.find(game => game.type == GameType.QUIZ);
 
         let chgk: GameLogic;
         let matrix: GameLogic;
+        let quiz: GameLogic;
 
         if (chgkFromDB) {
             chgk = new GameLogic(chgkFromDB.id, bigGame.name, GameTypeLogic.ChGK);
@@ -486,61 +484,69 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             matrix.addRounds(rounds);
         }
 
+        if (quizFromDB) {
+            quiz = new GameLogic(quizFromDB.id, bigGame.name, GameTypeLogic.Quiz);
+            for (const team of bigGame.teams) {
+                quiz.addTeam(new TeamLogic(team.name, team.id));
+            }
+
+            const rounds = this.getRoundsLogicFromDb(quizFromDB.rounds, quiz.teams);
+            quiz.addRounds(rounds);
+        }
+
         return new BigGameLogic(
             bigGame.id,
             bigGame.name,
             chgkFromDB ? chgk : null,
-            matrixFromDB ? matrix : null
+            matrixFromDB ? matrix : null,
+            quizFromDB ? quiz : null
         );
     }
 
     private getRoundsLogicFromDb(rounds: Round[], teams: Record<string, TeamLogic>): RoundLogic[] {
-        return rounds.map(r => {
-            const questions = r.questions.map(q => {
-                const answers = q.answers?.map(a => new AnswerLogic(
-                    a.team.id,
-                    r.number,
-                    q.number,
-                    a.text,
-                    a.status as AnswerStatus,
-                    a.score
-                )) ?? [];
+        return rounds
+            .map(r => {
+                const questions = r.questions
+                    .map(q => {
+                        const answers =
+                            q.answers?.map(
+                                a => new AnswerLogic(a.team.id, r.number, q.number, false, a.text, a.status as AnswerStatus, a.score)
+                            ) ?? [];
 
-                for (let ans of answers) {
-                    teams[ans.teamId].addAnswer(ans);
-                }
+                        for (let ans of answers) {
+                            teams[ans.teamId].addAnswer(ans);
+                        }
 
-                const appeals = q.answers
-                    ?.filter(a => a.appeal)
-                    .map(a => new AppealLogic(
-                        a.team.id,
-                        r.number,
-                        q.number,
-                        a.appeal.text,
-                        a.text,
-                        a.appeal.status as AppealStatus,
-                        a.appeal.comment
-                    )) ?? [];
-                return new QuestionLogic(
-                    q.id,
-                    q.cost,
+                        const appeals =
+                            q.answers
+                                ?.filter(a => a.appeal)
+                                .map(
+                                    a =>
+                                        new AppealLogic(
+                                            a.team.id,
+                                            r.number,
+                                            q.number,
+                                            a.appeal.text,
+                                            a.text,
+                                            a.appeal.status as AppealStatus,
+                                            a.appeal.comment
+                                        )
+                                ) ?? [];
+                        return new QuestionLogic(q.id, q.cost, r.number, q.number, r.questionTime, q.text, answers, appeals);
+                    })
+                    .sort((a, b) => (a.number > b.number ? 1 : -1));
+
+                return new RoundLogic(
+                    r.id,
                     r.number,
-                    q.number,
+                    r.name,
+                    questions.length,
                     r.questionTime,
-                    q.text,
-                    answers,
-                    appeals
+                    GameTypeLogic.ChGK,
+                    questions,
+                    r.type == RoundType.BLITZ
                 );
-            }).sort((a, b) => a.number > b.number ? 1 : -1);
-
-            return new RoundLogic(
-                r.id,
-                r.number,
-                questions.length,
-                r.questionTime,
-                GameTypeLogic.ChGK,
-                questions
-            );
-        }).sort((a, b) => a.number > b.number ? 1 : -1);
+            })
+            .sort((a, b) => (a.number > b.number ? 1 : -1));
     }
 }

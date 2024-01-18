@@ -1,4 +1,5 @@
 export enum GameTypeLogic {
     Matrix = 'matrix',
-    ChGK = 'chgk'
+    ChGK = 'chgk',
+    Quiz = 'quiz'
 }

@@ -6,9 +6,12 @@
   --font-family-primary: sans-serif, "Roboto";
   --font-family-secondary: serif, "Georgia";
   --font-size-12: calc(var(--base-unit) * 3);
+  --font-size-14: calc(var(--base-unit) * 7 / 2);
   --font-size-16: calc(var(--base-unit) * 4);
+  --font-size-18: calc(var(--base-unit) * 9 / 2);
   --font-size-20: calc(var(--base-unit) * 5);
   --font-size-24: calc(var(--base-unit) * 6);
+  --font-size-28: calc(var(--base-unit) * 7);
   --font-size-32: calc(var(--base-unit) * 8);
   --font-size-40: calc(var(--base-unit) * 10);
   --font-size-48: calc(var(--base-unit) * 12);
@@ -18,29 +21,52 @@
   --line-height-small: 1.1;
   --line-height-medium: 1.3;
   --line-height-large: 1.5;
+  --line-height-xlarge: 2;
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
+  --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --font-weight-bolder: 900;
 
+
   // Colors
   // Background
-  --color-bg-main: #00131D;
+  --color-bg-main: #000B1D;
+  --color-bg-block: #0F1A2B;
+
+  // old
+  --color-bg-main-OLD: #00131D;
   --color-bg-plates: #00283D;
   --color-bg-overlay-default: rgba(255, 255, 255, .06);
   --color-bg-overlay-success: rgba(36, 255, 36, .06);
 
   // Fills
+  --color-fill-default: #000B1D;
+
+  --color-fill-default-default: rgba(255, 255, 255, 0.06);
+  --color-fill-default-hover: rgba(255, 255, 255, 0.12);
+  --color-fill-default-pressed: rgba(255, 255, 255, 0.16);
+  --color-fill-default-disabled: rgba(20, 31, 47, 1);
+
+  --color-fill-primary-default: #1A5FC6;
+  --color-fill-primary-hover: #1857B6;
+  --color-fill-primary-pressed: #1650A6;
+  --color-fill-primary-disabled: #124187;
+
+  --color-fill-status-inprogress: rgba(0, 255, 26, 0.06);
+
+  // old
+
   --color-fill-accent-enabled: #0077B8;
   --color-fill-accent-hover: #0069A3;
   --color-fill-accent-pressed: #005787;
   --color-fill-accent-disabled: #00283D;
 
   --color-fill-default-enabled: rgba(255,255,255, .16);
-  --color-fill-default-hover: rgba(255,255,255, .24);
-  --color-fill-default-pressed: rgba(255,255,255, .06);
-  --color-fill-default-disabled: rgba(255,255,255, .06);
+  --color-fill-default-hover-OLD: rgba(255,255,255, .24);
+  --color-fill-default-pressed-OLD: rgba(255,255,255, .06);
+  --color-fill-default-disabled-OLD: rgba(255,255,255, .06);
 
   --color-control-accent-enabled: #0AA9FF;
   --color-control-error-enabled: #FF2424;
@@ -53,13 +79,31 @@
   --color-fill-notify: #FF00E5;
 
   // Text&Icon
+  --color-text-icon-default-primary: #F1F3F9;
+  --color-text-icon-default-secondary: rgba(241, 243, 249, 0.72);
+  --color-text-icon-default-disabled: rgba(241, 243, 249, 0.4);
+  --color-text-icon-link-primary: #5B9CFF;
+  --color-text-icon-link-hover: #8FBCFF;
+  --color-text-icon-status-inprogress: #00FF19;
+
+
+  // old
+
   --color-text-icon-primary: rgb(235, 248, 255);
   --color-text-icon-secondary: rgba(235, 248, 255, 0.48);
   --color-text-icon-disabled: rgba(235, 248, 255, 0.32);
   --color-text-icon-error: #ff2424;
-  --color-text-icon-success: #24ff24;
+  --color-text-icon-success-OLD: #24ff24;
 
   --color-text-icon-link-enabled: #0AA9FF;
+
+  // Line
+  --color-line-divider: rgba(235, 248, 255, 0.12);
+
+  // Control
+  --color-strokes-default: rgba(241, 243, 249, 0.16);
+  --color-strokes-active: rgba(241, 243, 249, 0.48);
+  --color-strokes-error: #FF3D3D
 }
 
 * {
