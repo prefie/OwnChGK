@@ -8,6 +8,7 @@ export interface TeamResult {
     teamName: string;
     teamId: string;
     matrixSum: number;
+    quizSum: number;
     toursWithResults: Tour[];
 }
 

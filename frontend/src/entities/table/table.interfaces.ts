@@ -1,5 +1,5 @@
-import {Tour} from '../rating/rating.interfaces';
-import {Dispatch, SetStateAction} from 'react';
+import { Tour } from '../rating/rating.interfaces';
+import { Dispatch, SetStateAction } from 'react';
 
 export interface TourHeaderCellProps {
     tourNumber: number;
@@ -13,6 +13,7 @@ export interface TeamTableRowProps {
     teamName: string;
     teamId: string;
     matrixSum: number;
+    quizSum: number;
     toursWithResults: Tour[];
     isExpanded: boolean[];
     gameId: string;

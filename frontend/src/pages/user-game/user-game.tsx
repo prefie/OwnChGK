@@ -728,7 +728,7 @@ const UserGame: FC<UserGameProps> = props => {
                 break;
             }
             default: {
-                if (event.target.checked) {
+                if (event.target.type === 'checkbox') {
                     setAnswersQuiz(prevValue => {
                         const copy = { ...prevValue };
                         copy[roundNumber] = copy[roundNumber].map((answer, i) =>
@@ -903,7 +903,7 @@ const UserGame: FC<UserGameProps> = props => {
                             }}
                         >
                             <div className={classes.matrixAnswerNumberWrapper}>
-                                <p className={classes.matrixAnswerNumber}>Вопрос {j + 1}0</p>
+                                <p className={classes.matrixAnswerNumber}>Вопрос {j + 1}</p>
                                 {acceptedAnswersQuiz?.[activeRound.number][j].answer ? (
                                     <small className={classes.accepted}>
                                         {'Ответ: '}
@@ -926,12 +926,12 @@ const UserGame: FC<UserGameProps> = props => {
                                         borderRadius: '.5rem'
                                     }}
                                     value={acceptedAnswersQuiz?.[activeRound.number][j].answer}
-                                    onChange={e => handleAnswer(e, GameType.quiz, j, activeRound.number + 1)}
+                                    onChange={e => handleAnswer(e, GameType.quiz, j, activeRound.number)}
                                 />
                                 <div className={classes.answerButtonWrapper}>
                                     <button
                                         className={classes.sendAnswerButton}
-                                        onClick={() => handleSendQuizAnswer(j + 1, activeRound.name, activeRound.number + 1)}
+                                        onClick={() => handleSendQuizAnswer(j + 1, activeRound.name, activeRound.number)}
                                     >
                                         <span className={classes.sendText}>Отправить</span>
                                         <SendRoundedIcon className={classes.sendIcon} />
@@ -947,10 +947,10 @@ const UserGame: FC<UserGameProps> = props => {
                                                 e as React.ChangeEvent<HTMLInputElement>,
                                                 GameType.quiz,
                                                 j,
-                                                activeRound.number + 1
+                                                activeRound.number
                                             )
                                         }
-                                        checked={acceptedAnswersQuiz?.[activeRound.number][j].blitz || false}
+                                        checked={answersQuiz?.[activeRound.number][j].blitz || false}
                                     />
                                 )}
                         </div>
