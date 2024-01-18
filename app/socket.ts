@@ -72,7 +72,7 @@ function GiveAddedTime(gameId: number, gamePart: GameTypeLogic) {
     }
 }
 
-function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber: number, activeGamePart: GameTypeLogic, oldGamePart: GameTypeLogic, oldQuestionNumber: number) {
+function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber: number, activeGamePart: GameTypeLogic, oldGamePart: GameTypeLogic, oldRoundNumber: number) {
     bigGames[gameId].currentGame = GetGame(gameId, activeGamePart);
     bigGames[gameId].currentGame.currentQuestion = [tourNumber, questionNumber];
 
@@ -93,7 +93,7 @@ function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber
                     name: bigGames[gameId].currentGame.rounds[tourNumber - 1]?.name || ''
                 },
                 old: {
-                    questionNumberOld: oldQuestionNumber,
+                    questionRoundOld: oldRoundNumber,
                     gamePartOld: oldGamePart
                 }
             })
@@ -618,7 +618,7 @@ function AdminsAction(gameId, ws, jsonMessage, gameType) {
             StopBreakTime(gameId);
             break;
         case 'changeQuestion':
-            ChangeQuestionNumber(gameId, jsonMessage.questionNumber, jsonMessage.tourNumber, jsonMessage.activeGamePart, jsonMessage.gamePartOld, jsonMessage.questionNumberOld);
+            ChangeQuestionNumber(gameId, jsonMessage.questionNumber, jsonMessage.tourNumber, jsonMessage.activeGamePart, jsonMessage.gamePartOld, jsonMessage.roundNumberOld);
             break;
         case 'getQuestionNumber':
             GetQuestionNumber(gameId, ws);
