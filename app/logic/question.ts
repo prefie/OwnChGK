@@ -1,7 +1,8 @@
-import { Team } from './team';
-import { Answer } from './answer';
-import { Appeal } from './appeal';
-import { AnswerStatus } from '../db/entities/answer';
+import {Team} from './team';
+import {Answer} from './answer';
+import {Appeal} from './appeal';
+import {AnswerStatus} from '../db/entities/answer';
+import {GameTypeLogic} from "./enums/game-type-logic.enum";
 
 export class Question {
     public readonly id: string;
@@ -52,11 +53,11 @@ export class Question {
         this._answers[teamId].onAppeal(this._appeals[teamId]);
     }
 
-    changeAnswer(team: Team, roundNumber: number, questionNumber: number, isMatrixType = false): void {
+    changeAnswer(team: Team, roundNumber: number, questionNumber: number, gameType: GameTypeLogic): void {
         let answer = this._answers[team.id];
         if (answer) {
             answer.status == AnswerStatus.RIGHT
-                ? answer.reject(isMatrixType ? this.cost : 0)
+                ? answer.reject(gameType == GameTypeLogic.Matrix || gameType == GameTypeLogic.Quiz ? this.cost : 0)
                 : answer.accept(this.cost);
         } else {
             answer = new Answer(team.id, this.roundNumber, this.number, false, '');
@@ -74,10 +75,12 @@ export class Question {
         }
     }
 
-    rejectAnswers(wrongAnswer: string, isMatrixType = false): void {
+    rejectAnswers(wrongAnswer: string, gameType: GameTypeLogic): void {
         for (let teamId of Object.keys(this._answers)) {
             if (this._answers[teamId].text == wrongAnswer) {
-                isMatrixType ? this._answers[teamId].reject(this.cost) : this._answers[teamId].reject(0);
+                gameType == GameTypeLogic.Matrix || gameType == GameTypeLogic.Quiz
+                    ? this._answers[teamId].reject(this.cost)
+                    : this._answers[teamId].reject(0);
             }
         }
     }
@@ -101,7 +104,7 @@ export class Question {
             appeal.reject(comment);
         }
 
-        this.rejectAnswers(answer);
+        this.rejectAnswers(answer, GameTypeLogic.ChGK);
     }
 
     private static mapAnswersToRecord(answers: Answer[]): Record<string, Answer> {

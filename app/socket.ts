@@ -208,7 +208,7 @@ function ChangeAnswer(gameId: number, gameType: GameTypeLogic, teamId: string, n
         game.teams[teamId],
         roundNumber,
         questionNumber,
-        gameType == GameTypeLogic.Matrix
+        gameType
     );
 }
 
@@ -231,12 +231,11 @@ function RejectAnswer(
     gameType: GameTypeLogic,
     roundNumber: number,
     questionNumber: number,
-    answers: string[],
-    isMatrixType = false
+    answers: string[]
 ) {
     const game = GetGame(gameId, gameType);
     for (const answer of answers) {
-        game.rounds[roundNumber - 1].questions[questionNumber - 1].rejectAnswers(answer, isMatrixType);
+        game.rounds[roundNumber - 1].questions[questionNumber - 1].rejectAnswers(answer, gameType);
     }
 }
 
@@ -594,8 +593,7 @@ function AdminsAction(gameId, ws, jsonMessage, gameType) {
                 jsonMessage.gamePart,
                 jsonMessage.roundNumber,
                 jsonMessage.questionNumber,
-                jsonMessage.answers,
-                gameType == GameTypeLogic.Matrix
+                jsonMessage.answers
             );
             break;
         case 'RejectAppeals':
