@@ -93,7 +93,7 @@ function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber
                     name: bigGames[gameId].currentGame.rounds[tourNumber - 1]?.name || ''
                 },
                 old: {
-                    questionRoundOld: oldRoundNumber,
+                    numberRoundOld: oldRoundNumber,
                     gamePartOld: oldGamePart
                 }
             })
