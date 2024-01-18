@@ -318,7 +318,8 @@ function GiveAnswerChgk(answer: string, teamId: string, gameId: number, ws) {
             action: 'statusAnswer',
             isAccepted: true,
             answer: answer,
-            activeGamePart: GameTypeLogic.ChGK
+            activeGamePart: GameTypeLogic.ChGK,
+            isOnPause: bigGames[gameId].currentGame.timeIsOnPause
         })
     );
 }
