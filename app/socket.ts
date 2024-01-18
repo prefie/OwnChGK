@@ -95,7 +95,8 @@ function ChangeQuestionNumber(gameId: number, questionNumber: number, tourNumber
                 old: {
                     numberRoundOld: oldRoundNumber,
                     gamePartOld: oldGamePart
-                }
+                },
+                isBlitz: bigGames[gameId].currentGame.rounds[tourNumber - 1]?.isBlitz
             })
         );
     }
