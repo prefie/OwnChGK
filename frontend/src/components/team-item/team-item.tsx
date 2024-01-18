@@ -5,6 +5,7 @@ import React, { Dispatch, SetStateAction, useState } from 'react';
 import { Roles } from '../game-item/game-item';
 import { Team } from '../../pages/admin-start-screen/admin-start-screen';
 import TeamItemFooter from '../team-footer/footer.tsx';
+import classNames from 'classnames';
 
 export interface Participant {
     email: string;
