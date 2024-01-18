@@ -158,7 +158,8 @@ function StopTimer(gameId: number, gamePart: GameTypeLogic, isBlitz: boolean) {
         user.send(
             JSON.stringify({
                 action: 'stop',
-                activeGamePart: game.type
+                activeGamePart: game.type,
+                time: time
             })
         );
     }
