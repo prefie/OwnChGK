@@ -353,8 +353,11 @@ export class GamesController {
         }
 
         const headersList = ['Название команды', 'Сумма']; // TODO: shusharin убрать эту логику отсюда
-        if (bigGame.isFullGame()) {
+        if (bigGame.matrixGame) {
             headersList.push('Матрица');
+        }
+        if (bigGame.quizGame) {
+            headersList.push('Квиз');
         }
 
         const game = bigGame.isFullGame() ? bigGame.chGKGame : bigGame.currentGame;
