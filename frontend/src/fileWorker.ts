@@ -21,13 +21,13 @@ export const encodeCP1251 = function (text: string) {
 }
 
 export const decodeCP1251 = function (text: string){
-    function decodeChar(s: string, p: number) {
+    function decodeChar(_: string, p: number) {
         const cp1251 = 'ЂЃ‚ѓ„…†‡€‰Љ‹ЊЌЋЏђ‘’“”•–—�™љ›њќћџ ЎўЈ¤Ґ¦§Ё©Є«¬*®Ї°±Ііґµ¶·\
 ё№є»јЅѕїАБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя';
         p = parseInt(p.toString(), 16);
         return p < 128 ? String.fromCharCode(p) : cp1251[p - 128];
     }
-    return text.replace(/%(..)/g,decodeChar);
+    return text.replace(/%(..)/g, decodeChar);
 }
 
 

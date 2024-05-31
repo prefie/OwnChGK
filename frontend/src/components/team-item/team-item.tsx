@@ -28,8 +28,6 @@ interface TeamItemProps {
 
 function TeamItem(props: TeamItemProps) {
     const [isRedirectedToEdit, setIsRedirectedToEdit] = useState(false);
-    const [isClicked, setIsClicked] = useState(false);
-    const [isClickedOnCurrentTeam, setIsClickedOnCurrentTeam] = useState<boolean>(false);
     const linkToTeam = props.role === Roles.user
         ? `/team-creation/edit`
         : `/admin/team-creation/edit`
@@ -99,7 +97,7 @@ function TeamItem(props: TeamItemProps) {
         }
     }
 
-    const setItemName = useCallback(e => {
+    const setItemName = useCallback(() => {
         if (props.setItemForDeleteName) {
             props.setItemForDeleteName(props.name);
         }
@@ -108,18 +106,18 @@ function TeamItem(props: TeamItemProps) {
         }
     }, [props]);
 
-    const handleOpenModal = useCallback(e => {
+    const handleOpenModal = useCallback(() => {
         if (props.openModal) {
             props.openModal(true);
         }
     }, [props]);
 
-    const handleDeleteClick = (event: React.SyntheticEvent) => {
-        setItemName(event);
-        handleOpenModal(event);
+    const handleDeleteClick = (_: React.SyntheticEvent) => {
+        setItemName();
+        handleOpenModal();
     };
 
-    const handleEditClick = (event: React.SyntheticEvent) => {
+    const handleEditClick = (_: React.SyntheticEvent) => {
         setIsRedirectedToEdit(true);
     };
 

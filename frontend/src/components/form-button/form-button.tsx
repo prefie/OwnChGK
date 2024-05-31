@@ -1,8 +1,8 @@
-import React, {FC} from 'react';
+import React from 'react';
 import classes from './form-button.module.scss';
 import {ButtonProps} from '../../entities/form-button/form-button.interfaces';
 
-export const FormButton: FC<ButtonProps> = props => {
+export const FormButton: React.FC<ButtonProps> = props => {
     const cls = [
         classes.Button,
         props.type ? classes[props.type] : null,

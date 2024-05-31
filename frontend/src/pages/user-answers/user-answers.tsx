@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import classes from './user-answers.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import {Link, useParams} from 'react-router-dom';
@@ -17,7 +17,7 @@ import {AnswerStatus} from "../../server-api/type";
 let conn: WebSocket;
 let ping: any;
 
-const UserAnswersPage: FC<UserAnswersPageProps> = props => {
+const UserAnswersPage: React.FC<UserAnswersPageProps> = props => {
     const {gameId} = useParams<{ gameId: string }>();
     const [gameName, setGameName] = useState<string>();
     const [answers, setAnswers] = useState<{ [key: string]: Answer[] }>({matrix: [], chgk: []});

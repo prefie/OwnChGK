@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {InputProps} from '../../entities/custom-input/custom-input.interfaces';
 import {
     FormControl,
@@ -23,7 +23,7 @@ const StyledIconButton = styled(IconButton)<IconButtonProps>({
     color: "var(--color-text-icon-secondary)"
 });
 
-export const Input: FC<InputProps> = props => {
+export const Input: React.FC<InputProps> = props => {
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
 
     useEffect(() => {

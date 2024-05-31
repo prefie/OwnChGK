@@ -1,8 +1,8 @@
-import React, {FC} from 'react';
+import React from 'react';
 import classes from './scrollbar.module.scss';
 import {Scrollbars} from 'rc-scrollbars';
 
-const Scrollbar: FC = props => {
+const Scrollbar: React.FC = props => {
     return (
         <Scrollbars
             autoHide

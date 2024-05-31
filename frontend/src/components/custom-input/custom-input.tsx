@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import classes from './custom-input.module.scss';
 import {InputProps} from '../../entities/custom-input/custom-input.interfaces';
 import {
@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import {Visibility, VisibilityOff} from '@mui/icons-material';
 
-export const CustomInput: FC<InputProps> = props => {
+export const CustomInput: React.FC<InputProps> = props => {
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
 
     useEffect(() => {
@@ -38,20 +38,6 @@ export const CustomInput: FC<InputProps> = props => {
     }
 
     const cls = [classes.Input];
-    const styles = {
-        '& .MuiOutlinedInput-notchedOutline': {
-            border: props.isInvalid ? '2px solid #FF0000 !important' : '2px solid var(--foreground-color) !important',
-            borderRadius: '9px',
-            minHeight: '26px',
-            padding: '0 !important'
-        },
-        '& .MuiOutlinedInput-input': {
-            padding: mediaMatch.matches
-                ? (props.type === 'password' ? '0 0 0 5.5vw !important' : '0 5.5vw 0 !important')
-                : (props.type === 'password' ? '0 0 0 1.5vmax !important' : '0 1.5vmax 0 !important'),
-            color: 'black',
-        }
-    };
 
     if (props.isInvalid && !cls.includes(classes.invalid)) {
         cls.push(classes.invalid);

@@ -1,6 +1,6 @@
 import { IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import React, { FC, useCallback, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import classes from './modal.module.scss';
 import { ModalProps } from '../../entities/modal/modal.interfaces';
 import { getCookie, getUrlForSocket } from '../../commonFunctions';
@@ -9,7 +9,7 @@ import {ServerApi} from "../../server-api/server-api";
 
 let conn: WebSocket;
 
-const Modal: FC<ModalProps> = props => {
+const Modal: React.FC<ModalProps> = props => {
     const [minutes, setMinutes] = useState<number>(0);
 
     const handleMinutesCountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,15 +18,15 @@ const Modal: FC<ModalProps> = props => {
         }
     };
 
-    const handleCloseModal = useCallback(e => {
+    const handleCloseModal = useCallback(() => {
         props.closeModal(false);
     }, [props]);
 
-    const handleCloseModalClick = (e: React.SyntheticEvent) => {
-        handleCloseModal(e);
+    const handleCloseModalClick = (_: React.SyntheticEvent) => {
+        handleCloseModal();
     };
 
-    const handleDelete = useCallback(e => {
+    const handleDelete = useCallback(() => {
         if (props.modalType === 'delete-game-part') {
             props.setGamePartUndefined?.(undefined);
         } else {
@@ -40,12 +40,12 @@ const Modal: FC<ModalProps> = props => {
         }
     }, [props]);
 
-    const handleDeleteClick = (e: React.SyntheticEvent) => {
-        handleDelete(e);
-        handleCloseModal(e);
+    const handleDeleteClick = (_: React.SyntheticEvent) => {
+        handleDelete();
+        handleCloseModal();
     };
 
-    const handleStartBreak = (e: React.SyntheticEvent) => {
+    const handleStartBreak = (_: React.SyntheticEvent) => {
         if (minutes !== 0) {
             props.setBreakTime?.(minutes * 60);
             props.startBreak?.(true);
@@ -61,7 +61,7 @@ const Modal: FC<ModalProps> = props => {
                 );
             };
         }
-        handleCloseModal(e);
+        handleCloseModal();
     };
 
     return createPortal(

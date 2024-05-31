@@ -3,7 +3,7 @@ import {GameTypeItemProps} from "../game-type-item/game-type-item";
 import classes from './game-item.module.scss';
 import GameTypeList from "../game-type-list/game-type-list";
 import {IconButton} from "@mui/material";
-import React, {Dispatch, SetStateAction, useCallback, useEffect, useState} from "react";
+import React, {Dispatch, SetStateAction, useCallback, useState} from "react";
 import {Redirect} from "react-router-dom";
 import {Link} from 'react-router-dom';
 import SignUpToGameItem from "../sign-up-to-game-item/sign-up-to-game-item";
@@ -79,9 +79,9 @@ function GameItem(props: GameItemProps) {
         })
     }
 
-    const handleDeleteClick = (event: React.SyntheticEvent) => {
-        setItemName(event);
-        handleOpenModal(event);
+    const handleDeleteClick = (_: React.SyntheticEvent) => {
+        setItemName();
+        handleOpenModal();
     };
 
     const renderGameTitle = () => {
@@ -102,7 +102,7 @@ function GameItem(props: GameItemProps) {
         }
     }
 
-    const setItemName = useCallback(e => {
+    const setItemName = useCallback(() => {
         if (props.setItemForDeleteName) {
             props.setItemForDeleteName(props.name);
         }
@@ -111,13 +111,13 @@ function GameItem(props: GameItemProps) {
         }
     }, [props]);
 
-    const handleOpenModal = useCallback(e => {
+    const handleOpenModal = useCallback(() => {
         if (props.openModal) {
             props.openModal(true);
         }
     }, [props]);
 
-    const handleEditClick = (event: React.SyntheticEvent) => {
+    const handleEditClick = (_: React.SyntheticEvent) => {
         setIsRedirectedToEdit(true);
     };
 

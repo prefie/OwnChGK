@@ -1,4 +1,4 @@
-import React, {Dispatch, FC, SetStateAction, useCallback, useEffect, useRef, useState} from 'react';
+import React, {Dispatch, SetStateAction, useCallback, useEffect, useRef, useState} from 'react';
 import classes from './admin-start-screen.module.scss';
 import Header from '../../components/header/header';
 import NavBar from '../../components/nav-bar/nav-bar';
@@ -8,18 +8,16 @@ import {Button, IconButton, OutlinedInput, Skeleton} from '@mui/material';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import {Scrollbars} from 'rc-scrollbars';
 import {Link, useLocation} from 'react-router-dom';
-import InputWithAdornment from '../../components/input-with-adornment/input-with-adornment';
 import {ServerApi} from '../../server-api/server-api';
 import Modal from '../../components/modal/modal';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import Scrollbar from '../../components/scrollbar/scrollbar';
 import Loader from "../../components/loader/loader";
-import {AddRounded, PlusOneRounded} from "@mui/icons-material";
+import {AddRounded} from "@mui/icons-material";
 import GameItem, {AccessLevel, Roles, Status} from "../../components/game-item/game-item";
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
 import {GameTypeItemProps} from "../../components/game-type-item/game-type-item";
-import {divide} from "lodash-es";
 import TeamItem, {Participant} from "../../components/team-item/team-item";
 import emptyOwlImage from '../../images/owl-images/empty_owl.svg';
 
@@ -49,8 +47,8 @@ interface AdminProps {
     isSuperAdmin: boolean;
 }
 
-const AdminComponent: FC<AdminProps> = props => {
-    const handleDelete = useCallback(e => {
+const AdminComponent: React.FC<AdminProps> = props => {
+    const handleDelete = useCallback(() => {
         ServerApi.deleteAdmin(props.email)
             .then(res => {
                 if (res.status === 200) {
@@ -61,8 +59,8 @@ const AdminComponent: FC<AdminProps> = props => {
             });
     }, [props]);
 
-    const handleDeleteClick = (e: React.SyntheticEvent) => {
-        handleDelete(e);
+    const handleDeleteClick = (_: React.SyntheticEvent) => {
+        handleDelete();
     };
 
     return (
@@ -107,7 +105,7 @@ export interface User {
     email: string
 }
 
-const AdminStartScreen: FC<AdminStartScreenProps> = props => {
+const AdminStartScreen: React.FC<AdminStartScreenProps> = props => {
     const [page, setPage] = useState<string>('games');
     const [teams, setTeams] = useState<Team[]>();
     const [games, setGames] = useState<Game[]>();
@@ -182,7 +180,7 @@ const AdminStartScreen: FC<AdminStartScreenProps> = props => {
                                                                   width="100%" height="7vh"
                                                                   sx={{marginBottom: '2.5vh'}}/>);
         }
-        return teams.map((team, index) =>
+        return teams.map((team) =>
             <TeamItem
                 id={team.id}
                 name={team.name}

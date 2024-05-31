@@ -1,9 +1,9 @@
-import React, {FC, useCallback} from 'react';
+import React, {useCallback} from 'react';
 import classes from './mobile-navbar.module.scss';
 import {Link} from 'react-router-dom';
 import {MobileNavBarProps} from '../../entities/nav-bar/nav-bar.interfaces';
 
-const MobileNavbar: FC<MobileNavBarProps> = props => {
+const MobileNavbar: React.FC<MobileNavBarProps> = props => {
     const handleClick = (e: React.SyntheticEvent) => {
         const el = e.target as HTMLElement;
         const items = document.querySelectorAll(`.${classes['nav-item']}`);

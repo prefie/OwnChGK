@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import classes from './user-start-screen.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import NavBar from '../../components/nav-bar/nav-bar';
@@ -24,7 +24,7 @@ import Scrollbar from "../../components/scrollbar/scrollbar";
 import emptyOwlImage from '../../images/owl-images/empty_owl.svg';
 import {ServerApi} from "../../server-api/server-api";
 
-const UserStartScreen: FC<UserStartScreenProps> = props => {
+const UserStartScreen: React.FC<UserStartScreenProps> = props => {
     const [page, setPage] = useState<string>('teams');
     const [gamesFromDB, setGamesFromDB] = useState<Game[]>();
     const [teamsFromDB, setTeamsFromDB] = useState<Team[]>();
@@ -39,7 +39,6 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
     const [gameId, setGameId] = useState<string>('');
     const [isTeamNotFree, setIsTeamNotFree] = useState<boolean>(false);
     const [numberLoading, setNumberLoading] = useState<number>(0);
-    const [isClickedOnCurrentTeam, setIsClickedOnCurrentTeam] = useState<boolean>(false);
     let location = useLocation<{ page: string }>();
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
 
@@ -137,10 +136,6 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
         setGameId(id);
     };
 
-    const handleEditClick = () => {
-        setIsClickedOnCurrentTeam(true);
-    };
-
     let isDisabledTeamButton = false;
     if (userTeam.id !== "") {
         isDisabledTeamButton = true;
@@ -203,7 +198,7 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
                 role={Roles.user}
                 userTeam={userTeam}
             />
-            :  teamsFromDB.map((team, index) =>
+            :  teamsFromDB.map((team) =>
                 <TeamItem
                     id={team.id}
                     name={team.name}
@@ -290,10 +285,6 @@ const UserStartScreen: FC<UserStartScreenProps> = props => {
 
     if (numberLoading < 2) {
         return <Loader />;
-    }
-
-    if (isClickedOnCurrentTeam) {
-        return <Redirect to={{pathname: `/team-creation/edit`, state: {id: userTeam.id, name: userTeam.name}}}/>
     }
 
     if (gameId) {

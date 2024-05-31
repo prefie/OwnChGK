@@ -1,9 +1,9 @@
-import React, {FC, Fragment, useEffect, useCallback} from 'react';
+import React, {Fragment, useEffect, useCallback} from 'react';
 import classes from './nav-bar.module.scss';
 import {Link} from 'react-router-dom';
 import {NavBarProps} from '../../entities/nav-bar/nav-bar.interfaces';
 
-const NavBar: FC<NavBarProps> = props => {
+const NavBar: React.FC<NavBarProps> = props => {
     const handleIndicator = (e: React.SyntheticEvent) => {
         const indicator = document.querySelector('#indicator') as HTMLSpanElement;
         const items = document.querySelectorAll(`.${classes['nav-item']}`);

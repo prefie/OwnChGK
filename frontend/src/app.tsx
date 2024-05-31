@@ -1,11 +1,11 @@
-import React, { FC, Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import Wrapper from './wrapper';
 import Authorization from './pages/authorization/authorization';
 import Registration from './pages/registration/registration';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import RestoringPassword from './pages/restoring-password/restoring-password';
 import { connect } from 'react-redux';
-import ProtectedRoute from './components/private-route/private-route';
+import { ProtectedRoute } from './components/private-route/private-route';
 import { AppDispatchProps, AppProps, AppState, AppStateProps } from './entities/app/app.interfaces';
 import { ServerApi } from './server-api/server-api';
 import { Dispatch } from 'redux';
@@ -27,7 +27,7 @@ import AdminStartScreen from "./pages/admin-start-screen/admin-start-screen";
 import GameCreator from "./pages/game-creation/game-creation";
 import UserAnswersPageForAdmin from "./pages/user-answers-for-admin/user-answers-for-admin";
 
-const App: FC<AppProps> = props => {
+const App: React.FC<AppProps> = props => {
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
 
     useEffect(() => {

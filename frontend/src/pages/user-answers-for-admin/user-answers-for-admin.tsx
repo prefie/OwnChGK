@@ -15,7 +15,7 @@ import {ServerApi} from "../../server-api/server-api";
 let conn: WebSocket;
 let ping: any;
 
-const UserAnswersPageForAdmin = () => {
+const UserAnswersPageForAdmin: React.FC = () => {
     const {gameId} = useParams<{ gameId: string }>();
     const {teamId} = useParams<{ teamId: string }>();
     const [gameName, setGameName] = useState<string>();

@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {useState} from 'react';
 import classes from './registration.module.scss';
 import Header from '../../components/header/header';
 import {Link, Redirect} from 'react-router-dom';
@@ -14,7 +14,7 @@ import CustomButton, {ButtonType} from "../../components/custom-button/custom-bu
 import {ServerApi} from "../../server-api/server-api";
 import logoImage from '../../images/Logo.svg';
 
-const Registration: FC<RegistrationProps> = props => {
+const Registration: React.FC<RegistrationProps> = props => {
     const [isRepeatedPasswordInvalid, setIsRepeatedPasswordInvalid] = useState<boolean>(false);
     const [loggedIn, setLoggedIn] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');

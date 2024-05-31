@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import classes from './rating.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import { GameParams, RatingProps, TeamResult, Tour } from '../../entities/rating/rating.interfaces';
@@ -12,7 +12,7 @@ import { createFileLink } from '../../fileWorker';
 import Loader from '../../components/loader/loader';
 import {ServerApi} from "../../server-api/server-api";
 
-const Rating: FC<RatingProps> = props => {
+const Rating: React.FC<RatingProps> = props => {
     const {gameId} = useParams<{ gameId: string }>();
     const [gameParams, setGameParams] = useState<GameParams>();
     const [teams, setTeams] = useState<TeamResult[]>();

@@ -1,7 +1,7 @@
-import React, {FC} from 'react';
+import React from 'react';
 import classes from './page-wrapper.module.scss';
 
-const PageWrapper: FC = props => {
+const PageWrapper: React.FC = props => {
     return (
         <div className={classes.PageWrapper}>
             {props.children}

@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import classes from './admin-start-game.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import {Redirect, useParams} from 'react-router-dom';
@@ -10,7 +10,7 @@ import {createFileLink} from '../../fileWorker';
 import downloadIcon from '../../images/DownloadIcon.svg';
 import logoImage from '../../images/Logo.svg';
 
-const StartGame: FC = () => {
+const StartGame: React.FC = () => {
     const [gameName, setGameName] = useState<string>();
     const {gameId} = useParams<{ gameId: string }>();
     const [isGameStart, setIsGameStart] = useState<boolean>(false);

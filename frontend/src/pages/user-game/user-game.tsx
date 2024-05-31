@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FC, useEffect, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import classes from './user-game.module.scss';
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
@@ -30,7 +30,7 @@ export enum GameType {
     matrix = 'matrix'
 }
 
-const UserGame: FC<UserGameProps> = props => {
+const UserGame: React.FC<UserGameProps> = props => {
     const {gameId} = useParams<{ gameId: string }>();
     const [answer, setAnswer] = useState<string>('');
     const [gameName, setGameName] = useState<string>();
@@ -50,7 +50,6 @@ const UserGame: FC<UserGameProps> = props => {
     const [isConnectionError, setIsConnectionError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [gamePart, setGamePart] = useState<GameType>(); // активная часть игры
-    const [chgkSettings, setChgkSettings] = useState<GamePartSettings>();
     const [matrixAnswers, setMatrixAnswers] = useState<{ [key: number]: string[] } | null>(null); // Заполнить там же, где matrixSettings, вызвав fillMatrixAnswers(tourNames, questionsCount)
     const [acceptedMatrixAnswers, setAcceptedMatrixAnswers] = useState<{ [key: number]: string[] } | null>(null); // Заполнить там же, где matrixSettings, вызвав fillMatrixAnswers(tourNames, questionsCount)
     const [acceptedAnswer, setAcceptedAnswer] = useState<string | undefined>();
@@ -207,7 +206,7 @@ const UserGame: FC<UserGameProps> = props => {
             });
             if (isStarted) {
                 clearInterval(progressBarInterval);
-                progressBarInterval = moveProgressBar(time, maxTime);
+                progressBarInterval = moveProgressBar();
             }
             setMaxTime(maxTime / 1000);
         },
@@ -227,23 +226,23 @@ const UserGame: FC<UserGameProps> = props => {
             setMaxTime(Math.round(maxTime / 1000));
         },
 
-        handleCheckBreakTimeMessage: (currentTime: number, time: number) => {
+        handleCheckBreakTimeMessage: (time: number) => {
             setBreakTime(time);
         },
 
         handleStartMessage: (time: number, maxTime: number) => {
             setTimeForAnswer(time / 1000);
             clearInterval(progressBarInterval);
-            progressBarInterval = moveProgressBar(time, maxTime);
+            progressBarInterval = moveProgressBar();
             setMaxTime(maxTime / 1000);
         },
 
-        handleAddTimeMessage: (time: number, maxTime: number, isStarted: boolean) => {
+        handleAddTimeMessage: (maxTime: number, isStarted: boolean) => {
             clearInterval(progressBarInterval);
             setTimeForAnswer(t => (t ?? 0) + 10);
             if (isStarted) {
                 clearInterval(progressBarInterval);
-                progressBarInterval = moveProgressBar(time, maxTime);
+                progressBarInterval = moveProgressBar();
             }
             setMaxTime(maxTime / 1000);
         },
@@ -424,7 +423,7 @@ const UserGame: FC<UserGameProps> = props => {
                         handler.handleStartMessage(jsonMessage.time, jsonMessage.maxTime);
                         break;
                     case 'addTime':
-                        handler.handleAddTimeMessage(jsonMessage.time, jsonMessage.maxTime, jsonMessage.isStarted);
+                        handler.handleAddTimeMessage(jsonMessage.maxTime, jsonMessage.isStarted); // TODO shusharin jsonMessage.time не используется
                         break;
                     case 'pause':
                         handler.handlePauseMessage();
@@ -454,7 +453,7 @@ const UserGame: FC<UserGameProps> = props => {
                         handler.handleGetTeamAnswers(jsonMessage.matrixAnswers);
                         break;
                     case 'checkBreakTime':
-                        handler.handleCheckBreakTimeMessage(jsonMessage.currentTime, jsonMessage.time);
+                        handler.handleCheckBreakTimeMessage(jsonMessage.time); // TODO передается лишний jsonMessage.currentTime
                         break;
                 }
             }
@@ -463,8 +462,7 @@ const UserGame: FC<UserGameProps> = props => {
         ServerApi.getGame(gameId).then((res) => {
             if (res.status === 200) {
                 res.json().then(({
-                                     name,
-                                     chgkSettings,
+                                     name, // TODO shusharin почему chgkSettings не используются?
                                      matrixSettings
                                  }) => {
                     setGameName(name);
@@ -472,9 +470,6 @@ const UserGame: FC<UserGameProps> = props => {
                     if (matrixSettings) {
                         matrixSettingsCurrent = matrixSettings;
                         fillMatrixAnswers(matrixSettings.roundsCount, matrixSettings.questionsCount);
-                    }
-                    if (chgkSettings) {
-                        setChgkSettings(chgkSettings);
                     }
 
                     openWs();
@@ -531,11 +526,11 @@ const UserGame: FC<UserGameProps> = props => {
         return 'var(--color-fill-progressBar-green)';  // 70-36, 20-11
     }
 
-    const moveProgressBar = (time: number, maxTime: number) => {
+    const moveProgressBar = () => {
         return setInterval(() => requester.checkTime(), 1000);
     };
 
-    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    const handleClose = (_?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }
@@ -882,7 +877,7 @@ const UserGame: FC<UserGameProps> = props => {
                         <img className={classes.image} src={breakOwlImage} alt="logo"/>
                         <div className={classes.breakTime}>
                             {parseTimer()}
-                            <p className={classes.breakTimeText}>Отдохни, да выпей чаю</p>
+                            <p className={classes.breakTimeText}>Отдохни да выпей чаю</p>
                         </div>
                     </div>
                     { renderErrorSnackbar() }

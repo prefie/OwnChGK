@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {useState} from 'react';
 import classes from './authorization.module.scss';
 import Header from '../../components/header/header';
 import {Link, Redirect} from 'react-router-dom';
@@ -8,7 +8,6 @@ import {
     AuthorizationStateProps
 } from '../../entities/authorization/authorization.interfaces';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
-import {CustomInput} from '../../components/custom-input/custom-input';
 import {connect} from 'react-redux';
 import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces';
 import {Dispatch} from 'redux';
@@ -21,7 +20,7 @@ import {Input} from "../../components/input/input";
 import { allAdminRoles } from '../../entities/common/common.constants';
 import logoImage from '../../images/Logo.svg';
 
-const Authorization: FC<AuthorizationProps> = props => {
+const Authorization: React.FC<AuthorizationProps> = props => {
     const [wrongEmailOrPassword, setWrongEmailOrPassword] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');

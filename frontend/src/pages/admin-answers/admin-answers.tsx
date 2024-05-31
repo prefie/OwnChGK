@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import classes from './admin-answers.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import Header from '../../components/header/header';
@@ -14,7 +14,7 @@ import Loader from "../../components/loader/loader";
 let conn: WebSocket;
 let ping: any;
 
-const AdminAnswersPage: FC = () => {
+const AdminAnswersPage: React.FC = () => {
     const {gameId, gamePart} = useParams<{ gameId: string, gamePart: 'chgk' | 'matrix' }>();
     const {tour, question} = useParams<{ tour: string, question: string }>();
     const [page, setPage] = useState<Page>('answers');

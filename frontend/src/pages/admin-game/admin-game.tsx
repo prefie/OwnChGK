@@ -1,11 +1,11 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import classes from './admin-game.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import Header from '../../components/header/header';
 import {Link, useParams} from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
-import {AdminGameProps, TourProps} from '../../entities/admin-game/admin-game.interfaces';
+import {TourProps} from '../../entities/admin-game/admin-game.interfaces';
 import PauseIcon from '@mui/icons-material/Pause';
 import {GamePartSettings} from '../../server-api/type';
 import {getCookie, getUrlForSocket} from '../../commonFunctions';
@@ -25,7 +25,7 @@ let breakInterval: any;
 let conn: WebSocket;
 let ping: any;
 
-const AdminGame: FC<AdminGameProps> = props => {
+const AdminGame: React.FC = () => {
     const [playOrPause, setPlayOrPause] = useState<'play' | 'pause'>('play');
 
     const [clickedTourIndex, setClickedTourIndex] = useState<number>(); // Тур, на который жмякнули
@@ -45,7 +45,7 @@ const AdminGame: FC<AdminGameProps> = props => {
     const [isAppeal, setIsAppeal] = useState<boolean[]>([]);
     const [isConnectionError, setIsConnectionError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [isStop, setIsStop] = useState<boolean>(false);
+    const [_, setIsStop] = useState<boolean>(false);
 
     const requester = {
         getPayload: (obj: any) => JSON.stringify({
@@ -137,7 +137,7 @@ const AdminGame: FC<AdminGameProps> = props => {
                 clearInterval(interval);
             }
 
-            setIsStop(stop => {
+            setIsStop(stop => { // TODO shusharin грязь, которая не использует isStop
                 if (!stop) {
                     if (time == 0) {
                         setPlayOrPause('play');
@@ -150,7 +150,7 @@ const AdminGame: FC<AdminGameProps> = props => {
             });
         },
 
-        handleCheckBreakTimeMessage: (currentTime: number, time: number) => {
+        handleCheckBreakTimeMessage: (time: number) => {
             setBreakTime(time);
         },
 
@@ -254,7 +254,7 @@ const AdminGame: FC<AdminGameProps> = props => {
                     handlers.handleCheckTimeMessage(jsonMessage.time);
                     break;
                 case 'checkBreakTime':
-                    handlers.handleCheckBreakTimeMessage(jsonMessage.currentTime, jsonMessage.time);
+                    handlers.handleCheckBreakTimeMessage(jsonMessage.time); // TODO shusharin передается лишний jsonMessage.currentTime
                     break;
             }
         };
@@ -262,7 +262,7 @@ const AdminGame: FC<AdminGameProps> = props => {
         return () => clearInterval(ping);
     }, []);
 
-    const Tour: FC<TourProps> = props => {
+    const Tour: React.FC<TourProps> = props => {
         const handleTourClick = () => {
             if (activeTourIndex === props.tourNumber && activeGamePart === props.gamePart) {
                 requester.getQuestionNumber();

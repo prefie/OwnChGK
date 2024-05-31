@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {useState} from 'react';
 import classes from './profile.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import {ProfileDispatchProps, ProfileProps, ProfileStateProps} from '../../entities/profile/profile.interfaces';
@@ -15,7 +15,7 @@ import DemoVersionFrame from "../../components/demoversion-frame/demoversion-fra
 import CustomButton, {ButtonType} from "../../components/custom-button/custom-button";
 import {ServerApi} from "../../server-api/server-api";
 
-const Profile: FC<ProfileProps> = props => {
+const Profile: React.FC<ProfileProps> = props => {
     const [userName, setUserName] = useState<string>(props.userName);
     const [userPassword, setUserPassword] = useState<string>('');
     const [userOldPassword, setUserOldPassword] = useState<string>('');
@@ -36,7 +36,7 @@ const Profile: FC<ProfileProps> = props => {
         }
     };
 
-    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    const handleClose = (_?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }

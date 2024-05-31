@@ -1,10 +1,10 @@
-import React, {FC, useState} from 'react';
+import React, {useState} from 'react';
 import classes from './user-answer.module.scss';
 import {TextareaAutosize} from '@mui/material';
 import {UserAnswerProps} from '../../entities/user-answer/user-answer.interfaces';
 import {getCookie, getUrlForSocket} from '../../commonFunctions';
 
-const UserAnswer: FC<UserAnswerProps> = props => {
+const UserAnswer: React.FC<UserAnswerProps> = props => {
     const [isOppositionClicked, setIsOppositionClicked] = useState<boolean>(false);
     const [opposition, setOpposition] = useState<string>('');
     const [answerStatus, setAnswerStatus] = useState<'success' | 'error' | 'opposition' | 'no-answer'>(props.status);

@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import classes from './restoring-password.module.scss';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
 import Header from '../../components/header/header';
@@ -9,7 +9,7 @@ import {Alert, Snackbar} from '@mui/material';
 import PageBackdrop from '../../components/backdrop/backdrop';
 import {ServerApi} from "../../server-api/server-api";
 
-const RestoringPassword: FC<RestoringPasswordProps> = props => {
+const RestoringPassword: React.FC<RestoringPasswordProps> = props => {
     const [isEmailInvalid, setIsEmailInvalid] = useState<boolean>(false);
     const [isCodeInvalid, setIsCodeInvalid] = useState<boolean>(false);
     const [isRepeatedPasswordInvalid, setIsRepeatedPasswordInvalid] = useState<boolean>(false);

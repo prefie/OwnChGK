@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import classes from './mobile-menu.module.scss';
 import {Link, useLocation} from 'react-router-dom';
 import {connect} from 'react-redux';
@@ -15,7 +15,7 @@ interface MobileMenuOwnProps {
 
 type MobileMenuProps = MobileMenuOwnProps & HeaderStateProps & HeaderDispatchProps;
 
-const MobileMenu: FC<MobileMenuProps> = props => {
+const MobileMenu: React.FC<MobileMenuProps> = props => {
     const location = useLocation<{prevPath: string}>();
     const [gameId, setGameId] = useState<string>();
 

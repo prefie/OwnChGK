@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import classes from './header.module.scss';
 import {HeaderDispatchProps, HeaderProps, HeaderStateProps} from '../../entities/header/header.interfaces';
 import {Link} from 'react-router-dom';
@@ -7,14 +7,13 @@ import {AppState} from '../../entities/app/app.interfaces';
 import {Dispatch} from 'redux';
 import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces';
 import {logOut} from '../../redux/actions/app-actions/app-actions';
-import {logout} from '../../server-api/server-api';
 import logoImage from '../../images/Logo.svg';
 import menuImage from '../../images/Menu.svg';
 import profileImage from '../../images/Profile.svg';
 import logOutImage from '../../images/LogOut.svg';
 import {ServerApi} from '../../server-api/server-api';
 
-const Header: FC<HeaderProps> = props => {
+const Header: React.FC<HeaderProps> = props => {
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
 
     useEffect(() => {

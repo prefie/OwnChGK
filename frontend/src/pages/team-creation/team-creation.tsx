@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import classes from './team-creation.module.scss';
 import Header from '../../components/header/header';
 import {FormButton} from '../../components/form-button/form-button';
@@ -30,11 +30,10 @@ export interface TeamMember {
     email: string;
 }
 
-const TeamCreator: FC<TeamCreatorProps> = props => {
+const TeamCreator: React.FC<TeamCreatorProps> = props => {
     const [usersFromDB, setUsersFromDB] = useState<string[]>();
     const [isCreatedSuccessfully, setIsCreatedSuccessfully] = useState<boolean>(false);
     const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
-    const [isCaptainEmpty, setIsCaptainEmpty] = useState<boolean>(false);
     const [oldCaptain, setOldCaptain] = useState<string | undefined>();
     const location = useLocation<{ id: string, name: string }>();
     const [teamName, setTeamName] = useState<string>(props.mode === 'edit' ? location.state.name : '');
@@ -106,9 +105,8 @@ const TeamCreator: FC<TeamCreatorProps> = props => {
         }
     }, []);
 
-    const handleAutocompleteChange = (event: React.SyntheticEvent, value: string | null) => {
+    const handleAutocompleteChange = (_: React.SyntheticEvent, value: string | null) => {
         setCaptain(value ? value as string : undefined);
-        setIsCaptainEmpty(false);
     };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,10 +116,6 @@ const TeamCreator: FC<TeamCreatorProps> = props => {
 
     const handleSubmit = async (event: React.SyntheticEvent) => {
         event.preventDefault();
-        /*if (captain === undefined) {
-            setIsCaptainEmpty(true);
-            return;
-        }*/
         setIsLoading(true);
         if (props.mode === 'creation') {
             ServerApi.createTeam(teamName, captain, members.filter(member => member.name !== "" || member.email !== "")).then(res => {
@@ -304,18 +298,6 @@ const TeamCreator: FC<TeamCreatorProps> = props => {
                                                         }}
                                                         renderInput={(params) => <TextField {...params} placeholder="Капитан"/>}
                                         />
-                                        {
-                                            false // isCaptainEmpty - пока совсем убирать не будем
-                                                ?
-                                                <small style={{
-                                                    position: 'absolute',
-                                                    color: '#FF0000',
-                                                    top: '7.5vh',
-                                                    fontSize: '1vmax'
-                                                }}>Выберите
-                                                    капитана</small>
-                                                : null
-                                        }
                                     </div>
                                     : <Skeleton variant='rectangular' width='100%' height={mediaMatch.matches ? '6vh' : '7vh'} sx={{marginBottom: '3%'}} />
                             }

@@ -8,7 +8,15 @@ export type ProtectedRouteProps = {
     extraCondition?: boolean;
 } & RouteProps;
 
-export default function ProtectedRoute({neededRole, redirectPath, currentUserRole, extraCondition, ...routeProps}: ProtectedRouteProps) {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = (
+    {
+        neededRole,
+        redirectPath,
+        currentUserRole,
+        extraCondition,
+        ...routeProps
+    }
+) => {
     if (neededRole.includes(currentUserRole) && (extraCondition !== undefined && extraCondition || !extraCondition)) {
         return <Route {...routeProps} />;
     } else {

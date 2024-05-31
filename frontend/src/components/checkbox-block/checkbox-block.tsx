@@ -1,10 +1,10 @@
-import React, {FC} from 'react';
+import React from 'react';
 import classes from './checkbox-block.module.scss';
 import {Checkbox} from '@mui/material';
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import {CheckboxBlockProps} from '../../entities/custom-checkbox/custom-checkbox.interfaces';
 
-const CheckboxBlock: FC<CheckboxBlockProps> = props => {
+const CheckboxBlock: React.FC<CheckboxBlockProps> = props => {
     return (
         <div className={classes.checkboxBlock} style={props.style}>
             <div className={classes.labelWrapper}>

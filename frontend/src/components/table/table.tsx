@@ -1,10 +1,10 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {TableCell, TableRow} from '@mui/material';
 import {TeamTableRowProps, TourHeaderCellProps} from '../../entities/table/table.interfaces';
 import {Link} from 'react-router-dom';
 import classes from "../../pages/user-game/user-game.module.scss";
 
-export const TourHeaderCell: FC<TourHeaderCellProps> = props => {
+export const TourHeaderCell: React.FC<TourHeaderCellProps> = props => {
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
 
     useEffect(() => {
