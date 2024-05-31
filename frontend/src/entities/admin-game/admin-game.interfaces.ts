@@ -5,6 +5,6 @@ export interface AdminGameProps {
 export interface TourProps {
     tourNumber: number;
     tourIndex: number;
-    gamePart: 'matrix' | 'chgk';
+    gamePart: 'matrix' | 'chgk' | 'quiz';
     tourName?: string;
 }

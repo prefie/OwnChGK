@@ -1,26 +1,43 @@
 .teamCreationForm {
   width: 50%;
-  height: 90%;
-  align-self: center;
+  height: 100%;
 }
 
 .pageTitle {
   font-size: 4vmin;
-  color: white;
-  display: flex;
-  text-align: center;
-  align-self: center;
-  font-weight: 300;
   margin: 5vh 0;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  vertical-align: middle;
+  font-family: Roboto, sans-serif;
+  font-weight: 300;
+  color:#FFFFFF;
+}
+
+.teamName{
+  border-radius: 4px !important;
+  background-color: #000B1D !important;
 }
 
 .contentWrapper {
-  height: 85%;
-  width: 100%;
+  height: 80%;
+  width: 90%;
   display: flex;
+  justify-content: start;
   align-items: center;
   flex-direction: column;
   box-sizing: content-box;
+  background-color: hsl(216, 48%, 11%);
+  border-radius: 8px;
+  padding: 4vh;
+  margin: 2vh;
+  gap:4%;
+
+  .buttonWrapper{
+    margin-left: auto;
+  }
 }
 
 .link {
@@ -30,15 +47,47 @@
 .settingsWrapper {
   display: flex;
   width: 100%;
-  justify-content: space-between;
-  margin-bottom: 1%;
+  input {
+    color:#FFFFFF;
+    background-color: #000B1D;
+    border-radius: 3px !important;
+    height: -webkit-fill-available;
+    border: 2px solid #F1F3F929
+  }
+
+  input::placeholder {
+    color: #F1F3F9B8 !important;
+    font-size: 3vh;
+  }
+}
+
+.settingsWrapper{
+  margin-bottom: -3%;
+}
+
+.captainWrapper {
+  flex-direction: column;
+  gap: 10%;
+  display: flex;
+  width: 100%;
+  input {
+    
+  }
+
+  input::placeholder {
+    color: #F1F3F9B8 !important;
+    font-size: 3vh;
+  }
+}
+
+.captainSettings{
+  display: flex;
+  flex-direction: row;
+  gap: 2%;
 }
 
 .membersWrapper {
   width: 100%;
-  border: 3px solid var(--color-fill-accent-enabled);
-  border-radius: 10px;
-  padding: 2vh 2vw;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -58,8 +107,10 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  font-size: 1.5vw;
+  font-size: 1.6vw;
   color: white;
+  font-family: Roboto, sans-serif;
+  flex-grow: 1;
 }
 
 .members {
@@ -71,6 +122,7 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+  gap: 2%;
 }
 
 .adminName {
@@ -84,29 +136,39 @@
 .adminInput {
   font-size: 1.4vw !important;
   height: 6vh;
-  border-radius: 8px !important;
-  background-color: white;
-  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.5);
+  border-radius: 4px !important;
+  background-color: #000B1D;
   margin-bottom: 2vh;
+  border: 2px solid rgba(241, 243, 249, 0.1607843137);
   min-height: 26px;
   cursor: text;
 
   input {
     cursor: text;
+    color:#FFFFFF;
+  }
+
+  input::placeholder {
+    color: #F1F3F9B8 !important;
   }
 }
 
 .button {
   height: 5vh;
-  font-size: 1.1vw;
+  font-size: 1.3vw;
   font-weight: var(--font-weight-medium);
-  border: 2px solid var(--color-fill-accent-enabled);
   border-radius: 8px;
   overflow: hidden;
   user-select: none;
   font-family: Roboto, sans-serif;
   min-height: 26px;
   padding: 0 2vw;
+  background-color: #FFFFFF0F;
+  color: #F1F3F9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1vw;
 
   &:not(:disabled):hover {
     cursor: pointer;
@@ -119,20 +181,21 @@
 }
 
 .adminButton {
-  width: 7% !important;
   min-width: 0 !important;
   height: 6vh;
   font-size: 1.5vw;
-  border: 2px solid var(--color-fill-accent-enabled) !important;
-  background-color: white !important;
-  border-radius: 8px !important;
   overflow: hidden;
   user-select: none;
   font-family: Roboto, sans-serif;
   min-height: 26px;
+  background: transparent;
 
   &:not(:disabled):hover {
     cursor: pointer;
+  }
+
+  svg > path{
+    width: 7vw;
   }
 }
 
@@ -145,10 +208,18 @@
   z-index: 0 !important;
 }
 
+.buttonsWrapper{
+  display: flex;
+  flex-direction: row;
+  gap: 2%;
+  width: -webkit-fill-available;
+  justify-content: flex-start;
+}
+
 @media only screen and (max-width: 600px) {
   .teamCreationForm {
-    width: 80%;
-    height: calc(100% - 28vw);
+    width: 100%;
+    height: 80%;
   }
 
   .pageTitle {
@@ -158,6 +229,7 @@
 
   .settingsWrapper {
     flex-direction: column;
+    margin-bottom: -5%;
   }
 
   .membersWrapper {
@@ -187,6 +259,10 @@
     align-items: flex-end;
   }
 
+  .membersLabel{
+    margin-bottom: 5%;
+  }
+
   .adminName {
     width: 100%;
   }
@@ -198,15 +274,27 @@
   .adminButton {
     width: auto !important;
     text-transform: capitalize !important;
-    color: black !important;
     padding: 0 5vw !important;
     font-size: 3.5vw !important;
     height: 9vw !important;
+    background-color: #FFFFFF0F !important;
+    color: #F1F3F9 !important;
   }
 
   .adminInput {
     height: 11vw !important;
     font-size: 5.3vw !important;
     margin-bottom: 3% !important;
+  }
+  .contentWrapper{
+    height: 98%;
+    width: 84%;
+  }
+
+  .captainSettings{
+    display: flex;
+    flex-direction: column;
+    margin-top: -3%;
+    margin-bottom: -5%;
   }
 }

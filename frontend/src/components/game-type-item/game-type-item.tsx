@@ -1,4 +1,4 @@
-import classes from "./game-type-item.module.scss"
+import classes from './game-type-item.module.scss';
 
 export interface GameTypeItemProps {
     type: string;
@@ -8,12 +8,14 @@ export interface GameTypeItemProps {
 
 function getTypeName(type: string) {
     switch (type) {
-        case "chgk":
+        case 'chgk':
             return 'ЧГК';
-        case "matrix":
-            return "Матрица";
+        case 'matrix':
+            return 'Матрица';
+        case 'quiz':
+            return 'Квиз';
         default:
-            return "";
+            return '';
     }
 }
 
@@ -21,10 +23,14 @@ function GameTypeItem(props: GameTypeItemProps) {
     const { type, questionsCount, roundsCount } = props;
 
     return (
-        <div className={classes.gameType}>
-            <div className={classes.gameTypeName}>{getTypeName(type)}</div>
-            <div className={classes.gameTypeQr}>{roundsCount} по {questionsCount}</div>
-        </div>
+        <td>
+            <div className={classes.gameType}>
+                <div className={classes.gameTypeName}>{getTypeName(type)}</div>
+                <div className={classes.gameTypeQr}>
+                    {roundsCount} по {questionsCount}
+                </div>
+            </div>
+        </td>
     );
 }
 

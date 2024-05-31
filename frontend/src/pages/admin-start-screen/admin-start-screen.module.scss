@@ -1,25 +1,14 @@
-.AdminStartScreen {
-  height: 100vh;
-  width: 100vw;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  background-color: var(--color-bg-main);
-}
-
 .sectionHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 2rem 5rem;
+  padding: 16px 0;
 }
 
 .title {
   margin: 0;
-  font-size: 3rem;
-  line-height: var(--line-height-small);
+  font-size: var(--font-size-32);
+  line-height: var(--line-height-medium);
   font-family: var(--font-family-primary);
   color: var(--color-text-icon-primary);
 }
@@ -40,12 +29,8 @@
   display: flex;
   flex-direction: column;
   height: 90%;
-}
-
-.sectionList {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0 80px;
+  padding: 24px;
+  gap: 8px;
 }
 
 .sectionListEmpty {
@@ -56,8 +41,13 @@
   gap: 8px;
   flex: auto;
   border: 1px solid var(--color-bg-plates);
-  margin: 0 80px 40px;
   border-radius: 16px;
+}
+
+.sectionList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .emptyImage {
@@ -72,25 +62,6 @@
   font-size: var(--font-size-32);
   color: var(--color-text-icon-primary);
   font-weight: var(--font-weight-medium);
-}
-
-
-.contentWrapper {
-  height: 100%;
-  width: 26%;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.containerWrapper {
-  height: 90%;
-  width: 40%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 0 80px;
-  align-self: center;
 }
 
 .box {

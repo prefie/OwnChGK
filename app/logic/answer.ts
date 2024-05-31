@@ -6,6 +6,7 @@ export class Answer {
     public readonly text: string;
     public readonly roundNumber: number;
     public readonly questionNumber: number;
+    public readonly isBlitz: boolean;
     private _appeal: Appeal;
     private _score: number;
     private _status: AnswerStatus;
@@ -14,6 +15,7 @@ export class Answer {
         teamId: string,
         roundNumber: number,
         questionNumber: number,
+        isBlitz: boolean,
         text: string,
         status: AnswerStatus = AnswerStatus.UNCHECKED,
         score: number = 0,
@@ -21,6 +23,7 @@ export class Answer {
         this.teamId = teamId;
         this.roundNumber = roundNumber;
         this.questionNumber = questionNumber;
+        this.isBlitz = isBlitz;
         this.text = text;
         this._status = AnswerStatus.UNCHECKED;
         this._score = score;
@@ -41,12 +44,20 @@ export class Answer {
 
     accept(score: number): void {
         this._status = AnswerStatus.RIGHT;
-        this._score = score;
+        if (this.isBlitz) {
+            this._score = score * 2;
+        } else {
+            this._score = score;
+        }
     }
 
     reject(score: number): void {
         this._status = AnswerStatus.WRONG;
-        this._score = -score;
+        if (this.isBlitz) {
+            this._score = -score * 2;
+        } else {
+            this._score = -score;
+        }
     }
 
     onAppeal(appeal: Appeal): void {

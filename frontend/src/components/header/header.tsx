@@ -1,18 +1,15 @@
-import React, {FC, useEffect, useState} from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import classes from './header.module.scss';
-import {HeaderDispatchProps, HeaderProps, HeaderStateProps} from '../../entities/header/header.interfaces';
-import {Link} from 'react-router-dom';
-import {connect} from 'react-redux';
-import {AppState} from '../../entities/app/app.interfaces';
-import {Dispatch} from 'redux';
-import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces';
-import {logOut} from '../../redux/actions/app-actions/app-actions';
-import {logout} from '../../server-api/server-api';
+import { HeaderDispatchProps, HeaderProps, HeaderStateProps } from '../../entities/header/header.interfaces';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { AppState } from '../../entities/app/app.interfaces';
+import { Dispatch } from 'redux';
+import { AppAction } from '../../redux/reducers/app-reducer/app-reducer.interfaces';
+import { logOut } from '../../redux/actions/app-actions/app-actions';
 import logoImage from '../../images/Logo.svg';
-import menuImage from '../../images/Menu.svg';
-import profileImage from '../../images/Profile.svg';
-import logOutImage from '../../images/LogOut.svg';
-import {ServerApi} from '../../server-api/server-api';
+import { LogoutRounded, PersonRounded, MenuRounded } from '@mui/icons-material';
+import { ServerApi } from '../../server-api/server-api';
 
 const Header: FC<HeaderProps> = props => {
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
@@ -20,7 +17,7 @@ const Header: FC<HeaderProps> = props => {
     useEffect(() => {
         const resizeEventHandler = () => {
             setMediaMatch(window.matchMedia('(max-width: 600px)'));
-        }
+        };
 
         mediaMatch.addEventListener('change', resizeEventHandler);
 
@@ -37,37 +34,45 @@ const Header: FC<HeaderProps> = props => {
     return (
         <header className={classes.Header}>
             <Link to={props.isAdmin ? '/admin/start-screen' : '/start-screen'} className={classes.logoLink}>
-                <img className={classes.logo} src={logoImage} alt="logo"/>
+                <img className={classes.logo} src={logoImage} alt="logo" />
             </Link>
 
-            <div className={classes.childrenWrapper}>
-                {props.children}
-            </div>
+            <div className={classes.childrenWrapper}>{props.children}</div>
 
-            {
-                props.isAuthorized
-                    ?
-                    (
-                        mediaMatch.matches
-                            ?
-                            <Link className={classes.MenuLink} to={{pathname: '/menu', state: { prevPath: window.location.pathname }}}>
-                                <img className={classes.Menu} src={menuImage} alt='Menu'/>
-                            </Link>
-                            :
-                            <div className={classes.userActionsWrapper}>
-                                <Link className={classes.Profile} to={props.isAdmin ? '/admin/profile' : '/profile'}>
-                                    <img className={classes.Profile} src={profileImage}
-                                         alt="Profile" id="profile"/>
-                                </Link>
-                                <Link className={classes.LogOut}
-                                      to={props.isLoggedIn ? '#' : (props.isAdmin ? '/admin' : '/auth')} onClick={handleLogout}>
-                                    <img className={classes.LogOut} src={logOutImage}
-                                         alt="LogOut" id="logout"/>
-                                </Link>
-                            </div>
-                    )
-                    : null
-            }
+            {props.isAuthorized ? (
+                mediaMatch.matches ? (
+                    <Link
+                        className={classes.MenuLink}
+                        to={{ pathname: '/menu', state: { prevPath: window.location.pathname } }}
+                    >
+                        <MenuRounded
+                            style={{
+                                color: 'var(--color-text-icon-default-primary)',
+                                fontSize: 'var(--font-size-28)',
+                            }}
+                        />
+                    </Link>
+                ) : (
+                    <div className={classes.userActionsWrapper}>
+                        <Link to={props.isAdmin ? '/admin/profile' : '/profile'}>
+                            <PersonRounded
+                                style={{
+                                    color: 'var(--color-text-icon-default-primary)',
+                                    fontSize: 'var(--font-size-28)',
+                                }}
+                            />
+                        </Link>
+                        <Link to={props.isLoggedIn ? '#' : props.isAdmin ? '/admin' : '/auth'} onClick={handleLogout}>
+                            <LogoutRounded
+                                style={{
+                                    color: 'var(--color-text-icon-default-primary)',
+                                    fontSize: 'var(--font-size-28)',
+                                }}
+                            />
+                        </Link>
+                    </div>
+                )
+            ) : null}
         </header>
     );
 };
