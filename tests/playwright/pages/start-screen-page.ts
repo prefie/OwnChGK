@@ -1,4 +1,4 @@
-import { Page, Locator } from "@playwright/test";
+import { Page, Locator } from '@playwright/test';
 
 export class StartScreenPage {
     readonly addTeamButton: Locator;
@@ -12,11 +12,10 @@ export class StartScreenPage {
         this.addTeamButton = page.locator('#addTeamButton');
         this.logoutButton = page.locator('img[alt="LogOut"]');
         this.teamsTab = page.locator('#teams');
-        this.profile = page.locator('#profile')
+        this.profile = page.locator('#profile');
     }
 
-    async accept(){
+    async accept() {
         await this.page.waitForURL('**/start-screen');
     }
 }
-

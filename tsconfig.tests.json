@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "target": "ES2021",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "skipLibCheck": true,
+        "outDir": "build/app"
+    },
+    "lib": ["es2021"],
+    "exclude": ["node_modules", "frontend"],
+    "include": ["tests", "playwright.config.ts"]
+}

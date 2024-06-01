@@ -1,5 +1,5 @@
-import { Page, Locator } from "@playwright/test";
-import { LOGIN_USER_SECRET, PASSWORD_USER_SECRET } from "../../test-consts";
+import { Page, Locator } from '@playwright/test';
+import { LOGIN_USER_SECRET, PASSWORD_USER_SECRET } from '../../test-consts';
 
 export class LoginPage {
     readonly email: Locator;

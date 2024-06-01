@@ -15,7 +15,7 @@ export class AdminRepository extends BaseRepository<Admin> {
         email: string,
         password: string,
         name: string = null,
-        role: AdminRoles = AdminRoles.ADMIN
+        role: AdminRoles = AdminRoles.ADMIN,
     ) {
         const admin = new Admin();
         admin.email = email.toLowerCase();

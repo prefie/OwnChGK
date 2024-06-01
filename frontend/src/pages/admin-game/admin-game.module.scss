@@ -1,280 +1,280 @@
 .ratingLink {
-  text-decoration: none;
-  color: var(--color-text-icon-link-enabled);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-24);
-  display: flex;
-  align-items: center;
+    text-decoration: none;
+    color: var(--color-text-icon-link-enabled);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-24);
+    display: flex;
+    align-items: center;
 }
 
 .gameName {
-  margin-left: 60px;
-  flex: 1;
-  font-size: 2.5vmax;
-  line-height: 3vmax;
-  color: #fff;
-  word-break: break-all;
-  display: -webkit-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  font-weight: 300;
-  height: 3vmax;
-  align-self: center;
-  text-align: center;
+    margin-left: 60px;
+    flex: 1;
+    font-size: 2.5vmax;
+    line-height: 3vmax;
+    color: #fff;
+    word-break: break-all;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    font-weight: 300;
+    height: 3vmax;
+    align-self: center;
+    text-align: center;
 }
 
 .button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: var(--font-size-24);
-  border-radius: .5rem;
-  padding: .75rem 1.5rem;
-  overflow: hidden;
-  user-select: none;
-  min-height: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: var(--font-size-24);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    overflow: hidden;
+    user-select: none;
+    min-height: 26px;
 }
 
 .primaryButton {
-  background-color: var(--color-fill-accent-enabled);
-  color: var(--color-text-icon-primary);
+    background-color: var(--color-fill-accent-enabled);
+    color: var(--color-text-icon-primary);
 
-  &:disabled {
-    background-color: var(--color-fill-default-disabled);
-    color: var(--color-text-icon-disabled);
-  }
+    &:disabled {
+        background-color: var(--color-fill-default-disabled);
+        color: var(--color-text-icon-disabled);
+    }
 
-  &:not(:disabled):hover {
-    cursor: pointer;
-    background-color: var(--color-fill-accent-hover);
-  }
+    &:not(:disabled):hover {
+        cursor: pointer;
+        background-color: var(--color-fill-accent-hover);
+    }
 
-  &:not(:disabled):active {
-    background-color: var(--color-fill-accent-pressed);
-  }
+    &:not(:disabled):active {
+        background-color: var(--color-fill-accent-pressed);
+    }
 }
 
 .defaultButton {
-  background-color: var(--color-fill-default-enabled);
-  color: var(--color-text-icon-primary);
+    background-color: var(--color-fill-default-enabled);
+    color: var(--color-text-icon-primary);
 
-  &:disabled {
-    background-color: var(--color-fill-default-disabled);
-    color: var(--color-text-icon-disabled);
-  }
+    &:disabled {
+        background-color: var(--color-fill-default-disabled);
+        color: var(--color-text-icon-disabled);
+    }
 
-  &:not(:disabled):hover {
-    cursor: pointer;
-    background-color: var(--color-fill-default-hover);
-  }
+    &:not(:disabled):hover {
+        cursor: pointer;
+        background-color: var(--color-fill-default-hover);
+    }
 
-  &:not(:disabled):active {
-    background-color: var(--color-fill-default-pressed);
-  }
+    &:not(:disabled):active {
+        background-color: var(--color-fill-default-pressed);
+    }
 }
 
 .mainWrapper {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  overflow-y: auto;
-  display: flex;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    overflow-y: auto;
+    display: flex;
 }
 
 .contentWrapper {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  padding: 0 80px;
-  margin: 2rem 0;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  .buttonsWrapper {
     display: flex;
-    height: 124px;
-    justify-content: space-between;
-    border-radius: 1rem;
-    padding: 2rem;
-    background-color: var(--color-bg-plates);
-    box-sizing: border-box;
-
-    .buttons {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .breakButton {
-      padding: 0 2rem;
-    }
-
-    .playButton,
-    .stopButton {
-      width: 3.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .tenSecondsButton {
-      padding: 0 30px;
-    }
-
-    .answerTime {
-      width: 20%;
-      color: white;
-      font-weight: 600;
-      font-size: 4.5vw;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 7vh;
-    }
-  }
-
-  .tablesWrapper {
     width: 100%;
-    height: 100%;
-    display: flex;
-    gap: 20px;
+    flex-direction: column;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding: 0 80px;
+    margin: 2rem 0;
 
-    .toursWrapper,
-    .questionsWrapper {
-      margin-top: 1rem;
-      border-radius: 1rem;
-      height: 100%;
-      background-color: var(--color-bg-plates);
-      box-sizing: border-box;
+    &::-webkit-scrollbar {
+        display: none;
     }
 
-    .tour {
-      padding-left: 5%;
-      font-weight: 500;
-    }
-
-    .question {
-      justify-content: center;
-    }
-
-    .toursWrapper,
-    .questionsWrapper {
-      width: 30%;
-      padding: 1.5rem 2rem 3rem;
-
-      .tour,
-      .question {
+    .buttonsWrapper {
         display: flex;
-        align-items: center;
-        font-size: var(--font-size-24);
-        border-radius: .5rem;
-        padding: 0.75rem 1rem;
-        margin-bottom: 0.5rem;
-        text-align: left;
-        background-color: transparent;
-        color: var(--color-text-icon-primary);
-      }
-
-      .tour:hover,
-      .question:hover {
-        background-color: rgba(255, 255, 255, .06);
-      }
-
-      .tour:active,
-      .question:active {
-        background-color: rgba(255, 255, 255, .02);
-      }
-
-      .activeTour,
-      .activeQuestion {
-        background-color: rgba(255, 255, 255, .06);
-        font-weight: var(--font-weight-bold);
-      }
-    }
-
-    .questionsWrapper {
-      flex: 1;
-    }
-
-    .questionWrapper {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      width: 100%;
-
-      .question {
-        width: 100%;
+        height: 124px;
         justify-content: space-between;
-      }
+        border-radius: 1rem;
+        padding: 2rem;
+        background-color: var(--color-bg-plates);
+        box-sizing: border-box;
 
-      .answersButtonLink {
-        text-decoration: none;
-        position: relative;
-        color: var(--color-text-icon-link-enabled);
-        font-weight: var(--font-weight-medium);
-        font-size: var(--font-size-24);
-      }
+        .buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .breakButton {
+            padding: 0 2rem;
+        }
+
+        .playButton,
+        .stopButton {
+            width: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tenSecondsButton {
+            padding: 0 30px;
+        }
+
+        .answerTime {
+            width: 20%;
+            color: white;
+            font-weight: 600;
+            font-size: 4.5vw;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 7vh;
+        }
     }
-  }
+
+    .tablesWrapper {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        gap: 20px;
+
+        .toursWrapper,
+        .questionsWrapper {
+            margin-top: 1rem;
+            border-radius: 1rem;
+            height: 100%;
+            background-color: var(--color-bg-plates);
+            box-sizing: border-box;
+        }
+
+        .tour {
+            padding-left: 5%;
+            font-weight: 500;
+        }
+
+        .question {
+            justify-content: center;
+        }
+
+        .toursWrapper,
+        .questionsWrapper {
+            width: 30%;
+            padding: 1.5rem 2rem 3rem;
+
+            .tour,
+            .question {
+                display: flex;
+                align-items: center;
+                font-size: var(--font-size-24);
+                border-radius: 0.5rem;
+                padding: 0.75rem 1rem;
+                margin-bottom: 0.5rem;
+                text-align: left;
+                background-color: transparent;
+                color: var(--color-text-icon-primary);
+            }
+
+            .tour:hover,
+            .question:hover {
+                background-color: rgba(255, 255, 255, 0.06);
+            }
+
+            .tour:active,
+            .question:active {
+                background-color: rgba(255, 255, 255, 0.02);
+            }
+
+            .activeTour,
+            .activeQuestion {
+                background-color: rgba(255, 255, 255, 0.06);
+                font-weight: var(--font-weight-bold);
+            }
+        }
+
+        .questionsWrapper {
+            flex: 1;
+        }
+
+        .questionWrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+
+            .question {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .answersButtonLink {
+                text-decoration: none;
+                position: relative;
+                color: var(--color-text-icon-link-enabled);
+                font-weight: var(--font-weight-medium);
+                font-size: var(--font-size-24);
+            }
+        }
+    }
 }
 
 .scrollbar {
-  :last-child {
-    margin-bottom: 0 !important;
-  }
+    :last-child {
+        margin-bottom: 0 !important;
+    }
 }
 
 .scrollbarView {
-  padding-bottom: 1rem;
+    padding-bottom: 1rem;
 }
 
 .opposition {
-  position: absolute;
-  right: 0;
-  top: -0.5rem;
-  user-select: none;
-  pointer-events: none;
+    position: absolute;
+    right: 0;
+    top: -0.5rem;
+    user-select: none;
+    pointer-events: none;
 }
 
 .breakInformer {
-  color: white;
-  font-size: 3vmin;
-  margin: 4vh 0;
+    color: white;
+    font-size: 3vmin;
+    margin: 4vh 0;
 }
 
 .gamePartWrapper {
-  display: flex;
-  font-family: var(--font-family-primary);
-  font-size: var(--font-size-40);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-icon-primary);
-  margin-bottom: 1rem;
+    display: flex;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-40);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-icon-primary);
+    margin-bottom: 1rem;
 }
 
 .tourName {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .scrollbarView {
-  overflow-x: hidden !important;
-  display: flex;
-  flex-direction: column;
+    overflow-x: hidden !important;
+    display: flex;
+    flex-direction: column;
 }
 
 .verticalTrack {
-  z-index: 0 !important;
+    z-index: 0 !important;
 }
 
 .scrollbarContainer {
-  align-self: center;
+    align-self: center;
 }

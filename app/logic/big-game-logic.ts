@@ -1,10 +1,9 @@
 import { Game } from './game';
 import { GameStatus } from './enums/game-status.enum';
 
-
 export class BigGameLogic {
     public readonly id: string;
-    public readonly name: String;
+    public readonly name: string;
     public readonly chGKGame: Game;
     public readonly matrixGame: Game;
 
@@ -15,13 +14,7 @@ export class BigGameLogic {
     private _breakTime: number;
     private _intervalForBreak: number;
 
-    constructor(
-        id: string,
-        name: String,
-        ChGK: Game = null,
-        Matrix: Game = null,
-        intrigueEnabled: boolean = false
-    ) {
+    constructor(id: string, name: string, ChGK: Game = null, Matrix: Game = null, intrigueEnabled: boolean = false) {
         this.id = id;
         this.matrixGame = Matrix;
         this.chGKGame = ChGK;
@@ -48,13 +41,17 @@ export class BigGameLogic {
     startBreak(time: number): void {
         this._status = GameStatus.IsOnBreak;
         this._breakTime = time;
-        this._intervalForBreak = setInterval(() => {
-            if (this._breakTime == 0) {
-                this.stopBreak();
-            } else {
-                this._breakTime -= 1;
-            }
-        }, 1000, this);
+        this._intervalForBreak = setInterval(
+            () => {
+                if (this._breakTime == 0) {
+                    this.stopBreak();
+                } else {
+                    this._breakTime -= 1;
+                }
+            },
+            1000,
+            this,
+        );
     }
 
     stopBreak(): void {

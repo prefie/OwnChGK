@@ -1,6 +1,6 @@
 import { BigGame } from '../db/entities/big-game';
 import { Game, GameStatus, GameType } from '../db/entities/game';
-import { RoundType } from "../db/entities/round.js";
+import { RoundType } from '../db/entities/round.js';
 
 export class GameDto {
     public readonly type: GameType;
@@ -16,7 +16,7 @@ export class GameDto {
             const questions: Record<number, string[]> = {};
             for (let i = 0; i < this.roundsCount; i++) {
                 questions[i + 1] = game.rounds[i].questions
-                    .sort((a, b) => a.number > b.number ? 1 : -1)
+                    .sort((a, b) => (a.number > b.number ? 1 : -1))
                     .map(q => q.text);
             }
             this.questions = questions;
@@ -30,11 +30,10 @@ export class MatrixGameDto extends GameDto {
     constructor(game: Game, withQuestions: boolean = false) {
         super(game, withQuestions);
 
-        this.roundNames = this.roundsCount !== 0
-            ? game.rounds
-                .sort((a, b) => a.number > b.number ? 1 : -1)
-                .map(round => round.name)
-            : [];
+        this.roundNames =
+            this.roundsCount !== 0
+                ? game.rounds.sort((a, b) => (a.number > b.number ? 1 : -1)).map(round => round.name)
+                : [];
     }
 }
 
@@ -44,9 +43,7 @@ export class QuizGameDto extends MatrixGameDto {
     constructor(game: Game, withQuestions: boolean = false) {
         super(game, withQuestions);
 
-        this.roundTypes = game.rounds
-            ?.sort((a, b) => a.number > b.number ? 1 : -1)
-            .map(round => round.type) ?? [];
+        this.roundTypes = game.rounds?.sort((a, b) => (a.number > b.number ? 1 : -1)).map(round => round.type) ?? [];
     }
 }
 

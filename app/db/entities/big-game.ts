@@ -5,7 +5,8 @@ import {
     OneToMany,
     ManyToOne,
     JoinColumn,
-    ManyToMany, JoinTable
+    ManyToMany,
+    JoinTable,
 } from 'typeorm';
 import { Game, GameStatus } from './game';
 import { Admin } from './admin';
@@ -14,7 +15,7 @@ import { BaseCreature } from './base-creature';
 
 export enum AccessLevel {
     PUBLIC = 'public',
-    PRIVATE = 'private'
+    PRIVATE = 'private',
 }
 
 @Entity('big_games')
@@ -23,14 +24,14 @@ export class BigGame extends BaseCreature {
     id: string;
 
     @Column({
-        unique: true
+        unique: true,
     })
     name: string;
 
     @Column({
         type: 'enum',
         enum: GameStatus,
-        default: GameStatus.NOT_STARTED
+        default: GameStatus.NOT_STARTED,
     })
     status: GameStatus;
 
@@ -38,70 +39,56 @@ export class BigGame extends BaseCreature {
         name: 'access_level',
         type: 'enum',
         enum: AccessLevel,
-        default: AccessLevel.PRIVATE
+        default: AccessLevel.PRIVATE,
     })
     accessLevel: string;
 
-    @OneToMany(
-        () => Game,
-        game => game.bigGame,
-        {
-            cascade: true,
-        }
-    )
+    @OneToMany(() => Game, game => game.bigGame, {
+        cascade: true,
+    })
     games: Game[];
 
-    @ManyToOne(
-        () => Admin,
-        {
-            nullable: false,
-            onDelete: 'RESTRICT',
-            onUpdate: 'CASCADE'
-        })
+    @ManyToOne(() => Admin, {
+        nullable: false,
+        onDelete: 'RESTRICT',
+        onUpdate: 'CASCADE',
+    })
     @JoinColumn({
         name: 'admin_id',
     })
     admin: Admin;
 
-    @ManyToMany(
-        () => Admin,
-        admin => admin.additionalBigGames,
-        {
-            onDelete: 'CASCADE',
-            onUpdate: 'CASCADE',
-        }
-    )
+    @ManyToMany(() => Admin, admin => admin.additionalBigGames, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
     @JoinTable({
         name: 'big_game_admin_links',
         joinColumn: {
             name: 'big_game_id',
-            referencedColumnName: 'id'
+            referencedColumnName: 'id',
         },
         inverseJoinColumn: {
             name: 'admin_id',
-            referencedColumnName: 'id'
-        }
+            referencedColumnName: 'id',
+        },
     })
     additionalAdmins: Admin[];
 
-    @ManyToMany(
-        () => Team,
-        team => team.bigGames,
-        {
-            onDelete: 'CASCADE',
-            onUpdate: 'CASCADE'
-        }
-    )
+    @ManyToMany(() => Team, team => team.bigGames, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
     @JoinTable({
         name: 'big_game_team_links',
         joinColumn: {
             name: 'big_game_id',
-            referencedColumnName: 'id'
+            referencedColumnName: 'id',
         },
         inverseJoinColumn: {
             name: 'team_id',
-            referencedColumnName: 'id'
-        }
+            referencedColumnName: 'id',
+        },
     })
     teams: Team[];
 }

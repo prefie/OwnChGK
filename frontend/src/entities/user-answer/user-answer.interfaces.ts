@@ -6,5 +6,9 @@ export interface UserAnswerProps {
     isAdmin: boolean;
     gameId: string;
     teamId?: string;
-    onChangeStatus?: (gamePart: string, order: number, status: 'success' | 'error' | 'opposition' | 'no-answer') => void;
+    onChangeStatus?: (
+        gamePart: string,
+        order: number,
+        status: 'success' | 'error' | 'opposition' | 'no-answer',
+    ) => void;
 }

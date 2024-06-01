@@ -1,109 +1,109 @@
 .Header {
-  width: 100vw;
-  height: 10%;
-  position: sticky;
-  top: 0;
-  background-color: var(--color-bg-main);
-  border-bottom: 1px solid var(--color-bg-plates);
-  display: flex;
-  z-index: 1;
-  user-select: none;
+    width: 100vw;
+    height: 10%;
+    position: sticky;
+    top: 0;
+    background-color: var(--color-bg-main);
+    border-bottom: 1px solid var(--color-bg-plates);
+    display: flex;
+    z-index: 1;
+    user-select: none;
 }
 
 .logo {
-  width: 9vmin;
-  margin-left: 80px;
-  user-select: none;
+    width: 9vmin;
+    margin-left: 80px;
+    user-select: none;
 
-  &:hover {
-    cursor: pointer;
-  }
+    &:hover {
+        cursor: pointer;
+    }
 }
 
 .logoLink {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .MenuLink {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .Menu {
-  height: 8vmin;
-  margin-right: 30px;
+    height: 8vmin;
+    margin-right: 30px;
 }
 
 .userActionsWrapper {
-  display: flex;
+    display: flex;
 }
 
 .Profile {
-  width: 4vmin;
-  margin-right: 60px;
-  align-self: center;
-  user-select: none;
+    width: 4vmin;
+    margin-right: 60px;
+    align-self: center;
+    user-select: none;
 
-  &:hover {
-    cursor: pointer;
-  }
+    &:hover {
+        cursor: pointer;
+    }
 }
 
 .LogOut {
-  width: 4vmin;
-  margin-right: 80px;
-  align-self: center;
-  user-select: none;
+    width: 4vmin;
+    margin-right: 80px;
+    align-self: center;
+    user-select: none;
 
-  &:hover {
-    cursor: pointer;
-  }
+    &:hover {
+        cursor: pointer;
+    }
 }
 
 .childrenWrapper {
-  padding: 0 30px;
-  display: flex;
-  position: relative;
-  height: 100%;
-  flex: 1;
+    padding: 0 30px;
+    display: flex;
+    position: relative;
+    height: 100%;
+    flex: 1;
 }
 
 @media only screen and (max-width: 1440px) {
-  .Profile {
-    margin-right: 35px;
-  }
+    .Profile {
+        margin-right: 35px;
+    }
 
-  .childrenWrapper {
-    padding: 0 25px;
-  }
+    .childrenWrapper {
+        padding: 0 25px;
+    }
 }
 
 @media only screen and (max-width: 960px) {
-  .Profile {
-    margin-right: 30px;
-  }
+    .Profile {
+        margin-right: 30px;
+    }
 
-  .childrenWrapper {
-    padding: 0 20px;
-  }
+    .childrenWrapper {
+        padding: 0 20px;
+    }
 }
 
 @media only screen and (max-width: 600px) {
-  .Header {
-    height: 15vw;
-  }
+    .Header {
+        height: 15vw;
+    }
 
-  .logo {
-    height: 35px;
-    margin-left: 30px;
-  }
+    .logo {
+        height: 35px;
+        margin-left: 30px;
+    }
 
-  .childrenWrapper {
-    padding: 0 20px;
-  }
+    .childrenWrapper {
+        padding: 0 20px;
+    }
 }

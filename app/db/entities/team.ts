@@ -20,40 +20,30 @@ export class Team extends BaseCreature {
     id: string;
 
     @Column({
-        unique: true
+        unique: true,
     })
     name: string;
 
-    @OneToOne(
-        () => User,
-        user => user.team,
-        {
-            onDelete: 'SET NULL',
-            onUpdate: 'CASCADE',
-        })
+    @OneToOne(() => User, user => user.team, {
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
+    })
     @JoinColumn({
-        name: 'captain_id'
+        name: 'captain_id',
     })
     captain: User;
 
-    @ManyToMany(
-        () => BigGame,
-        bigGame => bigGame.teams,
-        {
-            onDelete: 'CASCADE',
-            onUpdate: 'CASCADE'
-        }
-    )
+    @ManyToMany(() => BigGame, bigGame => bigGame.teams, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
     bigGames: BigGame[];
 
     @Column('json', {
-        nullable: true
+        nullable: true,
     })
     participants: Participant[];
 
-    @OneToMany(
-        () => Answer,
-        answer => answer.team
-    )
+    @OneToMany(() => Answer, answer => answer.team)
     answers: Answer[];
 }

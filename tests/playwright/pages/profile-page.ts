@@ -1,5 +1,4 @@
-import { Page, Locator } from "@playwright/test";
-
+import { Page, Locator } from '@playwright/test';
 
 export class ProfilePage {
     readonly page: Page;
@@ -18,7 +17,7 @@ export class ProfilePage {
         this.saveButton = page.locator('#saveProfile');
     }
 
-    async accept(){
+    async accept() {
         await this.page.waitForURL('**/profile');
     }
 }

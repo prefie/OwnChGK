@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, Redirect, RouteProps} from 'react-router-dom';
+import { Route, Redirect, RouteProps } from 'react-router-dom';
 
 export type ProtectedRouteProps = {
     neededRole: string[];
@@ -8,10 +8,16 @@ export type ProtectedRouteProps = {
     extraCondition?: boolean;
 } & RouteProps;
 
-export default function ProtectedRoute({neededRole, redirectPath, currentUserRole, extraCondition, ...routeProps}: ProtectedRouteProps) {
-    if (neededRole.includes(currentUserRole) && (extraCondition !== undefined && extraCondition || !extraCondition)) {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+    neededRole,
+    redirectPath,
+    currentUserRole,
+    extraCondition,
+    ...routeProps
+}) => {
+    if (neededRole.includes(currentUserRole) && ((extraCondition !== undefined && extraCondition) || !extraCondition)) {
         return <Route {...routeProps} />;
     } else {
-        return <Redirect to={{pathname: redirectPath}}/>;
+        return <Redirect to={{ pathname: redirectPath }} />;
     }
 };

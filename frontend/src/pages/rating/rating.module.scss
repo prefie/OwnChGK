@@ -43,7 +43,7 @@
         margin-top: 30px;
         border-radius: 16px;
         padding: 24px;
-        background-color: #1A2C37;
+        background-color: #1a2c37;
         box-sizing: border-box;
         margin-bottom: 16px;
 
@@ -66,7 +66,7 @@
             }
 
             &:not(:disabled):active {
-                box-shadow: inset 3px 3px 5px rgba(0, 0, 0, .50);
+                box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.5);
             }
         }
 
@@ -78,13 +78,13 @@
     .tableWrapper {
         border-radius: 16px;
         width: 100%;
-        background-color: #1A2C37;
+        background-color: #1a2c37;
         padding: 4vh 2vw 3vh 1vw;
         box-sizing: border-box;
         overflow: scroll;
         -ms-overflow-style: none;
         scrollbar-width: thin;
-        scrollbar-color: rgba(255, 255, 255, .7);
+        scrollbar-color: rgba(255, 255, 255, 0.7);
         margin-bottom: 18px;
 
         &::-webkit-scrollbar {

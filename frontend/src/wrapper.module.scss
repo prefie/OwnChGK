@@ -1,18 +1,18 @@
 .Wrapper {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-
-  main {
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
-  }
+    overflow: hidden;
+
+    main {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
 }
 
 @media only screen and (max-width: 600px) {
-  .Wrapper {
-    overflow-y: auto;
-  }
+    .Wrapper {
+        overflow-y: auto;
+    }
 }

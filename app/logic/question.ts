@@ -22,7 +22,7 @@ export class Question {
         time: number,
         text: string = null,
         answers?: Answer[] | undefined,
-        appeals?: Appeal[] | undefined
+        appeals?: Appeal[] | undefined,
     ) {
         this.id = id;
         this.cost = cost;
@@ -67,7 +67,7 @@ export class Question {
     }
 
     acceptAnswers(rightAnswer: string): void {
-        for (let teamId of Object.keys(this._answers)) {
+        for (const teamId of Object.keys(this._answers)) {
             if (this._answers[teamId].text == rightAnswer) {
                 this._answers[teamId].accept(this.cost);
             }
@@ -75,7 +75,7 @@ export class Question {
     }
 
     rejectAnswers(wrongAnswer: string, isMatrixType = false): void {
-        for (let teamId of Object.keys(this._answers)) {
+        for (const teamId of Object.keys(this._answers)) {
             if (this._answers[teamId].text == wrongAnswer) {
                 isMatrixType ? this._answers[teamId].reject(this.cost) : this._answers[teamId].reject(0);
             }
@@ -83,8 +83,7 @@ export class Question {
     }
 
     acceptAppeal(answer: string, comment: string = ''): void {
-        const appeals = Object.values(this._appeals)
-            .filter((value) => value.wrongAnswer == answer);
+        const appeals = Object.values(this._appeals).filter(value => value.wrongAnswer == answer);
 
         for (const appeal of appeals) {
             appeal.accept(comment);
@@ -94,8 +93,7 @@ export class Question {
     }
 
     rejectAppeal(answer: string, comment: string = ''): void {
-        const appeals = Object.values(this._appeals)
-            .filter((value) => value.wrongAnswer == answer);
+        const appeals = Object.values(this._appeals).filter(value => value.wrongAnswer == answer);
 
         for (const appeal of appeals) {
             appeal.reject(comment);
@@ -107,7 +105,7 @@ export class Question {
     private static mapAnswersToRecord(answers: Answer[]): Record<string, Answer> {
         const answersWrapper: Record<string, Answer> = {};
 
-        for (let answer of answers) {
+        for (const answer of answers) {
             answersWrapper[answer.teamId] = answer;
         }
 
@@ -117,7 +115,7 @@ export class Question {
     private static mapAppealsToRecord(appeals: Appeal[]): Record<string, Appeal> {
         const appealsWrapper: Record<string, Appeal> = {};
 
-        for (let appeal of appeals) {
+        for (const appeal of appeals) {
             appealsWrapper[appeal.teamId] = appeal;
         }
 

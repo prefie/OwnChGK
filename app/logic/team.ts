@@ -5,7 +5,7 @@ export class Team {
     public readonly id: string;
     private readonly _answers: Record<number, Record<number, Answer>>;
 
-    constructor(name: string, id: string, answers?: Answer[] | undefined) {
+    constructor(name: string, id: string) {
         this.name = name;
         this.id = id;
         this._answers = {};
@@ -21,9 +21,7 @@ export class Team {
 
     getAnswers(): Answer[] {
         const answersByRounds = Object.values(this._answers);
-        return answersByRounds
-            .map(e => Object.values(e))
-            .reduce((arr, e) => arr.concat(e), []);
+        return answersByRounds.map(e => Object.values(e)).reduce((arr, e) => arr.concat(e), []);
     }
 
     getTotalScore(): number {

@@ -12,12 +12,13 @@ export class APIError extends Error {
     }
 }
 
-export const errorHandler = (err, req, res, _) => {
+//eslint-disable-next-line
+export const errorHandler = (err, req, res, _) => { // 4 аргумента важны, иначе сломается
     if (err instanceof APIError && err?.status) {
-        return res.status(err.status).json({message: err.message});
+        return res.status(err.status).json({ message: err.message });
     } else {
         console.error(err?.stack);
 
-        return res.status(BAD_REQUEST_STATUS).json({message: err?.message});
+        return res.status(BAD_REQUEST_STATUS).json({ message: err?.message });
     }
 };

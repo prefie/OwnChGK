@@ -1,33 +1,33 @@
 .statusWrapper {
-  padding: .25rem .5rem;
-  border-radius: 1rem;
-  width: fit-content;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+    width: fit-content;
 }
 
 .statusWrapperNotStarted {
-  background-color: var(--color-bg-overlay-default);
+    background-color: var(--color-bg-overlay-default);
 }
 
 .statusWrapperStarted {
-  background-color: var(--color-bg-overlay-success);
+    background-color: var(--color-bg-overlay-success);
 }
 
 .statusWrapperFinished {
-  background-color: var(--color-bg-overlay-default);
+    background-color: var(--color-bg-overlay-default);
 }
 
 .statusCaption {
-  font-size: var(--font-size-16);
+    font-size: var(--font-size-16);
 }
 
 .statusCaptionNotStarted {
-  color: var(--color-text-icon-primary);
+    color: var(--color-text-icon-primary);
 }
 
 .statusCaptionStarted {
-  color: var(--color-text-icon-success);
+    color: var(--color-text-icon-success);
 }
 
 .statusCaptionFinished {
-  color: var(--color-text-icon-disabled);
+    color: var(--color-text-icon-disabled);
 }
