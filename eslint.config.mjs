@@ -25,7 +25,7 @@ export default tseslint.config(
     {
         languageOptions: {
             parserOptions: {
-                project: ['tsconfig.json', 'tsconfig.frontend.json'],
+                project: ['tsconfig.json', 'tsconfig.frontend.json', 'tsconfig.tests.json'],
             },
             globals: {
                 ...globals.node,

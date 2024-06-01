@@ -12,5 +12,5 @@
     },
     "lib": ["es2021"],
     "exclude": ["node_modules", "frontend"],
-    "include": ["app"]
+    "include": ["tests", "playwright.config.ts"]
 }
