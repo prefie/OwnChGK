@@ -39,7 +39,7 @@ const UserStartScreen: React.FC<UserStartScreenProps> = props => {
     const [gameId, setGameId] = useState<string>('');
     const [isTeamNotFree, setIsTeamNotFree] = useState<boolean>(false);
     const [numberLoading, setNumberLoading] = useState<number>(0);
-    let location = useLocation<{ page: string }>();
+    const location = useLocation<{ page: string }>();
     const [mediaMatch, setMediaMatch] = useState<MediaQueryList>(window.matchMedia('(max-width: 600px)'));
 
     useEffect(() => {
@@ -166,7 +166,7 @@ const UserStartScreen: React.FC<UserStartScreenProps> = props => {
         }
 
         const games = gamesFromDB.filter(game => game.amIParticipate || game.status === Status.NotStarted);
-        return games.map((game, _) => (
+        return games.map(game => (
             <GameItem
                 key={game.id}
                 id={game.id}

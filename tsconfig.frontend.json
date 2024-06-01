@@ -1,5 +1,4 @@
 {
-    // Дубль живет еще в tsconfig.frontend.json -- при изменениях скопировать и туда
     "compilerOptions": {
         "target": "ES2021",
         "lib": ["dom", "dom.iterable", "ES2021"],
@@ -20,5 +19,5 @@
         "noEmit": true,
         "jsx": "react-jsx"
     },
-    "include": ["src"]
+    "include": ["frontend"]
 }

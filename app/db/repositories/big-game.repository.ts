@@ -343,7 +343,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
     async updateBigGameState(bigGame: BigGameLogic) {
         const bigGameFromDb = await this.findWithAllRelationsByBigGameId(bigGame.id);
         const teams: Record<string, Team> = {};
-        for (let team of bigGameFromDb.teams) {
+        for (const team of bigGameFromDb.teams) {
             teams[team.id] = team;
         }
 
@@ -353,7 +353,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
             .reduce((arr, e) => arr.concat(e), [])
             .map(r => r.questions)
             .reduce((arr, e) => arr.concat(e), []);
-        for (let question of questionsFromDb) {
+        for (const question of questionsFromDb) {
             questions[question.id] = question;
         }
 
@@ -366,8 +366,8 @@ export class BigGameRepository extends BaseRepository<BigGame> {
 
         const answers: Answer[] = [];
 
-        for (let question of questionsFromCurrentGame) {
-            for (let answerFromCurrentGame of question.answers) {
+        for (const question of questionsFromCurrentGame) {
+            for (const answerFromCurrentGame of question.answers) {
                 const answer = new Answer();
                 answer.text = answerFromCurrentGame.text;
                 answer.status = answerFromCurrentGame.status;
@@ -505,7 +505,7 @@ export class BigGameRepository extends BaseRepository<BigGame> {
                                     ),
                             ) ?? [];
 
-                        for (let ans of answers) {
+                        for (const ans of answers) {
                             teams[ans.teamId].addAnswer(ans);
                         }
 

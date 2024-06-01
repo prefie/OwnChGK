@@ -109,12 +109,12 @@ function TeamItem(props: TeamItemProps) {
         }
     }, [props]);
 
-    const handleDeleteClick = (_: React.SyntheticEvent) => {
+    const handleDeleteClick = () => {
         setItemName();
         handleOpenModal();
     };
 
-    const handleEditClick = (_: React.SyntheticEvent) => {
+    const handleEditClick = () => {
         setIsRedirectedToEdit(true);
     };
 

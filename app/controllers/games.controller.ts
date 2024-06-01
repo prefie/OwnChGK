@@ -461,7 +461,7 @@ export class GamesController {
         const game = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
         const table = [];
         const sortedTeams = game.teams.sort((a, b) => (a.createdDate > b.createdDate ? 1 : -1));
-        for (let team of sortedTeams) {
+        for (const team of sortedTeams) {
             table.push([team.name, team.createdDate].join(';'));
             if (team.captain) {
                 table.push(['Капитан', 'Почта'].join(';'));
@@ -471,7 +471,7 @@ export class GamesController {
                 table.push(['Имя', 'Почта'].join(';'));
 
                 const participantsList = [];
-                for (let participant of team.participants) {
+                for (const participant of team.participants) {
                     participantsList.push(participant.name + ';' + participant.email + ';');
                 }
 

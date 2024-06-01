@@ -58,7 +58,7 @@ const AdminComponent: React.FC<AdminProps> = props => {
         });
     }, [props]);
 
-    const handleDeleteClick = (_: React.SyntheticEvent) => {
+    const handleDeleteClick = () => {
         handleDelete();
     };
 
@@ -125,7 +125,7 @@ const AdminStartScreen: React.FC<AdminStartScreenProps> = props => {
     const [isEmailInvalid, setIsEmailInvalid] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const scrollbars = useRef<Scrollbars>(null);
-    let location = useLocation<{ page: string }>();
+    const location = useLocation<{ page: string }>();
 
     if (teams && games && admins && isLoading) {
         setIsLoading(false);
@@ -234,7 +234,7 @@ const AdminStartScreen: React.FC<AdminStartScreenProps> = props => {
                 />
             ));
         }
-        return games.map((game, _) => (
+        return games.map(game => (
             <GameItem
                 key={game.id}
                 id={game.id}
@@ -282,8 +282,8 @@ const AdminStartScreen: React.FC<AdminStartScreenProps> = props => {
                 </div>
             ));
         }
-        let adminsForRender = [];
-        for (let admin of admins) {
+        const adminsForRender = [];
+        for (const admin of admins) {
             adminsForRender.push(
                 <AdminComponent
                     key={admin.email + admin.name}
@@ -312,8 +312,8 @@ const AdminStartScreen: React.FC<AdminStartScreenProps> = props => {
     };
 
     const handleAddNewAdmin = () => {
-        let newAdminName = document.querySelector('#new-admin-name') as HTMLInputElement;
-        let newAdminEmail = document.querySelector('#new-admin-email') as HTMLInputElement;
+        const newAdminName = document.querySelector('#new-admin-name') as HTMLInputElement;
+        const newAdminEmail = document.querySelector('#new-admin-email') as HTMLInputElement;
         if (newAdminEmail.value !== '') {
             ServerApi.addAdmin(newAdminEmail.value, newAdminName.value).then(res => {
                 if (res.status === 200) {

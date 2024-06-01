@@ -77,7 +77,7 @@ function GameItem(props: GameItemProps) {
         });
     }
 
-    const handleDeleteClick = (_: React.SyntheticEvent) => {
+    const handleDeleteClick = () => {
         setItemName();
         handleOpenModal();
     };
@@ -125,7 +125,7 @@ function GameItem(props: GameItemProps) {
         }
     }, [props]);
 
-    const handleEditClick = (_: React.SyntheticEvent) => {
+    const handleEditClick = () => {
         setIsRedirectedToEdit(true);
     };
 

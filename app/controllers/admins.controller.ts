@@ -94,7 +94,7 @@ export class AdminsController {
     public async sendPasswordWithTemporaryPassword(req: Request, res: Response) {
         const { email } = req.body;
 
-        let admin = await this.adminRepository.findByEmail(email);
+        const admin = await this.adminRepository.findByEmail(email);
         if (admin) {
             const code = makeTemporaryPassword(8);
             await this.adminRepository.updateTemporaryCode(admin, code);
@@ -108,7 +108,7 @@ export class AdminsController {
     public async confirmTemporaryPassword(req: Request, res: Response) {
         const { email, code } = req.body;
 
-        let admin = await this.adminRepository.findByEmail(email);
+        const admin = await this.adminRepository.findByEmail(email);
         if (!admin) {
             return res.status(404).json({ message: 'admin not found' });
         }
@@ -141,7 +141,7 @@ export class AdminsController {
         const { email, password, oldPassword } = req.body;
 
         const hashedPassword = await hash(password, 10);
-        let admin = await this.adminRepository.findByEmail(email);
+        const admin = await this.adminRepository.findByEmail(email);
         if (admin) {
             if (await compare(oldPassword, admin.password)) {
                 await this.adminRepository.updatePassword(admin, hashedPassword);
@@ -158,7 +158,7 @@ export class AdminsController {
         const { email, password, code } = req.body;
 
         const hashedPassword = await hash(password, 10);
-        let admin = await this.adminRepository.findByEmail(email);
+        const admin = await this.adminRepository.findByEmail(email);
         if (admin) {
             if (admin.temporary_code == code) {
                 await this.adminRepository.updatePassword(admin, hashedPassword);

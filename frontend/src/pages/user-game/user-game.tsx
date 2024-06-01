@@ -269,7 +269,7 @@ const UserGame: React.FC<UserGameProps> = props => {
         handleStopMessage: (gamePart: GameType) => {
             clearInterval(progressBarInterval);
             setTimeForAnswer(gamePart === GameType.chgk ? 70 : 20);
-            let progress = document.querySelector('#progress-bar') as HTMLDivElement;
+            const progress = document.querySelector('#progress-bar') as HTMLDivElement;
             if (progress) {
                 progress.style.width = '100%';
                 changeColor(progress, gamePart, gamePart === GameType.chgk ? 70 : 20);
@@ -284,11 +284,11 @@ const UserGame: React.FC<UserGameProps> = props => {
         ) => {
             clearInterval(progressBarInterval);
             setAnswer('');
-            let progress = document.querySelector('#progress-bar') as HTMLDivElement;
+            const progress = document.querySelector('#progress-bar') as HTMLDivElement;
             if (progress) {
                 progress.style.width = '100%';
             }
-            let answerInput = document.querySelector('#answer') as HTMLInputElement;
+            const answerInput = document.querySelector('#answer') as HTMLInputElement;
             if (answerInput && gamePart === GameType.chgk) {
                 answerInput.focus();
             }

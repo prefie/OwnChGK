@@ -192,7 +192,6 @@ test('Should_change_score_when_accept_answer_reject', () => {
 test('Should_not_change_score_when_answer_reject', () => {
     question.giveAnswer(team, 'wrong');
     question.acceptAnswers('right');
-    const scoreTable = game.getScoreTable();
 
     const answer = team.getAnswer(1, 1);
     answer.reject(0);

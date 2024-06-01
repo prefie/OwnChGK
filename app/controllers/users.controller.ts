@@ -107,7 +107,7 @@ export class UsersController {
         const { email, password, oldPassword } = req.body;
 
         const hashedPassword = await hash(password, 10);
-        let user = await this.userRepository.findByEmail(email);
+        const user = await this.userRepository.findByEmail(email);
         if (user) {
             if (await compare(oldPassword, user.password)) {
                 user.password = hashedPassword;
@@ -125,7 +125,7 @@ export class UsersController {
         const { email, password, code } = req.body;
 
         const hashedPassword = await hash(password, 10);
-        let user = await this.userRepository.findByEmail(email);
+        const user = await this.userRepository.findByEmail(email);
         if (user) {
             if (user.temporary_code == code) {
                 user.password = hashedPassword;
@@ -143,7 +143,7 @@ export class UsersController {
     public async sendPasswordWithTemporaryPassword(req: Request, res: Response) {
         const { email } = req.body;
 
-        let user = await this.userRepository.findByEmail(email);
+        const user = await this.userRepository.findByEmail(email);
         if (user) {
             const code = makeTemporaryPassword(8);
             await SendMailWithTemporaryPassword(transporter, email, code);
@@ -158,7 +158,7 @@ export class UsersController {
     public async confirmTemporaryPassword(req: Request, res: Response) {
         const { email, code } = req.body;
 
-        let user = await this.userRepository.findByEmail(email);
+        const user = await this.userRepository.findByEmail(email);
         if (!user) {
             return res.status(404).json({ message: 'user not found' });
         }

@@ -55,8 +55,7 @@ const UserAnswersPageForAdmin: React.FC = () => {
             chgkQuestionsCount: number,
             matrixQuestionsCount: number,
         ) => {
-            let dictionary: { [key: string]: Answer[] };
-            dictionary = {};
+            const dictionary: { [key: string]: Answer[] } = {};
             if (matrixAnswers) {
                 dictionary['matrix'] = matrixAnswers.map(
                     (ans: { answer: string; status: AnswerStatus; number: number }) => {
@@ -72,7 +71,7 @@ const UserAnswersPageForAdmin: React.FC = () => {
                         };
                     },
                 );
-                let numbers = dictionary['matrix'].map(ans => ans.number);
+                const numbers = dictionary['matrix'].map(ans => ans.number);
                 for (let i = 1; i <= matrixQuestionsCount; i++) {
                     if (!numbers.includes(i)) {
                         dictionary['matrix'].push({ status: 'no-answer', number: i, answer: '' });
@@ -96,7 +95,7 @@ const UserAnswersPageForAdmin: React.FC = () => {
                     },
                 );
 
-                let numbers = dictionary['chgk'].map(ans => ans.number);
+                const numbers = dictionary['chgk'].map(ans => ans.number);
                 for (let i = 1; i <= chgkQuestionsCount; i++) {
                     if (!numbers.includes(i)) {
                         dictionary['chgk'].push({ status: 'no-answer', number: i, answer: '' });
@@ -213,7 +212,7 @@ const UserAnswersPageForAdmin: React.FC = () => {
                 chgk: last['chgk'],
             };
 
-            let answer = old[gamePart].find(ans => ans.number === order);
+            const answer = old[gamePart].find(ans => ans.number === order);
             answer!.status = status;
             return old;
         });

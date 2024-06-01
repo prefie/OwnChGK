@@ -42,7 +42,7 @@ const AdminGame: React.FC = () => {
     const [isAppeal, setIsAppeal] = useState<boolean[]>([]);
     const [isConnectionError, setIsConnectionError] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [_, setIsStop] = useState<boolean>(false);
+    const [, setIsStop] = useState<boolean>(false);
 
     const requester = {
         getPayload: (obj: any) =>

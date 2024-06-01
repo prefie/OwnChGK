@@ -160,8 +160,8 @@ export const TeamTableRow: FC<TeamTableRowProps> = props => {
     };
 
     const countSums = () => {
-        let sums = [];
-        for (let tour of props.toursWithResults) {
+        const sums = [];
+        for (const tour of props.toursWithResults) {
             sums.push(tour.reduce((a, b) => a + b));
         }
         return sums;

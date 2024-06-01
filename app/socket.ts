@@ -19,7 +19,7 @@ function GiveAddedTime(gameId: number, gamePart: GameTypeLogic) {
     if (game.timeIsOnPause) {
         game.leftTime += extra10Seconds;
         game.maxTime += extra10Seconds;
-        for (let user of gameUsers[gameId]) {
+        for (const user of gameUsers[gameId]) {
             user.send(
                 JSON.stringify({
                     action: 'addTime',
@@ -33,7 +33,7 @@ function GiveAddedTime(gameId: number, gamePart: GameTypeLogic) {
         if (!game.timerStarted) {
             game.leftTime += extra10Seconds;
             game.maxTime += extra10Seconds;
-            for (let user of gameUsers[gameId]) {
+            for (const user of gameUsers[gameId]) {
                 user.send(
                     JSON.stringify({
                         action: 'addTime',
@@ -56,7 +56,7 @@ function GiveAddedTime(gameId: number, gamePart: GameTypeLogic) {
                 game.timerStarted = false;
                 game.leftTime = 0;
             }, game.leftTime);
-            for (let user of gameUsers[gameId]) {
+            for (const user of gameUsers[gameId]) {
                 user.send(
                     JSON.stringify({
                         action: 'addTime',
@@ -80,7 +80,7 @@ function ChangeQuestionNumber(
         activeGamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
     bigGames[gameId].currentGame.currentQuestion = [tourNumber, questionNumber];
 
-    for (let user of gameUsers[gameId]) {
+    for (const user of gameUsers[gameId]) {
         user.send(
             JSON.stringify({
                 action: 'changeQuestionNumber',
@@ -102,7 +102,7 @@ function StartTimer(gameId: number, gamePart: GameTypeLogic) {
             game.leftTime = 0;
         }, game.leftTime);
 
-        for (let user of gameUsers[gameId]) {
+        for (const user of gameUsers[gameId]) {
             user.send(
                 JSON.stringify({
                     action: 'start',
@@ -118,7 +118,7 @@ function StartTimer(gameId: number, gamePart: GameTypeLogic) {
             game.timerStarted = false;
             game.leftTime = 0;
         }, game.leftTime);
-        for (let user of gameUsers[gameId]) {
+        for (const user of gameUsers[gameId]) {
             user.send(
                 JSON.stringify({
                     action: 'start',
@@ -137,7 +137,7 @@ function StopTimer(gameId: number, gamePart: GameTypeLogic) {
     game.timeIsOnPause = false;
     game.leftTime = game.type == GameTypeLogic.ChGK ? seconds70PerQuestion : seconds20PerQuestion;
     game.maxTime = game.type == GameTypeLogic.ChGK ? seconds70PerQuestion : seconds20PerQuestion;
-    for (let user of gameUsers[gameId]) {
+    for (const user of gameUsers[gameId]) {
         user.send(
             JSON.stringify({
                 action: 'stop',
@@ -155,7 +155,7 @@ function PauseTimer(gameId: number, gamePart: GameTypeLogic) {
         game.leftTime -= Math.floor(process.uptime() * 1000 - game.timer._idleStart);
         clearTimeout(game.timer);
 
-        for (let user of gameUsers[gameId]) {
+        for (const user of gameUsers[gameId]) {
             user.send(
                 JSON.stringify({
                     action: 'pause',
@@ -192,7 +192,7 @@ function GiveAppeal(
 ) {
     const game = gamePart == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
     const roundNumber = Math.ceil(number / game.rounds[0].questionsCount);
-    let questionNumber = number - (roundNumber - 1) * game.rounds[0].questionsCount;
+    const questionNumber = number - (roundNumber - 1) * game.rounds[0].questionsCount;
     game.rounds[roundNumber - 1].questions[questionNumber - 1].giveAppeal(teamId, appeal, answer);
 }
 
@@ -212,7 +212,7 @@ function AcceptAnswer(
 function ChangeAnswer(gameId: number, gameType: GameTypeLogic, teamId: string, number: number) {
     const game = gameType == GameTypeLogic.ChGK ? bigGames[gameId].chGKGame : bigGames[gameId].matrixGame;
     const roundNumber = Math.ceil(number / game.rounds[0].questionsCount);
-    let questionNumber = number - (roundNumber - 1) * game.rounds[0].questionsCount;
+    const questionNumber = number - (roundNumber - 1) * game.rounds[0].questionsCount;
     game.rounds[roundNumber - 1].questions[questionNumber - 1].changeAnswer(
         game.teams[teamId],
         roundNumber,
@@ -412,8 +412,7 @@ function GetQuestionNumber(gameId, ws) {
 }
 
 function GetTeamAnswers(gameId, teamId, ws) {
-    let answer: { [key: string]: { number: number; answer: string; status: AnswerStatus }[] };
-    answer = {};
+    const answer: { [key: string]: { number: number; answer: string; status: AnswerStatus }[] } = {};
     if (bigGames[gameId].chGKGame) {
         const chgk = bigGames[gameId].chGKGame.teams[teamId].getAnswers();
         answer['chgk'] = chgk.map(ans => {
@@ -451,8 +450,7 @@ function GetTeamAnswers(gameId, teamId, ws) {
 }
 
 function GetTeamAnswersForAdmin(gameId, teamId, ws) {
-    let answer: { [key: string]: { number: number; answer: string; status: AnswerStatus }[] };
-    answer = {};
+    const answer: { [key: string]: { number: number; answer: string; status: AnswerStatus }[] } = {};
     if (bigGames[gameId].chGKGame) {
         const chgk = bigGames[gameId].chGKGame.teams[teamId].getAnswers();
         answer['chgk'] = chgk.map(ans => {
@@ -495,7 +493,7 @@ function GetTeamAnswersForAdmin(gameId, teamId, ws) {
 }
 
 function NotifyAdminsAboutAppeal(gameId, number) {
-    for (let ws of gameAdmins[gameId])
+    for (const ws of gameAdmins[gameId])
         ws.send(
             JSON.stringify({
                 action: 'appeal',

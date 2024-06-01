@@ -48,8 +48,7 @@ const UserAnswersPage: React.FC<UserAnswersPageProps> = props => {
             chgkAnswers: { answer: string; status: AnswerStatus; number: number }[],
             matrixAnswers: { answer: string; status: AnswerStatus; number: number }[],
         ) => {
-            let dictionary: { [key: string]: Answer[] };
-            dictionary = {};
+            const dictionary: { [key: string]: Answer[] } = {};
             if (matrixAnswers) {
                 dictionary['matrix'] = matrixAnswers.map(
                     (ans: { answer: string; status: AnswerStatus; number: number }) => {
@@ -83,7 +82,7 @@ const UserAnswersPage: React.FC<UserAnswersPageProps> = props => {
                     },
                 );
 
-                let numbers = dictionary['chgk'].map(ans => ans.number);
+                const numbers = dictionary['chgk'].map(ans => ans.number);
                 const max = Math.max(...numbers);
                 for (let i = 1; i <= max; i++) {
                     if (!numbers.includes(i)) {

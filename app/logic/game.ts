@@ -42,13 +42,13 @@ export class Game {
     addRound(round: Round): void {
         this.rounds[round.number - 1] = round;
         const answers = round.questions.map(q => q.answers).reduce((arr, e) => arr.concat(e), []);
-        for (let answer of answers) {
+        for (const answer of answers) {
             this.teams[answer.teamId]?.addAnswer(answer);
         }
     }
 
     addRounds(rounds: Round[]): void {
-        for (let round of rounds) {
+        for (const round of rounds) {
             this.addRound(round);
         }
     }
@@ -58,14 +58,14 @@ export class Game {
     }
 
     getTeamDictionary(teamId: string): { [name: string]: string } {
-        let result = {};
+        const result = {};
         result[this.teams[teamId].name] = teamId;
         return result;
     }
 
     getAllTeamsDictionary(): { [name: string]: string } {
-        let result = {};
-        for (let teamId of Object.keys(this.teams)) {
+        const result = {};
+        for (const teamId of Object.keys(this.teams)) {
             result[this.teams[teamId].name] = teamId;
         }
 
@@ -73,17 +73,17 @@ export class Game {
     }
 
     getScoreTable(): Record<string, number[][]> {
-        let table = {};
+        const table = {};
         const roundsCount = this.getRoundsCount();
         const questionsCount = this.rounds[0].questions.length;
 
-        for (let teamId of Object.keys(this.teams)) {
+        for (const teamId of Object.keys(this.teams)) {
             table[this.teams[teamId].name] = new Array(roundsCount);
             for (let round = 0; round < roundsCount; round++) {
                 table[this.teams[teamId].name][round] = new Array(questionsCount).fill(0);
             }
             const teamAnswers = this.teams[teamId].getAnswers();
-            for (let answer of teamAnswers) {
+            for (const answer of teamAnswers) {
                 table[this.teams[teamId].name][answer.roundNumber - 1][answer.questionNumber - 1] = answer.score;
             }
         }
@@ -91,7 +91,7 @@ export class Game {
     }
 
     getScoreTableForTeam(teamId: string): Record<string, number[][]> {
-        let table = {};
+        const table = {};
         const roundsCount = this.getRoundsCount();
         const questionsCount = this.rounds[0].questions.length;
 
@@ -100,7 +100,7 @@ export class Game {
             table[this.teams[teamId].name][round] = new Array(questionsCount).fill(0);
         }
         const teamAnswers = this.teams[teamId].getAnswers();
-        for (let answer of teamAnswers) {
+        for (const answer of teamAnswers) {
             table[this.teams[teamId].name][answer.roundNumber - 1][answer.questionNumber - 1] = answer.score;
         }
         return table;
@@ -108,7 +108,7 @@ export class Game {
 
     getTotalScoreForAllTeams(): Record<string, number> {
         const table = {};
-        for (let teamId in this.teams) {
+        for (const teamId in this.teams) {
             table[this.teams[teamId].name] = this.teams[teamId].getTotalScore();
         }
         return table;

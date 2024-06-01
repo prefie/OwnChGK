@@ -12,7 +12,7 @@ export class APIError extends Error {
     }
 }
 
-export const errorHandler = (err, req, res, _) => {
+export const errorHandler = (err, req, res) => {
     if (err instanceof APIError && err?.status) {
         return res.status(err.status).json({ message: err.message });
     } else {

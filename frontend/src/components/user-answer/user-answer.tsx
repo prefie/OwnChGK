@@ -43,7 +43,7 @@ const UserAnswer: React.FC<UserAnswerProps> = props => {
 
     const handleButtonClick = () => {
         if (props.isAdmin) {
-            let conn = new WebSocket(getUrlForSocket());
+            const conn = new WebSocket(getUrlForSocket());
             conn.onopen = () => requester.changeAnswer(conn);
             setAnswerStatus(lastStatus => {
                 const newStatus = lastStatus === 'success' ? 'error' : 'success';
@@ -65,7 +65,7 @@ const UserAnswer: React.FC<UserAnswerProps> = props => {
     const handleSendOpposition = () => {
         if (opposition !== '') {
             setAnswerStatus('opposition');
-            let conn = new WebSocket(getUrlForSocket());
+            const conn = new WebSocket(getUrlForSocket());
             conn.onopen = () => requester.sendAppeal(conn, opposition);
         }
         setIsOppositionClicked(false);

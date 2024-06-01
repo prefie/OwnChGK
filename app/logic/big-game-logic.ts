@@ -3,7 +3,7 @@ import { GameStatus } from './enums/game-status.enum';
 
 export class BigGameLogic {
     public readonly id: string;
-    public readonly name: String;
+    public readonly name: string;
     public readonly chGKGame: Game;
     public readonly matrixGame: Game;
 
@@ -14,7 +14,7 @@ export class BigGameLogic {
     private _breakTime: number;
     private _intervalForBreak: number;
 
-    constructor(id: string, name: String, ChGK: Game = null, Matrix: Game = null, intrigueEnabled: boolean = false) {
+    constructor(id: string, name: string, ChGK: Game = null, Matrix: Game = null, intrigueEnabled: boolean = false) {
         this.id = id;
         this.matrixGame = Matrix;
         this.chGKGame = ChGK;

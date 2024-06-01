@@ -22,7 +22,7 @@ const Modal: React.FC<ModalProps> = props => {
         props.closeModal(false);
     }, [props]);
 
-    const handleCloseModalClick = (_: React.SyntheticEvent) => {
+    const handleCloseModalClick = () => {
         handleCloseModal();
     };
 
@@ -40,12 +40,12 @@ const Modal: React.FC<ModalProps> = props => {
         }
     }, [props]);
 
-    const handleDeleteClick = (_: React.SyntheticEvent) => {
+    const handleDeleteClick = () => {
         handleDelete();
         handleCloseModal();
     };
 
-    const handleStartBreak = (_: React.SyntheticEvent) => {
+    const handleStartBreak = () => {
         if (minutes !== 0) {
             props.setBreakTime?.(minutes * 60);
             props.startBreak?.(true);

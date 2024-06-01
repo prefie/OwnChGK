@@ -91,8 +91,8 @@ const Rating: React.FC<RatingProps> = props => {
     };
 
     const countSums = (toursWithResults: Tour[]) => {
-        let sums = [];
-        for (let tour of toursWithResults) {
+        const sums = [];
+        for (const tour of toursWithResults) {
             sums.push(tour.reduce((a, b) => a + b));
         }
         return sums;

@@ -12,7 +12,7 @@ export const validateAccessLevel = (value: any) => {
 
 export const validateRoundTypes = (value: any[]) => {
     const objectValues = Object.values(RoundType);
-    for (let v of value) {
+    for (const v of value) {
         if (!objectValues.includes(v)) return false;
     }
 
