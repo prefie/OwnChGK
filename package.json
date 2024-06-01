@@ -15,7 +15,8 @@
         "ui-test": "playwright test tests/playwright",
         "typeorm": "typeorm-ts-node-commonjs",
         "lint": "eslint .",
-        "lint:fix": "eslint . --fix"
+        "lint:fix": "eslint . --fix",
+        "lint-staged": "lint-staged"
     },
     "keywords": [],
     "author": "",
@@ -76,11 +77,6 @@
     },
     "overrides": {
         "eslint": "9.4.0"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
     },
     "lint-staged": {
         "*.{ts,tsx}": [
