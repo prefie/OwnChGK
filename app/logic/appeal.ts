@@ -16,7 +16,7 @@ export class Appeal {
         text: string,
         wrongAnswer: string,
         status: AppealStatus = AppealStatus.UNCHECKED,
-        comment: string = ''
+        comment: string = '',
     ) {
         this.teamId = teamId;
         this.roundNumber = roundNumber;

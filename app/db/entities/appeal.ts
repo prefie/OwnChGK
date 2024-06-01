@@ -5,10 +5,10 @@ import { Answer } from './answer';
 export enum AppealStatus {
     UNCHECKED = 'unchecked',
     ACCEPTED = 'accepted',
-    NOT_ACCEPTED = 'not_accepted'
+    NOT_ACCEPTED = 'not_accepted',
 }
 
-@Entity("appeals")
+@Entity('appeals')
 export class Appeal extends BaseCreature {
     @PrimaryGeneratedColumn('uuid', { name: 'appeal_id' })
     id: string;
@@ -22,19 +22,16 @@ export class Appeal extends BaseCreature {
     @Column({
         type: 'enum',
         enum: AppealStatus,
-        default: AppealStatus.UNCHECKED
+        default: AppealStatus.UNCHECKED,
     })
     status: AppealStatus;
 
-    @OneToOne(
-        () => Answer,
-        answer => answer.appeal,
-        {
-            onDelete: 'CASCADE',
-            onUpdate: 'CASCADE',
-        })
+    @OneToOne(() => Answer, answer => answer.appeal, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
     @JoinColumn({
-        name: 'answer_id'
+        name: 'answer_id',
     })
     answer: Answer;
 }

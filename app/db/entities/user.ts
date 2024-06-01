@@ -7,9 +7,6 @@ export class User extends Person {
     @PrimaryGeneratedColumn('uuid', { name: 'user_id' })
     id: string;
 
-    @OneToOne(
-        () => Team,
-        team => team.captain,
-    )
+    @OneToOne(() => Team, team => team.captain)
     team: Team;
 }

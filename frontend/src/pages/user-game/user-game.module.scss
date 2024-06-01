@@ -1,417 +1,418 @@
 .menuLink {
-  text-decoration: none;
-  color: var(--color-text-icon-link-enabled);
-  display: flex;
-  align-items: center;
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-24);
+    text-decoration: none;
+    color: var(--color-text-icon-link-enabled);
+    display: flex;
+    align-items: center;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-24);
 }
 
 .ratingLink {
-  margin-right: 1.5rem;
+    margin-right: 1.5rem;
 }
 
 .answerButtonWrapper {
-  display: flex;
+    display: flex;
 }
 
 .gameName {
-  flex: 1;
-  font-size: var(--font-size-32);
-  line-height: var(--line-height-small);
-  color: var(--color-text-icon-primary);
-  word-break: break-all;
-  display: -webkit-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  align-self: center;
-  text-align: center;
-  width: 100%;
-  margin: 0 1rem;
+    flex: 1;
+    font-size: var(--font-size-32);
+    line-height: var(--line-height-small);
+    color: var(--color-text-icon-primary);
+    word-break: break-all;
+    display: -webkit-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    align-self: center;
+    text-align: center;
+    width: 100%;
+    margin: 0 1rem;
 }
 
 .breakHeader {
-  font-size: var(--font-size-40);
-  color: var(--color-text-icon-primary);
-  justify-content: center;
-  display: flex;
-  align-self: center;
-  margin: 0 1rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
+    font-size: var(--font-size-40);
+    color: var(--color-text-icon-primary);
+    justify-content: center;
+    display: flex;
+    align-self: center;
+    margin: 0 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 
 .contentWrapper {
-  height: 90%;
-  width: 70%;
-  display: flex;
-  flex-direction: column;
-  align-self: center;
-  position: relative;
-  overflow-y: auto;
-  scrollbar-width: none;
+    height: 90%;
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    position: relative;
+    overflow-y: auto;
+    scrollbar-width: none;
 
-  &::-webkit-scrollbar {
-    width: 0;
-  }
+    &::-webkit-scrollbar {
+        width: 0;
+    }
 }
 
 .breakContentWrapper {
-  height: 90%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  .logo {
-    width: 300px;
-    height: 300px;
-    user-select: none;
-  }
-
-  .breakTime {
+    height: 90%;
+    width: 100%;
     display: flex;
-    flex-direction: column;
-    font-size: 250px;
-    font-family: var(--font-family-primary);
-    line-height: var(--line-height-small);
-    text-align: center;
-    color: var(--color-text-icon-primary);
-  }
-
-  .breakTimeText {
-    font-family: var(--font-family-primary);
-    font-size: var(--font-size-48);
-    line-height: var(--line-height-small);
-    text-align: center;
-    color: var(--color-text-icon-primary);
-  }
-}
-
-.teamWrapper {
-  font-size: var(--font-size-20);
-  display: flex;
-  width: auto;
-  padding: 1rem;
-  border-radius: .5rem;
-  pointer-events: none;
-  white-space: pre-wrap;
-
-  .team {
-    color: var(--color-text-icon-secondary);
-    margin-right: 1rem;
-  }
-
-  .teamName {
-    color: var(--color-text-icon-primary);
-  }
-}
-
-.answerBox {
-  background-color: var(--color-bg-plates);
-  border-radius: 0 0 12px 12px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-  position: relative;
-  padding: 2rem;
-}
-
-.formWrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-.progressBar {
-  width: 100%;
-  height: 100%;
-}
-
-.gameStartContentWrapper {
-  height: 90%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  .image {
-    width: 300px;
-    height: 300px;
-    user-select: none;
-    margin-bottom: 2.5rem;
-  }
-
-  .pageText {
-    font-family: var(--font-family-primary);
-    font-size: var(--font-size-48);
-    line-height: var(--line-height-small);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-icon-primary);
-    text-align: center;
-  }
-}
-
-.answersWrapper {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  height: 90%;
-}
-
-.answersBox {
-  background-color: var(--color-bg-plates);
-  border-radius: 0 0 12px 12px;
-  width: 100%;
-  min-height: 80%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-  position: relative;
-  padding: 1rem 2rem;
-}
-
-.answerInputWrapper {
-  display: flex;
-  width: 100%;
-  position: relative;
-  margin-bottom: 1rem;
-
-  .sendAnswerButton {
-    background-color: var(--color-fill-accent-enabled);
-    color: var(--color-text-icon-primary);
-    font-family: var(--font-family-primary);
-    font-size: var(--font-size-24);
-    font-weight: var(--font-weight-medium);
-    flex: 1;
-    padding: 1rem;
-    border-radius: .5rem;
-    user-select: none;
-    min-height: 2rem;
-
-    &:not(:disabled):hover {
-      cursor: pointer;
-      background-color: var(--color-fill-accent-hover);
-    }
-
-    &:not(:disabled):active {
-      background-color: var(--color-fill-accent-pressed);
-    }
-  }
-}
-
-.activeQuestionHeader {
-  display: flex;
-  gap: 1rem;
-  width: 100%;
-  color: var(--color-text-icon-primary);
-  font-size: var(--font-size-32);
-  font-weight: var(--font-weight-bold);
-  align-items: center;
-  margin-bottom: 1rem;
-
-  .matrixRoundName {
-    color: var(--color-text-icon-secondary);
-    font-weight: var(--font-weight-regular);
-    font-size: var(--font-size-20);
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-}
-
-.tourName {
-  display: flex;
-  font-size: var(--font-size-24);
-  color: var(--color-text-icon-primary);
-  font-weight: var(--font-weight-bold);
-  margin-bottom: 1rem;
-}
-
-.matrixAnswerNumberWrapper {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: .5rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.matrixAnswerNumber {
-  font-size: var(--font-size-20);
-  color: var(--color-text-icon-primary);
-}
-
-.accepted, .acceptedChgk {
-  color: var(--color-text-icon-secondary);
-  font-size: var(--font-size-20);
-  white-space: nowrap;
-}
-
-.acceptedChgk {
-  bottom: 0;
-}
-
-.questionWrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 2rem;
-  color: var(--color-text-icon-primary);
-  background-color: var(--color-bg-plates);
-  border-radius: 12px 12px 0 0;
-  box-sizing: border-box;
-}
-
-.questionText {
-  font-size: var(--font-size-20);
-  color: var(--color-text-icon-primary);
-  margin-bottom: 1rem;
-}
-
-.leftTime {
-  color: var(--color-text-icon-primary);
-  font-size: var(--font-size-24);
-}
-
-@media only screen and (min-width: 601px) {
-  .sendIcon {
-    display: none !important;
-  }
-}
-
-@media only screen and (max-width: 600px) {
-  .gameStartContentWrapper {
-    .image {
-      width: 150px;
-      height: 150px;
-    }
-
-    .pageText {
-      font-size: var(--font-size-32);
-    }
-  }
-
-  .breakHeader {
-    font-size: var(--font-size-16);
-    margin: 0;
-  }
-
-  .breakContentWrapper {
-    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: center;
 
     .logo {
-      width: 200px;
+        width: 300px;
+        height: 300px;
+        user-select: none;
     }
 
     .breakTime {
-      font-size: 6rem;
+        display: flex;
+        flex-direction: column;
+        font-size: 250px;
+        font-family: var(--font-family-primary);
+        line-height: var(--line-height-small);
+        text-align: center;
+        color: var(--color-text-icon-primary);
     }
 
     .breakTimeText {
-      display: none;
+        font-family: var(--font-family-primary);
+        font-size: var(--font-size-48);
+        line-height: var(--line-height-small);
+        text-align: center;
+        color: var(--color-text-icon-primary);
     }
-  }
+}
 
-  .gameName {
-    width: 100%;
-    font-size: var(--font-size-16);
-  }
-
-  .contentWrapper {
-    width: 90%;
-    margin-bottom: 3rem;
-  }
-
-  .teamWrapper {
-    width: 100%;
-    font-size: var(--font-size-16);
+.teamWrapper {
+    font-size: var(--font-size-20);
+    display: flex;
+    width: auto;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    pointer-events: none;
+    white-space: pre-wrap;
 
     .team {
-      margin-right: 1rem;
+        color: var(--color-text-icon-secondary);
+        margin-right: 1rem;
     }
 
     .teamName {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+        color: var(--color-text-icon-primary);
     }
-  }
+}
 
-  .questionWrapper {
-    padding: 1rem;
-  }
-
-  .acceptedChgk,
-  .accepted {
-    font-size: var(--font-size-16);
-  }
-
-  .answersWrapper {
+.answerBox {
+    background-color: var(--color-bg-plates);
+    border-radius: 0 0 12px 12px;
     width: 100%;
-  }
-
-  .leftTime {
-    font-size: var(--font-size-16);
-  }
-
-  .activeQuestionHeader {
-    font-size: var(--font-size-20);
-    white-space: nowrap;
-  }
-
-  .matrixRoundName {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  .answersBox {
-    padding: 1rem;
-  }
-
-  .answerBox {
-    padding: 1rem;
-  }
-
-  .tourName {
-    font-size: var(--font-size-24);
-    margin-bottom: 1rem;
-  }
-
-  .matrixAnswerNumberWrapper {
-    gap: .5rem;
-  }
-
-  .matrixAnswerNumber {
-    font-size: var(--font-size-16);
-  }
-
-  .answerButtonWrapper {
     display: flex;
-  }
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    position: relative;
+    padding: 2rem;
+}
 
-  .answerInputWrapper {
+.formWrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.progressBar {
+    width: 100%;
+    height: 100%;
+}
+
+.gameStartContentWrapper {
+    height: 90%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .image {
+        width: 300px;
+        height: 300px;
+        user-select: none;
+        margin-bottom: 2.5rem;
+    }
+
+    .pageText {
+        font-family: var(--font-family-primary);
+        font-size: var(--font-size-48);
+        line-height: var(--line-height-small);
+        font-weight: var(--font-weight-medium);
+        color: var(--color-text-icon-primary);
+        text-align: center;
+    }
+}
+
+.answersWrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 90%;
+}
+
+.answersBox {
+    background-color: var(--color-bg-plates);
+    border-radius: 0 0 12px 12px;
+    width: 100%;
+    min-height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    position: relative;
+    padding: 1rem 2rem;
+}
+
+.answerInputWrapper {
+    display: flex;
+    width: 100%;
+    position: relative;
     margin-bottom: 1rem;
 
     .sendAnswerButton {
-      padding: 1rem;
-      font-size: var(--font-size-20);
-      margin-left: 0.5rem;
+        background-color: var(--color-fill-accent-enabled);
+        color: var(--color-text-icon-primary);
+        font-family: var(--font-family-primary);
+        font-size: var(--font-size-24);
+        font-weight: var(--font-weight-medium);
+        flex: 1;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        user-select: none;
+        min-height: 2rem;
+
+        &:not(:disabled):hover {
+            cursor: pointer;
+            background-color: var(--color-fill-accent-hover);
+        }
+
+        &:not(:disabled):active {
+            background-color: var(--color-fill-accent-pressed);
+        }
+    }
+}
+
+.activeQuestionHeader {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    color: var(--color-text-icon-primary);
+    font-size: var(--font-size-32);
+    font-weight: var(--font-weight-bold);
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .matrixRoundName {
+        color: var(--color-text-icon-secondary);
+        font-weight: var(--font-weight-regular);
+        font-size: var(--font-size-20);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}
+
+.tourName {
+    display: flex;
+    font-size: var(--font-size-24);
+    color: var(--color-text-icon-primary);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: 1rem;
+}
+
+.matrixAnswerNumberWrapper {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.matrixAnswerNumber {
+    font-size: var(--font-size-20);
+    color: var(--color-text-icon-primary);
+}
+
+.accepted,
+.acceptedChgk {
+    color: var(--color-text-icon-secondary);
+    font-size: var(--font-size-20);
+    white-space: nowrap;
+}
+
+.acceptedChgk {
+    bottom: 0;
+}
+
+.questionWrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 2rem;
+    color: var(--color-text-icon-primary);
+    background-color: var(--color-bg-plates);
+    border-radius: 12px 12px 0 0;
+    box-sizing: border-box;
+}
+
+.questionText {
+    font-size: var(--font-size-20);
+    color: var(--color-text-icon-primary);
+    margin-bottom: 1rem;
+}
+
+.leftTime {
+    color: var(--color-text-icon-primary);
+    font-size: var(--font-size-24);
+}
+
+@media only screen and (min-width: 601px) {
+    .sendIcon {
+        display: none !important;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .gameStartContentWrapper {
+        .image {
+            width: 150px;
+            height: 150px;
+        }
+
+        .pageText {
+            font-size: var(--font-size-32);
+        }
     }
 
-    .sendText {
-      display: none;
+    .breakHeader {
+        font-size: var(--font-size-16);
+        margin: 0;
     }
-  }
+
+    .breakContentWrapper {
+        flex-direction: column-reverse;
+
+        .logo {
+            width: 200px;
+        }
+
+        .breakTime {
+            font-size: 6rem;
+        }
+
+        .breakTimeText {
+            display: none;
+        }
+    }
+
+    .gameName {
+        width: 100%;
+        font-size: var(--font-size-16);
+    }
+
+    .contentWrapper {
+        width: 90%;
+        margin-bottom: 3rem;
+    }
+
+    .teamWrapper {
+        width: 100%;
+        font-size: var(--font-size-16);
+
+        .team {
+            margin-right: 1rem;
+        }
+
+        .teamName {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .questionWrapper {
+        padding: 1rem;
+    }
+
+    .acceptedChgk,
+    .accepted {
+        font-size: var(--font-size-16);
+    }
+
+    .answersWrapper {
+        width: 100%;
+    }
+
+    .leftTime {
+        font-size: var(--font-size-16);
+    }
+
+    .activeQuestionHeader {
+        font-size: var(--font-size-20);
+        white-space: nowrap;
+    }
+
+    .matrixRoundName {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .answersBox {
+        padding: 1rem;
+    }
+
+    .answerBox {
+        padding: 1rem;
+    }
+
+    .tourName {
+        font-size: var(--font-size-24);
+        margin-bottom: 1rem;
+    }
+
+    .matrixAnswerNumberWrapper {
+        gap: 0.5rem;
+    }
+
+    .matrixAnswerNumber {
+        font-size: var(--font-size-16);
+    }
+
+    .answerButtonWrapper {
+        display: flex;
+    }
+
+    .answerInputWrapper {
+        margin-bottom: 1rem;
+
+        .sendAnswerButton {
+            padding: 1rem;
+            font-size: var(--font-size-20);
+            margin-left: 0.5rem;
+        }
+
+        .sendText {
+            display: none;
+        }
+    }
 }

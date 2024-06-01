@@ -1,9 +1,9 @@
 export enum AccessType {
     ACCESS,
-    FORBIDDEN
+    FORBIDDEN,
 }
 
 export interface CheckAccessResult {
-    type: AccessType,
-    message?: string | undefined,
+    type: AccessType;
+    message?: string | undefined;
 }

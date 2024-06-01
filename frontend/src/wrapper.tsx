@@ -5,9 +5,7 @@ class Wrapper extends React.Component {
     render() {
         return (
             <div className={classes.Wrapper}>
-                <main>
-                    {this.props.children}
-                </main>
+                <main>{this.props.children}</main>
             </div>
         );
     }

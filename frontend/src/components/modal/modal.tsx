@@ -5,7 +5,7 @@ import classes from './modal.module.scss';
 import { ModalProps } from '../../entities/modal/modal.interfaces';
 import { getCookie, getUrlForSocket } from '../../commonFunctions';
 import { createPortal } from 'react-dom';
-import {ServerApi} from "../../server-api/server-api";
+import { ServerApi } from '../../server-api/server-api';
 
 let conn: WebSocket;
 
@@ -51,13 +51,13 @@ const Modal: React.FC<ModalProps> = props => {
             props.startBreak?.(true);
             conn = new WebSocket(getUrlForSocket());
             conn.onopen = () => {
-                conn.send(JSON.stringify({
-                            'cookie': getCookie('authorization'),
-                            'gameId': props.gameId,
-                            'action': 'breakTime',
-                            'time': minutes * 60
-                        }
-                    )
+                conn.send(
+                    JSON.stringify({
+                        cookie: getCookie('authorization'),
+                        gameId: props.gameId,
+                        action: 'breakTime',
+                        time: minutes * 60,
+                    }),
                 );
             };
         }
@@ -69,47 +69,51 @@ const Modal: React.FC<ModalProps> = props => {
             <div className={classes.modal}>
                 <div className={classes.closeButtonWrapper}>
                     <IconButton onClick={handleCloseModalClick}>
-                        <CloseIcon sx={{
-                            color: 'white',
-                            fontSize: '5vmin'
-                        }}/>
+                        <CloseIcon
+                            sx={{
+                                color: 'white',
+                                fontSize: '5vmin',
+                            }}
+                        />
                     </IconButton>
                 </div>
 
-                {
-                    props.modalType === 'delete'
-                        ?
-                        <p className={classes.modalText}>Вы уверены, что хотите удалить «{props.itemForDeleteName}»?</p>
-                        :
-                        (
-                            props.modalType === 'delete-game-part'
-                                ?
-                                <p className={classes.modalText}>Вы уверены, что хотите
-                                    удалить {props.itemForDeleteName}?</p>
-                                :
-                                <p className={`${classes.modalText} ${classes.breakModalText}`}>
-                                    Перерыв
-                                    <input className={classes.minutesInput}
-                                           type="text"
-                                           id="minutes"
-                                           name="minutes"
-                                           value={minutes || ''}
-                                           required={true}
-                                           onChange={handleMinutesCountChange}/>
-                                    минут
-                                </p>
-                        )
-                }
+                {props.modalType === 'delete' ? (
+                    <p className={classes.modalText}>Вы уверены, что хотите удалить «{props.itemForDeleteName}»?</p>
+                ) : props.modalType === 'delete-game-part' ? (
+                    <p className={classes.modalText}>Вы уверены, что хотите удалить {props.itemForDeleteName}?</p>
+                ) : (
+                    <p className={`${classes.modalText} ${classes.breakModalText}`}>
+                        Перерыв
+                        <input
+                            className={classes.minutesInput}
+                            type='text'
+                            id='minutes'
+                            name='minutes'
+                            value={minutes || ''}
+                            required={true}
+                            onChange={handleMinutesCountChange}
+                        />
+                        минут
+                    </p>
+                )}
                 <div className={classes.modalButtonWrapper}>
-                    <button className={classes.modalButton}
-                            onClick={props.modalType === 'delete' || props.modalType === 'delete-game-part' ? handleDeleteClick : handleStartBreak}>
+                    <button
+                        className={classes.modalButton}
+                        onClick={
+                            props.modalType === 'delete' || props.modalType === 'delete-game-part'
+                                ? handleDeleteClick
+                                : handleStartBreak
+                        }
+                    >
                         {props.modalType === 'delete' || props.modalType === 'delete-game-part' ? 'Да' : 'Запустить'}
                     </button>
                 </div>
             </div>
-            <div className={classes.overlay}/>
+            <div className={classes.overlay} />
         </React.Fragment>,
-        document.getElementById('root') as HTMLElement);
+        document.getElementById('root') as HTMLElement,
+    );
 };
 
 export default Modal;

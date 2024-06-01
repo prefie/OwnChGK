@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import classes from './user-answer.module.scss';
-import {TextareaAutosize} from '@mui/material';
-import {UserAnswerProps} from '../../entities/user-answer/user-answer.interfaces';
-import {getCookie, getUrlForSocket} from '../../commonFunctions';
+import { TextareaAutosize } from '@mui/material';
+import { UserAnswerProps } from '../../entities/user-answer/user-answer.interfaces';
+import { getCookie, getUrlForSocket } from '../../commonFunctions';
 
 const UserAnswer: React.FC<UserAnswerProps> = props => {
     const [isOppositionClicked, setIsOppositionClicked] = useState<boolean>(false);
@@ -10,30 +10,35 @@ const UserAnswer: React.FC<UserAnswerProps> = props => {
     const [answerStatus, setAnswerStatus] = useState<'success' | 'error' | 'opposition' | 'no-answer'>(props.status);
 
     const requester = {
-        getPayload: (obj: any) => JSON.stringify({
-            'cookie': getCookie('authorization'),
-            'gameId': props.gameId,
-            ...obj,
-        }),
+        getPayload: (obj: any) =>
+            JSON.stringify({
+                cookie: getCookie('authorization'),
+                gameId: props.gameId,
+                ...obj,
+            }),
 
         sendAppeal: (ws: WebSocket, opposition: string) => {
-            ws.send(requester.getPayload({
-                'action': 'appeal',
-                'number': props.order,
-                'appeal': opposition,
-                'answer': props.answer,
-                'gamePart': props.gamePart,
-            }));
+            ws.send(
+                requester.getPayload({
+                    action: 'appeal',
+                    number: props.order,
+                    appeal: opposition,
+                    answer: props.answer,
+                    gamePart: props.gamePart,
+                }),
+            );
         },
 
         changeAnswer: (ws: WebSocket) => {
-            ws.send(requester.getPayload({
-                'action': 'changeAnswer',
-                'gamePart': props.gamePart,
-                'teamId': props.teamId,
-                'number': props.order,
-            }));
-        }
+            ws.send(
+                requester.getPayload({
+                    action: 'changeAnswer',
+                    gamePart: props.gamePart,
+                    teamId: props.teamId,
+                    number: props.order,
+                }),
+            );
+        },
     };
 
     const handleButtonClick = () => {
@@ -41,11 +46,11 @@ const UserAnswer: React.FC<UserAnswerProps> = props => {
             let conn = new WebSocket(getUrlForSocket());
             conn.onopen = () => requester.changeAnswer(conn);
             setAnswerStatus(lastStatus => {
-                const newStatus = lastStatus === 'success' ? 'error' : 'success'
+                const newStatus = lastStatus === 'success' ? 'error' : 'success';
                 if (props.onChangeStatus) {
                     props.onChangeStatus(props.gamePart, props.order, newStatus);
                 }
-                return newStatus
+                return newStatus;
             });
             return;
         }
@@ -95,27 +100,39 @@ const UserAnswer: React.FC<UserAnswerProps> = props => {
         <div className={classes.userAnswerWrapper}>
             <div className={classes.answerWrapper}>
                 <div className={classes.answerNumber}>{props.order}</div>
-                <input readOnly className={`${classes.answer} ${getInputClass()}`} value={getAnswer()}/>
-                {
-                    answerStatus === 'error' && props.gamePart === 'chgk' || props.isAdmin
-                        ? <button className={
-                            `${classes.button} ${classes.oppositionButton} ${isOppositionClicked ? classes.clickedOppositionButton : ''}`}
-                                  onClick={handleButtonClick}>{props.isAdmin ? getButtonText() : 'Апелляция'}</button>
-                        : null
-                }
+                <input
+                    readOnly
+                    className={`${classes.answer} ${getInputClass()}`}
+                    value={getAnswer()}
+                />
+                {(answerStatus === 'error' && props.gamePart === 'chgk') || props.isAdmin ? (
+                    <button
+                        className={`${classes.button} ${classes.oppositionButton} ${
+                            isOppositionClicked ? classes.clickedOppositionButton : ''
+                        }`}
+                        onClick={handleButtonClick}
+                    >
+                        {props.isAdmin ? getButtonText() : 'Апелляция'}
+                    </button>
+                ) : null}
             </div>
-            {
-                isOppositionClicked
-                    ?
-                    <div className={classes.oppositionWrapper}>
-                        <TextareaAutosize className={classes.oppositionText} minRows={4} value={opposition}
-                                          onChange={handleOppositionChange} placeholder="Текст апелляции"/>
-                        <button className={`${classes.button} ${classes.sendOppositionButton}`}
-                                onClick={handleSendOpposition}>Отправить
-                        </button>
-                    </div>
-                    : null
-            }
+            {isOppositionClicked ? (
+                <div className={classes.oppositionWrapper}>
+                    <TextareaAutosize
+                        className={classes.oppositionText}
+                        minRows={4}
+                        value={opposition}
+                        onChange={handleOppositionChange}
+                        placeholder='Текст апелляции'
+                    />
+                    <button
+                        className={`${classes.button} ${classes.sendOppositionButton}`}
+                        onClick={handleSendOpposition}
+                    >
+                        Отправить
+                    </button>
+                </div>
+            ) : null}
         </div>
     );
 };

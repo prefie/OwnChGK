@@ -10,6 +10,6 @@ const Loader: React.FC = () => {
             <div className={classes.loader} />
         </PageWrapper>
     );
-}
+};
 
 export default Loader;

@@ -1,29 +1,29 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classes from './team-creation.module.scss';
 import Header from '../../components/header/header';
-import {FormButton} from '../../components/form-button/form-button';
+import { FormButton } from '../../components/form-button/form-button';
 import {
     TeamCreatorDispatchProps,
     TeamCreatorProps,
-    TeamCreatorStateProps
+    TeamCreatorStateProps,
 } from '../../entities/team-creation/team-creation.interfaces';
 import PageWrapper from '../../components/page-wrapper/page-wrapper';
-import {Alert, Autocomplete, Button, OutlinedInput, Skeleton, Snackbar, TextField} from '@mui/material';
-import {CustomInput} from '../../components/custom-input/custom-input';
-import {Redirect, useLocation} from 'react-router-dom';
+import { Alert, Autocomplete, Button, OutlinedInput, Skeleton, Snackbar, TextField } from '@mui/material';
+import { CustomInput } from '../../components/custom-input/custom-input';
+import { Redirect, useLocation } from 'react-router-dom';
 import NavBar from '../../components/nav-bar/nav-bar';
 import PageBackdrop from '../../components/backdrop/backdrop';
-import {Dispatch} from 'redux';
-import {AppAction} from '../../redux/reducers/app-reducer/app-reducer.interfaces';
-import {addUserTeam} from '../../redux/actions/app-actions/app-actions';
-import {connect} from 'react-redux';
-import {AppState} from '../../entities/app/app.interfaces';
+import { Dispatch } from 'redux';
+import { AppAction } from '../../redux/reducers/app-reducer/app-reducer.interfaces';
+import { addUserTeam } from '../../redux/actions/app-actions/app-actions';
+import { connect } from 'react-redux';
+import { AppState } from '../../entities/app/app.interfaces';
 import MobileNavbar from '../../components/mobile-navbar/mobile-navbar';
 import Loader from '../../components/loader/loader';
 import CloseIcon from '@mui/icons-material/Close';
-import {Scrollbars} from 'rc-scrollbars';
-import {User} from '../admin-start-screen/admin-start-screen';
-import {ServerApi} from "../../server-api/server-api";
+import { Scrollbars } from 'rc-scrollbars';
+import { User } from '../admin-start-screen/admin-start-screen';
+import { ServerApi } from '../../server-api/server-api';
 
 export interface TeamMember {
     name: string;
@@ -35,7 +35,7 @@ const TeamCreator: React.FC<TeamCreatorProps> = props => {
     const [isCreatedSuccessfully, setIsCreatedSuccessfully] = useState<boolean>(false);
     const [isNameInvalid, setIsNameInvalid] = useState<boolean>(false);
     const [oldCaptain, setOldCaptain] = useState<string | undefined>();
-    const location = useLocation<{ id: string, name: string }>();
+    const location = useLocation<{ id: string; name: string }>();
     const [teamName, setTeamName] = useState<string>(props.mode === 'edit' ? location.state.name : '');
     const [captain, setCaptain] = useState<string | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -48,7 +48,7 @@ const TeamCreator: React.FC<TeamCreatorProps> = props => {
     useEffect(() => {
         const resizeEventHandler = () => {
             setMediaMatch(window.matchMedia('(max-width: 600px)'));
-        }
+        };
 
         mediaMatch.addEventListener('change', resizeEventHandler);
 
@@ -58,7 +58,7 @@ const TeamCreator: React.FC<TeamCreatorProps> = props => {
     }, []);
 
     useEffect(() => {
-        if (!props.isAdmin || props.role === "demoadmin") {
+        if (!props.isAdmin || props.role === 'demoadmin') {
             setCaptain(props.userEmail);
             setOldCaptain(props.userEmail);
             setUsersFromDB([props.userEmail]);
@@ -68,7 +68,7 @@ const TeamCreator: React.FC<TeamCreatorProps> = props => {
                         res.json().then(team => {
                             setMembers(team.participants ?? []);
                             setIsPageLoading(false);
-                        })
+                        });
                     }
                 });
             } else {
@@ -77,8 +77,8 @@ const TeamCreator: React.FC<TeamCreatorProps> = props => {
         } else {
             ServerApi.getUsersWithoutTeam().then(res => {
                 if (res.status === 200) {
-                    res.json().then(({users}) => {
-                        const userObjects = users as User[]
+                    res.json().then(({ users }) => {
+                        const userObjects = users as User[];
                         setUsersFromDB([...userObjects.map(user => user.email)]);
                         if (props.mode === 'edit') {
                             ServerApi.getTeam(location.state.id).then(res => {
@@ -106,7 +106,7 @@ const TeamCreator: React.FC<TeamCreatorProps> = props => {
     }, []);
 
     const handleAutocompleteChange = (_: React.SyntheticEvent, value: string | null) => {
-        setCaptain(value ? value as string : undefined);
+        setCaptain(value ? (value as string) : undefined);
     };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,7 +118,11 @@ const TeamCreator: React.FC<TeamCreatorProps> = props => {
         event.preventDefault();
         setIsLoading(true);
         if (props.mode === 'creation') {
-            ServerApi.createTeam(teamName, captain, members.filter(member => member.name !== "" || member.email !== "")).then(res => {
+            ServerApi.createTeam(
+                teamName,
+                captain,
+                members.filter(member => member.name !== '' || member.email !== ''),
+            ).then(res => {
                 if (res.status === 200) {
                     setIsCreatedSuccessfully(true);
                     if (!props.isAdmin) {
@@ -133,7 +137,12 @@ const TeamCreator: React.FC<TeamCreatorProps> = props => {
                 }
             });
         } else {
-            ServerApi.editTeam(location.state.id, teamName, captain, members.filter(member => member.name !== "" || member.email !== "")).then(res => {
+            ServerApi.editTeam(
+                location.state.id,
+                teamName,
+                captain,
+                members.filter(member => member.name !== '' || member.email !== ''),
+            ).then(res => {
                 if (res.status === 200) {
                     if (!props.isAdmin) {
                         props.onAddUserTeam(teamName);
@@ -152,16 +161,16 @@ const TeamCreator: React.FC<TeamCreatorProps> = props => {
     };
 
     const addMember = () => {
-        setMembers((prevMembers) => [...prevMembers, {name: '', email: ''}]);
+        setMembers(prevMembers => [...prevMembers, { name: '', email: '' }]);
         (scrollbars.current as Scrollbars).scrollToBottom();
     };
 
     const handleDeleteMemberClick = (index: number) => {
-        setMembers((prevMembers) => prevMembers.filter((_, i) => i !== index));
+        setMembers(prevMembers => prevMembers.filter((_, i) => i !== index));
     };
 
     const handleMemberNameChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-        setMembers((members) => {
+        setMembers(members => {
             const newMembers = [...members];
             newMembers[index].name = event.target.value;
             return newMembers;
@@ -169,7 +178,7 @@ const TeamCreator: React.FC<TeamCreatorProps> = props => {
     };
 
     const handleMemberEmailChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-        setMembers((members) => {
+        setMembers(members => {
             const newMembers = [...members];
             newMembers[index].email = event.target.value;
             return newMembers;
@@ -178,30 +187,38 @@ const TeamCreator: React.FC<TeamCreatorProps> = props => {
 
     const renderMembers = () => {
         return members.map((member, index) => (
-            <div className={classes.memberWrapper} style={{marginBottom: mediaMatch.matches ? (index === members.length - 1 ? '0' : '5vw') : '0'}}>
-                <OutlinedInput className={`${classes.adminName} ${classes.adminInput}`}
-                               sx={{
-                                   '& .MuiOutlinedInput-notchedOutline': {
-                                       border: '2px solid var(--foreground-color) !important'
-                                   }
-                               }}
-                               onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleMemberNameChange(event, index)}
-                               value={member.name} placeholder='Имя'/>
-                <OutlinedInput className={`${classes.adminEmail} ${classes.adminInput}`}
-                               type='email'
-                               sx={{
-                                   '& .MuiOutlinedInput-notchedOutline': {
-                                       border: '2px solid var(--foreground-color) !important'
-                                   }
-                               }}
-                               onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleMemberEmailChange(event, index)}
-                               value={member.email} placeholder='Почта'/>
-                <Button className={classes.adminButton} onClick={() => handleDeleteMemberClick(index)}>
-                    {
-                        mediaMatch.matches
-                            ? 'Удалить'
-                            : <CloseIcon sx={{color: 'red', fontSize: '5vmin'}}/>
-                    }
+            <div
+                className={classes.memberWrapper}
+                style={{ marginBottom: mediaMatch.matches ? (index === members.length - 1 ? '0' : '5vw') : '0' }}
+            >
+                <OutlinedInput
+                    className={`${classes.adminName} ${classes.adminInput}`}
+                    sx={{
+                        '& .MuiOutlinedInput-notchedOutline': {
+                            border: '2px solid var(--foreground-color) !important',
+                        },
+                    }}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleMemberNameChange(event, index)}
+                    value={member.name}
+                    placeholder='Имя'
+                />
+                <OutlinedInput
+                    className={`${classes.adminEmail} ${classes.adminInput}`}
+                    type='email'
+                    sx={{
+                        '& .MuiOutlinedInput-notchedOutline': {
+                            border: '2px solid var(--foreground-color) !important',
+                        },
+                    }}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleMemberEmailChange(event, index)}
+                    value={member.email}
+                    placeholder='Почта'
+                />
+                <Button
+                    className={classes.adminButton}
+                    onClick={() => handleDeleteMemberClick(index)}
+                >
+                    {mediaMatch.matches ? 'Удалить' : <CloseIcon sx={{ color: 'red', fontSize: '5vmin' }} />}
                 </Button>
             </div>
         ));
@@ -211,164 +228,220 @@ const TeamCreator: React.FC<TeamCreatorProps> = props => {
         return <Loader />;
     }
 
-    return isCreatedSuccessfully
-        ? <Redirect to={{pathname: props.isAdmin ? '/admin/start-screen' : '/start-screen', state: {page: 'teams'}}}/>
-        :
-        (
-            <PageWrapper>
-                <Header isAuthorized={true} isAdmin={true}>
-                    {
-                        !mediaMatch.matches
-                            ? <NavBar isAdmin={props.isAdmin} page=''/>
-                            : null
-                    }
-                </Header>
+    return isCreatedSuccessfully ? (
+        <Redirect
+            to={{ pathname: props.isAdmin ? '/admin/start-screen' : '/start-screen', state: { page: 'teams' } }}
+        />
+    ) : (
+        <PageWrapper>
+            <Header
+                isAuthorized={true}
+                isAdmin={true}
+            >
+                {!mediaMatch.matches ? (
+                    <NavBar
+                        isAdmin={props.isAdmin}
+                        page=''
+                    />
+                ) : null}
+            </Header>
 
-                {
-                    mediaMatch.matches
-                        ? <MobileNavbar isAdmin={props.isAdmin} page='' isGame={false}/>
-                        : null
-                }
-                <form className={classes.teamCreationForm} onSubmit={handleSubmit}>
-                    <div className={classes.contentWrapper}>
-                        {
-                            props.mode === 'creation'
-                                ? <div className={classes.pageTitle}>Создание команды</div>
-                                : <div className={classes.pageTitle}>Редактирование</div>
-                        }
+            {mediaMatch.matches ? (
+                <MobileNavbar
+                    isAdmin={props.isAdmin}
+                    page=''
+                    isGame={false}
+                />
+            ) : null}
+            <form
+                className={classes.teamCreationForm}
+                onSubmit={handleSubmit}
+            >
+                <div className={classes.contentWrapper}>
+                    {props.mode === 'creation' ? (
+                        <div className={classes.pageTitle}>Создание команды</div>
+                    ) : (
+                        <div className={classes.pageTitle}>Редактирование</div>
+                    )}
 
-                        <div className={classes.settingsWrapper}>
-                            {
-                                usersFromDB
-                                    ? <CustomInput type='text' id='teamName'
-                                                   name='teamName'
-                                                   style={{width: mediaMatch.matches ? '100%' : '49%',
-                                                       marginBottom: mediaMatch.matches ? '8%' : '5%'}}
-                                                   placeholder='Название команды'
-                                                   value={teamName}
-                                                   defaultValue={teamName}
-                                                   onChange={handleInputChange}
-                                                   isInvalid={isNameInvalid}
-                                                   onFocus={() => setIsNameInvalid(false)}
-                                                   errorHelperText={'Такая команда уже существует'}/>
-                                    : <Skeleton variant='rectangular' width='100%'
-                                                height={mediaMatch.matches ? '6vh' : '7vh'} sx={{marginBottom: '3%'}}/>
-                            }
+                    <div className={classes.settingsWrapper}>
+                        {usersFromDB ? (
+                            <CustomInput
+                                type='text'
+                                id='teamName'
+                                name='teamName'
+                                style={{
+                                    width: mediaMatch.matches ? '100%' : '49%',
+                                    marginBottom: mediaMatch.matches ? '8%' : '5%',
+                                }}
+                                placeholder='Название команды'
+                                value={teamName}
+                                defaultValue={teamName}
+                                onChange={handleInputChange}
+                                isInvalid={isNameInvalid}
+                                onFocus={() => setIsNameInvalid(false)}
+                                errorHelperText={'Такая команда уже существует'}
+                            />
+                        ) : (
+                            <Skeleton
+                                variant='rectangular'
+                                width='100%'
+                                height={mediaMatch.matches ? '6vh' : '7vh'}
+                                sx={{ marginBottom: '3%' }}
+                            />
+                        )}
 
-                            {
-                                usersFromDB
-                                    ?
-                                    <div style={{position: 'relative', width: mediaMatch.matches ? '100%' : '49%'}}>
-                                        <Autocomplete disablePortal
-                                                        fullWidth
-                                                        id="captain"
-                                                        options={usersFromDB || []}
-                                                        defaultValue={oldCaptain}
-                                                        onChange={handleAutocompleteChange}
-                                                        disabled={!props.isAdmin && props.mode === 'creation' || props.role === "demoadmin"}
-                                                        sx={{
-                                                            border: 'none',
-                                                            fontSize: mediaMatch.matches ? '5.3vw' : '1.5vw',
-                                                            minHeight: '26px',
-                                                            height: mediaMatch.matches ? '13vw !important' : '7vh !important',
-                                                            borderRadius: '8px',
-                                                            backgroundColor: 'white',
-                                                            boxShadow: 'inset 0 4px 10px rgba(0, 0, 0, 0.5)',
-                                                            marginBottom: mediaMatch.matches ? '5%' : '0',
-                                                            '& .MuiOutlinedInput-input': {
-                                                                padding: '0 0 0 1.5vw !important',
-                                                                border: 'none',
-                                                                fontFamily: 'Roboto, sans-serif',
-                                                                color: 'black',
-                                                                fontSize:  mediaMatch.matches ? '5.3vw' : '1.5vw',
-                                                            },
-                                                            '& .MuiOutlinedInput-root': {
-                                                                height: mediaMatch.matches ? '13vw !important' : '7vh !important',
-                                                                minHeight: '26px',
-                                                                padding: mediaMatch.matches ? '0 4vw 0 !important' : '0'
-                                                            },
-                                                            '& .MuiOutlinedInput-notchedOutline': {
-                                                                border: '2px solid var(--foreground-color) !important',
-                                                                borderRadius: '8px',
-                                                                minHeight: '26px',
-                                                            },
-                                                            '& .MuiSvgIcon-root': {
-                                                                color: 'var(--background-color)'
-                                                            }
-                                                        }}
-                                                        renderInput={(params) => <TextField {...params} placeholder="Капитан"/>}
+                        {usersFromDB ? (
+                            <div style={{ position: 'relative', width: mediaMatch.matches ? '100%' : '49%' }}>
+                                <Autocomplete
+                                    disablePortal
+                                    fullWidth
+                                    id='captain'
+                                    options={usersFromDB || []}
+                                    defaultValue={oldCaptain}
+                                    onChange={handleAutocompleteChange}
+                                    disabled={
+                                        (!props.isAdmin && props.mode === 'creation') || props.role === 'demoadmin'
+                                    }
+                                    sx={{
+                                        border: 'none',
+                                        fontSize: mediaMatch.matches ? '5.3vw' : '1.5vw',
+                                        minHeight: '26px',
+                                        height: mediaMatch.matches ? '13vw !important' : '7vh !important',
+                                        borderRadius: '8px',
+                                        backgroundColor: 'white',
+                                        boxShadow: 'inset 0 4px 10px rgba(0, 0, 0, 0.5)',
+                                        marginBottom: mediaMatch.matches ? '5%' : '0',
+                                        '& .MuiOutlinedInput-input': {
+                                            padding: '0 0 0 1.5vw !important',
+                                            border: 'none',
+                                            fontFamily: 'Roboto, sans-serif',
+                                            color: 'black',
+                                            fontSize: mediaMatch.matches ? '5.3vw' : '1.5vw',
+                                        },
+                                        '& .MuiOutlinedInput-root': {
+                                            height: mediaMatch.matches ? '13vw !important' : '7vh !important',
+                                            minHeight: '26px',
+                                            padding: mediaMatch.matches ? '0 4vw 0 !important' : '0',
+                                        },
+                                        '& .MuiOutlinedInput-notchedOutline': {
+                                            border: '2px solid var(--foreground-color) !important',
+                                            borderRadius: '8px',
+                                            minHeight: '26px',
+                                        },
+                                        '& .MuiSvgIcon-root': {
+                                            color: 'var(--background-color)',
+                                        },
+                                    }}
+                                    renderInput={params => (
+                                        <TextField
+                                            {...params}
+                                            placeholder='Капитан'
                                         />
-                                    </div>
-                                    : <Skeleton variant='rectangular' width='100%' height={mediaMatch.matches ? '6vh' : '7vh'} sx={{marginBottom: '3%'}} />
-                            }
-                        </div>
-
-                        <div className={classes.membersWrapper}>
-                            <div className={classes.membersPanel}>
-                                <div className={classes.membersLabel}>Участники</div>
-
-                                <button className={classes.button}
-                                        onClick={addMember}
-                                        disabled={members.length === 9}
-                                        type='button'
-                                >{mediaMatch.matches ? 'Добавить' : 'Добавить участника'}
-                                </button>
+                                    )}
+                                />
                             </div>
-
-                            <div className={classes.members}>
-                                <Scrollbars autoHide autoHideTimeout={500}
-                                            ref={scrollbars}
-                                            autoHideDuration={200}
-                                            renderThumbVertical={() =>
-                                                <div style={{
-                                                    backgroundColor: 'white',
-                                                    borderRadius: '4px',
-                                                    cursor: 'pointer'
-                                                }}/>
-                                            }
-                                            renderTrackHorizontal={props => <div {...props} style={{display: 'none'}}/>}
-                                            classes={{
-                                                view: classes.scrollbarView,
-                                                trackVertical: classes.verticalTrack
-                                            }}>
-                                    {renderMembers()}
-                                </Scrollbars>
-                            </div>
-                        </div>
+                        ) : (
+                            <Skeleton
+                                variant='rectangular'
+                                width='100%'
+                                height={mediaMatch.matches ? '6vh' : '7vh'}
+                                sx={{ marginBottom: '3%' }}
+                            />
+                        )}
                     </div>
 
-                    <FormButton id={"saveTeam"} text={props.mode === 'creation' ? 'Создать' : 'Сохранить'} disabled={props.isAdmin && !usersFromDB}
-                                style={{
-                                    padding: mediaMatch.matches ? '0 13vw' : '0 2vw',
-                                    fontSize: mediaMatch.matches ? '5.5vw' : '1.5vw',
-                                    height: mediaMatch.matches ? '13vw' : '7vh',
-                                    marginBottom: '2vh',
-                                    marginTop: '2vh',
-                                    borderRadius: '7px',
-                                    fontWeight: 700,
-                                    filter: 'drop-shadow(0 3px 3px rgba(255, 255, 255, 0.2))'
-                                }}/>
-                </form>
-                <PageBackdrop isOpen={isLoading}/>
-                <Snackbar sx={{marginTop: '8vh'}} open={isSaveError}
-                          anchorOrigin={{vertical: 'top', horizontal: 'right'}} autoHideDuration={5000} onClose={() => setIsSaveError(false)}>
-                    <Alert severity='error' sx={{width: '100%'}} onClose={() => setIsSaveError(false)}>
-                        Не удалось сохранить изменения
-                    </Alert>
-                </Snackbar>
-            </PageWrapper>
-        );
+                    <div className={classes.membersWrapper}>
+                        <div className={classes.membersPanel}>
+                            <div className={classes.membersLabel}>Участники</div>
+
+                            <button
+                                className={classes.button}
+                                onClick={addMember}
+                                disabled={members.length === 9}
+                                type='button'
+                            >
+                                {mediaMatch.matches ? 'Добавить' : 'Добавить участника'}
+                            </button>
+                        </div>
+
+                        <div className={classes.members}>
+                            <Scrollbars
+                                autoHide
+                                autoHideTimeout={500}
+                                ref={scrollbars}
+                                autoHideDuration={200}
+                                renderThumbVertical={() => (
+                                    <div
+                                        style={{
+                                            backgroundColor: 'white',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer',
+                                        }}
+                                    />
+                                )}
+                                renderTrackHorizontal={props => (
+                                    <div
+                                        {...props}
+                                        style={{ display: 'none' }}
+                                    />
+                                )}
+                                classes={{
+                                    view: classes.scrollbarView,
+                                    trackVertical: classes.verticalTrack,
+                                }}
+                            >
+                                {renderMembers()}
+                            </Scrollbars>
+                        </div>
+                    </div>
+                </div>
+
+                <FormButton
+                    id={'saveTeam'}
+                    text={props.mode === 'creation' ? 'Создать' : 'Сохранить'}
+                    disabled={props.isAdmin && !usersFromDB}
+                    style={{
+                        padding: mediaMatch.matches ? '0 13vw' : '0 2vw',
+                        fontSize: mediaMatch.matches ? '5.5vw' : '1.5vw',
+                        height: mediaMatch.matches ? '13vw' : '7vh',
+                        marginBottom: '2vh',
+                        marginTop: '2vh',
+                        borderRadius: '7px',
+                        fontWeight: 700,
+                        filter: 'drop-shadow(0 3px 3px rgba(255, 255, 255, 0.2))',
+                    }}
+                />
+            </form>
+            <PageBackdrop isOpen={isLoading} />
+            <Snackbar
+                sx={{ marginTop: '8vh' }}
+                open={isSaveError}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                autoHideDuration={5000}
+                onClose={() => setIsSaveError(false)}
+            >
+                <Alert
+                    severity='error'
+                    sx={{ width: '100%' }}
+                    onClose={() => setIsSaveError(false)}
+                >
+                    Не удалось сохранить изменения
+                </Alert>
+            </Snackbar>
+        </PageWrapper>
+    );
 };
 
 function mapStateToProps(state: AppState): TeamCreatorStateProps {
     return {
-        userEmail: state.appReducer.user.email
+        userEmail: state.appReducer.user.email,
     };
 }
 
 function mapDispatchToProps(dispatch: Dispatch<AppAction>): TeamCreatorDispatchProps {
     return {
-        onAddUserTeam: (team: string) => dispatch(addUserTeam(team))
+        onAddUserTeam: (team: string) => dispatch(addUserTeam(team)),
     };
 }
 

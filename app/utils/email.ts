@@ -14,7 +14,7 @@ export function CreateTransporter(user: string, pass: string) {
         auth: {
             user,
             pass,
-        }
+        },
     });
 }
 
@@ -32,7 +32,7 @@ export async function SendMailWithTemporaryPassword(transporter, email: string, 
         from: `"Своя ЧГК" <${AppConfig.emailLogin}>`,
         to: email,
         subject: 'Смена пароля',
-        html: `${changePasswordMessage} <b>${code}</b><br>${ignoreMessage}`
+        html: `${changePasswordMessage} <b>${code}</b><br>${ignoreMessage}`,
     });
 }
 
@@ -41,6 +41,6 @@ export async function SendMailWithTemporaryPasswordToAdmin(transporter, email: s
         from: `"Своя ЧГК" <${AppConfig.emailLogin}>`,
         to: email,
         subject: 'Временный пароль',
-        html: `${adminPasswordMessage} <b>${code}</b><br>${ignoreMessage}`
+        html: `${adminPasswordMessage} <b>${code}</b><br>${ignoreMessage}`,
     });
 }

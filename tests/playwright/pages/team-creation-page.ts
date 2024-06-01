@@ -1,5 +1,4 @@
-import { Page, Locator } from "@playwright/test";
-
+import { Page, Locator } from '@playwright/test';
 
 export class TeamCreationPage {
     readonly teamNameInput: Locator;
@@ -14,7 +13,7 @@ export class TeamCreationPage {
         this.saveTeamButton = page.locator('#saveTeam');
     }
 
-    async accept(){
+    async accept() {
         await this.page.waitForURL('**/team-creation');
     }
 }

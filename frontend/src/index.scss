@@ -1,110 +1,110 @@
 :root {
-  // Units
-  --base-unit: 0.25rem;
+    // Units
+    --base-unit: 0.25rem;
 
-  //Typography
-  --font-family-primary: sans-serif, "Roboto";
-  --font-family-secondary: serif, "Georgia";
-  --font-size-12: calc(var(--base-unit) * 3);
-  --font-size-16: calc(var(--base-unit) * 4);
-  --font-size-20: calc(var(--base-unit) * 5);
-  --font-size-24: calc(var(--base-unit) * 6);
-  --font-size-32: calc(var(--base-unit) * 8);
-  --font-size-40: calc(var(--base-unit) * 10);
-  --font-size-48: calc(var(--base-unit) * 12);
-  --font-size-64: calc(var(--base-unit) * 16);
+    //Typography
+    --font-family-primary: sans-serif, 'Roboto';
+    --font-family-secondary: serif, 'Georgia';
+    --font-size-12: calc(var(--base-unit) * 3);
+    --font-size-16: calc(var(--base-unit) * 4);
+    --font-size-20: calc(var(--base-unit) * 5);
+    --font-size-24: calc(var(--base-unit) * 6);
+    --font-size-32: calc(var(--base-unit) * 8);
+    --font-size-40: calc(var(--base-unit) * 10);
+    --font-size-48: calc(var(--base-unit) * 12);
+    --font-size-64: calc(var(--base-unit) * 16);
 
-  --line-height-default: 1;
-  --line-height-small: 1.1;
-  --line-height-medium: 1.3;
-  --line-height-large: 1.5;
+    --line-height-default: 1;
+    --line-height-small: 1.1;
+    --line-height-medium: 1.3;
+    --line-height-large: 1.5;
 
-  --font-weight-regular: 400;
-  --font-weight-medium: 500;
-  --font-weight-bold: 700;
-  --font-weight-bolder: 900;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+    --font-weight-bolder: 900;
 
-  // Colors
-  // Background
-  --color-bg-main: #00131D;
-  --color-bg-plates: #00283D;
-  --color-bg-overlay-default: rgba(255, 255, 255, .06);
-  --color-bg-overlay-success: rgba(36, 255, 36, .06);
+    // Colors
+    // Background
+    --color-bg-main: #00131d;
+    --color-bg-plates: #00283d;
+    --color-bg-overlay-default: rgba(255, 255, 255, 0.06);
+    --color-bg-overlay-success: rgba(36, 255, 36, 0.06);
 
-  // Fills
-  --color-fill-accent-enabled: #0077B8;
-  --color-fill-accent-hover: #0069A3;
-  --color-fill-accent-pressed: #005787;
-  --color-fill-accent-disabled: #00283D;
+    // Fills
+    --color-fill-accent-enabled: #0077b8;
+    --color-fill-accent-hover: #0069a3;
+    --color-fill-accent-pressed: #005787;
+    --color-fill-accent-disabled: #00283d;
 
-  --color-fill-default-enabled: rgba(255,255,255, .16);
-  --color-fill-default-hover: rgba(255,255,255, .24);
-  --color-fill-default-pressed: rgba(255,255,255, .06);
-  --color-fill-default-disabled: rgba(255,255,255, .06);
+    --color-fill-default-enabled: rgba(255, 255, 255, 0.16);
+    --color-fill-default-hover: rgba(255, 255, 255, 0.24);
+    --color-fill-default-pressed: rgba(255, 255, 255, 0.06);
+    --color-fill-default-disabled: rgba(255, 255, 255, 0.06);
 
-  --color-control-accent-enabled: #0AA9FF;
-  --color-control-error-enabled: #FF2424;
-  --color-control-disabled: rgba(235, 248, 255, 0.32);
+    --color-control-accent-enabled: #0aa9ff;
+    --color-control-error-enabled: #ff2424;
+    --color-control-disabled: rgba(235, 248, 255, 0.32);
 
-  --color-fill-progressBar-green: #2AB027;
-  --color-fill-progressBar-yellow: #D9BB1F;
-  --color-fill-progressBar-red: #E42E2E;
+    --color-fill-progressBar-green: #2ab027;
+    --color-fill-progressBar-yellow: #d9bb1f;
+    --color-fill-progressBar-red: #e42e2e;
 
-  --color-fill-notify: #FF00E5;
+    --color-fill-notify: #ff00e5;
 
-  // Text&Icon
-  --color-text-icon-primary: rgb(235, 248, 255);
-  --color-text-icon-secondary: rgba(235, 248, 255, 0.48);
-  --color-text-icon-disabled: rgba(235, 248, 255, 0.32);
-  --color-text-icon-error: #ff2424;
-  --color-text-icon-success: #24ff24;
+    // Text&Icon
+    --color-text-icon-primary: rgb(235, 248, 255);
+    --color-text-icon-secondary: rgba(235, 248, 255, 0.48);
+    --color-text-icon-disabled: rgba(235, 248, 255, 0.32);
+    --color-text-icon-error: #ff2424;
+    --color-text-icon-success: #24ff24;
 
-  --color-text-icon-link-enabled: #0AA9FF;
+    --color-text-icon-link-enabled: #0aa9ff;
 }
 
 * {
-  padding: 0;
-  margin: 0;
-  border: none;
-  outline: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
+    outline: 0;
 }
 
 ul,
 ol {
-  list-style: none;
+    list-style: none;
 }
 
 body,
 html {
-  width: 100%;
+    width: 100%;
 }
 
 html {
-  font-family: var(--font-family-primary);
-  font-weight: var(--font-weight-regular);
-  font-size: 16px;
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-regular);
+    font-size: 16px;
 }
 
 body {
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
-input[type=number] {
-  -moz-appearance: textfield;
+input[type='number'] {
+    -moz-appearance: textfield;
 }
 
 ::-ms-reveal {
-  display: none;
+    display: none;
 }

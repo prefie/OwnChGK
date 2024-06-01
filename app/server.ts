@@ -22,8 +22,7 @@ export class Server {
         this.config();
         this.routerConfig();
         this.app.use(errorHandler);
-        this.DBconnection().then(() => {
-        });
+        this.DBconnection().then(() => {});
     }
 
     private DBconnection() {
@@ -31,19 +30,18 @@ export class Server {
             .then(() => {
                 console.log('Connected to Postgres');
             })
-            .catch((error) => {
+            .catch(error => {
                 console.error(error);
             });
     }
 
     private config() {
-        this.app.use(cors({
-            origin: [
-                'http://localhost',
-                'http://localhost:3000',
-            ],
-            credentials: true,
-        }));
+        this.app.use(
+            cors({
+                origin: ['http://localhost', 'http://localhost:3000'],
+                credentials: true,
+            }),
+        );
         this.app.use(bodyParser.json()); // 100kb default
         this.app.use(bodyParser.urlencoded({ extended: true }));
         this.app.use(boolParser());
@@ -61,19 +59,23 @@ export class Server {
 
     public start = (port: number) => {
         return new Promise((resolve, reject) => {
-            const server = this.app.listen(port, '0.0.0.0', () => {
-                resolve(port);
-            }).on('error', (err: Object) => reject(err));
+            const server = this.app
+                .listen(port, '0.0.0.0', () => {
+                    resolve(port);
+                })
+                .on('error', (err: Object) => reject(err));
 
             const wss = new WSServer({ server, path: '/api/ws' });
-            wss.on('connection', (ws) => {
+            wss.on('connection', ws => {
                 ws.on('message', (message: string) => {
                     try {
                         HandlerWebsocket(ws, message);
                     } catch (error: any) {
-                        ws.send(JSON.stringify({
-                            'action': 'ERROR'
-                        }));
+                        ws.send(
+                            JSON.stringify({
+                                action: 'ERROR',
+                            }),
+                        );
                         console.error(error);
                     }
                 });

@@ -1,92 +1,92 @@
 .gamesHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
 }
 
 .gameContent {
-  position: relative;
-  text-decoration: none;
-  color: var(--color-text-icon-primary);
-  width: calc(25% - 48px);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  background-color: #00283d;
-  padding: 16px;
-  border-radius: 8px;
-  margin: 0 1rem 1rem 0;
+    position: relative;
+    text-decoration: none;
+    color: var(--color-text-icon-primary);
+    width: calc(25% - 48px);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background-color: #00283d;
+    padding: 16px;
+    border-radius: 8px;
+    margin: 0 1rem 1rem 0;
 }
 
 .gameActions {
-  position: absolute;
-  bottom: .5rem;
-  right: 1rem;
+    position: absolute;
+    bottom: 0.5rem;
+    right: 1rem;
 }
 
 .gameContent:hover {
-  background-color: rgba(0, 40, 61, 0.8);
-  cursor: pointer;
+    background-color: rgba(0, 40, 61, 0.8);
+    cursor: pointer;
 }
 
 @media (max-width: 1280px) {
-  .gameContent {
-    width: calc(33.33% - 48px);
-  }
+    .gameContent {
+        width: calc(33.33% - 48px);
+    }
 }
 
 @media (max-width: 860px) {
-  .gameContent {
-    width: calc(50% - 48px);
-  }
+    .gameContent {
+        width: calc(50% - 48px);
+    }
 }
 
 @media (max-width: 600px) {
-  .gameContent {
-    width: 100%;
-    margin-right: 0;
-  }
+    .gameContent {
+        width: 100%;
+        margin-right: 0;
+    }
 }
 
 .gameTitle {
-  margin: 0;
-  text-decoration: none;
-  color: inherit;
-  font-size: var(--font-size-24);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-small);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
+    margin: 0;
+    text-decoration: none;
+    color: inherit;
+    font-size: var(--font-size-24);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-small);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 
 .gameTeamsCount {
-  font-size: var(--font-size-20);
-  line-height: var(--line-height-small);
+    font-size: var(--font-size-20);
+    line-height: var(--line-height-small);
 }
 
 .gameTeamsAddCount {
-  font-size: var(--font-size-20);
-  line-height: var(--line-height-small);
-  color: var(--color-text-icon-link-enabled);
+    font-size: var(--font-size-20);
+    line-height: var(--line-height-small);
+    color: var(--color-text-icon-link-enabled);
 }
 
 .gameTeams {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .gameFooter {
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--color-fill-default-disabled);
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-fill-default-disabled);
 }
 
 .gameActions {
-  display: flex;
-  gap: 8px;
+    display: flex;
+    gap: 8px;
 }

@@ -22,7 +22,7 @@ export class Question {
         time: number,
         text: string = null,
         answers?: Answer[] | undefined,
-        appeals?: Appeal[] | undefined
+        appeals?: Appeal[] | undefined,
     ) {
         this.id = id;
         this.cost = cost;
@@ -83,8 +83,7 @@ export class Question {
     }
 
     acceptAppeal(answer: string, comment: string = ''): void {
-        const appeals = Object.values(this._appeals)
-            .filter((value) => value.wrongAnswer == answer);
+        const appeals = Object.values(this._appeals).filter(value => value.wrongAnswer == answer);
 
         for (const appeal of appeals) {
             appeal.accept(comment);
@@ -94,8 +93,7 @@ export class Question {
     }
 
     rejectAppeal(answer: string, comment: string = ''): void {
-        const appeals = Object.values(this._appeals)
-            .filter((value) => value.wrongAnswer == answer);
+        const appeals = Object.values(this._appeals).filter(value => value.wrongAnswer == answer);
 
         for (const appeal of appeals) {
             appeal.reject(comment);

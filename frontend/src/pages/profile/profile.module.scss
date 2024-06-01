@@ -1,156 +1,156 @@
 .pageTitle {
-  font-size: 2.5vmax;
-  color: white;
-  display: flex;
-  text-align: center;
-  align-self: center;
-  font-weight: 300;
-  margin: auto;
+    font-size: 2.5vmax;
+    color: white;
+    display: flex;
+    text-align: center;
+    align-self: center;
+    font-weight: 300;
+    margin: auto;
 }
 
 .box {
-  padding: 1rem 5rem;
-  width: 70%;
-  display: flex;
-  flex-direction: column;
+    padding: 1rem 5rem;
+    width: 70%;
+    display: flex;
+    flex-direction: column;
 }
 
 .contentWrapper {
-  width: 100%;
-  display: flex;
-  gap: 16px;
+    width: 100%;
+    display: flex;
+    gap: 16px;
 }
 
 .infoWrapper {
-  padding: 2rem 1.5rem;
-  border-radius: 1rem;
-  background-color: var(--color-bg-plates);
-  height: fit-content;
+    padding: 2rem 1.5rem;
+    border-radius: 1rem;
+    background-color: var(--color-bg-plates);
+    height: fit-content;
 }
 
 .changePasswordWrapper {
-  padding: 2rem 1.5rem;
-  border-radius: 1rem;
-  background-color: var(--color-bg-plates);
-  height: fit-content;
-  width: 50%;
+    padding: 2rem 1.5rem;
+    border-radius: 1rem;
+    background-color: var(--color-bg-plates);
+    height: fit-content;
+    width: 50%;
 }
 
 .infoCategoryWrapper {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  font-weight: 300;
-  font-size: 1.5vw;
-  margin-top: 1.5vh;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    font-weight: 300;
+    font-size: 1.5vw;
+    margin-top: 1.5vh;
 
-  .category {
-    font-size: var(--font-size-16);
-    margin-bottom: .25rem;
-    color: var(--color-text-icon-secondary);
-  }
+    .category {
+        font-size: var(--font-size-16);
+        margin-bottom: 0.25rem;
+        color: var(--color-text-icon-secondary);
+    }
 
-  .userData {
-    color: var(--color-text-icon-primary);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 400;
-  }
+    .userData {
+        color: var(--color-text-icon-primary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 400;
+    }
 }
 
 .infoAndDemoWrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 50%;
 }
 
 .changePasswordParagraph {
-  margin: 0 0 2rem;
-  font-size: var(--font-size-40);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-icon-primary);
+    margin: 0 0 2rem;
+    font-size: var(--font-size-40);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-icon-primary);
 }
 
 .buttonWrapper {
-  display: flex;
-  text-decoration: none;
-  margin-top: 1rem;
+    display: flex;
+    text-decoration: none;
+    margin-top: 1rem;
 }
 
 .saveButton {
-  height: 7vh;
-  font-size: 1.5vw;
-  width: 100%;
-  margin-top: 7vh;
-  font-weight: 700;
-  border: 2px solid var(--color-fill-accent-enabled);
-  border-radius: 7px;
-  filter: drop-shadow(0 3px 3px rgba(255, 255, 255, .4));
-  overflow: hidden;
-  user-select: none;
-  font-family: Roboto, sans-serif;
-  min-height: 26px;
+    height: 7vh;
+    font-size: 1.5vw;
+    width: 100%;
+    margin-top: 7vh;
+    font-weight: 700;
+    border: 2px solid var(--color-fill-accent-enabled);
+    border-radius: 7px;
+    filter: drop-shadow(0 3px 3px rgba(255, 255, 255, 0.4));
+    overflow: hidden;
+    user-select: none;
+    font-family: Roboto, sans-serif;
+    min-height: 26px;
 
-  &:not(:disabled):hover {
-    cursor: pointer;
-    box-shadow: 0 0 2vh 2px var(--color-fill-accent-enabled);
-  }
+    &:not(:disabled):hover {
+        cursor: pointer;
+        box-shadow: 0 0 2vh 2px var(--color-fill-accent-enabled);
+    }
 
-  &:not(:disabled):active {
-    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, .50);
-  }
+    &:not(:disabled):active {
+        box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.5);
+    }
 }
 
 @media only screen and (max-width: 600px) {
-  .pageTitle {
-    font-size: 6.6vw;
-  }
+    .pageTitle {
+        font-size: 6.6vw;
+    }
 
-  .box {
-    width: 80%;
-    padding: 1rem 2rem;
-  }
+    .box {
+        width: 80%;
+        padding: 1rem 2rem;
+    }
 
-  .contentWrapper {
-    flex-direction: column;
-    margin: 0;
-    height: 65%;
-  }
+    .contentWrapper {
+        flex-direction: column;
+        margin: 0;
+        height: 65%;
+    }
 
-  .infoAndDemoWrapper {
-    width: 100%;
-  }
+    .infoAndDemoWrapper {
+        width: 100%;
+    }
 
-  .infoWrapper {
-    width: auto;
-  }
+    .infoWrapper {
+        width: auto;
+    }
 
-  .MuiOutlinedInput-root {
-    font-size: var(--font-size-16);
-  }
+    .MuiOutlinedInput-root {
+        font-size: var(--font-size-16);
+    }
 
-  .changePasswordWrapper {
-    width: auto;
-  }
+    .changePasswordWrapper {
+        width: auto;
+    }
 
-  .changePasswordParagraph {
-    font-size: var(--font-size-24);
-  }
+    .changePasswordParagraph {
+        font-size: var(--font-size-24);
+    }
 
-  .infoCategoryWrapper {
-    font-size: var(--font-size-16);
-  }
+    .infoCategoryWrapper {
+        font-size: var(--font-size-16);
+    }
 
-  .buttonWrapper {
-    width: auto;
-  }
+    .buttonWrapper {
+        width: auto;
+    }
 
-  .saveButton {
-    height: 13vw;
-    font-size: 6vw;
-    margin-top: 10vh;
-  }
+    .saveButton {
+        height: 13vw;
+        font-size: 6vw;
+        margin-top: 10vh;
+    }
 }

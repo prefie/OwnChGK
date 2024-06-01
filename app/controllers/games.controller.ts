@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { TeamRepository } from "../db/repositories/team.repository";
+import { TeamRepository } from '../db/repositories/team.repository';
 import { AccessLevel, BigGame } from '../db/entities/big-game';
 import { GameStatus, GameType } from '../db/entities/game';
 import { BigGameRepository } from '../db/repositories/big-game.repository';
@@ -22,7 +22,7 @@ export class GamesController {
     public async getAll(req: Request, res: Response) {
         const { amIParticipate, publicEnabled } = req.query;
         const { id, role, teamId } = getTokenFromRequest(req);
-        
+
         let games: BigGame[] = [];
         if (amIParticipate) {
             games = publicEnabled
@@ -35,22 +35,15 @@ export class GamesController {
         }
 
         return res.status(200).json({
-            games: games?.map(value => new BigGameDto(value, teamId))
+            games: games?.map(value => new BigGameDto(value, teamId)),
         });
     }
 
     public async insertGame(req: Request, res: Response) {
-        const {
-            gameName,
-            teams,
-            accessLevel,
-            chgkSettings,
-            matrixSettings,
-            quizSettings,
-        } = req.body;
+        const { gameName, teams, accessLevel, chgkSettings, matrixSettings, quizSettings } = req.body;
 
         const { email, id, role } = getTokenFromRequest(req);
-        
+
         const game = await this.bigGameRepository.findByName(gameName);
         if (game) {
             return res.status(409).json({ message: 'Игра с таким названием уже есть' });
@@ -65,7 +58,15 @@ export class GamesController {
             return res.status(403).json({ message: 'Демо-админ может создавать только приватные игры' });
         }
 
-        await this.bigGameRepository.insertByParams(gameName, email, teams, accessLevel, chgkSettings, matrixSettings, quizSettings);
+        await this.bigGameRepository.insertByParams(
+            gameName,
+            email,
+            teams,
+            accessLevel,
+            chgkSettings,
+            matrixSettings,
+            quizSettings,
+        );
         return res.status(200).json({});
     }
 
@@ -113,7 +114,7 @@ export class GamesController {
 
     public async getGame(req: Request, res: Response) {
         const { gameId } = req.params;
-        
+
         const bigGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
         if (!bigGame) {
             return res.status(404).json({ message: 'game not found' });
@@ -127,7 +128,8 @@ export class GamesController {
 
         await this.restoreBigGameIfNeeded(bigGame.id, bigGame.status);
 
-        const answer = { // TODO: shusharin DTO
+        const answer = {
+            // TODO: shusharin DTO
             name: bigGame.name,
             isStarted: !!bigGames[gameId],
             id: bigGame.id,
@@ -143,7 +145,7 @@ export class GamesController {
 
     public async startGame(req: Request, res: Response) {
         const { gameId } = req.params;
-        
+
         const bigGame = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
         if (!bigGame) {
             return res.status(404).json({ message: 'game not found' });
@@ -160,23 +162,27 @@ export class GamesController {
 
             bigGames[bigGame.id] = await this.bigGameRepository.createBigGameLogic(bigGame);
 
-            setTimeout(async () => {
-                await this.bigGameRepository.updateBigGameState(bigGames[gameId]);
-                delete bigGames[gameId];
-                delete gameUsers[gameId];
-                delete gameAdmins[gameId];
-            }, 1000 * 60 * 60 * 24); // TODO: shusharin избавиться
+            setTimeout(
+                async () => {
+                    await this.bigGameRepository.updateBigGameState(bigGames[gameId]);
+                    delete bigGames[gameId];
+                    delete gameUsers[gameId];
+                    delete gameAdmins[gameId];
+                },
+                1000 * 60 * 60 * 24,
+            ); // TODO: shusharin избавиться
         }
 
         const chgkFromDB = bigGame.games.find(game => game.type == GameType.CHGK);
         const matrixFromDB = bigGame.games.find(game => game.type == GameType.MATRIX);
 
-        const answer = { // TODO: shusharin DTO
+        const answer = {
+            // TODO: shusharin DTO
             name: bigGame.name,
             id: bigGame.id,
             teams: bigGame.teams.map(value => value.name),
             chgkSettings: chgkFromDB ? new GameDto(chgkFromDB) : null,
-            matrixSettings: matrixFromDB ? new MatrixGameDto(matrixFromDB) : null
+            matrixSettings: matrixFromDB ? new MatrixGameDto(matrixFromDB) : null,
         };
 
         await this.bigGameRepository.updateByGameIdAndStatus(gameId, GameStatus.STARTED);
@@ -185,14 +191,8 @@ export class GamesController {
 
     public async changeGame(req: Request, res: Response) {
         const { gameId } = req.params;
-        
-        const {
-            newGameName,
-            accessLevel,
-            chgkSettings,
-            matrixSettings,
-            quizSettings,
-        } = req.body;
+
+        const { newGameName, accessLevel, chgkSettings, matrixSettings, quizSettings } = req.body;
 
         const currentGame = await this.bigGameRepository.findById(gameId);
         if (!currentGame) {
@@ -216,12 +216,19 @@ export class GamesController {
         }
 
         const { role } = getTokenFromRequest(req);
-        
+
         if (demoAdminRoles.has(role) && accessLevel != AccessLevel.PRIVATE) {
             return res.status(403).json({ message: 'Демо-админ может создавать только приватные игры' });
         }
 
-        await this.bigGameRepository.updateByParams(gameId, newGameName, accessLevel, chgkSettings, matrixSettings, quizSettings);
+        await this.bigGameRepository.updateByParams(
+            gameId,
+            newGameName,
+            accessLevel,
+            chgkSettings,
+            matrixSettings,
+            quizSettings,
+        );
         return res.status(200).json({});
     }
 
@@ -231,7 +238,7 @@ export class GamesController {
         const { isIntrigue } = req.body;
 
         if (!bigGames[gameId]) {
-            return res.status(404).json({ 'message': 'Игра не началась' });
+            return res.status(404).json({ message: 'Игра не началась' });
         }
 
         const checkAccessResult = await this.checkAccess(req, gameId, true);
@@ -245,9 +252,9 @@ export class GamesController {
 
     public async getGameResult(req: Request, res: Response) {
         const { gameId } = req.params;
-        
+
         if (!bigGames[gameId]) {
-            return res.status(404).json({ 'message': 'Игра не началась' });
+            return res.status(404).json({ message: 'Игра не началась' });
         }
 
         const totalScore = bigGames[gameId].currentGame.getTotalScoreForAllTeams();
@@ -274,18 +281,18 @@ export class GamesController {
         const bigGame = bigGames[gameId];
         const game = bigGame.isFullGame() ? bigGame.chGKGame : bigGame.currentGame;
 
-        const totalScoreForAllTeams = userRoles.has(role) && teamId && bigGame.intrigueEnabled
-            ? game.getScoreTableForTeam(teamId)
-            : game.getScoreTable();
+        const totalScoreForAllTeams =
+            userRoles.has(role) && teamId && bigGame.intrigueEnabled
+                ? game.getScoreTableForTeam(teamId)
+                : game.getScoreTable();
 
-        const teamsDictionary = userRoles.has(role) && teamId
-            ? game.getTeamDictionary(teamId)
-            : game.getAllTeamsDictionary();
-
+        const teamsDictionary =
+            userRoles.has(role) && teamId ? game.getTeamDictionary(teamId) : game.getAllTeamsDictionary();
 
         const matrixSums = bigGame.isFullGame() ? bigGame.matrixGame.getTotalScoreForAllTeams() : undefined;
 
-        const answer = { // TODO: shusharin DTO
+        const answer = {
+            // TODO: shusharin DTO
             gameId,
             isIntrigue: bigGame.intrigueEnabled,
             roundsCount: game.getRoundsCount(),
@@ -312,8 +319,11 @@ export class GamesController {
             const bigGameFromDb = await this.bigGameRepository.findById(gameId);
             await this.restoreBigGameIfNeeded(gameId, bigGameFromDb.status);
         } else if (allAdminRoles.has(role)) {
-            this.bigGameRepository.updateBigGameState(bigGame)
-                .catch(e => console.error(`Ошибка при сохранении состояния игры ${bigGame.id} -- ${bigGame.name} -- ${e}`));
+            this.bigGameRepository
+                .updateBigGameState(bigGame)
+                .catch(e =>
+                    console.error(`Ошибка при сохранении состояния игры ${bigGame.id} -- ${bigGame.name} -- ${e}`),
+                );
         }
 
         const headersList = ['Название команды', 'Сумма']; // TODO: shusharin убрать эту логику отсюда
@@ -334,9 +344,10 @@ export class GamesController {
         const totalScoreForAllTeams = game.getTotalScoreForAllTeams();
         const matrixSums = bigGame.isFullGame() ? bigGame.matrixGame.getTotalScoreForAllTeams() : undefined;
 
-        const scoreTable = userRoles.has(role) && teamId && bigGames[gameId].intrigueEnabled
-            ? game.getScoreTableForTeam(teamId)
-            : game.getScoreTable();
+        const scoreTable =
+            userRoles.has(role) && teamId && bigGames[gameId].intrigueEnabled
+                ? game.getScoreTableForTeam(teamId)
+                : game.getScoreTable();
 
         let roundsResultList = [];
         for (const team in scoreTable) {
@@ -349,8 +360,14 @@ export class GamesController {
                 roundsResultList.push(scoreTable[team][i].join(';'));
                 roundSum = 0;
             }
-            teamRows.push(team + ';' + totalScoreForAllTeams[team] + ';' +
-                (matrixSums ? `${matrixSums[team]};` : '') + roundsResultList.join(';'));
+            teamRows.push(
+                team +
+                    ';' +
+                    totalScoreForAllTeams[team] +
+                    ';' +
+                    (matrixSums ? `${matrixSums[team]};` : '') +
+                    roundsResultList.join(';'),
+            );
             roundsResultList = [];
         }
 
@@ -358,7 +375,7 @@ export class GamesController {
         const value = teamRows.join('\n');
 
         const answer = {
-            totalTable: [headers, value].join('\n')
+            totalTable: [headers, value].join('\n'),
         };
 
         return res.status(200).json(answer);
@@ -382,7 +399,7 @@ export class GamesController {
         const { teamId } = req.body;
         const { role, teamId: userTeamId, email } = getTokenFromRequest(req);
 
-        if (userRoles.has(role) && !userTeamId || allAdminRoles.has(role) && !teamId) {
+        if ((userRoles.has(role) && !userTeamId) || (allAdminRoles.has(role) && !teamId)) {
             return res.status(400).json({ message: 'Нет параметра id команды' });
         }
 
@@ -403,7 +420,9 @@ export class GamesController {
         if (demoAdminRoles.has(role)) {
             const team = await this.teamRepository.findWithCaptainRelationsById(teamId);
             if (team?.captain?.email != email) {
-                return res.status(403).json({ message: 'Демо-админ может добавить в игру только команду своего юзера' });
+                return res
+                    .status(403)
+                    .json({ message: 'Демо-админ может добавить в игру только команду своего юзера' });
             }
         }
 
@@ -417,7 +436,7 @@ export class GamesController {
         const { teamId } = req.body;
         const { role, teamId: userTeamId } = getTokenFromRequest(req);
 
-        if (userRoles.has(role) && !userTeamId || allAdminRoles.has(role) && !teamId) {
+        if ((userRoles.has(role) && !userTeamId) || (allAdminRoles.has(role) && !teamId)) {
             return res.status(400).json({ message: 'Нет параметра id команды' });
         }
 
@@ -438,10 +457,10 @@ export class GamesController {
 
     public async getParticipants(req: Request, res: Response) {
         const { gameId } = req.params;
-        
+
         const game = await this.bigGameRepository.findWithAllRelationsByBigGameId(gameId);
         const table = [];
-        const sortedTeams = game.teams.sort((a, b) => a.createdDate > b.createdDate ? 1 : -1);
+        const sortedTeams = game.teams.sort((a, b) => (a.createdDate > b.createdDate ? 1 : -1));
         for (let team of sortedTeams) {
             table.push([team.name, team.createdDate].join(';'));
             if (team.captain) {
@@ -459,11 +478,10 @@ export class GamesController {
                 table.push(participantsList.join('\n'));
             }
             table.push('\n');
-
         }
 
         return res.status(200).json({
-            participants: table.join('\n')
+            participants: table.join('\n'),
         });
     }
 
@@ -475,12 +493,15 @@ export class GamesController {
             gameAdmins[gameId] = new Set();
             gameUsers[gameId] = new Set();
 
-            setTimeout(async () => {
-                await this.bigGameRepository.updateBigGameState(bigGames[gameId]);
-                delete bigGames[gameId];
-                delete gameUsers[gameId];
-                delete gameAdmins[gameId];
-            }, 1000 * 60 * 60 * 24); // TODO: shusharin избавиться
+            setTimeout(
+                async () => {
+                    await this.bigGameRepository.updateBigGameState(bigGames[gameId]);
+                    delete bigGames[gameId];
+                    delete gameUsers[gameId];
+                    delete gameAdmins[gameId];
+                },
+                1000 * 60 * 60 * 24,
+            ); // TODO: shusharin избавиться
 
             return bigGames[gameId];
         }
@@ -488,7 +509,7 @@ export class GamesController {
 
     private async checkAccess(req: Request, gameId: string, withAdditionalAdmins = false): Promise<CheckAccessResult> {
         const { id, role } = getTokenFromRequest(req);
-        
+
         const defaultAnswer = { type: AccessType.ACCESS };
         if (superAdminRoles.has(role)) return defaultAnswer;
 

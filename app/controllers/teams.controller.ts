@@ -6,7 +6,6 @@ import { Participant, Team } from '../db/entities/team';
 import { UserRepository } from '../db/repositories/user.repository';
 import { demoAdminRoles, realAdminRoles, userRoles } from '../utils/roles';
 
-
 export class TeamsController {
     private readonly teamRepository: TeamRepository;
     private readonly userRepository: UserRepository;
@@ -19,7 +18,7 @@ export class TeamsController {
     public async getAll(req: Request, res: Response) {
         const { withoutUser } = req.query;
         const { email, role } = getTokenFromRequest(req);
-        
+
         let teams: Team[];
         if (demoAdminRoles.has(role)) {
             const team = await this.teamRepository.findByCaptainEmail(email);
@@ -31,19 +30,14 @@ export class TeamsController {
         }
 
         return res.status(200).json({
-            teams: teams?.map(value => new TeamDto(value))
+            teams: teams?.map(value => new TeamDto(value)),
         });
     }
 
     public async insertTeam(req: Request, res: Response) {
         const { teamName, captain, participants } = req.body;
 
-        const {
-            id,
-            email,
-            role,
-            name,
-        } = getTokenFromRequest(req);
+        const { id, email, role, name } = getTokenFromRequest(req);
 
         if (!realAdminRoles.has(role) && email.toLowerCase() !== captain?.toLowerCase()) {
             return res.status(403).json({
@@ -70,7 +64,7 @@ export class TeamsController {
     public async deleteTeam(req: Request, res: Response) {
         const { teamId } = req.params;
         const { email, role } = getTokenFromRequest(req);
-        
+
         if (demoAdminRoles.has(role)) {
             const team = await this.teamRepository.findByIdWithRelations(teamId);
             if (team.captain?.email !== email) {
@@ -96,13 +90,7 @@ export class TeamsController {
             return res.status(409).json({ message: 'Команда с таким названием уже есть' });
         }
 
-        const {
-            id,
-            email,
-            role,
-            name,
-            teamId: currentTeamId,
-        } = getTokenFromRequest(req);
+        const { id, email, role, name, teamId: currentTeamId } = getTokenFromRequest(req);
 
         if (userRoles.has(role)) {
             if (teamId !== currentTeamId) {
@@ -125,12 +113,7 @@ export class TeamsController {
     public async editTeamCaptainByCurrentUser(req: Request, res: Response) {
         const { teamId } = req.params;
 
-        const {
-            id,
-            email,
-            role,
-            name
-        } = getTokenFromRequest(req);
+        const { id, email, role, name } = getTokenFromRequest(req);
 
         const newTeam = await this.teamRepository.updateEmptyTeamByIdAndUserId(teamId, id);
 
@@ -142,7 +125,7 @@ export class TeamsController {
 
     public async getTeam(req: Request, res: Response) {
         const { teamId } = req.params;
-        
+
         const team = await this.teamRepository.findByIdWithRelations(teamId);
         if (!team) {
             return res.status(404).json({ message: 'team not found' });
@@ -153,10 +136,10 @@ export class TeamsController {
 
     public async getParticipants(req: Request, res: Response) {
         const { teamId } = req.params;
-        
+
         const team = await this.teamRepository.findById(teamId);
         return res.status(200).json({
-            participants: team.participants
+            participants: team.participants,
         });
     }
 }

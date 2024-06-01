@@ -1,10 +1,4 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    OneToMany,
-    ManyToMany,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany } from 'typeorm';
 import { Person } from './person';
 import { BigGame } from './big-game';
 
@@ -22,23 +16,16 @@ export class Admin extends Person {
     @Column({
         type: 'enum',
         enum: AdminRoles,
-        default: AdminRoles.ADMIN
+        default: AdminRoles.ADMIN,
     })
     role: AdminRoles;
 
-    @OneToMany(
-        () => BigGame,
-        game => game.admin
-    )
+    @OneToMany(() => BigGame, game => game.admin)
     bigGames: BigGame[];
 
-    @ManyToMany(
-        () => BigGame,
-        game => game.additionalAdmins,
-        {
-            onDelete: 'CASCADE',
-            onUpdate: 'CASCADE'
-        }
-    )
+    @ManyToMany(() => BigGame, game => game.additionalAdmins, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
     additionalBigGames: BigGame[];
 }
