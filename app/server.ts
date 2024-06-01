@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { usersRouter } from './routers/users.router';
-import { adminsRouter } from './routers/admins.router';
+import {usersRouter} from './routers/users.router';
+import {adminsRouter} from './routers/admins.router';
 import { teamsRouter } from './routers/teams.router';
 import { gamesRouter } from './routers/games.router';
 import { mainRouter } from './routers/main.router';
