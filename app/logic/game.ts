@@ -37,10 +37,6 @@ export class Game {
         return Object.values(this.rounds);
     }
 
-    get teamValues(): Team[] {
-        return Object.values(this.teams);
-    }
-
     addTeam(team: Team): void {
         this.teams[team.id] = team;
     }

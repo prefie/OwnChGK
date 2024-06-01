@@ -65,7 +65,7 @@ test('Should_go_to_admin_profile', async ({page}) => {
     await startScreenPage.profile.click();
 
     const profilePage = new ProfilePage(page);
-    profilePage.accept();
+    await profilePage.accept();
 
     await expect.soft(profilePage.email).toHaveText(LOGIN_USER_SECRET);
     expect.soft(await profilePage.oldPassword.getAttribute("value")).toBe("");
