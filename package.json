@@ -15,7 +15,7 @@
         "ui-test": "playwright test tests/playwright",
         "typeorm": "typeorm-ts-node-commonjs",
         "lint": "eslint .",
-        "lint-fix": "eslint . --fix"
+        "lint:fix": "eslint . --fix"
     },
     "keywords": [],
     "author": "",
@@ -84,8 +84,7 @@
     },
     "lint-staged": {
         "*.{ts,tsx}": [
-            "prettier . --write",
-            "eslint . --fix",
+            "npm run lint:fix",
             "git add"
         ],
         "*.{html,css,less,ejs,json}": [
